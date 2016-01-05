@@ -34,14 +34,27 @@ public class Discoverer {
 //		/192.168.1.106
 //		/127.0.0.1		
 		ServiceInfo command = discoverer.getCommandService();
-		String commandUrl = command.getProtocol() + "://" + command.getServer() + ":" + command.getPort() + "/";
+		//String commandUrl = command.getProtocol() + "://" + command.getServer() + ":" + command.getPort() + "/";
+		String commandUrl = "tcp://beaglebone.local:" + command.getPort() + "/";
 		System.out.println("command url: " + commandUrl);
 		// tcp://beaglebone.local.:64907/
 		Context con = ZMQ.context(1);
-		Socket req = con.socket(ZMQ.REQ);
-		req.connect(commandUrl);
-		req.send("test");
-		String result = req.recvStr();
+		//Socket req = con.socket(ZMQ.REQ);
+		//req.connect(commandUrl);
+		//req.send("test");
+		//String result = req.recvStr();
+		
+		Socket socket = con.socket(ZMQ.SUB);
+		socket.connect("tcp://192.168.7.2:64907/");
+		socket.subscribe("task".getBytes());
+		socket.subscribe("motion".getBytes());
+		socket.subscribe("io".getBytes());
+		socket.subscribe("interp".getBytes());
+		socket.subscribe("config".getBytes());
+		String content = socket.recvStr();		
+		
+		System.out.println(content);
+		
 	}
 
 	public Discoverer() {

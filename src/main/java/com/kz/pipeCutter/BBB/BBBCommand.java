@@ -21,9 +21,9 @@ public class BBBCommand {
 
 	public static void main(String[] args) {
 		// TODO Auto-generated method stub
-		
-		String s="088952d2010765786563757465";
-		byte[] buff = new BigInteger(s,16).toByteArray();
+		byte[] buff;
+		//String s="088952d2010765786563757465";
+		//byte[] buff = new BigInteger(s,16).toByteArray();
 		
 		Context con = ZMQ.context(1);
 		
@@ -32,10 +32,12 @@ public class BBBCommand {
 		
 		Message.Container msgContainer = Message.Container.getDefaultInstance();
 		MotionCommand motionCmd = Message.Container.getDefaultInstance().getMotcmd();
-		EmcStatusTask task = msgContainer.getEmcStatusTask().getDefaultInstanceForType().
-		task.getTaskMode().values() = EmcTaskModeType.EMC_TASK_MODE_AUTO;
-		task.getTaskMode().values().length
-		System.out.println(javax.xml.bind.DatatypeConverter.printHexBinary(task.toByteArray()));
+		EmcStatusTask task = msgContainer.getEmcStatusTask().getDefaultInstanceForType();
+		//task.getTaskMode().values() = EmcTaskModeType.EMC_TASK_MODE_AUTO;
+		buff = task.toByteArray();
+		
+		String hexOutput = javax.xml.bind.DatatypeConverter.printHexBinary(buff);
+		System.out.println(hexOutput);
 		
 		socket.send(buff);		
 	}

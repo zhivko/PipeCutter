@@ -45,7 +45,7 @@ public class Discoverer {
 		//String result = req.recvStr();
 		
 		Socket socket = con.socket(ZMQ.SUB);
-		socket.connect("tcp://192.168.7.2:64907/");
+		socket.connect("tcp://beaglebone.local:64907/");
 		socket.subscribe("task".getBytes());
 		socket.subscribe("motion".getBytes());
 		socket.subscribe("io".getBytes());

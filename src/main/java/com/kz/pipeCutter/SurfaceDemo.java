@@ -2,7 +2,6 @@ package com.kz.pipeCutter;
 
 import java.awt.MenuItem;
 import java.awt.MouseInfo;
-import java.awt.PopupMenu;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
@@ -45,13 +44,13 @@ import org.jzy3d.plot3d.primitives.Point;
 import org.jzy3d.plot3d.primitives.Sphere;
 import org.jzy3d.plot3d.rendering.canvas.CanvasAWT;
 import org.jzy3d.plot3d.rendering.canvas.Quality;
-import org.jzy3d.plot3d.rendering.view.modes.ViewBoundMode;
 import org.jzy3d.plot3d.rendering.view.modes.ViewPositionMode;
 import org.jzy3d.plot3d.text.align.Halign;
 import org.jzy3d.plot3d.text.align.Valign;
 import org.jzy3d.plot3d.text.drawable.DrawableTextBitmap;
 
 import com.kz.pipeCutter.BBB.Discoverer;
+import com.kz.pipeCutter.ui.Settings;
 
 public class SurfaceDemo extends AbstractAnalysis {
 	Utils utils;
@@ -75,13 +74,16 @@ public class SurfaceDemo extends AbstractAnalysis {
 	public String plasmaStartMsPause = "1500";
 	public float plasmaStandoff = 3.175f;
 	public Point cylinderPoint;
+	public Settings settingsFrame;
 	
 	public float plasmaKerfOffset = 0.5f;
 
 	public SurfaceDemo()
 	{
 		System.setProperty("java.net.preferIPv4Stack", "true");
-		discoverer = new Discoverer();
+		//discoverer = new Discoverer();
+		settingsFrame = new Settings();
+		settingsFrame.setVisible(true);
 	}
 	
 	public static void main(String[] args) throws Exception {

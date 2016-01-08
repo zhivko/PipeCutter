@@ -15,29 +15,74 @@ import pb.Message;
 import pb.Message.Container;
 import pb.Status;
 import pb.Status.EmcStatusTask;
+import pb.Status.EmcStatusTask.Builder;
+import pb.Status.EmcTaskStateType;
 import pb.Task;
 import pb.Types;
+import pb.Types.ContainerType;
 
 public class BBBCommand {
 	ServiceListener bonjourServiceListener;
 	ArrayList<ServiceInfo> services;
+	static Socket socket = null;
 
 	public static void main(String[] args) {
-		// TODO Auto-generated method stub
-		byte[] buff;
+		BBBCommand comm = new BBBCommand();
+		//comm.ping();
+		comm.estopReset();
+	}
+
+	private Socket getSocket() {
+		if (BBBCommand.socket != null)
+			return socket;
+		Discoverer discoverer = new Discoverer();
+		ServiceInfo command = discoverer.getCommandService();
+		String commandUrl = "tcp://beaglebone.local:" + command.getPort() + "/";
+
 		Context con = ZMQ.context(1);
-		Socket socket = con.socket(ZMQ.DEALER);
-		socket.connect("tcp://beaglebone.local:57668/");
+		socket = con.socket(ZMQ.DEALER);
+		socket.connect(commandUrl);
+		return socket;
+	}
+
+	public void ping() {
+		byte[] buff;
 		Container container = Container.newBuilder()
 				.setType(Types.ContainerType.MT_PING).build();
-		
 		buff = container.toByteArray();
-		String hexOutput = javax.xml.bind.DatatypeConverter
-				.printHexBinary(buff);
-		System.out.println(hexOutput);
-		socket.send(buff);
+		String hexOutput = javax.xml.bind.DatatypeConverter.printHexBinary(buff);
+		System.out.println("Mesage: " + hexOutput);
+		getSocket().send(buff);
 
-		byte[] received = socket.recv();
+		byte[] received = getSocket().recv();
+		try {
+			Container contReturned = Container.parseFrom(received);
+			contReturned.getType().toString();
+			System.out.println(contReturned.toString());
+		} catch (InvalidProtocolBufferException e) {
+			e.printStackTrace();
+		}
+
+	}
+
+	public void estopReset() {
+		pb.Message.Container.Builder builder = Container.newBuilder();
+		pb.Status.EmcCommandParameters emcCommandParameter = pb.Status.EmcCommandParameters
+				.newBuilder()
+				.setTaskState(Status.EmcTaskStateType.EMC_TASK_STATE_ESTOP_RESET).build();
+
+		builder.setType(ContainerType.MT_EMC_TASK_SET_STATE);
+		builder.setEmcCommandParams(emcCommandParameter);
+		builder.setInterpName("execute");
+		builder.setTicket(1);
+
+		Container container = builder.build();
+
+		byte[] buff = container.toByteArray();
+		String hexOutput = javax.xml.bind.DatatypeConverter.printHexBinary(buff);
+		System.out.println("Message: " + hexOutput);
+		getSocket().send(buff);
+		byte[] received = getSocket().recv();
 		try {
 			Container contReturned = Container.parseFrom(received);
 			contReturned.getType().toString();
@@ -46,25 +91,6 @@ public class BBBCommand {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		
-		container = Container.newBuilder()
-				.setType(Types.ContainerType.MT_EMC_TASK_SET_STATE).build();
-		container.getAllFields().put(container.getOneofFieldDescriptor(getField(Status.EmcTaskStateType.EMC_TASK_STATE_ESTOP.getValueDescriptor());// .getAllFields().put(Status.EmcTaskStateType.EMC_TASK_STATE_ESTOP_VALUE,  "emc_command_params","task_state");
-		buff = container.toByteArray();
-		hexOutput = javax.xml.bind.DatatypeConverter
-				.printHexBinary(buff);
-		System.out.println(hexOutput);
-		socket.send(buff);
-		received = socket.recv();
-		try {
-			Container contReturned = Container.parseFrom(received);
-			contReturned.getType().toString();
-			System.out.println(contReturned.toString());
-		} catch (InvalidProtocolBufferException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		
-		
+
 	}
 }

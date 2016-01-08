@@ -23,18 +23,7 @@ public class Discoverer {
 	public static void main(String[] args) {
 		// TODO Auto-generated method stub
 		Discoverer discoverer = new Discoverer();
-//		/192.168.7.1
-//		Added: [ServiceInfoImpl@11393876 name: 'Status service on beaglebone._local pid 5126._machinekit._tcp.local.' address: '(null):64306' status: 'NO DNS state: probing 1 task: null', has NO data empty]
-//		Added: [ServiceInfoImpl@32678821 name: 'Command service on beaglebone._local pid 5126._machinekit._tcp.local.' address: '(null):64907' status: 'NO DNS state: probing 1 task: null', has NO data empty]
-//		Added: [ServiceInfoImpl@11714816 name: 'Preview service on beaglebone._local pid 5126._machinekit._tcp.local.' address: '(null):49153' status: 'NO DNS state: probing 1 task: null', has NO data empty]
-//		Added: [ServiceInfoImpl@28660940 name: 'Log service on beaglebone._local pid 4714._machinekit._tcp.local.' address: '(null):49152' status: 'NO DNS state: probing 1 task: null', has NO data empty]
-//		Added: [ServiceInfoImpl@21779733 name: 'File service on beaglebone._local pid 5126._machinekit._tcp.local.' address: '(null):58192' status: 'NO DNS state: probing 1 task: null', has NO data empty]
-//		Added: [ServiceInfoImpl@28650770 name: 'Error service on beaglebone._local pid 5126._machinekit._tcp.local.' address: '(null):59611' status: 'NO DNS state: probing 1 task: null', has NO data empty]
-//		Added: [ServiceInfoImpl@22366245 name: 'Previewstatus service on beaglebone._local pid 5126._machinekit._tcp.local.' address: '(null):49154' status: 'NO DNS state: probing 1 task: null', has NO data empty]
-//		/192.168.1.106
-//		/127.0.0.1		
-		ServiceInfo command = discoverer.getCommandService();
-		//String commandUrl = command.getProtocol() + "://" + command.getServer() + ":" + command.getPort() + "/";
+		ServiceInfo command = discoverer.getErrorService();
 		String commandUrl = "tcp://beaglebone.local:" + command.getPort() + "/";
 		System.out.println("command url: " + commandUrl);
 		// tcp://beaglebone.local.:64907/
@@ -45,14 +34,13 @@ public class Discoverer {
 		//String result = req.recvStr();
 		
 		Socket socket = con.socket(ZMQ.SUB);
-		socket.connect("tcp://beaglebone.local:64907/");
+		socket.connect(commandUrl);
 		socket.subscribe("task".getBytes());
 		socket.subscribe("motion".getBytes());
 		socket.subscribe("io".getBytes());
 		socket.subscribe("interp".getBytes());
 		socket.subscribe("config".getBytes());
 		String content = socket.recvStr();		
-		
 		System.out.println(content);
 		
 	}
@@ -132,4 +120,18 @@ public class Discoverer {
 		return ret;
 	}
 
+	public ServiceInfo getErrorService()
+	{
+		ServiceInfo ret=null;
+		for (ServiceInfo serviceInfo : services) {
+			if(serviceInfo.getName().matches("Error.*"))
+			{
+				ret = serviceInfo;
+				break;
+			}
+		}
+		return ret;
+	}
+	
+	
 }

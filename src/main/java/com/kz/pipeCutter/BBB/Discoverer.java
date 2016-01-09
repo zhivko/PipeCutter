@@ -63,7 +63,7 @@ public class Discoverer {
 			@Override
 			public void serviceAdded(ServiceEvent arg0) {
 				services.add(arg0.getInfo());
-				System.out.println("Added: " + arg0.getInfo());
+				//System.out.println("Added: " + arg0.getInfo());
 			}
 		};
 		// String bonjourServiceType = "_http._tcp.local.";
@@ -81,9 +81,7 @@ public class Discoverer {
 								.getInetAddresses();
 						while (addr.hasMoreElements()) {
 							InetAddress address = addr.nextElement();
-							System.out.println(address);
-						
-							
+							//System.out.println(address);
 							JmDNS jmdns = JmDNS.create(address,
 									bonjourServiceType);
 							ServiceInfo[] infos = jmdns.list(bonjourServiceType);

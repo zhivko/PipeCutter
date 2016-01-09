@@ -30,6 +30,7 @@ public class BBBCommand {
 		BBBCommand comm = new BBBCommand();
 		//comm.ping();
 		comm.estopReset();
+		comm.machineOn();
 	}
 
 	private Socket getSocket() {
@@ -93,4 +94,34 @@ public class BBBCommand {
 		}
 
 	}
+	
+	
+	public void machineOn() {
+		pb.Message.Container.Builder builder = Container.newBuilder();
+		pb.Status.EmcCommandParameters emcCommandParameter = pb.Status.EmcCommandParameters
+				.newBuilder()
+				.setTaskState(Status.EmcTaskStateType.EMC_TASK_STATE_ON).build();
+
+		builder.setType(ContainerType.MT_EMC_TASK_SET_STATE);
+		builder.setEmcCommandParams(emcCommandParameter);
+		builder.setInterpName("execute");
+		builder.setTicket(1);
+
+		Container container = builder.build();
+
+		byte[] buff = container.toByteArray();
+		String hexOutput = javax.xml.bind.DatatypeConverter.printHexBinary(buff);
+		System.out.println("Message: " + hexOutput);
+		getSocket().send(buff);
+		byte[] received = getSocket().recv();
+		try {
+			Container contReturned = Container.parseFrom(received);
+			contReturned.getType().toString();
+			System.out.println(contReturned.toString());
+		} catch (InvalidProtocolBufferException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+	}	
 }

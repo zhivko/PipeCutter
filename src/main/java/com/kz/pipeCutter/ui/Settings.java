@@ -26,9 +26,8 @@ import java.awt.Insets;
 public class Settings extends JFrame {
 
 	private JPanel contentPane;
-	public String iniFullFileName = null;
-	public static Settings instance=null;
-
+	public static String iniFullFileName = getIniPath();
+	public static Settings instance = null;
 
 	/**
 	 * Launch the application.
@@ -49,25 +48,6 @@ public class Settings extends JFrame {
 	 * Create the frame.
 	 */
 	public Settings() {
-
-		String iniFileName = "pipeCutter.ini";
-		iniFullFileName = null;
-		try {
-			String path = new File(".").getCanonicalPath();
-			iniFullFileName = path + File.separator + iniFileName;
-			File f = new File(iniFullFileName);
-			if (!f.exists()) {
-				System.out.println(iniFullFileName + " does not exist. Creating in path:" + path);
-				File fout = new File(iniFullFileName);
-				FileOutputStream fos = new FileOutputStream(fout);
-				BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(fos));
-				bw.write("#pipecutter ini file");
-				bw.close();
-			}
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
 
 		this.setTitle("PipeCutter settings");
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -194,6 +174,29 @@ public class Settings extends JFrame {
 		tabbedPane.setSelectedIndex(1);
 		Settings.instance = this;
 
+	}
+
+	private static String getIniPath() {
+		String ret = null;
+		String iniFileName = "pipeCutter.ini";
+		iniFullFileName = null;
+		try {
+			String path = new File(".").getCanonicalPath();
+			ret = path + File.separator + iniFileName;
+			File f = new File(ret);
+			if (!f.exists()) {
+				System.out.println(ret + " does not exist. Creating in path:" + path);
+				File fout = new File(ret);
+				FileOutputStream fos = new FileOutputStream(fout);
+				BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(fos));
+				bw.write("#pipecutter ini file");
+				bw.close();
+			}
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return ret;
 	}
 
 }

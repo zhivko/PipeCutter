@@ -59,18 +59,18 @@ public abstract class SavableControl extends JPanel {
 
 		add(jValue);
 		jValue.setColumns(10);
-
+		
 	}
 
 	public void save() throws IOException {
 		if (!this.isLoadingValue && Settings.instance != null && Settings.instance.isVisible())
 			if (this.getParValue() != null) {
-				FileInputStream in = new FileInputStream(Settings.instance.iniFullFileName);
+				FileInputStream in = new FileInputStream(Settings.iniFullFileName);
 				Properties props = new Properties();
 				props.load(in);
 				in.close();
 
-				FileOutputStream out = new FileOutputStream(Settings.instance.iniFullFileName);
+				FileOutputStream out = new FileOutputStream(Settings.iniFullFileName);
 				props.setProperty(this.getParId(), this.getParValue());
 				props.store(out, null);
 				out.close();
@@ -82,7 +82,7 @@ public abstract class SavableControl extends JPanel {
 
 	public void load() throws IOException {
 		// TODO Auto-generated method stub
-		FileInputStream in = new FileInputStream(Settings.instance.iniFullFileName);
+		FileInputStream in = new FileInputStream(Settings.iniFullFileName);
 		Properties props = new Properties();
 		props.load(in);
 		in.close();
@@ -99,6 +99,13 @@ public abstract class SavableControl extends JPanel {
 
 	public void setParId(String parId) {
 		this.parId = parId;
+		try {
+			load();
+		} catch (IOException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
+		
 	}
 
 	public String getParValue() {

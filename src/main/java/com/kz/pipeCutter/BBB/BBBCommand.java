@@ -196,4 +196,13 @@ public class BBBCommand {
 	}
 
 
+	public void SSH_SendGcode(String gcode) {
+		try {
+			String command = "machinekit /home/machinekit/machinekit/configs/ARM.BeagleBone.CRAMPS/CRAMPS.ini &\n";
+			this.is.read(command.getBytes());
+		} catch (Exception e) {
+			System.out.println(e);
+		}
+	}
+	
 }

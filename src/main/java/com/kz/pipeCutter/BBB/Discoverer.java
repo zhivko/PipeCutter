@@ -28,11 +28,11 @@ public class Discoverer {
 		System.out.println("command url: " + commandUrl);
 		// tcp://beaglebone.local.:64907/
 		Context con = ZMQ.context(1);
-		//Socket req = con.socket(ZMQ.REQ);
-		//req.connect(commandUrl);
-		//req.send("test");
-		//String result = req.recvStr();
-		
+		// Socket req = con.socket(ZMQ.REQ);
+		// req.connect(commandUrl);
+		// req.send("test");
+		// String result = req.recvStr();
+
 		Socket socket = con.socket(ZMQ.SUB);
 		socket.connect(commandUrl);
 		socket.subscribe("task".getBytes());
@@ -40,9 +40,9 @@ public class Discoverer {
 		socket.subscribe("io".getBytes());
 		socket.subscribe("interp".getBytes());
 		socket.subscribe("config".getBytes());
-		String content = socket.recvStr();		
+		String content = socket.recvStr();
 		System.out.println(content);
-		
+
 	}
 
 	public Discoverer() {
@@ -57,13 +57,13 @@ public class Discoverer {
 			@Override
 			public void serviceRemoved(ServiceEvent arg0) {
 				services.remove(arg0.getInfo());
-				System.out.println("Removed: " + arg0.getInfo());
+				// System.out.println("Removed: " + arg0.getInfo());
 			}
 
 			@Override
 			public void serviceAdded(ServiceEvent arg0) {
 				services.add(arg0.getInfo());
-				System.out.println("Added: " + arg0.getInfo());
+				// System.out.println("Added: " + arg0.getInfo());
 			}
 		};
 		// String bonjourServiceType = "_http._tcp.local.";
@@ -77,19 +77,13 @@ public class Discoverer {
 				NetworkInterface anInterface = ifc.nextElement();
 				try {
 					if (anInterface.isUp()) {
-						Enumeration<InetAddress> addr = anInterface
-								.getInetAddresses();
+						Enumeration<InetAddress> addr = anInterface.getInetAddresses();
 						while (addr.hasMoreElements()) {
 							InetAddress address = addr.nextElement();
-							System.out.println(address);
-						
-							
-							JmDNS jmdns = JmDNS.create(address,
-									bonjourServiceType);
+							// System.out.println(address);
+							JmDNS jmdns = JmDNS.create(address, bonjourServiceType);
 							ServiceInfo[] infos = jmdns.list(bonjourServiceType);
-							jmdns.addServiceListener(bonjourServiceType,
-									bonjourServiceListener);
-
+							jmdns.addServiceListener(bonjourServiceType, bonjourServiceListener);
 						}
 					}
 				} catch (IOException e) {
@@ -106,13 +100,11 @@ public class Discoverer {
 	public void discover() {
 
 	}
-	
-	public ServiceInfo getCommandService()
-	{
-		ServiceInfo ret=null;
+
+	public ServiceInfo getCommandService() {
+		ServiceInfo ret = null;
 		for (ServiceInfo serviceInfo : services) {
-			if(serviceInfo.getName().matches("Command.*"))
-			{
+			if (serviceInfo.getName().matches("Command.*")) {
 				ret = serviceInfo;
 				break;
 			}
@@ -120,18 +112,15 @@ public class Discoverer {
 		return ret;
 	}
 
-	public ServiceInfo getErrorService()
-	{
-		ServiceInfo ret=null;
+	public ServiceInfo getErrorService() {
+		ServiceInfo ret = null;
 		for (ServiceInfo serviceInfo : services) {
-			if(serviceInfo.getName().matches("Error.*"))
-			{
+			if (serviceInfo.getName().matches("Error.*")) {
 				ret = serviceInfo;
 				break;
 			}
 		}
 		return ret;
 	}
-	
-	
+
 }

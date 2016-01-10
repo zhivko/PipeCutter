@@ -82,7 +82,7 @@ public abstract class SavableControl extends JPanel {
 	}
 
 	public void save() throws IOException {
-		if (!this.isLoadingValue && Settings.instance != null && Settings.instance.isVisible())
+		if (!this.isLoadingValue && Settings.instance != null)
 			if (this.getParValue() != null) {
 				FileInputStream in = new FileInputStream(Settings.iniFullFileName);
 				SortedProperties props = new SortedProperties();

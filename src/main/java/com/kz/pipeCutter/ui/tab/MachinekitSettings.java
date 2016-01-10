@@ -29,5 +29,12 @@ public class MachinekitSettings extends JPanel {
 		machinePass.setLabelTxt("Password:");
 		machinePass.setParId("machinekit_password");
 		add(machinePass);		
+
+		SavableText commandUrl = new SavableText();
+		commandUrl.setLabelTxt("Command url:");
+		commandUrl.setParId("machinekit_command_url");
+		add(commandUrl);		
+	
+	
 	}
 }

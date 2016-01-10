@@ -1,6 +1,8 @@
 package com.kz.pipeCutter.ui;
 
 import java.awt.BorderLayout;
+import java.awt.Component;
+import java.awt.Container;
 import java.awt.Dimension;
 import java.awt.EventQueue;
 import java.awt.FlowLayout;
@@ -10,6 +12,10 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Properties;
 
 import javax.swing.JFrame;
@@ -51,31 +57,19 @@ public class Settings extends JFrame {
 
 		this.setTitle("PipeCutter settings");
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		setBounds(100, 100, 824, 514);
+		setBounds(400, 500, 782, 516);
+		this.setPreferredSize(new Dimension(800, 450));
 		contentPane = new JPanel();
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
 		setContentPane(contentPane);
 		contentPane.setLayout(new BorderLayout(0, 0));
 
-		JPanel textPanel = new JPanel();
-		contentPane.add(textPanel);
-
-		JScrollPane scrollPane = new JScrollPane();
-		textPanel.add(scrollPane);
-		textPanel.setMinimumSize(new Dimension(600, 600));
-
-		JTextArea textArea = new JTextArea();
-		textArea.setColumns(1);
-		textArea.setRows(10);
-		scrollPane.add(textArea);
-		textArea.setText("This is textArea...");
-
 		JTabbedPane tabbedPane = new JTabbedPane(JTabbedPane.TOP);
 		tabbedPane.setMinimumSize(new Dimension(600, 200));
 		contentPane.add(tabbedPane);
 
-		tabbedPane.addTab("Machinekit", new MachinekitSettings());
-
+		tabbedPane.addTab("MachinekitSettings", new MachinekitSettings());
+		
 		JPanel tabPanel2 = new JPanel();
 		tabPanel2.setPreferredSize(new Dimension(220, 250));
 		FlowLayout flowLayout = (FlowLayout) tabPanel2.getLayout();
@@ -166,9 +160,8 @@ public class Settings extends JFrame {
 		sliderRot3.setParId("rotator3_step");
 		panelRotator3.add(sliderRot3);
 
-		tabbedPane.setSelectedIndex(1);
+		this.pack();
 		Settings.instance = this;
-
 	}
 
 	private static String getIniPath() {
@@ -210,6 +203,23 @@ public class Settings extends JFrame {
 		return ret;
 	}
 
+	public void setSetting(String parameterId,String value) {
+		String ret = null;
+		try {
+			List<SavableControl> savableControls = harvestMatches(this.getContentPane(), SavableControl.class);
+			for (SavableControl savableControl : savableControls) {
+				System.out.println("control  id:" + savableControl.getParId());
+				if(savableControl.getParId().equals(parameterId))
+				{
+					savableControl.setParValue(value);
+					savableControl.save();
+				}
+			}
+		} catch (Exception ex) {
+			ex.printStackTrace();
+		}
+	}
+
 	public String getHostOrIp() {
 		String host = getSetting("machine_host");
 		String ip = getSetting("machine_ip");
@@ -219,6 +229,24 @@ public class Settings extends JFrame {
 			return ip;
 
 		return null;
+	}
+
+	public <T extends Component> List<T> harvestMatches(Container root, Class<T> clazz) {
+		List<Container> containers = new LinkedList<>();
+		List<T> harvested = new ArrayList<>();
+
+		containers.add(root);
+		while (!containers.isEmpty()) {
+			Container container = containers.remove(0);
+			for (Component component : container.getComponents()) {
+				if (clazz.isAssignableFrom(component.getClass())) {
+					harvested.add((T) component);
+				} else if (component instanceof Container) {
+					containers.add((Container) component);
+				}
+			}
+		}
+		return Collections.unmodifiableList(harvested);
 	}
 
 }

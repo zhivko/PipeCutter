@@ -6,28 +6,27 @@ import java.awt.EventQueue;
 import java.awt.FlowLayout;
 import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
+import java.util.Properties;
 
 import javax.swing.JFrame;
+import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTabbedPane;
 import javax.swing.JTextArea;
-import javax.swing.JTextField;
 import javax.swing.border.EmptyBorder;
-import javax.swing.JLabel;
-import javax.swing.JSlider;
-import java.awt.GridBagLayout;
-import java.awt.GridBagConstraints;
-import java.awt.Insets;
+
+import com.kz.pipeCutter.ui.tab.MachinekitSettings;
 
 public class Settings extends JFrame {
 
 	private JPanel contentPane;
 	public static String iniFullFileName = getIniPath();
-	public static Settings instance = null;
+	public static Settings instance = new Settings();
 
 	/**
 	 * Launch the application.
@@ -37,6 +36,7 @@ public class Settings extends JFrame {
 			public void run() {
 				try {
 					Settings frame = new Settings();
+					frame.setVisible(true);
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
@@ -74,12 +74,7 @@ public class Settings extends JFrame {
 		tabbedPane.setMinimumSize(new Dimension(600, 200));
 		contentPane.add(tabbedPane);
 
-		JPanel tabPanel1 = new JPanel(new FlowLayout(FlowLayout.LEFT));
-		tabbedPane.addTab("Settings", tabPanel1);
-
-		JTextField tab1_field1 = new JTextField();
-		tab1_field1.setText("This is text 1");
-		tabPanel1.add(tab1_field1);
+		tabbedPane.addTab("Machinekit", new MachinekitSettings());
 
 		JPanel tabPanel2 = new JPanel();
 		tabPanel2.setPreferredSize(new Dimension(220, 250));
@@ -197,6 +192,33 @@ public class Settings extends JFrame {
 			e.printStackTrace();
 		}
 		return ret;
+	}
+
+	public String getSetting(String parameterId) {
+		String ret = null;
+		try {
+			FileInputStream in = new FileInputStream(Settings.iniFullFileName);
+			Properties props = new Properties();
+			props.load(in);
+			in.close();
+			if (props.getProperty(parameterId) != null) {
+				ret = props.getProperty(parameterId);
+			}
+		} catch (Exception ex) {
+			ex.printStackTrace();
+		}
+		return ret;
+	}
+
+	public String getHostOrIp() {
+		String host = getSetting("machine_host");
+		String ip = getSetting("machine_ip");
+		if (host != null)
+			return host;
+		else if (ip != null)
+			return ip;
+
+		return null;
 	}
 
 }

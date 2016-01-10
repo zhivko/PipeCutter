@@ -33,7 +33,9 @@ public class BBBCommand {
 
 	public static void main(String[] args) {
 		BBBCommand comm = new BBBCommand();
-		comm.machineSSHLogin();
+		comm.SSH_Login();
+		comm.SSH_StartMachinekit();
+		
 		//comm.ping();
 		comm.estopReset();
 		//comm.machineOnSSH();
@@ -128,7 +130,7 @@ public class BBBCommand {
 		}
 	}
 
-	public void machineSSHLogin() {
+	public void SSH_Login() {
 		try {
 			JSch jsch = new JSch();
 
@@ -184,7 +186,7 @@ public class BBBCommand {
 		}
 	}
 
-	public void machineSSHStartMachinekit() {
+	public void SSH_StartMachinekit() {
 		try {
 			String command = "machinekit /home/machinekit/machinekit/configs/ARM.BeagleBone.CRAMPS/CRAMPS.ini &\n";
 			this.is.read(command.getBytes());

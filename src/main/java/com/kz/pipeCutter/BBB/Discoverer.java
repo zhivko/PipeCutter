@@ -63,11 +63,6 @@ public class Discoverer {
 			@Override
 			public void serviceAdded(ServiceEvent arg0) {
 				services.add(arg0.getInfo());
-<<<<<<< HEAD
-				//System.out.println("Added: " + arg0.getInfo());
-=======
-				// System.out.println("Added: " + arg0.getInfo());
->>>>>>> b890531b22026651f992f55e3f2ecdb0d6d40143
 			}
 		};
 		// String bonjourServiceType = "_http._tcp.local.";
@@ -84,14 +79,10 @@ public class Discoverer {
 						Enumeration<InetAddress> addr = anInterface.getInetAddresses();
 						while (addr.hasMoreElements()) {
 							InetAddress address = addr.nextElement();
-<<<<<<< HEAD
 							//System.out.println(address);
 							JmDNS jmdns = JmDNS.create(address,
 									bonjourServiceType);
-=======
 							// System.out.println(address);
-							JmDNS jmdns = JmDNS.create(address, bonjourServiceType);
->>>>>>> b890531b22026651f992f55e3f2ecdb0d6d40143
 							ServiceInfo[] infos = jmdns.list(bonjourServiceType);
 							jmdns.addServiceListener(bonjourServiceType, bonjourServiceListener);
 						}

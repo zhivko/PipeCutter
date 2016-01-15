@@ -3,11 +3,13 @@ package com.kz.pipeCutter.BBB;
 import java.io.ByteArrayInputStream;
 import java.io.OutputStream;
 import java.io.PrintStream;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 
 import javax.jmdns.ServiceInfo;
 import javax.jmdns.ServiceListener;
 
+import org.apache.commons.codec.binary.StringUtils;
 import org.zeromq.ZMQ;
 import org.zeromq.ZMQ.Context;
 import org.zeromq.ZMQ.Socket;
@@ -18,6 +20,7 @@ import pb.Status.EmcTaskModeType;
 import pb.Types;
 import pb.Types.ContainerType;
 
+import com.google.protobuf.ByteString;
 import com.google.protobuf.InvalidProtocolBufferException;
 import com.jcraft.jsch.Channel;
 import com.jcraft.jsch.JSch;
@@ -68,10 +71,12 @@ public class BBBCommand {
 	}
 
 	private void executeMdi(String command) throws Exception {
-		System.out.println(new Object(){}.getClass().getEnclosingMethod().getName());
+		System.out.println(new Object() {
+		}.getClass().getEnclosingMethod().getName());
 		pb.Message.Container.Builder builder = Container.newBuilder();
-		pb.Status.EmcCommandParameters emcCommandParameter = pb.Status.EmcCommandParameters.newBuilder().setCommand(command)
-				.build();
+
+		pb.Status.EmcCommandParameters emcCommandParameter = pb.Status.EmcCommandParameters
+				.newBuilder().setCommandBytes(ByteString.copyFromUtf8(command)).build();
 
 		builder.setType(ContainerType.MT_EMC_TASK_PLAN_EXECUTE);
 		builder.setEmcCommandParams(emcCommandParameter);
@@ -113,10 +118,11 @@ public class BBBCommand {
 	}
 
 	private void toMdiMode() throws Exception {
-		System.out.println(new Object(){}.getClass().getEnclosingMethod().getName());
+		System.out.println(new Object() {
+		}.getClass().getEnclosingMethod().getName());
 		pb.Message.Container.Builder builder = Container.newBuilder();
-		pb.Status.EmcCommandParameters emcCommandParameter = pb.Status.EmcCommandParameters.newBuilder()
-				.setTaskMode(EmcTaskModeType.EMC_TASK_MODE_MDI).build();
+		pb.Status.EmcCommandParameters emcCommandParameter = pb.Status.EmcCommandParameters
+				.newBuilder().setTaskMode(EmcTaskModeType.EMC_TASK_MODE_MDI).build();
 
 		builder.setType(ContainerType.MT_EMC_TASK_SET_MODE);
 		builder.setEmcCommandParams(emcCommandParameter);
@@ -133,10 +139,11 @@ public class BBBCommand {
 	}
 
 	private void toManualMode() throws Exception {
-		System.out.println(new Object(){}.getClass().getEnclosingMethod().getName());		
+		System.out.println(new Object() {
+		}.getClass().getEnclosingMethod().getName());
 		pb.Message.Container.Builder builder = Container.newBuilder();
-		pb.Status.EmcCommandParameters emcCommandParameter = pb.Status.EmcCommandParameters.newBuilder()
-				.setTaskMode(EmcTaskModeType.EMC_TASK_MODE_MANUAL).build();
+		pb.Status.EmcCommandParameters emcCommandParameter = pb.Status.EmcCommandParameters
+				.newBuilder().setTaskMode(EmcTaskModeType.EMC_TASK_MODE_MANUAL).build();
 
 		builder.setType(ContainerType.MT_EMC_TASK_SET_MODE);
 		builder.setEmcCommandParams(emcCommandParameter);
@@ -152,12 +159,15 @@ public class BBBCommand {
 		parseAndOutput();
 	}
 
-	private void jogAxis(int axis, double velocity, double distance) throws Exception {
-		System.out.println(new Object(){}.getClass().getEnclosingMethod().getName());
-		
+	private void jogAxis(int axis, double velocity, double distance)
+			throws Exception {
+		System.out.println(new Object() {
+		}.getClass().getEnclosingMethod().getName());
+
 		pb.Message.Container.Builder builder = Container.newBuilder();
-		pb.Status.EmcCommandParameters emcCommandParameter = pb.Status.EmcCommandParameters.newBuilder().setIndex(axis)
-				.setVelocity(velocity).setDistance(distance).build();
+		pb.Status.EmcCommandParameters emcCommandParameter = pb.Status.EmcCommandParameters
+				.newBuilder().setIndex(axis).setVelocity(velocity)
+				.setDistance(distance).build();
 
 		builder.setType(ContainerType.MT_EMC_AXIS_INCR_JOG);
 		builder.setEmcCommandParams(emcCommandParameter);
@@ -183,7 +193,8 @@ public class BBBCommand {
 				command = discoverer.getCommandService();
 				if (command == null)
 					try {
-						System.out.println("Still looking for command servvice with mdns...");
+						System.out
+								.println("Still looking for command servvice with mdns...");
 						Thread.sleep(1000);
 					} catch (InterruptedException e) {
 						// TODO Auto-generated catch block
@@ -202,10 +213,12 @@ public class BBBCommand {
 	}
 
 	public void ping() throws Exception {
-		System.out.println(new Object(){}.getClass().getEnclosingMethod().getName());
+		System.out.println(new Object() {
+		}.getClass().getEnclosingMethod().getName());
 
 		byte[] buff;
-		Container container = Container.newBuilder().setType(Types.ContainerType.MT_PING).build();
+		Container container = Container.newBuilder()
+				.setType(Types.ContainerType.MT_PING).build();
 		buff = container.toByteArray();
 		String hexOutput = javax.xml.bind.DatatypeConverter.printHexBinary(buff);
 		System.out.println("Mesage: " + hexOutput);
@@ -215,11 +228,14 @@ public class BBBCommand {
 	}
 
 	public void estopReset() throws Exception {
-		System.out.println(new Object(){}.getClass().getEnclosingMethod().getName());
+		System.out.println(new Object() {
+		}.getClass().getEnclosingMethod().getName());
 
 		pb.Message.Container.Builder builder = Container.newBuilder();
-		pb.Status.EmcCommandParameters emcCommandParameter = pb.Status.EmcCommandParameters.newBuilder()
-				.setTaskState(Status.EmcTaskStateType.EMC_TASK_STATE_ESTOP_RESET).build();
+		pb.Status.EmcCommandParameters emcCommandParameter = pb.Status.EmcCommandParameters
+				.newBuilder()
+				.setTaskState(Status.EmcTaskStateType.EMC_TASK_STATE_ESTOP_RESET)
+				.build();
 
 		builder.setType(ContainerType.MT_EMC_TASK_SET_STATE);
 		builder.setEmcCommandParams(emcCommandParameter);
@@ -236,11 +252,13 @@ public class BBBCommand {
 	}
 
 	public void machineOnMachineTalk() throws Exception {
-		System.out.println(new Object(){}.getClass().getEnclosingMethod().getName());
+		System.out.println(new Object() {
+		}.getClass().getEnclosingMethod().getName());
 
 		pb.Message.Container.Builder builder = Container.newBuilder();
-		pb.Status.EmcCommandParameters emcCommandParameter = pb.Status.EmcCommandParameters.newBuilder()
-				.setTaskState(Status.EmcTaskStateType.EMC_TASK_STATE_ON).build();
+		pb.Status.EmcCommandParameters emcCommandParameter = pb.Status.EmcCommandParameters
+				.newBuilder().setTaskState(Status.EmcTaskStateType.EMC_TASK_STATE_ON)
+				.build();
 
 		builder.setType(ContainerType.MT_EMC_TASK_SET_STATE);
 		builder.setEmcCommandParams(emcCommandParameter);

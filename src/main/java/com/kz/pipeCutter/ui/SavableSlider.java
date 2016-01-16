@@ -71,10 +71,10 @@ public class SavableSlider extends SavableControl {
 			@Override
 			public void stateChanged(ChangeEvent e) {
 				// TODO Auto-generated method stub
-				//if (Settings.instance != null) {
+				if (Settings.instance != null) {
 					String txt = SavableSlider.this.table.get(SavableSlider.this.slider.getValue()).getText();
 					SavableSlider.this.setParValue(txt);
-				//}
+				}
 			}
 		});
 	}

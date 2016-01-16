@@ -5,7 +5,10 @@ import java.awt.Component;
 import java.awt.Container;
 import java.awt.Dimension;
 import java.awt.EventQueue;
-import java.awt.FlowLayout;
+import java.awt.event.ComponentAdapter;
+import java.awt.event.ComponentEvent;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileInputStream;
@@ -19,35 +22,48 @@ import java.util.List;
 import java.util.Properties;
 
 import javax.swing.JFrame;
-import javax.swing.JLabel;
 import javax.swing.JPanel;
-import javax.swing.JScrollPane;
 import javax.swing.JTabbedPane;
-import javax.swing.JTextArea;
+import javax.swing.SwingUtilities;
 import javax.swing.border.EmptyBorder;
 
+import com.kz.pipeCutter.BBB.Discoverer;
 import com.kz.pipeCutter.ui.tab.MachinekitSettings;
+import com.kz.pipeCutter.ui.tab.RotatorSettings;
+
+import pb.Status.EmcTaskModeType;
 
 public class Settings extends JFrame {
 
 	private JPanel contentPane;
+	public static double parDistance;
+	public static EmcTaskModeType parMode;
+	public static String parMdiCommand; 
+	
 	public static String iniFullFileName = getIniPath();
-	public static Settings instance = new Settings();
-
+	public static Settings instance;
+	public static Discoverer discoverer;
+	
+	public static int parAxisNo = 0; 
+	public static double parVelocity = 0;
+	
 	/**
 	 * Launch the application.
 	 */
 	public static void main(String[] args) {
-		EventQueue.invokeLater(new Runnable() {
-			public void run() {
-				try {
-					Settings frame = new Settings();
-					frame.setVisible(true);
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
+
+		System.setProperty("java.net.preferIPv4Stack", "true");
+		Settings frame = Settings.getInstance();
+		frame.addComponentListener(new ComponentAdapter() {
+			public void componentHidden(ComponentEvent e) {
+				/* code run when component hidden */
+			}
+
+			public void componentShown(ComponentEvent e) {
+				discoverer = Discoverer.getInstance();
 			}
 		});
+		frame.setVisible(true);
 	}
 
 	/**
@@ -65,100 +81,13 @@ public class Settings extends JFrame {
 		contentPane.setLayout(new BorderLayout(0, 0));
 
 		JTabbedPane tabbedPane = new JTabbedPane(JTabbedPane.TOP);
-		tabbedPane.setMinimumSize(new Dimension(600, 200));
+		// tabbedPane.setMinimumSize(new Dimension(600, 500));
 		contentPane.add(tabbedPane);
 
 		tabbedPane.addTab("MachinekitSettings", new MachinekitSettings());
-		
-		JPanel tabPanel2 = new JPanel();
-		tabPanel2.setPreferredSize(new Dimension(220, 250));
-		FlowLayout flowLayout = (FlowLayout) tabPanel2.getLayout();
-		flowLayout.setAlignment(FlowLayout.LEFT);
-		tabbedPane.addTab("Rotators", tabPanel2);
+		tabbedPane.addTab("Rotators", new RotatorSettings());
 
-		// ----------ROTATOR 1---------------------------
-
-		JPanel panelRotator1 = new JPanel();
-		panelRotator1.setPreferredSize(new Dimension(220, 450));
-		tabPanel2.add(panelRotator1);
-		panelRotator1.setLayout(new MyVerticalFlowLayout());
-		JLabel lblNewLabel1 = new JLabel("Rotator1");
-		panelRotator1.add(lblNewLabel1);
-
-		SavableText rotator1_vel = new SavableText();
-		rotator1_vel.setParId("rotator1_vel1");
-		rotator1_vel.setLabelTxt("velocity:");
-		panelRotator1.add(rotator1_vel);
-
-		SavableText rotator1_acel = new SavableText();
-		rotator1_acel.setLabelTxt("acceleration:");
-		panelRotator1.add(rotator1_acel);
-		rotator1_acel.setParId("rotator1_acel1");
-
-		SavableSlider sliderRot1 = new SavableSlider();
-		sliderRot1.setValues("1,10,100,1000");
-		sliderRot1.setLabelTxt("Move for:");
-		sliderRot1.setMinValue(0);
-		sliderRot1.setMaxValue(3);
-		sliderRot1.setStepValue(1);
-		sliderRot1.setParId("rotator1_step");
-		panelRotator1.add(sliderRot1);
-
-		// ----------ROTATOR 2---------------------------
-		JPanel panelRotator2 = new JPanel();
-		panelRotator2.setPreferredSize(new Dimension(220, 450));
-		panelRotator2.setMinimumSize(new Dimension(250, 200));
-		tabPanel2.add(panelRotator2);
-		panelRotator2.setLayout(new MyVerticalFlowLayout());
-		JLabel lblNewLabel2 = new JLabel("Rotator2");
-		panelRotator2.add(lblNewLabel2);
-
-		SavableText rotator2_vel1 = new SavableText();
-		rotator2_vel1.setLabelTxt("velocity");
-		panelRotator2.add(rotator2_vel1);
-		rotator2_vel1.setParId("rotator2_vel");
-
-		SavableText savableSetting = new SavableText();
-		savableSetting.setLabelTxt("acceleration:");
-		savableSetting.setParId("rotator2_acc");
-		panelRotator2.add(savableSetting);
-
-		SavableSlider sliderRot2 = new SavableSlider();
-		sliderRot2.setValues("1,10,100,1000");
-		sliderRot2.setLabelTxt("Move for:");
-		sliderRot2.setMinValue(0);
-		sliderRot2.setMaxValue(3);
-		sliderRot2.setStepValue(1);
-		sliderRot2.setParId("rotator2_step");
-		panelRotator2.add(sliderRot2);
-
-		// ----------ROTATOR 3---------------------------
-		JPanel panelRotator3 = new JPanel();
-		panelRotator3.setPreferredSize(new Dimension(220, 450));
-		panelRotator3.setLayout(new MyVerticalFlowLayout());
-		panelRotator3.setMinimumSize(new Dimension(250, 200));
-		tabPanel2.add(panelRotator3);
-		JLabel lblNewLabel3 = new JLabel("Rotator3");
-		panelRotator3.add(lblNewLabel3);
-
-		SavableText rotator3Speed = new SavableText();
-		rotator3Speed.setLabelTxt("velocity:");
-		rotator3Speed.setParId("rotator3_vel");
-		panelRotator3.add(rotator3Speed);
-
-		SavableText savableSetting_1 = new SavableText();
-		savableSetting_1.setLabelTxt("acceleration:");
-		savableSetting_1.setParId("rotator3_acc");
-		panelRotator3.add(savableSetting_1);
-
-		SavableSlider sliderRot3 = new SavableSlider();
-		sliderRot3.setValues("1,10,100,1000");
-		sliderRot3.setLabelTxt("Move for:");
-		sliderRot3.setMinValue(0);
-		sliderRot3.setMaxValue(3);
-		sliderRot3.setStepValue(1);
-		sliderRot3.setParId("rotator3_step");
-		panelRotator3.add(sliderRot3);
+		tabbedPane.setSelectedIndex(1);
 
 		this.pack();
 		Settings.instance = this;
@@ -203,21 +132,32 @@ public class Settings extends JFrame {
 		return ret;
 	}
 
-	public void setSetting(String parameterId,String value) {
-		String ret = null;
+	public void setSetting(String parameterId, String value) {
 		try {
 			List<SavableControl> savableControls = harvestMatches(this.getContentPane(), SavableControl.class);
 			for (SavableControl savableControl : savableControls) {
-				System.out.println("control  id:" + savableControl.getParId());
-				if(savableControl.getParId().equals(parameterId))
-				{
+				if (savableControl.getParId().equals(parameterId)) {
 					savableControl.setParValue(value);
 					savableControl.save();
+					break;
 				}
 			}
 		} catch (Exception ex) {
 			ex.printStackTrace();
 		}
+	}
+
+	public IParameter getParameter(String parameterId) {
+		IParameter ret = null;
+		List<SavableControl> savableControls = harvestMatches(this.getContentPane(), SavableControl.class);
+		for (SavableControl savableControl : savableControls) {
+			System.out.println("control  id:" + savableControl.getParId());
+			if (savableControl.getParId().equals(parameterId)) {
+				ret = savableControl;
+				break;
+			}
+		}
+		return ret;
 	}
 
 	public String getHostOrIp() {
@@ -249,4 +189,9 @@ public class Settings extends JFrame {
 		return Collections.unmodifiableList(harvested);
 	}
 
+	public static Settings getInstance() {
+		if (instance == null)
+			instance = new Settings();
+		return instance;
+	}
 }

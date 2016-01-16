@@ -1,73 +1,95 @@
 package com.kz.pipeCutter.BBB;
 
 import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
 import java.net.InetAddress;
 import java.net.NetworkInterface;
 import java.net.SocketException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Enumeration;
+import java.util.Timer;
+import java.util.TimerTask;
+import java.util.logging.ConsoleHandler;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import javax.jmdns.JmDNS;
 import javax.jmdns.ServiceEvent;
 import javax.jmdns.ServiceInfo;
 import javax.jmdns.ServiceListener;
+import javax.jmdns.impl.JmDNSImpl;
+import javax.swing.SwingUtilities;
+import javax.swing.SwingWorker;
 
-import org.zeromq.ZMQ;
-import org.zeromq.ZMQ.Context;
-import org.zeromq.ZMQ.Socket;
+import com.kz.pipeCutter.ui.Settings;
+import com.kz.pipeCutter.ui.tab.MachinekitSettings;
 
 public class Discoverer {
-	ServiceListener bonjourServiceListener;
-	ArrayList<ServiceInfo> services;
+	private static ArrayList<ServiceInfo> services = new ArrayList<ServiceInfo>();
+	private static Discoverer instance;
+	private ArrayList<JmDNS> jMdnsS = new ArrayList<JmDNS>();
+	private static String bonjourServiceType = "_machinekit._tcp.local.";
+
+	ServiceListener bonjourServiceListener = new ServiceListener() {
+
+		@Override
+		public void serviceResolved(ServiceEvent arg0) {
+			// TODO Auto-generated method stub
+			System.out.println("resolved: " + arg0.toString());
+		}
+
+		@Override
+		public void serviceRemoved(ServiceEvent arg0) {
+			System.out.println("- " + arg0.getInfo().getName());
+			services.remove(arg0.getInfo());
+			Pattern p = Pattern.compile("(.*)service(.*)");
+			Matcher m = p.matcher(arg0.getInfo().getName());
+			if (m.find()) {
+				SwingUtilities.invokeLater(new Runnable() {
+					@Override
+					public void run() {
+						MachinekitSettings.instance.machinekitServices.removeService(arg0.getInfo());
+					}
+				});
+			}
+		}
+
+		@Override
+		public void serviceAdded(ServiceEvent arg0) {
+			System.out.println("+ " + arg0.getInfo().getName());
+			services.add(arg0.getInfo());
+			Pattern p = Pattern.compile("(.*)service(.*)");
+			Matcher m = p.matcher(arg0.getInfo().getName());
+			if (m.find()) {
+				SwingUtilities.invokeLater(new Runnable() {
+					@Override
+					public void run() {
+						MachinekitSettings.instance.machinekitServices.addService(arg0.getInfo());
+					}
+				});
+			}
+		}
+	};
 
 	public static void main(String[] args) {
-		// TODO Auto-generated method stub
-		Discoverer discoverer = new Discoverer();
-		ServiceInfo command = discoverer.getErrorService();
-		String commandUrl = "tcp://beaglebone.local:" + command.getPort() + "/";
-		System.out.println("command url: " + commandUrl);
-		// tcp://beaglebone.local.:64907/
-		Context con = ZMQ.context(1);
-		// Socket req = con.socket(ZMQ.REQ);
-		// req.connect(commandUrl);
-		// req.send("test");
-		// String result = req.recvStr();
-
-		Socket socket = con.socket(ZMQ.SUB);
-		socket.connect(commandUrl);
-		socket.subscribe("task".getBytes());
-		socket.subscribe("motion".getBytes());
-		socket.subscribe("io".getBytes());
-		socket.subscribe("interp".getBytes());
-		socket.subscribe("config".getBytes());
-		String content = socket.recvStr();
-		System.out.println(content);
-
+		Discoverer discoverer = Discoverer.getInstance();
 	}
 
 	public Discoverer() {
-		services = new ArrayList<ServiceInfo>();
-		bonjourServiceListener = new ServiceListener() {
 
-			@Override
-			public void serviceResolved(ServiceEvent arg0) {
-				// TODO Auto-generated method stub
-			}
+		boolean log = true;
+		if (log) {
+			Logger logger = Logger.getLogger(JmDNS.class.getName());
+			ConsoleHandler handler = new ConsoleHandler();
+			logger.addHandler(handler);
+			logger.setLevel(Level.FINER);
+			handler.setLevel(Level.FINER);
+		}
 
-			@Override
-			public void serviceRemoved(ServiceEvent arg0) {
-				services.remove(arg0.getInfo());
-				// System.out.println("Removed: " + arg0.getInfo());
-			}
-
-			@Override
-			public void serviceAdded(ServiceEvent arg0) {
-				services.add(arg0.getInfo());
-			}
-		};
-		// String bonjourServiceType = "_http._tcp.local.";
-		// String bonjourServiceType = "_machinekit._tcp.local.";
-		String bonjourServiceType = "_machinekit._tcp.local.";
+		System.out.println("Initializing discoverer...");
 
 		Enumeration<NetworkInterface> ifc;
 		try {
@@ -79,12 +101,11 @@ public class Discoverer {
 						Enumeration<InetAddress> addr = anInterface.getInetAddresses();
 						while (addr.hasMoreElements()) {
 							InetAddress address = addr.nextElement();
-							//System.out.println(address);
-							JmDNS jmdns = JmDNS.create(address,
-									bonjourServiceType);
-							// System.out.println(address);
-							ServiceInfo[] infos = jmdns.list(bonjourServiceType);
-							jmdns.addServiceListener(bonjourServiceType, bonjourServiceListener);
+							if (!address.equals(InetAddress.getLoopbackAddress())) {
+								JmDNS jmdns = JmDNSImpl.create(address, bonjourServiceType);
+								jMdnsS.add(jmdns);
+								System.out.println("Adding bonjour listener on local IP: " + address.toString());
+							}
 						}
 					}
 				} catch (IOException e) {
@@ -92,36 +113,66 @@ public class Discoverer {
 					e.printStackTrace();
 				}
 			}
+
 		} catch (SocketException e1) {
 			// TODO Auto-generated catch block
 			e1.printStackTrace();
 		}
+
+		// TimerTask myDiscoveryTask = new TimerTask() {
+		// @Override
+		// public void run() {
+		// discover();
+		// }
+		// };
+		// Timer discoveryTimer = new Timer("DiscoveryTimer");
+		// discoveryTimer.scheduleAtFixedRate(myDiscoveryTask, 0, 5000);
+		// discoveryTimer.schedule(myDiscoveryTask, 0, 5000);
+		discover();
+	}
+
+	public static Discoverer getInstance() {
+		if (instance == null)
+			instance = new Discoverer();
+		return instance;
+	}
+
+	@Override
+	protected void finalize() throws Throwable {
+		// TODO Auto-generated method stub
+		System.out.println("destructor discoverer");
+		super.finalize();
 	}
 
 	public void discover() {
+		Thread t = new Thread(new Runnable() {
+			public void run() {
 
-	}
+				try {
+					SwingUtilities.invokeAndWait(new Runnable() {
+						@Override
+						public void run() {
+							MachinekitSettings.instance.machinekitServices.removeAll();
+						}
+					});
+					for (JmDNS jmDNS : Discoverer.getInstance().jMdnsS) {
+						System.out.println("Discovering Machinekit services...");
+						jmDNS.addServiceListener(bonjourServiceType, bonjourServiceListener);
+						ServiceInfo[] infos = jmDNS.list(bonjourServiceType);
+						jmDNS.addServiceListener(bonjourServiceType, bonjourServiceListener);
+					}
+				} catch (InvocationTargetException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				} catch (InterruptedException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
 
-	public ServiceInfo getCommandService() {
-		ServiceInfo ret = null;
-		for (ServiceInfo serviceInfo : services) {
-			if (serviceInfo.getName().matches("Command.*")) {
-				ret = serviceInfo;
-				break;
 			}
-		}
-		return ret;
-	}
+		});
 
-	public ServiceInfo getErrorService() {
-		ServiceInfo ret = null;
-		for (ServiceInfo serviceInfo : services) {
-			if (serviceInfo.getName().matches("Error.*")) {
-				ret = serviceInfo;
-				break;
-			}
-		}
-		return ret;
+		t.start();
 	}
 
 }

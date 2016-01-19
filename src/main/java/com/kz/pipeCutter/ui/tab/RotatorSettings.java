@@ -9,7 +9,7 @@ import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 
-import com.kz.pipeCutter.BBB.BBBCommand;
+import com.kz.pipeCutter.BBB.BBBError;
 import com.kz.pipeCutter.BBB.commands.Jog;
 import com.kz.pipeCutter.ui.MyVerticalFlowLayout;
 import com.kz.pipeCutter.ui.SavableSlider;
@@ -44,11 +44,8 @@ public class RotatorSettings extends JPanel {
 		rotator1_acel.setParId("rotator1_acc");
 
 		SavableSlider sliderRot1 = new SavableSlider();
-		sliderRot1.setValues("1,10,100,1000");
+		sliderRot1.setValues("-1000,-100,-10,-1,1,10,100,1000");
 		sliderRot1.setLabelTxt("Move for:");
-		sliderRot1.setMinValue(0);
-		sliderRot1.setMaxValue(3);
-		sliderRot1.setStepValue(1);
 		sliderRot1.setParId("rotator1_step");
 		panelRotator1.add(sliderRot1);
 
@@ -86,11 +83,8 @@ public class RotatorSettings extends JPanel {
 		panelRotator2.add(savableSetting);
 
 		SavableSlider sliderRot2 = new SavableSlider();
-		sliderRot2.setValues("1,10,100,1000");
+		sliderRot2.setValues("-1000,-100,-10,-1,1,10,100,1000");
 		sliderRot2.setLabelTxt("Move for:");
-		sliderRot2.setMinValue(0);
-		sliderRot2.setMaxValue(3);
-		sliderRot2.setStepValue(1);
 		sliderRot2.setParId("rotator2_step");
 		panelRotator2.add(sliderRot2);
 		
@@ -130,11 +124,8 @@ public class RotatorSettings extends JPanel {
 		panelRotator3.add(savableSetting_1);
 
 		SavableSlider sliderRot3 = new SavableSlider();
-		sliderRot3.setValues("1,10,100,1000");
+		sliderRot3.setValues("-1000,-100,-10,-1,1,10,100,1000");
 		sliderRot3.setLabelTxt("Move for:");
-		sliderRot3.setMinValue(0);
-		sliderRot3.setMaxValue(3);
-		sliderRot3.setStepValue(1);
 		sliderRot3.setParId("rotator3_step");
 		panelRotator3.add(sliderRot3);
 		

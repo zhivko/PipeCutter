@@ -41,6 +41,8 @@ public class SavableSlider extends SavableControl {
 		}
 		this.jValue.setColumns(maxcol);
 		this.slider.setLabelTable(table);
+		this.slider.setMaximum(splittedValues.length);
+		this.slider.setMinimum(0);
 
 	}
 

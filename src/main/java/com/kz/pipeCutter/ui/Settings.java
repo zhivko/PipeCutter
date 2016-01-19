@@ -27,26 +27,31 @@ import javax.swing.JTabbedPane;
 import javax.swing.SwingUtilities;
 import javax.swing.border.EmptyBorder;
 
+import com.kz.pipeCutter.BBB.BBBError;
 import com.kz.pipeCutter.BBB.Discoverer;
 import com.kz.pipeCutter.ui.tab.MachinekitSettings;
 import com.kz.pipeCutter.ui.tab.RotatorSettings;
 
 import pb.Status.EmcTaskModeType;
+import javax.swing.JSplitPane;
 
 public class Settings extends JFrame {
 
 	private JPanel contentPane;
 	public static double parDistance;
 	public static EmcTaskModeType parMode;
-	public static String parMdiCommand; 
-	
+	public static String parMdiCommand;
+
 	public static String iniFullFileName = getIniPath();
 	public static Settings instance;
 	public static Discoverer discoverer;
-	
-	public static int parAxisNo = 0; 
+	public static BBBError error;
+
+	public static int parAxisNo = 0;
 	public static double parVelocity = 0;
-	
+
+	public JSplitPane splitPane;
+
 	/**
 	 * Launch the application.
 	 */
@@ -55,12 +60,14 @@ public class Settings extends JFrame {
 		System.setProperty("java.net.preferIPv4Stack", "true");
 		Settings frame = Settings.getInstance();
 		frame.addComponentListener(new ComponentAdapter() {
+
 			public void componentHidden(ComponentEvent e) {
 				/* code run when component hidden */
 			}
 
 			public void componentShown(ComponentEvent e) {
 				discoverer = Discoverer.getInstance();
+				error = new BBBError();
 			}
 		});
 		frame.setVisible(true);
@@ -73,8 +80,8 @@ public class Settings extends JFrame {
 
 		this.setTitle("PipeCutter settings");
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		setBounds(400, 500, 782, 516);
-		this.setPreferredSize(new Dimension(800, 450));
+		// setBounds(400, 500, 800, 650);
+		this.setPreferredSize(new Dimension(800, 600));
 		contentPane = new JPanel();
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
 		setContentPane(contentPane);
@@ -82,15 +89,42 @@ public class Settings extends JFrame {
 
 		JTabbedPane tabbedPane = new JTabbedPane(JTabbedPane.TOP);
 		// tabbedPane.setMinimumSize(new Dimension(600, 500));
-		contentPane.add(tabbedPane);
 
 		tabbedPane.addTab("MachinekitSettings", new MachinekitSettings());
 		tabbedPane.addTab("Rotators", new RotatorSettings());
 
 		tabbedPane.setSelectedIndex(1);
 
+		JSplitPane splitPane = new JSplitPane();
+		splitPane.setOrientation(JSplitPane.VERTICAL_SPLIT);
+		contentPane.add(splitPane, BorderLayout.NORTH);
+
+		CommandPanel commandPanel = new CommandPanel();
+		splitPane.setTopComponent(tabbedPane);
+		splitPane.setBottomComponent(commandPanel);
+
 		this.pack();
 		Settings.instance = this;
+
+		this.addComponentListener(new ComponentAdapter() {
+			public void componentResized(ComponentEvent evt) {
+				Component c = (Component) evt.getSource();
+				System.out.println(c.getName() + " resized");
+				if (c.getName().equals("frame0")) {
+					//splitPane.setDividerLocation(1 - (commandPanel.getHeight() / Settings.instance.getHeight()));
+				}
+			}
+		});
+
+		this.addComponentListener(new ComponentAdapter() {
+			public void componentHidden(ComponentEvent e) {
+				/* code run when component hidden */
+			}
+
+			public void componentShown(ComponentEvent e) {
+				//splitPane.setDividerLocation(1 - (commandPanel.getHeight() / Settings.instance.getHeight()));
+			}
+		});
 	}
 
 	private static String getIniPath() {

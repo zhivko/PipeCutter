@@ -152,11 +152,11 @@ public class CommandPanel extends JPanel {
 		});
 		machineTalkPanel.add(homeAll);
 
-		SavableText mdiCommand = new SavableText();
-		mdiCommand.setLabelTxt("MDI:");
-		mdiCommand.setParId("machinekit_mdi");
-		machineTalkPanel.add(mdiCommand);
-		mdiCommand.jValue.addKeyListener(new KeyListener() {
+		SavableText mdiCommand1 = new SavableText();
+		mdiCommand1.setLabelTxt("MDI1:");
+		mdiCommand1.setParId("machinekit_mdi1");
+		machineTalkPanel.add(mdiCommand1);
+		mdiCommand1.jValue.addKeyListener(new KeyListener() {
 
 			@Override
 			public void keyTyped(KeyEvent e) {
@@ -173,7 +173,7 @@ public class CommandPanel extends JPanel {
 						new ChangeMode().start();
 						Thread.sleep(1000);
 						
-						Settings.parMdiCommand = mdiCommand.getParValue();
+						Settings.parMdiCommand = mdiCommand1.getParValue();
 						new ExecuteMdi().start();
 					} catch (Exception ex) {
 						ex.printStackTrace();
@@ -189,7 +189,45 @@ public class CommandPanel extends JPanel {
 				
 			}
 		});
+
 		
+		SavableText mdiCommand2 = new SavableText();
+		mdiCommand2.setLabelTxt("MDI2:");
+		mdiCommand2.setParId("machinekit_mdi2");
+		machineTalkPanel.add(mdiCommand2);
+		mdiCommand2.jValue.addKeyListener(new KeyListener() {
+
+			@Override
+			public void keyTyped(KeyEvent e) {
+				// TODO Auto-generated method stub
+
+			}
+
+			@Override
+			public void keyReleased(KeyEvent e) {
+				// TODO Auto-generated method stub
+				if (e.getKeyCode() == 10) {
+					try {
+						Settings.parMode = EmcTaskModeType.EMC_TASK_MODE_MDI;
+						new ChangeMode().start();
+						Thread.sleep(1000);
+						
+						Settings.parMdiCommand = mdiCommand2.getParValue();
+						new ExecuteMdi().start();
+					} catch (Exception ex) {
+						ex.printStackTrace();
+					}
+				} else {
+					//System.out.println(e.getKeyCode());
+				}
+			}
+
+			@Override
+			public void keyPressed(KeyEvent e) {
+				// TODO Auto-generated method stub
+				
+			}
+		});		
 		
 		
 	}

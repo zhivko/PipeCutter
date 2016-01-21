@@ -56,7 +56,7 @@ public abstract class MachineTalkCommand {
 		byte[] received = null;
 		long nowMilis = System.currentTimeMillis();
 		long currentMilis = System.currentTimeMillis();
-		while (received == null && (currentMilis - nowMilis) < 10000) {
+		while (received == null && (currentMilis - nowMilis) < 1000) {
 			received = getCommandSocket().recv();
 			currentMilis = System.currentTimeMillis();
 		}

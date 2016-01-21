@@ -16,7 +16,7 @@ import java.awt.Insets;
 import javax.swing.SwingConstants;
 
 @SuppressWarnings("serial")
-public abstract class SavableControl extends JPanel {
+public abstract class SavableControl extends JPanel implements IParameter, ISaveableAndLoadable {
 
 	private String parId;
 	private String parValue;
@@ -25,7 +25,7 @@ public abstract class SavableControl extends JPanel {
 	public JTextField jValue;
 	public JLabel jLabel;
 
-	boolean isLoadingValue;
+	private boolean isLoadingValue;
 
 	public JPanel panel;
 
@@ -59,7 +59,8 @@ public abstract class SavableControl extends JPanel {
 			public void warn() {
 				SavableControl.this.parValue = jValue.getText();
 				try {
-					SavableControl.this.save();
+					if(!SavableControl.this.isLoadingValue)
+						SavableControl.this.save();
 				} catch (Exception ex) {
 					ex.printStackTrace();
 				}
@@ -82,7 +83,7 @@ public abstract class SavableControl extends JPanel {
 	}
 
 	public void save() throws IOException {
-		if (!this.isLoadingValue && Settings.instance != null)
+		if (!this.isLoadingValue && Settings.getInstance() != null)
 			if (this.getParValue() != null) {
 				FileInputStream in = new FileInputStream(Settings.iniFullFileName);
 				SortedProperties props = new SortedProperties();
@@ -101,6 +102,7 @@ public abstract class SavableControl extends JPanel {
 
 	public void load() throws IOException {
 		// TODO Auto-generated method stub
+		this.isLoadingValue = true;
 		FileInputStream in = new FileInputStream(Settings.iniFullFileName);
 		Properties props = new Properties();
 		props.load(in);
@@ -109,9 +111,9 @@ public abstract class SavableControl extends JPanel {
 			this.isLoadingValue = true;
 			this.setParValue(props.getProperty(this.getParId()));
 			this.isLoadingValue = false;
-		}
-		else
+		} else
 			this.jValue.setText("");
+		this.isLoadingValue = false;
 	}
 
 	public String getParId() {
@@ -152,4 +154,8 @@ public abstract class SavableControl extends JPanel {
 		this.jLabel.setText(labelTxt);
 	}
 
+	public boolean isLoadingValue()
+	{
+		return this.isLoadingValue;
+	}
 }

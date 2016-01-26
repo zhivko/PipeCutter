@@ -27,6 +27,16 @@
 			<name>Jzy3d Releases</name>
 			<url>http://maven.jzy3d.org/releases</url>
 		</repository>
+		<repository>
+			<id>sonatype-nexus-snapshots</id>
+			<url>https://oss.sonatype.org/content/repositories/snapshots</url>
+			<releases>
+				<enabled>false</enabled>
+			</releases>
+			<snapshots>
+				<enabled>true</enabled>
+			</snapshots>
+		</repository>
 	</repositories>
 
 
@@ -120,11 +130,23 @@
 		<!-- <artifactId>jzmq</artifactId> -->
 		<!-- <version>3.1.0</version> -->
 		<!-- </dependency> -->
-		<dependency>
-			<groupId>org.zeromq</groupId>
-			<artifactId>jeromq</artifactId>
-			<version>0.3.5</version>
-		</dependency>
+	<dependency>
+		<groupId>org.zeromq</groupId>
+		<artifactId>jeromq</artifactId>
+		<version>0.3.5</version>
+	</dependency>
+
+<!-- 	<dependency> -->
+<!-- 		<groupId>org.zeromq</groupId> -->
+<!-- 		<artifactId>jeromq</artifactId> -->
+<!-- 		<version>0.3.6-SNAPSHOT</version> -->
+<!-- 	</dependency> -->
+<!-- <dependency> -->
+<!-- 	<groupId>org.zeromq</groupId> -->
+<!-- 	<artifactId>jzmq</artifactId> -->
+<!-- 	<version>3.1.0</version> -->
+<!-- </dependency> -->
+
 
 		<dependency>
 			<groupId>javax.jmdns</groupId>

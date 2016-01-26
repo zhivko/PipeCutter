@@ -1,5 +1,6 @@
 package com.kz.pipeCutter.ui;
 
+import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.GridBagConstraints;
 import java.util.Hashtable;
@@ -41,8 +42,9 @@ public class SavableSlider extends SavableControl {
 		}
 		this.jValue.setColumns(maxcol);
 		this.slider.setLabelTable(table);
-		this.slider.setMaximum(splittedValues.length);
+		this.slider.setMaximum(splittedValues.length-1);
 		this.slider.setMinimum(0);
+		this.setPreferredSize(new Dimension(300,100));
 
 	}
 
@@ -73,8 +75,10 @@ public class SavableSlider extends SavableControl {
 			@Override
 			public void stateChanged(ChangeEvent e) {
 				// TODO Auto-generated method stub
-				if (Settings.instance != null) {
+				if (Settings.instance != null && !SavableSlider.this.slider.getValueIsAdjusting() ) {
 					String txt = SavableSlider.this.table.get(SavableSlider.this.slider.getValue()).getText();
+					txt = txt.replaceAll("²", "0");
+					txt = txt.replaceAll("³", "00");
 					SavableSlider.this.setParValue(txt);
 				}
 			}

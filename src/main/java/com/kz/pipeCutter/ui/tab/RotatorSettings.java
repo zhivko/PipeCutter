@@ -23,6 +23,8 @@ public class RotatorSettings extends JPanel {
 		this.setPreferredSize(new Dimension(420, 332));
 		FlowLayout flowLayout = (FlowLayout) this.getLayout();
 		flowLayout.setAlignment(FlowLayout.LEFT);
+		
+		String moveToText = "-10³,-10²,-10,-1,1,10,10²,10³";
 
 		// ----------ROTATOR 1---------------------------
 
@@ -35,7 +37,7 @@ public class RotatorSettings extends JPanel {
 
 		SavableText rotator1_vel = new SavableText();
 		rotator1_vel.setParId("rotator1_vel");
-		rotator1_vel.setLabelTxt("velocity:");
+		rotator1_vel.setLabelTxt("velocity [°/min]:");
 		panelRotator1.add(rotator1_vel);
 
 		SavableText rotator1_acel = new SavableText();
@@ -44,7 +46,7 @@ public class RotatorSettings extends JPanel {
 		rotator1_acel.setParId("rotator1_acc");
 
 		SavableSlider sliderRot1 = new SavableSlider();
-		sliderRot1.setValues("-1000,-100,-10,-1,1,10,100,1000");
+		sliderRot1.setValues(moveToText);
 		sliderRot1.setLabelTxt("Move for:");
 		sliderRot1.setParId("rotator1_step");
 		panelRotator1.add(sliderRot1);
@@ -58,9 +60,11 @@ public class RotatorSettings extends JPanel {
 				Double distance = Double.valueOf(Settings.instance.getSetting("rotator1_step"));
 				Settings.parAxisNo = 3;
 				Settings.parDistance = distance;
-				Settings.parVelocity = velocity;
+				Settings.parVelocity = velocity/60;
 				new Jog().start();
 			}
+
+
 		});
 
 		// ----------ROTATOR 2---------------------------
@@ -73,7 +77,7 @@ public class RotatorSettings extends JPanel {
 		panelRotator2.add(lblNewLabel2);
 
 		SavableText rotator2_vel1 = new SavableText();
-		rotator2_vel1.setLabelTxt("velocity");
+		rotator2_vel1.setLabelTxt("velocity [°/min]:");
 		panelRotator2.add(rotator2_vel1);
 		rotator2_vel1.setParId("rotator2_vel");
 
@@ -83,7 +87,7 @@ public class RotatorSettings extends JPanel {
 		panelRotator2.add(savableSetting);
 
 		SavableSlider sliderRot2 = new SavableSlider();
-		sliderRot2.setValues("-1000,-100,-10,-1,1,10,100,1000");
+		sliderRot2.setValues(moveToText);
 		sliderRot2.setLabelTxt("Move for:");
 		sliderRot2.setParId("rotator2_step");
 		panelRotator2.add(sliderRot2);
@@ -99,7 +103,7 @@ public class RotatorSettings extends JPanel {
 				
 				Settings.parAxisNo = 4;
 				Settings.parDistance = distance;
-				Settings.parVelocity = velocity;
+				Settings.parVelocity = velocity/60;
 				new Jog().start();
 			}
 		});		
@@ -114,7 +118,7 @@ public class RotatorSettings extends JPanel {
 		panelRotator3.add(lblNewLabel3);
 
 		SavableText rotator3Speed = new SavableText();
-		rotator3Speed.setLabelTxt("velocity:");
+		rotator3Speed.setLabelTxt("velocity [°/min]:");
 		rotator3Speed.setParId("rotator3_vel");
 		panelRotator3.add(rotator3Speed);
 
@@ -124,7 +128,7 @@ public class RotatorSettings extends JPanel {
 		panelRotator3.add(savableSetting_1);
 
 		SavableSlider sliderRot3 = new SavableSlider();
-		sliderRot3.setValues("-1000,-100,-10,-1,1,10,100,1000");
+		sliderRot3.setValues(moveToText);
 		sliderRot3.setLabelTxt("Move for:");
 		sliderRot3.setParId("rotator3_step");
 		panelRotator3.add(sliderRot3);
@@ -139,7 +143,7 @@ public class RotatorSettings extends JPanel {
 				
 				Settings.parAxisNo = 5;
 				Settings.parDistance = distance;
-				Settings.parVelocity = velocity;
+				Settings.parVelocity = velocity/60;
 				new Jog().start();
 				
 				

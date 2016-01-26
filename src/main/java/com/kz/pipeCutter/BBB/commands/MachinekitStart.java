@@ -29,7 +29,7 @@ public class MachinekitStart extends SSH_Command {
 		try {
 			this.SSH_Login();
 			// try to see if machinekit lready running
-			String command = "ps -aux | grep machinekit\nexit\n";
+			String command = "ps -aux | grep machinekit";
 			MyOutputStreamReader myOut = new MyOutputStreamReader();
 			channelExec = (ChannelExec) session.openChannel("exec");
 			channelExec.setCommand(command.getBytes());

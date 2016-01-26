@@ -111,7 +111,8 @@ public class Settings extends JFrame {
 				Component c = (Component) evt.getSource();
 				System.out.println(c.getName() + " resized");
 				if (c.getName().equals("frame0")) {
-					//splitPane.setDividerLocation(1 - (commandPanel.getHeight() / Settings.instance.getHeight()));
+					// splitPane.setDividerLocation(1 - (commandPanel.getHeight() /
+					// Settings.instance.getHeight()));
 				}
 			}
 		});
@@ -122,7 +123,8 @@ public class Settings extends JFrame {
 			}
 
 			public void componentShown(ComponentEvent e) {
-				//splitPane.setDividerLocation(1 - (commandPanel.getHeight() / Settings.instance.getHeight()));
+				// splitPane.setDividerLocation(1 - (commandPanel.getHeight() /
+				// Settings.instance.getHeight()));
 			}
 		});
 	}
@@ -163,6 +165,7 @@ public class Settings extends JFrame {
 		} catch (Exception ex) {
 			ex.printStackTrace();
 		}
+		// TODO Auto-generated method stub
 		return ret;
 	}
 

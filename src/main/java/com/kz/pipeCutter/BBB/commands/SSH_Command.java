@@ -39,16 +39,16 @@ public abstract class SSH_Command {
 
 
 
-	public void SSH_Login() {
+	public static void SSH_Login() {
 		try {
-			if (jsch == null || session == null || session.isConnected()) {
-				this.jsch = new JSch();
+			if (jsch == null || session == null || !session.isConnected()) {
+				jsch = new JSch();
 				String host = Settings.getInstance().getSetting("machinekit_host");
 				String ip = Settings.getInstance().getSetting("machinekit_ip");
 				String user = Settings.getInstance().getSetting("machinekit_user");
 				String pass = Settings.getInstance().getSetting("machinekit_password");
 
-				this.session = jsch.getSession(user, ip, 22);
+				session = jsch.getSession(user, ip, 22);
 				session.setPassword(pass);
 
 				session.setConfig("StrictHostKeyChecking", "no");
@@ -63,6 +63,7 @@ public abstract class SSH_Command {
 			System.out.println(e);
 		}
 	}
+
 
 
 }

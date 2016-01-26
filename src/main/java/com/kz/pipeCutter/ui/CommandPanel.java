@@ -138,12 +138,12 @@ public class CommandPanel extends JPanel {
 				try {
 					Settings.parMode = EmcTaskModeType.EMC_TASK_MODE_MANUAL;
 					new ChangeMode().start();
-					Thread.sleep(1000);
+					Thread.sleep(100);
 
 					for (int i = 0; i < 4; i++) {
 						Settings.parAxisNo = i;
 						new HomeAxis().start();
-						Thread.sleep(1000);
+						Thread.sleep(100);
 					}
 				} catch (Exception ex) {
 					ex.printStackTrace();

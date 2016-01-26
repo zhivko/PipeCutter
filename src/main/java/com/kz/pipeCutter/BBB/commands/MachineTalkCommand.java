@@ -12,11 +12,10 @@ import pb.Message.Container;
 
 public abstract class MachineTalkCommand {
 	public static Socket commandSocket = null;
-	public int ticket=0;
+	public int ticket = 0;
 
-	public abstract Container prepareContainer();	
-	
-	
+	public abstract Container prepareContainer();
+
 	public void start() {
 		// TODO Auto-generated method stub
 		Thread t = new Thread(new Runnable() {
@@ -26,9 +25,9 @@ public abstract class MachineTalkCommand {
 					byte[] buff = prepareContainer().toByteArray();
 					String hexOutput = javax.xml.bind.DatatypeConverter.printHexBinary(buff);
 					System.out.println("Message: " + hexOutput);
-					getCommandSocket().send(buff);
-					parseAndOutput();					
-					//parseAndOutput();
+					getCommandSocket().send(buff,0);
+					parseAndOutput();
+					// parseAndOutput();
 				} catch (Exception ex) {
 					ex.printStackTrace();
 				}
@@ -37,18 +36,18 @@ public abstract class MachineTalkCommand {
 		t.run();
 	}
 
-	protected static Socket getCommandSocket() {
+	public static Socket getCommandSocket() {
 		if (MachineTalkCommand.commandSocket != null)
 			return commandSocket;
 		String commandUrl = Settings.getInstance().getSetting("machinekit_commandService_url");
 		System.out.println("commandUrl: " + commandUrl);
 		Context con = ZMQ.context(1);
 		commandSocket = con.socket(ZMQ.DEALER);
-		commandSocket.setDelayAttachOnConnect(true);
 		commandSocket.setReceiveTimeOut(4000);
 		commandSocket.setSendTimeOut(4000);
 		commandSocket.setSendBufferSize(4000);
 		commandSocket.connect(commandUrl);
+		
 		return commandSocket;
 	}
 

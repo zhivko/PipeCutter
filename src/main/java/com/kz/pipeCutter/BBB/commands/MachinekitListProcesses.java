@@ -21,6 +21,7 @@ public class MachinekitListProcesses extends SSH_Command {
 			}
 		}
 		channelExec.disconnect();
+		session.disconnect();
 	}
 
 }

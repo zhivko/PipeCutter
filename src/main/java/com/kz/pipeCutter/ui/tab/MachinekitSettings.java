@@ -72,6 +72,16 @@ public class MachinekitSettings extends JPanel {
 		errorUrl.setParId("machinekit_errorService_url");
 		add(errorUrl);
 
+		SavableText statusUrl = new SavableText();
+		statusUrl.setLabelTxt("Status service url:");
+		statusUrl.setParId("machinekit_statusService_url");
+		add(statusUrl);		
+
+		SavableText previewUrl = new SavableText();
+		previewUrl.setLabelTxt("Preview service url:");
+		previewUrl.setParId("machinekit_previewstatusService_url");
+		add(previewUrl);				
+
 		machinekitServices = new NamedList();
 		machinekitServices.setParId("machinekit_services");
 		machinekitServices.setLabelTxt("MachineTalk services");

@@ -17,9 +17,11 @@ import org.zeromq.ZMQ.Context;
 import org.zeromq.ZMQ.Socket;
 import org.zeromq.ZMsg;
 
+import com.google.protobuf.ByteString;
 import com.jcraft.jsch.ChannelExec;
 import com.jcraft.jsch.JSch;
 import com.jcraft.jsch.Session;
+import com.kz.pipeCutter.ui.CommandPanel;
 import com.kz.pipeCutter.ui.Settings;
 
 import pb.Message;
@@ -29,9 +31,7 @@ import pb.Types.ContainerType;
 public class BBBError {
 	ServiceListener bonjourServiceListener;
 	ArrayList<ServiceInfo> services;
-	static Socket commandSocket = null;
 	static Socket errorSocket = null;
-	static Socket reportSocket = null;
 	static BBBError instance = null;
 	public static ZMQ.Poller items = null;
 
@@ -42,7 +42,8 @@ public class BBBError {
 	private PrintStream ps;
 
 	private static int ticket = 5000;
-	private final static ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
+	private final static ScheduledExecutorService scheduler = Executors
+			.newScheduledThreadPool(1);
 
 	public BBBError() {
 		Runnable errorReporter = new Runnable() {
@@ -50,16 +51,30 @@ public class BBBError {
 			public void run() {
 				try {
 					Container contReturned;
-
-					byte[] returnedBytes = getErrorSocket().recv();
-					returnedBytes = getErrorSocket().recv();
-					contReturned = Message.Container.parseFrom(returnedBytes);
-					System.out.println(contReturned.toString());
-					List<String> notes = contReturned.getNoteList();
-					for (String note : notes) {
-						System.out.println("\t" + note);
+					ZMsg receivedMessage = ZMsg.recvMsg(getErrorSocket());
+					int i = 0;
+					while (receivedMessage != null) {
+						// System.out.println("loop: " + i);
+						for (ZFrame f : receivedMessage) {
+							byte[] returnedBytes = f.getData();
+							String messageType = new String(returnedBytes);
+							if (!messageType.equals("error") && !messageType.equals("text")
+									&& !messageType.equals("display")
+									&& !messageType.equals("status")) {
+								// System.out.println(messageType);
+								contReturned = Message.Container.parseFrom(returnedBytes);
+								if (!contReturned.getType().equals(ContainerType.MT_PING)) {
+									Settings.instance.log(contReturned.toString());
+									List<String> notes = contReturned.getNoteList();
+									for (String note : notes) {
+										System.out.println("\t" + note);
+									}
+								}
+							}
+						}
+						receivedMessage = ZMsg.recvMsg(getErrorSocket());
+						i++;
 					}
-					System.out.println("");
 
 				} catch (Exception e) {
 					if (!e.getMessage().equals("Unknown message type."))
@@ -68,6 +83,7 @@ public class BBBError {
 			}
 		};
 		scheduler.scheduleAtFixedRate(errorReporter, 0, 5, TimeUnit.SECONDS);
+		// scheduler.schedule(errorReporter, 0, TimeUnit.SECONDS);
 		instance = this;
 
 	}
@@ -78,17 +94,18 @@ public class BBBError {
 		sett.setVisible(true);
 		getErrorSocket();
 
-		BBBError error = new BBBError();
+		BBBStatus error = new BBBStatus();
 
 	}
 
 	private static Socket getErrorSocket() {
-		if (BBBError.errorSocket != null)
+		if (errorSocket != null)
 			return errorSocket;
 
-		String errorUrl = Settings.getInstance().getSetting("machinekit_errorService_url");
+		String errorUrl = Settings.getInstance().getSetting(
+				"machinekit_errorService_url");
 
-		Context con = ZMQ.context(1);
+		Context con = ZMQ.context(2);
 		errorSocket = con.socket(ZMQ.SUB);
 		errorSocket.setReceiveTimeOut(2000);
 		errorSocket.setLinger(20);
@@ -98,9 +115,8 @@ public class BBBError {
 		errorSocket.subscribe("error".getBytes());
 		errorSocket.subscribe("text".getBytes());
 		errorSocket.subscribe("display".getBytes());
-		errorSocket.subscribe("status".getBytes());
-
-		// errorSocket.setLinger(0);
+		errorSocket.setLinger(10);
+		
 		return errorSocket;
 	}
 

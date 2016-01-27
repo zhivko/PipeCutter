@@ -28,5 +28,6 @@
 		</attributes>
 	</classpathentry>
 	<classpathentry combineaccessrules="false" kind="src" path="/jzy3d-api"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/jzy3d-jdt-core"/>
 	<classpathentry kind="output" path="target/classes"/>
 </classpath>

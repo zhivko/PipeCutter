@@ -148,6 +148,8 @@ public class NamedList extends JPanel implements IParameter, IHasLabel {
 
 		getCommandServiceUrl(serviceInfo);
 		getErrorServiceUrl(serviceInfo);
+		getStatusServiceUrl(serviceInfo);
+		getPreviewStatusServiceUrl(serviceInfo);
 	}
 
 	public static void getCommandServiceUrl(ServiceInfo serviceInfo) {
@@ -176,6 +178,32 @@ public class NamedList extends JPanel implements IParameter, IHasLabel {
 			Settings.getInstance().setSetting("machinekit_errorService_url", errorUrl);
 		}
 	}
+	
+	public static void getStatusServiceUrl(ServiceInfo serviceInfo) {
+		ServiceInfo ret = null;
+		if (serviceInfo.getName().matches("Previewstatus.*")) {
+			ret = serviceInfo;
+		}
+		if (ret != null) {
+			String ip = Settings.getInstance().getSetting("machinekit_ip");
+			String host = Settings.getInstance().getSetting("machinekit_host");
+			String errorUrl = "tcp://" + serviceInfo.getServer() + ":" + ret.getPort() + "/";
+			Settings.getInstance().setSetting("machinekit_statusService_url", errorUrl);
+		}
+	}	
+	
+	public static void getPreviewStatusServiceUrl(ServiceInfo serviceInfo) {
+		ServiceInfo ret = null;
+		if (serviceInfo.getName().matches("Previewstatus.*")) {
+			ret = serviceInfo;
+		}
+		if (ret != null) {
+			String ip = Settings.getInstance().getSetting("machinekit_ip");
+			String host = Settings.getInstance().getSetting("machinekit_host");
+			String errorUrl = "tcp://" + serviceInfo.getServer() + ":" + ret.getPort() + "/";
+			Settings.getInstance().setSetting("machinekit_previewstatusService_url", errorUrl);
+		}
+	}		
 
 	public void removeService(ServiceInfo serviceInfo) {
 		MyServiceInfo mi = new MyServiceInfo(serviceInfo);

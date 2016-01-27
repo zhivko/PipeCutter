@@ -4,36 +4,35 @@ import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.Container;
 import java.awt.Dimension;
-import java.awt.EventQueue;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
-import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Properties;
 
 import javax.swing.JFrame;
 import javax.swing.JPanel;
+import javax.swing.JSplitPane;
 import javax.swing.JTabbedPane;
-import javax.swing.SwingUtilities;
 import javax.swing.border.EmptyBorder;
 
+import pb.Status.EmcTaskModeType;
+
 import com.kz.pipeCutter.BBB.BBBError;
+import com.kz.pipeCutter.BBB.BBBStatus;
 import com.kz.pipeCutter.BBB.Discoverer;
 import com.kz.pipeCutter.ui.tab.MachinekitSettings;
 import com.kz.pipeCutter.ui.tab.RotatorSettings;
-
-import pb.Status.EmcTaskModeType;
-import javax.swing.JSplitPane;
 
 public class Settings extends JFrame {
 
@@ -46,12 +45,13 @@ public class Settings extends JFrame {
 	public static Settings instance;
 	public static Discoverer discoverer;
 	public static BBBError error;
+	public static BBBStatus status;
 
 	public static int parAxisNo = 0;
 	public static double parVelocity = 0;
 
 	public JSplitPane splitPane;
-
+	CommandPanel commandPanel;
 	/**
 	 * Launch the application.
 	 */
@@ -66,8 +66,9 @@ public class Settings extends JFrame {
 			}
 
 			public void componentShown(ComponentEvent e) {
-				discoverer = Discoverer.getInstance();
+				//discoverer = Discoverer.getInstance();
 				error = new BBBError();
+				status = new BBBStatus();
 			}
 		});
 		frame.setVisible(true);
@@ -81,7 +82,7 @@ public class Settings extends JFrame {
 		this.setTitle("PipeCutter settings");
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		// setBounds(400, 500, 800, 650);
-		this.setPreferredSize(new Dimension(800, 600));
+		this.setPreferredSize(new Dimension(900, 600));
 		contentPane = new JPanel();
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
 		setContentPane(contentPane);
@@ -99,7 +100,7 @@ public class Settings extends JFrame {
 		splitPane.setOrientation(JSplitPane.VERTICAL_SPLIT);
 		contentPane.add(splitPane, BorderLayout.NORTH);
 
-		CommandPanel commandPanel = new CommandPanel();
+		commandPanel = new CommandPanel();
 		splitPane.setTopComponent(tabbedPane);
 		splitPane.setBottomComponent(commandPanel);
 
@@ -109,7 +110,7 @@ public class Settings extends JFrame {
 		this.addComponentListener(new ComponentAdapter() {
 			public void componentResized(ComponentEvent evt) {
 				Component c = (Component) evt.getSource();
-				System.out.println(c.getName() + " resized");
+				System.out.println(c.getName() + " resized: " + c.getSize().toString());
 				if (c.getName().equals("frame0")) {
 					// splitPane.setDividerLocation(1 - (commandPanel.getHeight() /
 					// Settings.instance.getHeight()));
@@ -230,5 +231,13 @@ public class Settings extends JFrame {
 		if (instance == null)
 			instance = new Settings();
 		return instance;
+	}
+	
+	public void log(String txt)
+	{
+		System.out.println(txt);
+		SimpleDateFormat sdf = new SimpleDateFormat("HH:mm:ss");
+		commandPanel.log.setText(sdf.format(new Date()) + " " + txt + commandPanel.log.getText());
+		commandPanel.log.setCaretPosition(txt.length());
 	}
 }

@@ -9,6 +9,10 @@ import java.awt.event.KeyListener;
 
 import javax.swing.JButton;
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JTextArea;
+
+import pb.Status.EmcTaskModeType;
 
 import com.kz.pipeCutter.BBB.Discoverer;
 import com.kz.pipeCutter.BBB.commands.ChangeMode;
@@ -21,9 +25,9 @@ import com.kz.pipeCutter.BBB.commands.MachinekitStop;
 import com.kz.pipeCutter.BBB.commands.PowerOff;
 import com.kz.pipeCutter.BBB.commands.PowerOn;
 
-import pb.Status.EmcTaskModeType;
-
 public class CommandPanel extends JPanel {
+	public JTextArea log;
+	
 	public CommandPanel() {
 		super();
 
@@ -227,8 +231,15 @@ public class CommandPanel extends JPanel {
 				// TODO Auto-generated method stub
 				
 			}
-		});		
+		});
 		
+		log = new JTextArea();
 		
+		JScrollPane sp = new JScrollPane(log); 
+		sp.setAutoscrolls(true);
+		sp.setPreferredSize(new Dimension(600,80));
+		machineTalkPanel.add(sp);
+		
+		machineTalkPanel.setPreferredSize(new Dimension(650,400));
 	}
 }

@@ -128,7 +128,7 @@ public class Discoverer {
 		// Timer discoveryTimer = new Timer("DiscoveryTimer");
 		// discoveryTimer.scheduleAtFixedRate(myDiscoveryTask, 0, 5000);
 		// discoveryTimer.schedule(myDiscoveryTask, 0, 5000);
-		discover();
+		//discover();
 	}
 
 	public static Discoverer getInstance() {

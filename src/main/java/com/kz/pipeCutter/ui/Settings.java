@@ -52,6 +52,7 @@ public class Settings extends JFrame {
 
 	public JSplitPane splitPane;
 	CommandPanel commandPanel;
+
 	/**
 	 * Launch the application.
 	 */
@@ -66,12 +67,16 @@ public class Settings extends JFrame {
 			}
 
 			public void componentShown(ComponentEvent e) {
-				//discoverer = Discoverer.getInstance();
-				error = new BBBError();
-				status = new BBBStatus();
+				// discoverer = Discoverer.getInstance();
+				Settings.instance.initServices();
 			}
 		});
 		frame.setVisible(true);
+	}
+
+	protected void initServices() {
+		error = new BBBError();
+		status = new BBBStatus();
 	}
 
 	/**
@@ -232,9 +237,8 @@ public class Settings extends JFrame {
 			instance = new Settings();
 		return instance;
 	}
-	
-	public void log(String txt)
-	{
+
+	public void log(String txt) {
 		System.out.println(txt);
 		SimpleDateFormat sdf = new SimpleDateFormat("HH:mm:ss");
 		commandPanel.log.setText(sdf.format(new Date()) + " " + txt + commandPanel.log.getText());

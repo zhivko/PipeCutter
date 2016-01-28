@@ -12,6 +12,7 @@ import javax.swing.JPanel;
 import com.kz.pipeCutter.BBB.BBBStatus;
 import com.kz.pipeCutter.BBB.commands.Jog;
 import com.kz.pipeCutter.ui.MyVerticalFlowLayout;
+import com.kz.pipeCutter.ui.Positioner;
 import com.kz.pipeCutter.ui.SavableSlider;
 import com.kz.pipeCutter.ui.SavableText;
 import com.kz.pipeCutter.ui.Settings;
@@ -29,7 +30,7 @@ public class RotatorSettings extends JPanel {
 		// ----------ROTATOR 1---------------------------
 
 		JPanel panelRotator1 = new JPanel();
-		panelRotator1.setPreferredSize(new Dimension(220, 450));
+		panelRotator1.setPreferredSize(new Dimension(220, 480));
 		this.add(panelRotator1);
 		panelRotator1.setLayout(new MyVerticalFlowLayout());
 		JLabel lblNewLabel1 = new JLabel("Rotator1");
@@ -63,8 +64,6 @@ public class RotatorSettings extends JPanel {
 				Settings.parVelocity = velocity/60;
 				new Jog().start();
 			}
-
-
 		});
 		
 		SavableText positionA = new SavableText();
@@ -72,6 +71,16 @@ public class RotatorSettings extends JPanel {
 		panelRotator1.add(positionA);
 		positionA.setParId("position_a");
 		positionA.setNeedsSave(false);
+
+		SavableText positionerSocketUrl = new SavableText();
+		positionerSocketUrl.setLabelTxt("Positioner url:");
+		positionerSocketUrl.setParId("positioner1_socket_url");
+		panelRotator1.add(positionerSocketUrl);
+		
+		Positioner pos1 = new Positioner();
+		panelRotator1.add(pos1);
+		
+		
 
 		// ----------ROTATOR 2---------------------------
 		JPanel panelRotator2 = new JPanel();

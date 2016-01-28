@@ -12,12 +12,15 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
+import java.text.DecimalFormat;
+import java.text.DecimalFormatSymbols;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Locale;
 import java.util.Properties;
 
 import javax.swing.JFrame;
@@ -26,13 +29,13 @@ import javax.swing.JSplitPane;
 import javax.swing.JTabbedPane;
 import javax.swing.border.EmptyBorder;
 
-import pb.Status.EmcTaskModeType;
-
 import com.kz.pipeCutter.BBB.BBBError;
 import com.kz.pipeCutter.BBB.BBBStatus;
 import com.kz.pipeCutter.BBB.Discoverer;
 import com.kz.pipeCutter.ui.tab.MachinekitSettings;
 import com.kz.pipeCutter.ui.tab.RotatorSettings;
+
+import pb.Status.EmcTaskModeType;
 
 public class Settings extends JFrame {
 
@@ -87,7 +90,7 @@ public class Settings extends JFrame {
 		this.setTitle("PipeCutter settings");
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		// setBounds(400, 500, 800, 650);
-		this.setPreferredSize(new Dimension(900, 600));
+		this.setPreferredSize(new Dimension(900, 700));
 		contentPane = new JPanel();
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
 		setContentPane(contentPane);
@@ -104,6 +107,7 @@ public class Settings extends JFrame {
 		JSplitPane splitPane = new JSplitPane();
 		splitPane.setOrientation(JSplitPane.VERTICAL_SPLIT);
 		contentPane.add(splitPane, BorderLayout.NORTH);
+		splitPane.setDividerLocation(460);
 
 		commandPanel = new CommandPanel();
 		splitPane.setTopComponent(tabbedPane);
@@ -192,7 +196,13 @@ public class Settings extends JFrame {
 	}
 
 	public void setSetting(String parameterId, Double value) {
-		String strValue = String.valueOf(value);
+		DecimalFormatSymbols otherSymbols = new DecimalFormatSymbols(Locale.ENGLISH);
+		//otherSymbols.setDecimalSeparator('.');
+		//otherSymbols.setGroupingSeparator(','); 
+		
+		DecimalFormat df = new DecimalFormat("##,##0.0000",otherSymbols);
+		df.setDecimalSeparatorAlwaysShown(true);
+		String strValue = df.format(value);
 		setSetting(parameterId, strValue);
 	}
 

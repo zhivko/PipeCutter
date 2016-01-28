@@ -42,8 +42,7 @@ public class BBBError {
 	private PrintStream ps;
 
 	private static int ticket = 5000;
-	private final static ScheduledExecutorService scheduler = Executors
-			.newScheduledThreadPool(1);
+	private final static ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
 
 	public BBBError() {
 		Runnable errorReporter = new Runnable() {
@@ -58,8 +57,7 @@ public class BBBError {
 						for (ZFrame f : receivedMessage) {
 							byte[] returnedBytes = f.getData();
 							String messageType = new String(returnedBytes);
-							if (!messageType.equals("error") && !messageType.equals("text")
-									&& !messageType.equals("display")
+							if (!messageType.equals("error") && !messageType.equals("text") && !messageType.equals("display")
 									&& !messageType.equals("status")) {
 								// System.out.println(messageType);
 								contReturned = Message.Container.parseFrom(returnedBytes);
@@ -84,6 +82,7 @@ public class BBBError {
 		};
 		scheduler.scheduleAtFixedRate(errorReporter, 0, 5, TimeUnit.SECONDS);
 		// scheduler.schedule(errorReporter, 0, TimeUnit.SECONDS);
+		errorSocket = null;
 		instance = this;
 
 	}
@@ -102,8 +101,7 @@ public class BBBError {
 		if (errorSocket != null)
 			return errorSocket;
 
-		String errorUrl = Settings.getInstance().getSetting(
-				"machinekit_errorService_url");
+		String errorUrl = Settings.getInstance().getSetting("machinekit_errorService_url");
 
 		Context con = ZMQ.context(2);
 		errorSocket = con.socket(ZMQ.SUB);
@@ -116,7 +114,7 @@ public class BBBError {
 		errorSocket.subscribe("text".getBytes());
 		errorSocket.subscribe("display".getBytes());
 		errorSocket.setLinger(10);
-		
+
 		return errorSocket;
 	}
 

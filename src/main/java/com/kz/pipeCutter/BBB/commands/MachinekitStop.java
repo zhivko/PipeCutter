@@ -2,6 +2,7 @@ package com.kz.pipeCutter.BBB.commands;
 
 import com.jcraft.jsch.ChannelExec;
 import com.kz.pipeCutter.BBB.MyOutputStreamReader;
+import com.kz.pipeCutter.ui.Settings;
 
 public class MachinekitStop extends SSH_Command {
 
@@ -28,7 +29,10 @@ public class MachinekitStop extends SSH_Command {
 				String splittedLine[] = line.replaceAll("\\s+", " ").split(" ");
 				String pid = splittedLine[1];
 				if (!pid.equals(""))
+				{
 					killCommands += "kill -9 " + pid + "\n";
+					Settings.instance.log(killCommands);
+				}
 			}
 		}
 		System.out.println(killCommands);

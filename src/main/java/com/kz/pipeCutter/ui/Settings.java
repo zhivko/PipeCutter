@@ -177,7 +177,8 @@ public class Settings extends JFrame {
 
 	public void setSetting(String parameterId, String value) {
 		try {
-			List<SavableControl> savableControls = harvestMatches(this.getContentPane(), SavableControl.class);
+			List<SavableControl> savableControls = harvestMatches(
+					this.getContentPane(), SavableControl.class);
 			for (SavableControl savableControl : savableControls) {
 				if (savableControl.getParId().equals(parameterId)) {
 					savableControl.setParValue(value);
@@ -190,9 +191,15 @@ public class Settings extends JFrame {
 		}
 	}
 
+	public void setSetting(String parameterId, Double value) {
+		String strValue = String.valueOf(value);
+		setSetting(parameterId, strValue);
+	}
+
 	public IParameter getParameter(String parameterId) {
 		IParameter ret = null;
-		List<SavableControl> savableControls = harvestMatches(this.getContentPane(), SavableControl.class);
+		List<SavableControl> savableControls = harvestMatches(
+				this.getContentPane(), SavableControl.class);
 		for (SavableControl savableControl : savableControls) {
 			System.out.println("control  id:" + savableControl.getParId());
 			if (savableControl.getParId().equals(parameterId)) {
@@ -214,7 +221,8 @@ public class Settings extends JFrame {
 		return null;
 	}
 
-	public <T extends Component> List<T> harvestMatches(Container root, Class<T> clazz) {
+	public <T extends Component> List<T> harvestMatches(Container root,
+			Class<T> clazz) {
 		List<Container> containers = new LinkedList<>();
 		List<T> harvested = new ArrayList<>();
 
@@ -241,7 +249,8 @@ public class Settings extends JFrame {
 	public void log(String txt) {
 		System.out.println(txt);
 		SimpleDateFormat sdf = new SimpleDateFormat("HH:mm:ss");
-		commandPanel.log.setText(sdf.format(new Date()) + " " + txt + commandPanel.log.getText());
+		commandPanel.log.setText(sdf.format(new Date()) + " " + txt
+				+ commandPanel.log.getText());
 		commandPanel.log.setCaretPosition(txt.length());
 	}
 }

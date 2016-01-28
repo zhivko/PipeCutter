@@ -8,11 +8,14 @@ import java.util.Properties;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
+import javax.swing.SwingUtilities;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
+
 import java.awt.GridBagLayout;
 import java.awt.GridBagConstraints;
 import java.awt.Insets;
+
 import javax.swing.SwingConstants;
 
 @SuppressWarnings("serial")
@@ -24,6 +27,15 @@ public abstract class SavableControl extends JPanel implements IParameter, ISave
 	private String labelTxt;
 	public JTextField jValue;
 	public JLabel jLabel;
+	boolean needsSave=true;
+
+	public boolean isNeedsSave() {
+		return needsSave;
+	}
+
+	public void setNeedsSave(boolean needsSave) {
+		this.needsSave = needsSave;
+	}
 
 	private boolean isLoadingValue;
 
@@ -82,8 +94,8 @@ public abstract class SavableControl extends JPanel implements IParameter, ISave
 
 	}
 
-	public void save() throws IOException {
-		if (!this.isLoadingValue && Settings.getInstance() != null)
+	public synchronized void save() throws IOException {
+		if (this.isNeedsSave() && !this.isLoadingValue && Settings.getInstance() != null)
 			if (this.getParValue() != null) {
 				FileInputStream in = new FileInputStream(Settings.iniFullFileName);
 				SortedProperties props = new SortedProperties();
@@ -142,7 +154,14 @@ public abstract class SavableControl extends JPanel implements IParameter, ISave
 
 	public void setParValue(String value) {
 		this.parValue = value;
+		//SwingUtilities.invokeLater(new Runnable() {
+		//	
+		//	@Override
+		//	public void run() {
 		this.jValue.setText(value);
+		//	}
+		//});
+		
 	}
 
 	public String getLabelTxt() {

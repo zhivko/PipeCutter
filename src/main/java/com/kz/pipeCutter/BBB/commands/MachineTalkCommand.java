@@ -60,17 +60,19 @@ public abstract class MachineTalkCommand {
 
 	protected void parseAndOutput() throws InvalidProtocolBufferException {
 		ZMsg receivedMessage = ZMsg.recvMsg(getCommandSocket());
-		for (ZFrame f : receivedMessage) {
-			byte[] returnedBytes = f.getData();
-			Container contReturned = Message.Container.parseFrom(returnedBytes);
-			Settings.instance.log(contReturned.toString());
-//			System.out.println(contReturned.toString());
-//			System.out.println(contReturned.getOperatorError().toString());
-//			List<String> notes = contReturned.getNoteList();
-//			for (String note : notes) {
-//				System.out.println("\t" + note);
-//			}
+		if (receivedMessage != null) {
+			for (ZFrame f : receivedMessage) {
+				byte[] returnedBytes = f.getData();
+				Container contReturned = Message.Container.parseFrom(returnedBytes);
+				Settings.instance.log(contReturned.toString());
+				// System.out.println(contReturned.toString());
+				// System.out.println(contReturned.getOperatorError().toString());
+				// List<String> notes = contReturned.getNoteList();
+				// for (String note : notes) {
+				// System.out.println("\t" + note);
+				// }
 
+			}
 		}
 	}
 

@@ -143,13 +143,17 @@ public class NamedList extends JPanel implements IParameter, IHasLabel {
 					}
 				}
 				listModel.addElement(mi.toString());
+				getCommandServiceUrl(serviceInfo);
+				getErrorServiceUrl(serviceInfo);
+				getStatusServiceUrl(serviceInfo);
+				getPreviewStatusServiceUrl(serviceInfo);
+
+				if (listModel.size() == 7) {
+					Settings.instance.initServices();
+				}
 			}
 		});
 
-		getCommandServiceUrl(serviceInfo);
-		getErrorServiceUrl(serviceInfo);
-		getStatusServiceUrl(serviceInfo);
-		getPreviewStatusServiceUrl(serviceInfo);
 	}
 
 	public static void getCommandServiceUrl(ServiceInfo serviceInfo) {
@@ -160,9 +164,11 @@ public class NamedList extends JPanel implements IParameter, IHasLabel {
 		if (ret != null) {
 			String ip = Settings.getInstance().getSetting("machinekit_ip");
 			String host = Settings.getInstance().getSetting("machinekit_host");
-			String commandUrl = "tcp://" + serviceInfo.getServer() + ":" + ret.getPort() + "/";
-			Settings.getInstance().setSetting("machinekit_commandService_url", commandUrl);
-			MachineTalkCommand.commandSocket=null;
+			String commandUrl = "tcp://" + serviceInfo.getServer() + ":"
+					+ ret.getPort() + "/";
+			Settings.getInstance().setSetting("machinekit_commandService_url",
+					commandUrl);
+			MachineTalkCommand.commandSocket = null;
 		}
 	}
 
@@ -174,11 +180,17 @@ public class NamedList extends JPanel implements IParameter, IHasLabel {
 		if (ret != null) {
 			String ip = Settings.getInstance().getSetting("machinekit_ip");
 			String host = Settings.getInstance().getSetting("machinekit_host");
-			String errorUrl = "tcp://" + serviceInfo.getServer() + ":" + ret.getPort() + "/";
-			Settings.getInstance().setSetting("machinekit_errorService_url", errorUrl);
+			String errorUrl = "tcp://" + serviceInfo.getServer() + ":"
+					+ ret.getPort() + "/";
+			if (!errorUrl.equals(Settings.getInstance().getSetting(
+					"machinekit_errorService_url"))) {
+				Settings.getInstance().setSetting("machinekit_errorService_url",
+						errorUrl);
+				Settings.instance.initServices();
+			}
 		}
 	}
-	
+
 	public static void getStatusServiceUrl(ServiceInfo serviceInfo) {
 		ServiceInfo ret = null;
 		if (serviceInfo.getName().matches("Status.*")) {
@@ -187,16 +199,18 @@ public class NamedList extends JPanel implements IParameter, IHasLabel {
 		if (ret != null) {
 			String ip = Settings.getInstance().getSetting("machinekit_ip");
 			String host = Settings.getInstance().getSetting("machinekit_host");
-			String errorUrl = "tcp://" + serviceInfo.getServer() + ":" + ret.getPort() + "/";
-			if(!errorUrl.equals(Settings.getInstance().getSetting("machinekit_statusService_url")))
-			{
-				Settings.getInstance().setSetting("machinekit_statusService_url", errorUrl);
+			String statusUrl = "tcp://" + serviceInfo.getServer() + ":"
+					+ ret.getPort() + "/";
+			if (!statusUrl.equals(Settings.getInstance().getSetting(
+					"machinekit_statusService_url"))) {
+				Settings.getInstance().setSetting("machinekit_statusService_url",
+						statusUrl);
 				Settings.instance.initServices();
 			}
-			
+
 		}
-	}	
-	
+	}
+
 	public static void getPreviewStatusServiceUrl(ServiceInfo serviceInfo) {
 		ServiceInfo ret = null;
 		if (serviceInfo.getName().matches("Previewstatus.*")) {
@@ -205,14 +219,16 @@ public class NamedList extends JPanel implements IParameter, IHasLabel {
 		if (ret != null) {
 			String ip = Settings.getInstance().getSetting("machinekit_ip");
 			String host = Settings.getInstance().getSetting("machinekit_host");
-			String previewStatusUrl = "tcp://" + serviceInfo.getServer() + ":" + ret.getPort() + "/";
-			if(!previewStatusUrl.equals(Settings.getInstance().getSetting("machinekit_previewstatusService_url")))
-			{
-				Settings.getInstance().setSetting("machinekit_previewstatusService_url", previewStatusUrl);
-				Settings.instance.initServices();				
+			String previewStatusUrl = "tcp://" + serviceInfo.getServer() + ":"
+					+ ret.getPort() + "/";
+			if (!previewStatusUrl.equals(Settings.getInstance().getSetting(
+					"machinekit_previewstatusService_url"))) {
+				Settings.getInstance().setSetting(
+						"machinekit_previewstatusService_url", previewStatusUrl);
+				Settings.instance.initServices();
 			}
 		}
-	}		
+	}
 
 	public void removeService(ServiceInfo serviceInfo) {
 		MyServiceInfo mi = new MyServiceInfo(serviceInfo);

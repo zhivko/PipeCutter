@@ -50,36 +50,50 @@ public class BBBStatus {
 			@Override
 			public void run() {
 				try {
+					if (!Settings.instance.isVisible())
+						return;
+
 					Container contReturned;
 					ZMsg receivedMessage = ZMsg.recvMsg(getStatusSocket());
 					int i = 0;
-					while (receivedMessage != null) {
-						// System.out.println("loop: " + i);
-						for (ZFrame f : receivedMessage) {
-							byte[] returnedBytes = f.getData();
-							String messageType = new String(returnedBytes);
-							if (messageType != "status" && messageType != "preview") {
-								contReturned = Message.Container.parseFrom(returnedBytes);
-								if (contReturned.getType().equals(ContainerType.MT_INTERP_STAT) || contReturned.getType().equals(ContainerType.MT_PREVIEW)) {
-									System.out.println("Status:");
-									System.out.println("\t" + contReturned.toString());
-//									List<String> notes = contReturned.getNoteList();
-//									for (String note : notes) {
-//										System.out.println("\t" + note);
-//									}
-								}
+					// System.out.println("loop: " + i);
+					for (ZFrame f : receivedMessage) {
+						byte[] returnedBytes = f.getData();
+						String messageType = new String(returnedBytes);
+						if (!messageType.equals("motion")) {
+							contReturned = Message.Container.parseFrom(returnedBytes);
+							if (contReturned.getType().equals(
+									ContainerType.MT_EMCSTAT_FULL_UPDATE) || contReturned.getType().equals(ContainerType.MT_EMCSTAT_INCREMENTAL_UPDATE)) {
+								double x = contReturned.getEmcStatusMotion()
+										.getActualPosition().getX();
+								double y = contReturned.getEmcStatusMotion()
+										.getActualPosition().getY();
+								double z = contReturned.getEmcStatusMotion()
+										.getActualPosition().getZ();
+								double a = contReturned.getEmcStatusMotion()
+										.getActualPosition().getA();
+								double b = contReturned.getEmcStatusMotion()
+										.getActualPosition().getB();
+								double c = contReturned.getEmcStatusMotion()
+										.getActualPosition().getC();
+
+								// Settings.instance.setSetting("position_x", x);
+								// Settings.instance.setSetting("position_y", y);
+								// Settings.instance.setSetting("position_z", z);
+								Settings.instance.setSetting("position_a", a);
+								Settings.instance.setSetting("position_b", b);
+								Settings.instance.setSetting("position_c", c);
+
 							}
 						}
 					}
-					receivedMessage = ZMsg.recvMsg(getStatusSocket());
-					i++;
 				} catch (Exception e) {
 					if (!e.getMessage().equals("Unknown message type."))
 						e.printStackTrace();
 				}
 			}
 		};
-		scheduler.scheduleAtFixedRate(errorReporter, 0, 5, TimeUnit.SECONDS);
+		scheduler.scheduleAtFixedRate(errorReporter, 0, 10, TimeUnit.MILLISECONDS);
 		// scheduler.schedule(errorReporter, 0, TimeUnit.SECONDS);
 		instance = this;
 
@@ -99,16 +113,15 @@ public class BBBStatus {
 			return statusSocket;
 
 		String statusUrl = Settings.getInstance().getSetting(
-				"machinekit_previewstatusService_url");
+				"machinekit_statusService_url");
 
 		Context con = ZMQ.context(1);
 		statusSocket = con.socket(ZMQ.SUB);
-		statusSocket.setReceiveTimeOut(2000);
+		statusSocket.setReceiveTimeOut(10000);
 		statusSocket.setLinger(10);
 		statusSocket.connect(statusUrl);
 
-		statusSocket.subscribe("status".getBytes());
-		statusSocket.subscribe("preview".getBytes());
+		statusSocket.subscribe("motion".getBytes());
 
 		return statusSocket;
 	}

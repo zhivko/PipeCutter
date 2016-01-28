@@ -66,6 +66,12 @@ public class RotatorSettings extends JPanel {
 
 
 		});
+		
+		SavableText positionA = new SavableText();
+		positionA.setLabelTxt("Position:");
+		panelRotator1.add(positionA);
+		positionA.setParId("position_a");
+		positionA.setNeedsSave(false);
 
 		// ----------ROTATOR 2---------------------------
 		JPanel panelRotator2 = new JPanel();
@@ -107,6 +113,13 @@ public class RotatorSettings extends JPanel {
 				new Jog().start();
 			}
 		});		
+		
+		SavableText positionB = new SavableText();
+		positionB.setLabelTxt("Position:");
+		panelRotator2.add(positionB);
+		positionB.setParId("position_b");			
+		positionB.setNeedsSave(false);
+
 
 		// ----------ROTATOR 3---------------------------
 		JPanel panelRotator3 = new JPanel();
@@ -148,7 +161,14 @@ public class RotatorSettings extends JPanel {
 				
 				
 			}
-		});				
+		});			
+		SavableText positionC = new SavableText();
+		positionC.setLabelTxt("Position:");
+		panelRotator3.add(positionC);
+		positionC.setParId("position_c");
+		positionC.setNeedsSave(false);
+
+		
 
 	}
 }

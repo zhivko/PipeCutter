@@ -8,6 +8,8 @@ import java.awt.event.ActionListener;
 import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
 
 import com.kz.pipeCutter.BBB.BBBStatus;
 import com.kz.pipeCutter.BBB.commands.Jog;
@@ -18,6 +20,8 @@ import com.kz.pipeCutter.ui.SavableText;
 import com.kz.pipeCutter.ui.Settings;
 
 public class RotatorSettings extends JPanel {
+
+	
 	public RotatorSettings() {
 		super();
 
@@ -71,15 +75,9 @@ public class RotatorSettings extends JPanel {
 		panelRotator1.add(positionA);
 		positionA.setParId("position_a");
 		positionA.setNeedsSave(false);
-
-		SavableText positionerSocketUrl = new SavableText();
-		positionerSocketUrl.setLabelTxt("Positioner url:");
-		positionerSocketUrl.setParId("positioner1_socket_url");
-		panelRotator1.add(positionerSocketUrl);
 		
-		Positioner pos1 = new Positioner();
+		Positioner pos1 = new Positioner(1);
 		panelRotator1.add(pos1);
-		
 		
 
 		// ----------ROTATOR 2---------------------------

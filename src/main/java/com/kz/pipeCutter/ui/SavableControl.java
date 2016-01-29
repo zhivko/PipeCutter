@@ -1,5 +1,10 @@
 package com.kz.pipeCutter.ui;
 
+import java.awt.Dimension;
+import java.awt.FontMetrics;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
+import java.awt.Insets;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -8,15 +13,10 @@ import java.util.Properties;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
-import javax.swing.SwingUtilities;
+import javax.swing.SwingConstants;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
-
-import java.awt.GridBagLayout;
-import java.awt.GridBagConstraints;
-import java.awt.Insets;
-
-import javax.swing.SwingConstants;
+import java.awt.FlowLayout;
 
 @SuppressWarnings("serial")
 public abstract class SavableControl extends JPanel implements IParameter, ISaveableAndLoadable {
@@ -43,12 +43,6 @@ public abstract class SavableControl extends JPanel implements IParameter, ISave
 
 	public SavableControl() {
 		super();
-		GridBagLayout gridBagLayout = new GridBagLayout();
-		gridBagLayout.columnWidths = new int[] { 91, 74, 0 };
-		gridBagLayout.rowHeights = new int[] { 20, 0 };
-		gridBagLayout.columnWeights = new double[] { 0.0, 0.0, Double.MIN_VALUE };
-		gridBagLayout.rowWeights = new double[] { 0.0, Double.MIN_VALUE };
-		setLayout(gridBagLayout);
 
 		jValue = new JTextField();
 		jValue.setHorizontalAlignment(SwingConstants.LEFT);
@@ -78,20 +72,11 @@ public abstract class SavableControl extends JPanel implements IParameter, ISave
 				}
 			}
 		});
+		setLayout(new FlowLayout(FlowLayout.LEFT, 5, 5));
 		jLabel = new JLabel("This is label:");
-		GridBagConstraints gbc_jLabel = new GridBagConstraints();
-		gbc_jLabel.anchor = GridBagConstraints.WEST;
-		gbc_jLabel.insets = new Insets(0, 0, 0, 5);
-		gbc_jLabel.gridx = 0;
-		gbc_jLabel.gridy = 0;
-		add(jLabel, gbc_jLabel);
-		GridBagConstraints gbc_jValue = new GridBagConstraints();
-		gbc_jValue.anchor = GridBagConstraints.NORTHEAST;
-		gbc_jValue.gridx = 1;
-		gbc_jValue.gridy = 0;
-		add(jValue, gbc_jValue);
+		add(jLabel);
+		add(jValue);
 		jValue.setColumns(10);
-
 	}
 
 	public synchronized void save() throws IOException {
@@ -171,6 +156,8 @@ public abstract class SavableControl extends JPanel implements IParameter, ISave
 	public void setLabelTxt(String labelTxt) {
 		this.labelTxt = labelTxt;
 		this.jLabel.setText(labelTxt);
+		int length = this.jLabel.getFontMetrics(this.jLabel.getFont()).stringWidth(labelTxt);
+		this.jLabel.setPreferredSize(new Dimension(length,12));
 	}
 
 	public boolean isLoadingValue()

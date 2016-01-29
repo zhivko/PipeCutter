@@ -24,8 +24,9 @@ public class RotatorSettings extends JPanel {
 	
 	public RotatorSettings() {
 		super();
+		Dimension panelPreferedDimension = new Dimension(220, 480);
 
-		this.setPreferredSize(new Dimension(420, 332));
+		this.setPreferredSize(new Dimension(420, 450));
 		FlowLayout flowLayout = (FlowLayout) this.getLayout();
 		flowLayout.setAlignment(FlowLayout.LEFT);
 		
@@ -34,7 +35,7 @@ public class RotatorSettings extends JPanel {
 		// ----------ROTATOR 1---------------------------
 
 		JPanel panelRotator1 = new JPanel();
-		panelRotator1.setPreferredSize(new Dimension(220, 480));
+		panelRotator1.setPreferredSize(panelPreferedDimension);
 		this.add(panelRotator1);
 		panelRotator1.setLayout(new MyVerticalFlowLayout());
 		JLabel lblNewLabel1 = new JLabel("Rotator1");
@@ -82,7 +83,7 @@ public class RotatorSettings extends JPanel {
 
 		// ----------ROTATOR 2---------------------------
 		JPanel panelRotator2 = new JPanel();
-		panelRotator2.setPreferredSize(new Dimension(220, 450));
+		panelRotator2.setPreferredSize(panelPreferedDimension);
 		panelRotator2.setMinimumSize(new Dimension(250, 200));
 		this.add(panelRotator2);
 		panelRotator2.setLayout(new MyVerticalFlowLayout());
@@ -126,11 +127,14 @@ public class RotatorSettings extends JPanel {
 		panelRotator2.add(positionB);
 		positionB.setParId("position_b");			
 		positionB.setNeedsSave(false);
+		
+		Positioner pos2 = new Positioner(2);
+		panelRotator2.add(pos2);		
 
 
 		// ----------ROTATOR 3---------------------------
 		JPanel panelRotator3 = new JPanel();
-		panelRotator3.setPreferredSize(new Dimension(220, 450));
+		panelRotator3.setPreferredSize(panelPreferedDimension);
 		panelRotator3.setLayout(new MyVerticalFlowLayout());
 		panelRotator3.setMinimumSize(new Dimension(250, 200));
 		this.add(panelRotator3);
@@ -175,7 +179,8 @@ public class RotatorSettings extends JPanel {
 		positionC.setParId("position_c");
 		positionC.setNeedsSave(false);
 
-		
+		Positioner pos3 = new Positioner(3);
+		panelRotator3.add(pos3);		
 
 	}
 }

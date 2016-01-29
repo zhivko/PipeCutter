@@ -45,6 +45,8 @@ public class Positioner extends JPanel {
 
 	public Positioner(int id) {
 		this.id = id;
+		this.setPreferredSize(new Dimension(250, 220));
+
 		GridBagLayout gridBagLayout = new GridBagLayout();
 		gridBagLayout.columnWidths = new int[] { 60, 0, 51, 0, 46, 0 };
 		gridBagLayout.rowHeights = new int[] { 0, 0, 0, 32, 19, 5 };
@@ -155,7 +157,6 @@ public class Positioner extends JPanel {
 		sliderHor.setValue(50);
 		prevSliderHorValue = sliderHor.getValue();
 
-		this.setPreferredSize(new Dimension(247, 206));
 		sliderHor.addChangeListener(new ChangeListener() {
 
 			@Override
@@ -264,13 +265,11 @@ public class Positioner extends JPanel {
 
 			@Override
 			public void onOpen(ServerHandshake handshakedata) {
-				// TODO Auto-generated method stub
 				isConnected = true;
 			}
 
 			@Override
 			public void onMessage(String message) {
-				// TODO Auto-generated method stub
 				String res[] = message.split(" ");
 				if (message.substring(0, 1).equals("X") && res.length == 5) {
 					Positioner.this.x = Double.valueOf(res[0]);
@@ -297,10 +296,6 @@ public class Positioner extends JPanel {
 			}
 		};
 
-		SavableText positioner1SocketUrl = new SavableText();
-		positioner1SocketUrl.setLabelTxt("Positioner url:");
-		positioner1SocketUrl.setParId("positioner1_socket_url");
-		this.add(positioner1SocketUrl);
 	}
 
 	public void setStep(Double step) {

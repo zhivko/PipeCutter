@@ -33,6 +33,7 @@ import com.kz.pipeCutter.BBB.BBBError;
 import com.kz.pipeCutter.BBB.BBBStatus;
 import com.kz.pipeCutter.BBB.Discoverer;
 import com.kz.pipeCutter.ui.tab.MachinekitSettings;
+import com.kz.pipeCutter.ui.tab.PlasmaSettings;
 import com.kz.pipeCutter.ui.tab.RotatorSettings;
 
 import pb.Status.EmcTaskModeType;
@@ -101,6 +102,7 @@ public class Settings extends JFrame {
 
 		tabbedPane.addTab("MachinekitSettings", new MachinekitSettings());
 		tabbedPane.addTab("Rotators", new RotatorSettings());
+		tabbedPane.addTab("Plasma", new PlasmaSettings());
 
 		tabbedPane.setSelectedIndex(1);
 

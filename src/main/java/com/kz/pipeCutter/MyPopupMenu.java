@@ -16,7 +16,7 @@ import org.jzy3d.plot3d.rendering.view.modes.ViewBoundMode;
 
 public class MyPopupMenu extends PopupMenu {
 
-	public void MyPopupMenu() {
+	public MyPopupMenu() {
 		MenuItem menuItem = new MenuItem("Cut whole pipe");
 		menuItem.addActionListener(new ActionListener() {
 			@Override

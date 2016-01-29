@@ -71,8 +71,6 @@ public class SurfaceDemo extends AbstractAnalysis {
 
 	private Coord3d rotationPoint;
 	private DrawableTextBitmap currentRotTxt = null;
-	public String plasmaStartMsPause = "1500";
-	public float plasmaStandoff = 3.175f;
 	public Point cylinderPoint;
 	public Settings settingsFrame;
 	
@@ -147,19 +145,19 @@ public class SurfaceDemo extends AbstractAnalysis {
 		// remove horizontal edges that connect to separated surfaces
 		// edges with two point index 0 and 1
 
-		// instance.centerObject();
-		menu.addSeparator();
-		MenuItem menuItem11 = new MenuItem("Start animator");
-		menuItem11.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent arg0) {
-				SurfaceDemo.instance.canvas.getAnimator().start();
-				// SurfaceDemo.instance.resumeAnimator();
-				// SurfaceDemo.instance.canvas.getAnimator().setUpdateFPSFrames(20,
-				// System.out);
-			}
-		});
-		menu.add(menuItem11);
+//		// instance.centerObject();
+//		menu.addSeparator();
+//		MenuItem menuItem11 = new MenuItem("Start animator");
+//		menuItem11.addActionListener(new ActionListener() {
+//			@Override
+//			public void actionPerformed(ActionEvent arg0) {
+//				SurfaceDemo.instance.canvas.getAnimator().start();
+//				// SurfaceDemo.instance.resumeAnimator();
+//				// SurfaceDemo.instance.canvas.getAnimator().setUpdateFPSFrames(20,
+//				// System.out);
+//			}
+//		});
+//		menu.add(menuItem11);
 
 		instance.getChart().getView().setViewPositionMode(ViewPositionMode.FREE);
 		instance.getChart().getView().setMaximized(true);
@@ -604,7 +602,8 @@ public class SurfaceDemo extends AbstractAnalysis {
 						if (picked.get(0).getClass().getName().equals("com.kz.grbl.MyPickablePoint")) {
 							MyPickablePoint mp = ((MyPickablePoint) picked.get(0));
 							lastClickedPoint = mp;
-							move(mp,false);
+							float offset = Float.valueOf(Settings.instance.getSetting("plasma_pierce_offset_mm"));
+							move(mp,false,offset);
 							
 							Point p = SurfaceDemo.instance.utils.calculateOffsetPoint(mp);
 							p.setColor(Color.GREEN );
@@ -693,7 +692,7 @@ public class SurfaceDemo extends AbstractAnalysis {
 		instance.getChart().resumeAnimator();
 	}
 
-	public void move(MyPickablePoint tempPoint, boolean cut) {
+	public void move(MyPickablePoint tempPoint, boolean cut, float offset) {
 		// if (cylinder == null) {
 		// cylinder = new Cylinder(tempPoint);
 
@@ -711,7 +710,7 @@ public class SurfaceDemo extends AbstractAnalysis {
 		}
 
 		cylinderPoint.setCoord(tempPoint.xyz);
-		plasma.setPosition(cylinderPoint.xyz);
+		plasma.setPosition(cylinderPoint.xyz.add(new Coord3d(0,0,offset)) );
 
 		String gcode = SurfaceDemo.instance.utils.coordinateToGcode(tempPoint);
 		try (PrintWriter out = new PrintWriter(new BufferedWriter(new FileWriter("prog.gcode", true)))) {
@@ -739,12 +738,12 @@ public class SurfaceDemo extends AbstractAnalysis {
 
 	}
 
-	public void moveAbove(MyPickablePoint tempPoint) {
-		Coord3d abovePoint= tempPoint.xyz.add(0f,0f,SurfaceDemo.instance.plasmaStandoff);
+	public void moveAbove(MyPickablePoint tempPoint, float offset, long pierceTimeMs) {
+		Coord3d abovePoint= tempPoint.xyz.add(0f,0f,offset);
 		plasma.setPosition(abovePoint);
 
 		try (PrintWriter out = new PrintWriter(new BufferedWriter(new FileWriter("prog.gcode", true)))) {
-			String gcode = SurfaceDemo.instance.utils.coordinateToGcode(abovePoint);
+			String gcode = SurfaceDemo.instance.utils.coordinateToGcode(abovePoint,offset);
 			plasma.setColor(Color.BLUE);
 			plasma.setWireframeColor(Color.BLUE);
 			try
@@ -759,10 +758,10 @@ public class SurfaceDemo extends AbstractAnalysis {
 			out.println("G1 " + gcode);
 			plasma.setColor(Color.RED);
 			plasma.setWireframeColor(Color.RED);
-			out.println("G4 P" + SurfaceDemo.instance.plasmaStartMsPause);
+			out.println("G4 P" + pierceTimeMs);
 			try
 			{
-				Thread.sleep(Long.valueOf(SurfaceDemo.instance.plasmaStartMsPause));
+				Thread.sleep(Long.valueOf(pierceTimeMs));
 			}
 			catch(Exception ex)
 			{

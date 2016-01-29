@@ -33,10 +33,15 @@ public class PlasmaSettings extends JPanel {
 		plasmaPierceOffsetMm.setParId("plasma_pierce_offset_mm");
 		this.add(plasmaPierceOffsetMm);
 
-		SavableText plasmaPierceTimeMs = new SavableText();
-		plasmaPierceTimeMs.setLabelTxt("Plasma pierce time [ms]:");
-		plasmaPierceTimeMs.setParId("plasma_pierce_time_ms");
-		this.add(plasmaPierceTimeMs);
+		SavableText plasmaPierceTimeS = new SavableText();
+		plasmaPierceTimeS.setLabelTxt("Plasma pierce time [s]:");
+		plasmaPierceTimeS.setParId("plasma_pierce_time_s");
+		this.add(plasmaPierceTimeS);
+		
+		SavableText plasmaCutOffsetMm = new SavableText();
+		plasmaCutOffsetMm.setLabelTxt("Plasma cut offset [mm]:");
+		plasmaCutOffsetMm.setParId("plasma_cut_offset_mm");
+		this.add(plasmaCutOffsetMm);		
 		
 		
 

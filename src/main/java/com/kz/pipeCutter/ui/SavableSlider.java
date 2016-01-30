@@ -8,15 +8,20 @@ import java.util.Hashtable;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JSlider;
+import javax.swing.JTextField;
+import javax.swing.SwingConstants;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
 
 @SuppressWarnings("serial")
 public class SavableSlider extends SavableControl {
 	private JSlider slider;
 	private int minValue;
 	private int maxValue;
-	private int stepValue;
+
+	private JTextField jValue;
 
 	private String values;
 	Hashtable<Integer, JLabel> table;
@@ -42,15 +47,46 @@ public class SavableSlider extends SavableControl {
 		}
 		this.jValue.setColumns(maxcol);
 		this.slider.setLabelTable(table);
-		this.slider.setMaximum(splittedValues.length-1);
+		this.slider.setMaximum(splittedValues.length - 1);
 		this.slider.setMinimum(0);
-		this.setPreferredSize(new Dimension(300,100));
+		this.setPreferredSize(new Dimension(300, 100));
 
 	}
 
 	public SavableSlider() {
 		super();
 		this.setLayout(new MyVerticalFlowLayout());
+
+		jValue = new JTextField();
+		jValue.setHorizontalAlignment(SwingConstants.LEFT);
+		jValue.setText("This is value");
+		jValue.setColumns(1);
+
+		jValue.getDocument().addDocumentListener(new DocumentListener() {
+			public void changedUpdate(DocumentEvent e) {
+				warn();
+			}
+
+			public void removeUpdate(DocumentEvent e) {
+				warn();
+			}
+
+			public void insertUpdate(DocumentEvent e) {
+				warn();
+			}
+
+			public void warn() {
+				try {
+					if (!SavableSlider.this.isLoadingValue())
+					{
+						SavableSlider.this.save();
+						valueChangedFromUI();
+					}
+				} catch (Exception ex) {
+					ex.printStackTrace();
+				}
+			}
+		});
 
 		panel1 = new JPanel();
 		this.add(panel1);
@@ -75,7 +111,7 @@ public class SavableSlider extends SavableControl {
 			@Override
 			public void stateChanged(ChangeEvent e) {
 				// TODO Auto-generated method stub
-				if (Settings.instance != null && !SavableSlider.this.slider.getValueIsAdjusting() ) {
+				if (Settings.instance != null && !SavableSlider.this.slider.getValueIsAdjusting()) {
 					String txt = SavableSlider.this.table.get(SavableSlider.this.slider.getValue()).getText();
 					txt = txt.replaceAll("²", "0");
 					txt = txt.replaceAll("³", "00");
@@ -103,12 +139,32 @@ public class SavableSlider extends SavableControl {
 		this.slider.setMaximum(maxValue);
 	}
 
-	public int getStepValue() {
-		return stepValue;
+	public void setStepValue(int stepValue) {
+		while (SavableSlider.this.table.keys().hasMoreElements())
+		{
+			Integer i = SavableSlider.this.table.keys().nextElement();
+			if(Integer.valueOf(SavableSlider.this.table.get(i).getText()).intValue()==stepValue)
+			{
+				SavableSlider.this.slider.setValue(i);
+				break;
+			}
+		}
 	}
 
-	public void setStepValue(int stepValue) {
-		this.stepValue = stepValue;
+	@Override
+	public void setParValue(String val) {
+		this.jValue.setText(val);
+	}
+
+	@Override
+	public String getParValue() {
+		return this.jValue.getText();
+	}
+
+	@Override
+	public void valueChangedFromUI() {
+		// TODO Auto-generated method stub
+		
 	}
 
 }

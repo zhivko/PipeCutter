@@ -22,12 +22,11 @@ import java.awt.FlowLayout;
 public abstract class SavableControl extends JPanel implements IParameter, ISaveableAndLoadable {
 
 	private String parId;
-	private String parValue;
 	public String iniFullFileName;
 	private String labelTxt;
-	public JTextField jValue;
+
 	public JLabel jLabel;
-	boolean needsSave=true;
+	boolean needsSave = true;
 
 	public boolean isNeedsSave() {
 		return needsSave;
@@ -37,46 +36,16 @@ public abstract class SavableControl extends JPanel implements IParameter, ISave
 		this.needsSave = needsSave;
 	}
 
-	private boolean isLoadingValue;
+	boolean isLoadingValue;
 
 	public JPanel panel;
 
 	public SavableControl() {
 		super();
 
-		jValue = new JTextField();
-		jValue.setHorizontalAlignment(SwingConstants.LEFT);
-		jValue.setText("This is value");
-		jValue.setColumns(1);
-
-		jValue.getDocument().addDocumentListener(new DocumentListener() {
-			public void changedUpdate(DocumentEvent e) {
-				warn();
-			}
-
-			public void removeUpdate(DocumentEvent e) {
-				warn();
-			}
-
-			public void insertUpdate(DocumentEvent e) {
-				warn();
-			}
-
-			public void warn() {
-				SavableControl.this.parValue = jValue.getText();
-				try {
-					if(!SavableControl.this.isLoadingValue)
-						SavableControl.this.save();
-				} catch (Exception ex) {
-					ex.printStackTrace();
-				}
-			}
-		});
 		setLayout(new FlowLayout(FlowLayout.LEFT, 5, 5));
 		jLabel = new JLabel("This is label:");
 		add(jLabel);
-		add(jValue);
-		jValue.setColumns(10);
 	}
 
 	public synchronized void save() throws IOException {
@@ -109,7 +78,7 @@ public abstract class SavableControl extends JPanel implements IParameter, ISave
 			this.setParValue(props.getProperty(this.getParId()));
 			this.isLoadingValue = false;
 		} else
-			this.jValue.setText("");
+			this.setParValue("");
 		this.isLoadingValue = false;
 	}
 
@@ -128,25 +97,9 @@ public abstract class SavableControl extends JPanel implements IParameter, ISave
 
 	}
 
-	public String getParValue() {
-		return this.parValue;
-	}
-
 	public String getIniFullFileName() {
 		// TODO Auto-generated method stub
 		return iniFullFileName;
-	}
-
-	public void setParValue(String value) {
-		this.parValue = value;
-		//SwingUtilities.invokeLater(new Runnable() {
-		//	
-		//	@Override
-		//	public void run() {
-		this.jValue.setText(value);
-		//	}
-		//});
-		
 	}
 
 	public String getLabelTxt() {
@@ -157,11 +110,17 @@ public abstract class SavableControl extends JPanel implements IParameter, ISave
 		this.labelTxt = labelTxt;
 		this.jLabel.setText(labelTxt);
 		int length = this.jLabel.getFontMetrics(this.jLabel.getFont()).stringWidth(labelTxt);
-		this.jLabel.setPreferredSize(new Dimension(length,12));
+		this.jLabel.setPreferredSize(new Dimension(length, 12));
 	}
 
-	public boolean isLoadingValue()
-	{
+	public boolean isLoadingValue() {
 		return this.isLoadingValue;
 	}
+
+	public abstract void setParValue(String val);
+
+	public abstract String getParValue();
+
+	public abstract void valueChangedFromUI();
+	
 }

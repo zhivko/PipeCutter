@@ -8,10 +8,7 @@ import java.awt.event.ActionListener;
 import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
-import javax.swing.event.DocumentEvent;
-import javax.swing.event.DocumentListener;
 
-import com.kz.pipeCutter.BBB.BBBStatus;
 import com.kz.pipeCutter.BBB.commands.Jog;
 import com.kz.pipeCutter.ui.MyVerticalFlowLayout;
 import com.kz.pipeCutter.ui.Positioner;
@@ -19,6 +16,7 @@ import com.kz.pipeCutter.ui.SavableSlider;
 import com.kz.pipeCutter.ui.SavableText;
 import com.kz.pipeCutter.ui.Settings;
 
+@SuppressWarnings("serial")
 public class RotatorSettings extends JPanel {
 
 	
@@ -64,10 +62,8 @@ public class RotatorSettings extends JPanel {
 			public void actionPerformed(ActionEvent e) {
 				Double velocity = Double.valueOf(Settings.instance.getSetting("rotator1_vel"));
 				Double distance = Double.valueOf(Settings.instance.getSetting("rotator1_step"));
-				Settings.parAxisNo = 3;
-				Settings.parDistance = distance;
-				Settings.parVelocity = velocity/60;
-				new Jog().start();
+				new Jog(3, velocity/60, distance).start();
+
 			}
 		});
 		
@@ -114,11 +110,7 @@ public class RotatorSettings extends JPanel {
 			public void actionPerformed(ActionEvent e) {
 				Double velocity = Double.valueOf(Settings.instance.getSetting("rotator2_vel"));
 				Double distance = Double.valueOf(Settings.instance.getSetting("rotator2_step"));
-				
-				Settings.parAxisNo = 4;
-				Settings.parDistance = distance;
-				Settings.parVelocity = velocity/60;
-				new Jog().start();
+				new Jog(4, velocity/60, distance).start();
 			}
 		});		
 		
@@ -164,13 +156,7 @@ public class RotatorSettings extends JPanel {
 			public void actionPerformed(ActionEvent e) {
 				Double velocity = Double.valueOf(Settings.instance.getSetting("rotator3_vel"));
 				Double distance = Double.valueOf(Settings.instance.getSetting("rotator3_step"));
-				
-				Settings.parAxisNo = 5;
-				Settings.parDistance = distance;
-				Settings.parVelocity = velocity/60;
-				new Jog().start();
-				
-				
+				new Jog(5, velocity/60, distance).start();
 			}
 		});			
 		SavableText positionC = new SavableText();

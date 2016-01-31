@@ -1,15 +1,17 @@
 package com.kz.pipeCutter.ui;
 
 import java.awt.Dimension;
-import java.awt.GridBagConstraints;
-import java.awt.GridBagLayout;
-import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
+import java.io.File;
 import java.io.IOException;
+import java.net.MalformedURLException;
 import java.net.URI;
+import java.util.List;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
 import javax.swing.JButton;
@@ -27,13 +29,15 @@ import org.glassfish.tyrus.client.ClientManager;
 @SuppressWarnings("serial")
 public class Positioner extends JPanel {
 	WebSocketContainer wsContainer;
+	MyWebsocketClient myWebsocketClient;
 	public Session wsSession;
 	boolean m;
-	Double x;
-	Double y;
-	Double z;
-	Double e;
+	long x;
+	long y;
+	long z;
+	long e;
 
+	boolean isConnecting = false;
 	public boolean isConnected = false;
 
 	int prevSliderVerValue;
@@ -46,12 +50,16 @@ public class Positioner extends JPanel {
 	}
 
 	SavableText positionerStep;
+	SavableText positionerUrl;
+	SavableCheckBox motorEnableCheckBox;
+
+	JButton btnUp, btnDown, btnLeft, btnRight;
 
 	public Positioner(int id) {
 		wsContainer = ContainerProvider.getWebSocketContainer();
 		wsContainer.getDefaultAsyncSendTimeout();
 		this.id = id;
-		this.setPreferredSize(new Dimension(184, 219));
+		this.setPreferredSize(new Dimension(184, 214));
 		setLayout(null);
 
 		JSlider sliderVer = new JSlider();
@@ -61,8 +69,8 @@ public class Positioner extends JPanel {
 		sliderVer.setOrientation(SwingConstants.VERTICAL);
 		add(sliderVer);
 		sliderVer.setMinimum(0);
-		sliderVer.setMaximum(5000);
-		sliderVer.setValue(2500);
+		sliderVer.setMaximum(100);
+		sliderVer.setValue(50);
 		prevSliderVerValue = sliderVer.getValue();
 		sliderVer.addChangeListener(new ChangeListener() {
 
@@ -85,45 +93,77 @@ public class Positioner extends JPanel {
 			}
 		});
 
-		JButton btnGor = new JButton("⇑");
-		btnGor.setBounds(75, 0, 54, 33);
-		btnGor.addActionListener(new ActionListener() {
+		btnUp = new JButton();
+		try {
+			ShrinkIcon si = new ShrinkIcon(
+					new File("C:\\Users\\klemen\\git\\PipeCutter\\src\\main\\resources\\ArrowUp.png").toURI().toURL());
+			btnUp.setIcon(si);
+		} catch (MalformedURLException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
+		btnUp.setBounds(75, 0, 54, 33);
+		btnUp.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				String message = "Z+" + positionerStep.getParValue() + " E+" + positionerStep.getParValue();
 				socketSend(message);
 			}
 		});
-		add(btnGor);
+		add(btnUp);
 
-		JButton button_2 = new JButton("⇐");
-		button_2.setBounds(30, 32, 48, 31);
-		button_2.addActionListener(new ActionListener() {
+		btnLeft = new JButton();
+		try {
+			ShrinkIcon si = new ShrinkIcon(
+					new File("C:\\Users\\klemen\\git\\PipeCutter\\src\\main\\resources\\ArrowLeft.png").toURI().toURL());
+			btnLeft.setIcon(si);
+		} catch (MalformedURLException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
+		btnLeft.setBounds(30, 32, 48, 31);
+		btnLeft.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				String message = "X-" + positionerStep.getParValue() + " Y-" + positionerStep.getParValue();
 				socketSend(message);
 			}
 		});
-		add(button_2);
+		add(btnLeft);
 
-		JButton button = new JButton("⇓");
-		button.setBounds(75, 61, 54, 31);
-		button.addActionListener(new ActionListener() {
+		btnDown = new JButton();
+		try {
+			ShrinkIcon si = new ShrinkIcon(
+					new File("C:\\Users\\klemen\\git\\PipeCutter\\src\\main\\resources\\ArrowDown.png").toURI().toURL());
+			btnDown.setIcon(si);
+		} catch (MalformedURLException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
+		btnDown.setBounds(75, 61, 54, 31);
+		btnDown.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				String message = "Z-" + positionerStep.getParValue() + " E-" + positionerStep.getParValue();
 				socketSend(message);
 			}
 		});
 
-		JButton button_1 = new JButton("⇒");
-		button_1.setBounds(127, 32, 48, 31);
-		button_1.addActionListener(new ActionListener() {
+		btnRight = new JButton();
+		try {
+			ShrinkIcon si = new ShrinkIcon(
+					new File("C:\\Users\\klemen\\git\\PipeCutter\\src\\main\\resources\\ArrowRight.png").toURI().toURL());
+			btnRight.setIcon(si);
+		} catch (MalformedURLException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
+		btnRight.setBounds(127, 32, 48, 31);
+		btnRight.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				String message = "X+" + positionerStep.getParValue() + " Y+" + positionerStep.getParValue();
 				socketSend(message);
 			}
 		});
-		add(button_1);
-		add(button);
+		add(btnRight);
+		add(btnDown);
 
 		JSlider sliderHor = new JSlider();
 		sliderHor.setBounds(27, 96, 155, 31);
@@ -131,8 +171,8 @@ public class Positioner extends JPanel {
 		sliderHor.setPaintTicks(true);
 		add(sliderHor);
 		sliderHor.setMinimum(0);
-		sliderHor.setMaximum(5000);
-		sliderHor.setValue(2500);
+		sliderHor.setMaximum(100);
+		sliderHor.setValue(50);
 		prevSliderHorValue = sliderHor.getValue();
 
 		sliderHor.addChangeListener(new ChangeListener() {
@@ -156,16 +196,8 @@ public class Positioner extends JPanel {
 			}
 		});
 
-		SavableText positionerUrl = new SavableText() {
-			@Override
-			public void valueChangedFromUI() {
-				// TODO Auto-generated method stub
-				System.out.println(this.getParId());
-				if (Settings.instance != null)
-					Positioner.this.setUri(this.getParValue());
-			}
-		};
-		positionerUrl.setBounds(0, 118, 177, 30);
+		positionerUrl = new SavableText();
+		positionerUrl.setBounds(0, 126, 177, 22);
 		positionerUrl.setLabelTxt("Url:");
 		positionerUrl.setParId("rotator" + id + "_positioner_url");
 		positionerUrl.jValue.setColumns(12);
@@ -189,7 +221,7 @@ public class Positioner extends JPanel {
 			public void keyPressed(KeyEvent e) {
 				// TODO Auto-generated method stub
 				if (e.getKeyCode() == 10) {
-					setUri(positionerUrl.jValue.getText());
+					makeWebsocketConnection();
 				} else {
 					System.out.println(e.getKeyCode());
 				}
@@ -198,13 +230,13 @@ public class Positioner extends JPanel {
 		});
 
 		positionerStep = new SavableText();
-		positionerStep.setBounds(0, 178, 176, 30);
+		positionerStep.setBounds(0, 169, 176, 22);
 		positionerStep.setLabelTxt("Positioner step:");
 		positionerStep.setParId("rotator" + id + "_positioner_step");
 		positionerStep.jValue.setColumns(5);
 		add(positionerStep);
 
-		SavableCheckBox motorEnableCheckBox = new SavableCheckBox() {
+		motorEnableCheckBox = new SavableCheckBox() {
 			@Override
 			public void valueChangedFromUI() {
 				String messageToSend;
@@ -215,23 +247,40 @@ public class Positioner extends JPanel {
 				socketSend(messageToSend);
 			}
 		};
-		motorEnableCheckBox.setBounds(0, 147, 177, 33);
+		motorEnableCheckBox.setBounds(0, 146, 177, 22);
 		motorEnableCheckBox.setLabelTxt("Motors enable");
 		motorEnableCheckBox.setParId("rotator" + id + "_positioner_motors_enable");
 		add(motorEnableCheckBox);
+
+		JButton stopBtn = new JButton("Stop");
+		stopBtn.setBounds(0, 191, 78, 20);
+		stopBtn.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				socketSend("stop");
+			}
+		});
+		add(stopBtn);
+		
+		initPositioners();
 	}
 
-	public void setUri(String uriStr) {
-
+	public void makeWebsocketConnection() {
+		URI uri=null;
 		try {
-			URI uri = new URI(uriStr);
+			if (wsSession != null && wsSession.isOpen())
+				wsSession.close();
+
 			ClientManager cm = ClientManager.createClient();
-			MyWebsocketClient myWebsocketClient = new MyWebsocketClient(this);
+			uri = new URI(positionerUrl.getParValue());
+			myWebsocketClient = new MyWebsocketClient(this);
 			if (Settings.instance != null)
-				Settings.instance.log("Connecting to: " + uriStr + "\n");
+				Settings.instance.log("Connecting to: " + uri.toString() + "\n");
 			wsSession = cm.asyncConnectToServer(myWebsocketClient, uri).get(2000, TimeUnit.MILLISECONDS);
 		} catch (Exception e) {
-			e.printStackTrace();
+			if (Settings.instance != null)
+				Settings.instance.log("\t" + uri.toString() + " " + e.toString() + "\n");
 		}
 
 	}
@@ -247,4 +296,28 @@ public class Positioner extends JPanel {
 
 	}
 
+	public void initPositioners() {
+		final ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
+		Runnable connectPositioner = new Runnable() {
+			@Override
+			public void run() {
+				if (!isConnecting && !Positioner.this.isConnected && Positioner.this.positionerUrl.getParValue() != null) {
+					isConnecting = true;
+					Positioner.this.makeWebsocketConnection();
+					scheduler.shutdown();
+					isConnecting = false;
+				}
+			}
+		};
+		scheduler.scheduleAtFixedRate(connectPositioner, 1000, 2000, TimeUnit.MILLISECONDS);
+	}
+
+	public void initToolTips()
+	{
+		btnUp.setToolTipText("E " + String.valueOf(this.e));
+		btnDown.setToolTipText("Z " + String.valueOf(this.z));
+
+		btnLeft.setToolTipText("X " + String.valueOf(this.x));
+		btnRight.setToolTipText("Y " + String.valueOf(this.y));
+	}
 }

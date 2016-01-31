@@ -41,18 +41,12 @@ import pb.Status.EmcTaskModeType;
 public class Settings extends JFrame {
 
 	private JPanel contentPane;
-	public static double parDistance;
-	public static EmcTaskModeType parMode;
-	public static String parMdiCommand;
-
 	public static String iniFullFileName = getIniPath();
 	public static Settings instance;
 	public static Discoverer discoverer;
 	public static BBBError error;
 	public static BBBStatus status;
 
-	public static int parAxisNo = 0;
-	public static double parVelocity = 0;
 
 	public JSplitPane splitPane;
 	CommandPanel commandPanel;
@@ -233,7 +227,7 @@ public class Settings extends JFrame {
 		return null;
 	}
 
-	public <T extends Component> List<T> harvestMatches(Container root,
+	public static <T extends Component> List<T> harvestMatches(Container root,
 			Class<T> clazz) {
 		List<Container> containers = new LinkedList<>();
 		List<T> harvested = new ArrayList<>();

@@ -8,11 +8,22 @@ import pb.Types.ContainerType;
 
 public class Jog extends MachineTalkCommand {
 
+	int axisNo;
+	double velocity;
+	double distance;
+	
+	public Jog(int axisNo, double velocity, double distance)
+	{
+		this.axisNo = axisNo;
+		this.velocity = velocity;
+		this.distance = distance;
+	}
+	
 	@Override
 	public Container prepareContainer() {
 		pb.Message.Container.Builder builder = Container.newBuilder();
-		pb.Status.EmcCommandParameters emcCommandParameter = pb.Status.EmcCommandParameters.newBuilder().setIndex(Settings.getInstance().parAxisNo)
-				.setVelocity(Settings.parVelocity).setDistance(Settings.parDistance).build();
+		pb.Status.EmcCommandParameters emcCommandParameter = pb.Status.EmcCommandParameters.newBuilder().setIndex(axisNo)
+				.setVelocity(velocity).setDistance(distance).build();
 
 		builder.setType(ContainerType.MT_EMC_AXIS_INCR_JOG);
 		builder.setEmcCommandParams(emcCommandParameter);

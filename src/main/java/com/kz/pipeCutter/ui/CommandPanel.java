@@ -119,8 +119,7 @@ public class CommandPanel extends JPanel {
 		modeManual.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				Settings.parMode = EmcTaskModeType.EMC_TASK_MODE_MANUAL;
-				new ChangeMode().start();
+				new ChangeMode(EmcTaskModeType.EMC_TASK_MODE_MANUAL).start();
 			}
 		});
 		machineTalkPanel.add(modeManual);		
@@ -129,8 +128,7 @@ public class CommandPanel extends JPanel {
 		modeAutomatic.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				Settings.parMode = EmcTaskModeType.EMC_TASK_MODE_AUTO;
-				new ChangeMode().start();
+				new ChangeMode(EmcTaskModeType.EMC_TASK_MODE_AUTO).start();
 			}
 		});
 		machineTalkPanel.add(modeAutomatic);			
@@ -140,14 +138,10 @@ public class CommandPanel extends JPanel {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				try {
-					Settings.parMode = EmcTaskModeType.EMC_TASK_MODE_MANUAL;
-					new ChangeMode().start();
-					Thread.sleep(100);
-
+					new ChangeMode(EmcTaskModeType.EMC_TASK_MODE_MANUAL).start();
 					for (int i = 0; i < 4; i++) {
-						Settings.parAxisNo = i;
-						new HomeAxis().start();
-						Thread.sleep(100);
+						new HomeAxis(i).start();
+						Thread.sleep(10);
 					}
 				} catch (Exception ex) {
 					ex.printStackTrace();
@@ -173,12 +167,7 @@ public class CommandPanel extends JPanel {
 				// TODO Auto-generated method stub
 				if (e.getKeyCode() == 10) {
 					try {
-						Settings.parMode = EmcTaskModeType.EMC_TASK_MODE_MDI;
-						new ChangeMode().start();
-						Thread.sleep(1000);
-						
-						Settings.parMdiCommand = mdiCommand1.getParValue();
-						new ExecuteMdi().start();
+						new ExecuteMdi(mdiCommand1.getParValue()).start();
 					} catch (Exception ex) {
 						ex.printStackTrace();
 					}
@@ -212,12 +201,7 @@ public class CommandPanel extends JPanel {
 				// TODO Auto-generated method stub
 				if (e.getKeyCode() == 10) {
 					try {
-						Settings.parMode = EmcTaskModeType.EMC_TASK_MODE_MDI;
-						new ChangeMode().start();
-						Thread.sleep(1000);
-						
-						Settings.parMdiCommand = mdiCommand2.getParValue();
-						new ExecuteMdi().start();
+						new ExecuteMdi(mdiCommand2.getParValue()).start();
 					} catch (Exception ex) {
 						ex.printStackTrace();
 					}

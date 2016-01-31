@@ -21,8 +21,8 @@ public abstract class MachineTalkCommand {
 
 	public abstract Container prepareContainer();
 
-	public void start() {
 		// TODO Auto-generated method stub
+	public void start() {
 		Thread t = new Thread(new Runnable() {
 			@Override
 			public void run() {

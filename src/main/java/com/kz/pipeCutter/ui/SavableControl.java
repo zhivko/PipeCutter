@@ -43,9 +43,10 @@ public abstract class SavableControl extends JPanel implements IParameter, ISave
 	public SavableControl() {
 		super();
 
-		setLayout(new FlowLayout(FlowLayout.LEFT, 5, 5));
+		setLayout(new FlowLayout(FlowLayout.LEFT, 1, 1));
 		jLabel = new JLabel("This is label:");
 		add(jLabel);
+		
 	}
 
 	public synchronized void save() throws IOException {

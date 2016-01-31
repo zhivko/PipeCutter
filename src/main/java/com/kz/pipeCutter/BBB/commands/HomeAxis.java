@@ -7,11 +7,16 @@ import pb.Status.EmcTaskModeType;
 import pb.Types.ContainerType;
 
 public class HomeAxis extends MachineTalkCommand {
+	int axisNo;
+	
+	public HomeAxis(int i) {
+		this.axisNo = i;
+	}
 
 	@Override
 	public Container prepareContainer() {
 		pb.Message.Container.Builder builder = Container.newBuilder();
-		pb.Status.EmcCommandParameters emcCommandParameter = pb.Status.EmcCommandParameters.newBuilder().setIndex(Settings.getInstance().parAxisNo)
+		pb.Status.EmcCommandParameters emcCommandParameter = pb.Status.EmcCommandParameters.newBuilder().setIndex(axisNo)
 				.build();
 		builder.setType(ContainerType.MT_EMC_AXIS_HOME);
 		builder.setEmcCommandParams(emcCommandParameter);

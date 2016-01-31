@@ -37,6 +37,10 @@ public class SavableCheckBox extends SavableControl {
 	
 	@Override
 	public void setParValue(String val) {
+		if(val.equals("1"))
+			val="True";
+		else
+			val="False";
 			this.jCheckBox.setSelected(Boolean.valueOf(val));
 	}
 	

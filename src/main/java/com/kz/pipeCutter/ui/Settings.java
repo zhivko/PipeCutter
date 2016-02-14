@@ -35,8 +35,7 @@ import com.kz.pipeCutter.BBB.Discoverer;
 import com.kz.pipeCutter.ui.tab.MachinekitSettings;
 import com.kz.pipeCutter.ui.tab.PlasmaSettings;
 import com.kz.pipeCutter.ui.tab.RotatorSettings;
-
-import pb.Status.EmcTaskModeType;
+import com.kz.pipeCutter.ui.tab.XYZSettings;
 
 public class Settings extends JFrame {
 
@@ -96,6 +95,7 @@ public class Settings extends JFrame {
 
 		tabbedPane.addTab("MachinekitSettings", new MachinekitSettings());
 		tabbedPane.addTab("Rotators", new RotatorSettings());
+		tabbedPane.addTab("XYZ", new XYZSettings());
 		tabbedPane.addTab("Plasma", new PlasmaSettings());
 
 		tabbedPane.setSelectedIndex(1);

@@ -75,6 +75,9 @@ public class BBBStatus {
 								SwingUtilities.invokeLater(new Runnable() {
 									@Override
 									public void run() {
+										Settings.instance.setSetting("position_x", x);
+										Settings.instance.setSetting("position_y", y);
+										Settings.instance.setSetting("position_z", z);
 										Settings.instance.setSetting("position_a", a);
 										Settings.instance.setSetting("position_b", b);
 										Settings.instance.setSetting("position_c", c);

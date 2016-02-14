@@ -124,6 +124,15 @@ public class CommandPanel extends JPanel {
 		});
 		machineTalkPanel.add(modeManual);		
 
+		JButton modeMDI = new JButton("Mode: MDI");
+		modeMDI.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				new ChangeMode(EmcTaskModeType.EMC_TASK_MODE_MDI).start();
+			}
+		});
+		machineTalkPanel.add(modeMDI);				
+		
 		JButton modeAutomatic = new JButton("Mode: AUTOMATIC");
 		modeAutomatic.addActionListener(new ActionListener() {
 			@Override

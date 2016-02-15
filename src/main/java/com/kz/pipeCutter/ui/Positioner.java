@@ -95,10 +95,10 @@ public class Positioner extends JPanel {
 
 		btnUp = new JButton();
 		try {
-			ShrinkIcon si = new ShrinkIcon(
-					new File("C:\\Users\\klemen\\git\\PipeCutter\\src\\main\\resources\\ArrowUp.png").toURI().toURL());
+			
+			ShrinkIcon si = new ShrinkIcon(this.getClass().getResource("./icons/ArrowUp.png").toURI().toURL());
 			btnUp.setIcon(si);
-		} catch (MalformedURLException e1) {
+		} catch (Exception e1) {
 			// TODO Auto-generated catch block
 			e1.printStackTrace();
 		}
@@ -114,9 +114,9 @@ public class Positioner extends JPanel {
 		btnLeft = new JButton();
 		try {
 			ShrinkIcon si = new ShrinkIcon(
-					new File("C:\\Users\\klemen\\git\\PipeCutter\\src\\main\\resources\\ArrowLeft.png").toURI().toURL());
+					this.getClass().getResource("./icons/ArrowLeft.png").toURI().toURL());
 			btnLeft.setIcon(si);
-		} catch (MalformedURLException e1) {
+		} catch (Exception e1) {
 			// TODO Auto-generated catch block
 			e1.printStackTrace();
 		}
@@ -132,9 +132,9 @@ public class Positioner extends JPanel {
 		btnDown = new JButton();
 		try {
 			ShrinkIcon si = new ShrinkIcon(
-					new File("C:\\Users\\klemen\\git\\PipeCutter\\src\\main\\resources\\ArrowDown.png").toURI().toURL());
+					this.getClass().getResource("./icons/ArrowDown.png").toURI().toURL());
 			btnDown.setIcon(si);
-		} catch (MalformedURLException e1) {
+		} catch (Exception e1) {
 			// TODO Auto-generated catch block
 			e1.printStackTrace();
 		}
@@ -148,10 +148,9 @@ public class Positioner extends JPanel {
 
 		btnRight = new JButton();
 		try {
-			ShrinkIcon si = new ShrinkIcon(
-					new File("C:\\Users\\klemen\\git\\PipeCutter\\src\\main\\resources\\ArrowRight.png").toURI().toURL());
+			ShrinkIcon si = new ShrinkIcon(this.getClass().getResource("./icons/ArrowRight.png").toURI().toURL());
 			btnRight.setIcon(si);
-		} catch (MalformedURLException e1) {
+		} catch (Exception e1) {
 			// TODO Auto-generated catch block
 			e1.printStackTrace();
 		}

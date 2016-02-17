@@ -254,9 +254,9 @@ public class Settings extends JFrame {
 
 	public void log(String txt) {
 		System.out.println(txt);
+		txt = txt.replaceAll("reply_ticket: (.*)\n", "");
 		SimpleDateFormat sdf = new SimpleDateFormat("HH:mm:ss");
-		commandPanel.log.setText(sdf.format(new Date()) + " " + txt
-				+ commandPanel.log.getText());
-		commandPanel.log.setCaretPosition(txt.length());
+		commandPanel.log.append(sdf.format(new Date()) + " " + txt);
+		commandPanel.log.setCaretPosition(commandPanel.log.getText().length());
 	}
 }

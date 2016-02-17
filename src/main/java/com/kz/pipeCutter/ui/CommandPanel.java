@@ -24,6 +24,7 @@ import com.kz.pipeCutter.BBB.commands.MachinekitStart;
 import com.kz.pipeCutter.BBB.commands.MachinekitStop;
 import com.kz.pipeCutter.BBB.commands.PowerOff;
 import com.kz.pipeCutter.BBB.commands.PowerOn;
+import com.kz.pipeCutter.BBB.commands.UnHomeAxis;
 
 public class CommandPanel extends JPanel {
 	public JTextArea log;
@@ -159,6 +160,24 @@ public class CommandPanel extends JPanel {
 		});
 		machineTalkPanel.add(homeAll);
 
+		JButton unHomeAll = new JButton("UnHome ALL");
+		unHomeAll.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				try {
+					new ChangeMode(EmcTaskModeType.EMC_TASK_MODE_MANUAL).start();
+					for (int i = 0; i < 4; i++) {
+						new UnHomeAxis(i).start();
+						Thread.sleep(10);
+					}
+				} catch (Exception ex) {
+					ex.printStackTrace();
+				}
+			}
+		});
+		machineTalkPanel.add(unHomeAll);
+		
+		
 		SavableText mdiCommand1 = new SavableText();
 		mdiCommand1.setLabelTxt("MDI1:");
 		mdiCommand1.setParId("machinekit_mdi1");

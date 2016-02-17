@@ -41,7 +41,7 @@ public class XYZSettings extends JPanel {
 
 		SavableText x_vel = new SavableText();
 		x_vel.setParId("x_vel");
-		x_vel.setLabelTxt("velocity [°/min]:");
+		x_vel.setLabelTxt("velocity [mm/min]:");
 		panelXAxis.add(x_vel);
 
 		SavableText x_acel = new SavableText();
@@ -83,7 +83,7 @@ public class XYZSettings extends JPanel {
 
 		SavableText y_vel = new SavableText();
 		y_vel.setParId("y_vel");
-		y_vel.setLabelTxt("velocity [°/min]:");
+		y_vel.setLabelTxt("velocity [mm/min]:");
 		panelYAxis.add(y_vel);
 
 		SavableText y_acc = new SavableText();
@@ -125,7 +125,7 @@ public class XYZSettings extends JPanel {
 		panelZAxis.add(lblNewLabel3);
 
 		SavableText z_vel = new SavableText();
-		z_vel.setLabelTxt("velocity [°/min]:");
+		z_vel.setLabelTxt("velocity [mm/min]:");
 		z_vel.setParId("z_vel");
 		panelZAxis.add(z_vel);
 

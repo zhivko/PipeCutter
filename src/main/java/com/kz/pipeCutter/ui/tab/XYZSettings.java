@@ -143,7 +143,7 @@ public class XYZSettings extends JPanel {
 		JButton jog3 = new JButton("JOG");
 		jog3.setPreferredSize(new Dimension(100, 50));
 		panelZAxis.add(jog3);
-		jog1.addActionListener(new ActionListener() {
+		jog3.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				Double velocity = Double.valueOf(Settings.instance.getSetting("z_vel"));
 				Double distance = Double.valueOf(Settings.instance.getSetting("z_step"));

@@ -9,6 +9,7 @@ import java.awt.event.ComponentEvent;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
@@ -46,7 +47,6 @@ public class Settings extends JFrame {
 	public static BBBError error;
 	public static BBBStatus status;
 
-
 	public JSplitPane splitPane;
 	CommandPanel commandPanel;
 
@@ -68,7 +68,36 @@ public class Settings extends JFrame {
 				Settings.instance.initServices();
 			}
 		});
-		frame.setVisible(true);
+		
+		FileInputStream in;
+		try {
+			in = new FileInputStream(Settings.iniFullFileName);
+			SortedProperties props = new SortedProperties();
+			props.load(in);
+			in.close();	
+			
+			String size = props.get("frame0").toString();
+			try
+			{
+				String[] splittedSize = size.split("x");
+				frame.setPreferredSize(new Dimension(Double.valueOf(splittedSize[0]).intValue(), Double.valueOf(splittedSize[1]).intValue()));
+				
+				frame.validate();
+        frame.repaint();
+        frame.pack();
+        frame.setVisible(true);
+			}
+			catch(Exception ex)
+			{
+				ex.printStackTrace();
+			}
+			
+			System.out.println("size: " + size);
+		} catch (Exception e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
+	
 	}
 
 	protected void initServices() {
@@ -117,6 +146,20 @@ public class Settings extends JFrame {
 				Component c = (Component) evt.getSource();
 				System.out.println(c.getName() + " resized: " + c.getSize().toString());
 				if (c.getName().equals("frame0")) {
+					try {
+						FileInputStream in = new FileInputStream(Settings.iniFullFileName);
+						SortedProperties props = new SortedProperties();
+						props.load(in);
+						in.close();
+
+						FileOutputStream out = new FileOutputStream(
+								Settings.iniFullFileName);
+						props.setProperty("frame0", c.getSize().getWidth() + "x" + c.getSize().getHeight());
+						props.store(out, null);
+						out.close();
+					} catch (Exception ex) {
+						ex.printStackTrace();
+					}
 					// splitPane.setDividerLocation(1 - (commandPanel.getHeight() /
 					// Settings.instance.getHeight()));
 				}
@@ -193,10 +236,10 @@ public class Settings extends JFrame {
 
 	public void setSetting(String parameterId, Double value) {
 		DecimalFormatSymbols otherSymbols = new DecimalFormatSymbols(Locale.ENGLISH);
-		//otherSymbols.setDecimalSeparator('.');
-		//otherSymbols.setGroupingSeparator(','); 
-		
-		DecimalFormat df = new DecimalFormat("##,##0.0000",otherSymbols);
+		// otherSymbols.setDecimalSeparator('.');
+		// otherSymbols.setGroupingSeparator(',');
+
+		DecimalFormat df = new DecimalFormat("##,##0.0000", otherSymbols);
 		df.setDecimalSeparatorAlwaysShown(true);
 		String strValue = df.format(value);
 		setSetting(parameterId, strValue);

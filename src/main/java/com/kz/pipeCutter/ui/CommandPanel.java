@@ -22,13 +22,14 @@ import com.kz.pipeCutter.BBB.commands.HomeAxis;
 import com.kz.pipeCutter.BBB.commands.MachinekitListProcesses;
 import com.kz.pipeCutter.BBB.commands.MachinekitStart;
 import com.kz.pipeCutter.BBB.commands.MachinekitStop;
+import com.kz.pipeCutter.BBB.commands.MachinekitUpload;
 import com.kz.pipeCutter.BBB.commands.PowerOff;
 import com.kz.pipeCutter.BBB.commands.PowerOn;
 import com.kz.pipeCutter.BBB.commands.UnHomeAxis;
 
 public class CommandPanel extends JPanel {
 	public JTextArea log;
-	
+
 	public CommandPanel() {
 		super();
 
@@ -41,7 +42,7 @@ public class CommandPanel extends JPanel {
 		JPanel machineKitPanel = new JPanel();
 		machineKitPanel.setPreferredSize(new Dimension(200, 350));
 		this.add(machineKitPanel);
-		
+
 		JButton startMachineKit = new JButton("Start MachineKit");
 		startMachineKit.addActionListener(new ActionListener() {
 
@@ -80,13 +81,11 @@ public class CommandPanel extends JPanel {
 		});
 
 		machineKitPanel.add(MachineKitStop);
-		
-
 
 		// ----------machineTalkPanel---------------------------
 		JPanel machineTalkPanel = new JPanel();
 		machineTalkPanel.setPreferredSize(new Dimension(300, 350));
-		
+
 		this.add(machineTalkPanel);
 
 		JButton estopReset = new JButton("EStop reset");
@@ -123,7 +122,7 @@ public class CommandPanel extends JPanel {
 				new ChangeMode(EmcTaskModeType.EMC_TASK_MODE_MANUAL).start();
 			}
 		});
-		machineTalkPanel.add(modeManual);		
+		machineTalkPanel.add(modeManual);
 
 		JButton modeMDI = new JButton("Mode: MDI");
 		modeMDI.addActionListener(new ActionListener() {
@@ -132,8 +131,8 @@ public class CommandPanel extends JPanel {
 				new ChangeMode(EmcTaskModeType.EMC_TASK_MODE_MDI).start();
 			}
 		});
-		machineTalkPanel.add(modeMDI);				
-		
+		machineTalkPanel.add(modeMDI);
+
 		JButton modeAutomatic = new JButton("Mode: AUTOMATIC");
 		modeAutomatic.addActionListener(new ActionListener() {
 			@Override
@@ -141,8 +140,8 @@ public class CommandPanel extends JPanel {
 				new ChangeMode(EmcTaskModeType.EMC_TASK_MODE_AUTO).start();
 			}
 		});
-		machineTalkPanel.add(modeAutomatic);			
-		
+		machineTalkPanel.add(modeAutomatic);
+
 		JButton homeAll = new JButton("Home ALL");
 		homeAll.addActionListener(new ActionListener() {
 			@Override
@@ -176,8 +175,7 @@ public class CommandPanel extends JPanel {
 			}
 		});
 		machineTalkPanel.add(unHomeAll);
-		
-		
+
 		SavableText mdiCommand1 = new SavableText();
 		mdiCommand1.setLabelTxt("MDI1:");
 		mdiCommand1.setParId("machinekit_mdi1");
@@ -200,18 +198,17 @@ public class CommandPanel extends JPanel {
 						ex.printStackTrace();
 					}
 				} else {
-					//System.out.println(e.getKeyCode());
+					// System.out.println(e.getKeyCode());
 				}
 			}
 
 			@Override
 			public void keyPressed(KeyEvent e) {
 				// TODO Auto-generated method stub
-				
+
 			}
 		});
 
-		
 		SavableText mdiCommand2 = new SavableText();
 		mdiCommand2.setLabelTxt("MDI2:");
 		mdiCommand2.setParId("machinekit_mdi2");
@@ -234,24 +231,52 @@ public class CommandPanel extends JPanel {
 						ex.printStackTrace();
 					}
 				} else {
-					//System.out.println(e.getKeyCode());
+					// System.out.println(e.getKeyCode());
 				}
 			}
 
 			@Override
 			public void keyPressed(KeyEvent e) {
 				// TODO Auto-generated method stub
-				
+
 			}
 		});
+
+		JButton uploadGCode = new JButton("Upload prog.gcode");
+		uploadGCode.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				try {
+					new MachinekitUpload().start();
+
+				} catch (Exception ex) {
+					ex.printStackTrace();
+				}
+			}
+		});
+		machineTalkPanel.add(uploadGCode);
 		
+		JButton playGCode = new JButton("Play prog.gcode");
+		uploadGCode.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				try {
+					new MachinekitUpload().start();
+
+				} catch (Exception ex) {
+					ex.printStackTrace();
+				}
+			}
+		});
+		machineTalkPanel.add(playGCode);		
+
 		log = new JTextArea();
-		
-		JScrollPane sp = new JScrollPane(log); 
+
+		JScrollPane sp = new JScrollPane(log);
 		sp.setAutoscrolls(true);
-		sp.setPreferredSize(new Dimension(600,80));
+		sp.setPreferredSize(new Dimension(600, 80));
 		machineTalkPanel.add(sp);
-		
-		machineTalkPanel.setPreferredSize(new Dimension(650,400));
+
+		machineTalkPanel.setPreferredSize(new Dimension(650, 400));
 	}
 }

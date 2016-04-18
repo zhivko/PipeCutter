@@ -23,5 +23,4 @@ public class PowerOn extends MachineTalkCommand {
 		Container container = builder.build();
 		return container;
 	}
-
 }

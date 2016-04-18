@@ -48,7 +48,7 @@ public abstract class SSH_Command {
 				String user = Settings.getInstance().getSetting("machinekit_user");
 				String pass = Settings.getInstance().getSetting("machinekit_password");
 
-				session = jsch.getSession(user, ip, 22);
+				session = jsch.getSession(user, host, 22);
 				session.setPassword(pass);
 
 				session.setConfig("StrictHostKeyChecking", "no");

@@ -19,7 +19,7 @@ public abstract class MachineTalkCommand {
 	public static Socket commandSocket = null;
 	public int ticket = 0;
 
-	public abstract Container prepareContainer();
+	public abstract Container prepareContainer() throws Exception;
 
 		// TODO Auto-generated method stub
 	public void start() {

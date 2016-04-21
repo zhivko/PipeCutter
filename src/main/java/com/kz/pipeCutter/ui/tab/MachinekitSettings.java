@@ -88,9 +88,6 @@ public class MachinekitSettings extends JPanel {
 		machinekitServices.setListPrefferedSize(350, 160);
 		add(machinekitServices);
 
-
-
-
 		MachinekitSettings.instance = this;
 	}
 }

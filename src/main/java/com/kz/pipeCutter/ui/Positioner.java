@@ -51,7 +51,7 @@ public class Positioner extends JPanel {
 
 	SavableText positionerStep;
 	SavableText positionerUrl;
-	SavableCheckBox motorEnableCheckBox;
+	SavableCheckBox linkedJogEnableCheckBox;
 
 	JButton btnUp, btnDown, btnLeft, btnRight;
 
@@ -62,6 +62,23 @@ public class Positioner extends JPanel {
 		this.setPreferredSize(new Dimension(184, 214));
 		setLayout(null);
 
+		linkedJogEnableCheckBox = new SavableCheckBox() {
+			@Override
+			public void valueChangedFromUI() {
+				String messageToSend;
+				if (getParValue().equals("1"))
+					messageToSend = "enable";
+				else
+					messageToSend = "disable";
+				socketSend(messageToSend);
+			}
+		};
+		linkedJogEnableCheckBox.setBounds(80, 191, 110, 22);
+		linkedJogEnableCheckBox.setLabelTxt("Linked jog");
+		linkedJogEnableCheckBox.setParId("rotator" + id + "_linkedJog_enable");
+		add(linkedJogEnableCheckBox);
+		
+		
 		JSlider sliderVer = new JSlider();
 		sliderVer.setBounds(0, 0, 31, 97);
 		sliderVer.setSnapToTicks(true);
@@ -235,7 +252,7 @@ public class Positioner extends JPanel {
 		positionerStep.jValue.setColumns(5);
 		add(positionerStep);
 
-		motorEnableCheckBox = new SavableCheckBox() {
+		linkedJogEnableCheckBox = new SavableCheckBox() {
 			@Override
 			public void valueChangedFromUI() {
 				String messageToSend;
@@ -246,10 +263,10 @@ public class Positioner extends JPanel {
 				socketSend(messageToSend);
 			}
 		};
-		motorEnableCheckBox.setBounds(0, 146, 177, 22);
-		motorEnableCheckBox.setLabelTxt("Motors enable");
-		motorEnableCheckBox.setParId("rotator" + id + "_positioner_motors_enable");
-		add(motorEnableCheckBox);
+		linkedJogEnableCheckBox.setBounds(0, 146, 177, 22);
+		linkedJogEnableCheckBox.setLabelTxt("Motors enable");
+		linkedJogEnableCheckBox.setParId("rotator" + id + "_positioner_motors_enable");
+		add(linkedJogEnableCheckBox);
 
 		JButton stopBtn = new JButton("Stop");
 		stopBtn.setBounds(0, 191, 78, 20);

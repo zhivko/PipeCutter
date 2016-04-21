@@ -9,6 +9,7 @@ import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 
+import com.kz.pipeCutter.BBB.commands.ExecuteMdi;
 import com.kz.pipeCutter.BBB.commands.Jog;
 import com.kz.pipeCutter.ui.MyVerticalFlowLayout;
 import com.kz.pipeCutter.ui.Positioner;
@@ -19,7 +20,6 @@ import com.kz.pipeCutter.ui.Settings;
 @SuppressWarnings("serial")
 public class RotatorSettings extends JPanel {
 
-	
 	public RotatorSettings() {
 		super();
 		Dimension panelPreferedDimension = new Dimension(220, 480);
@@ -27,7 +27,7 @@ public class RotatorSettings extends JPanel {
 		this.setPreferredSize(new Dimension(420, 450));
 		FlowLayout flowLayout = (FlowLayout) this.getLayout();
 		flowLayout.setAlignment(FlowLayout.LEFT);
-		
+
 		String moveToText = "-10³,-10²,-10,-1,1,10,10²,10³";
 
 		// ----------ROTATOR 1---------------------------
@@ -60,22 +60,23 @@ public class RotatorSettings extends JPanel {
 		panelRotator1.add(jog1);
 		jog1.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				Double velocity = Double.valueOf(Settings.instance.getSetting("rotator1_vel"));
-				Double distance = Double.valueOf(Settings.instance.getSetting("rotator1_step"));
-				new Jog(3, velocity/60, distance).start();
-
+				Double velocity = Double.valueOf(Settings.instance
+						.getSetting("rotator1_vel"));
+				Double distance = Double.valueOf(Settings.instance
+						.getSetting("rotator1_step"));
+			  //new Jog(3, velocity/60, distance).start();
+				RotatorSettings.this.jog(3, velocity / 60, distance);
 			}
 		});
-		
+
 		SavableText positionA = new SavableText();
 		positionA.setLabelTxt("Position:");
 		panelRotator1.add(positionA);
 		positionA.setParId("position_a");
 		positionA.setNeedsSave(false);
-		
+
 		Positioner pos1 = new Positioner(1);
 		panelRotator1.add(pos1);
-		
 
 		// ----------ROTATOR 2---------------------------
 		JPanel panelRotator2 = new JPanel();
@@ -101,28 +102,28 @@ public class RotatorSettings extends JPanel {
 		sliderRot2.setLabelTxt("Move for:");
 		sliderRot2.setParId("rotator2_step");
 		panelRotator2.add(sliderRot2);
-		
-		
+
 		JButton jog2 = new JButton("JOG");
 		jog2.setPreferredSize(new Dimension(100, 50));
 		panelRotator2.add(jog2);
 		jog2.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				Double velocity = Double.valueOf(Settings.instance.getSetting("rotator2_vel"));
-				Double distance = Double.valueOf(Settings.instance.getSetting("rotator2_step"));
-				new Jog(4, velocity/60, distance).start();
+				Double velocity = Double.valueOf(Settings.instance
+						.getSetting("rotator2_vel"));
+				Double distance = Double.valueOf(Settings.instance
+						.getSetting("rotator2_step"));
+				RotatorSettings.this.jog(4, velocity / 60, distance);
 			}
-		});		
-		
+		});
+
 		SavableText positionB = new SavableText();
 		positionB.setLabelTxt("Position:");
 		panelRotator2.add(positionB);
-		positionB.setParId("position_b");			
+		positionB.setParId("position_b");
 		positionB.setNeedsSave(false);
-		
-		Positioner pos2 = new Positioner(2);
-		panelRotator2.add(pos2);		
 
+		Positioner pos2 = new Positioner(2);
+		panelRotator2.add(pos2);
 
 		// ----------ROTATOR 3---------------------------
 		JPanel panelRotator3 = new JPanel();
@@ -148,17 +149,19 @@ public class RotatorSettings extends JPanel {
 		sliderRot3.setLabelTxt("Move for:");
 		sliderRot3.setParId("rotator3_step");
 		panelRotator3.add(sliderRot3);
-		
+
 		JButton jog3 = new JButton("JOG");
 		jog3.setPreferredSize(new Dimension(100, 50));
 		panelRotator3.add(jog3);
 		jog1.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				Double velocity = Double.valueOf(Settings.instance.getSetting("rotator3_vel"));
-				Double distance = Double.valueOf(Settings.instance.getSetting("rotator3_step"));
-				new Jog(5, velocity/60, distance).start();
+				Double velocity = Double.valueOf(Settings.instance
+						.getSetting("rotator3_vel"));
+				Double distance = Double.valueOf(Settings.instance
+						.getSetting("rotator3_step"));
+				RotatorSettings.this.jog(5, velocity / 60, distance);
 			}
-		});			
+		});
 		SavableText positionC = new SavableText();
 		positionC.setLabelTxt("Position:");
 		panelRotator3.add(positionC);
@@ -166,7 +169,37 @@ public class RotatorSettings extends JPanel {
 		positionC.setNeedsSave(false);
 
 		Positioner pos3 = new Positioner(3);
-		panelRotator3.add(pos3);		
+		panelRotator3.add(pos3);
+	}
 
+	protected void jog(int axisId, double speed, Double distance) {
+
+		// cycle through linked jog rotator settings to establish weather we need to
+		// do synchronized rotations
+		String settingRot1 = "rotator1_linkedJog_enable";
+		String settingRot2 = "rotator2_linkedJog_enable";
+		String settingRot3 = "rotator3_linkedJog_enable";
+
+		if (Settings.instance.getParameter(settingRot1).getParValue().equals("1")
+				|| Settings.instance.getParameter(settingRot2).getParValue().equals("1")
+				|| Settings.instance.getParameter(settingRot3).getParValue().equals("1")) {
+			
+			String mdiCommand = "G91";
+			new ExecuteMdi(mdiCommand).start();
+			
+			mdiCommand = "G01 ";
+			if(Settings.instance.getParameter(settingRot1).getParValue().equals("1"))
+				mdiCommand += "A" + distance;
+			if(Settings.instance.getParameter(settingRot2).getParValue().equals("1"))
+				mdiCommand += "B" + distance;
+			if(Settings.instance.getParameter(settingRot3).getParValue().equals("1"))
+				mdiCommand += "C" + distance;
+			
+			mdiCommand += " F" + String.valueOf(speed);
+			new ExecuteMdi(mdiCommand).start();;
+			
+		} else {
+			new Jog(axisId, speed, distance).start();
+		}
 	}
 }

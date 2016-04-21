@@ -34,12 +34,12 @@ public class MyWebsocketClient {
 			if (res[4].endsWith("1"))
 			{
 				positioner.m = true;
-				positioner.motorEnableCheckBox.setParValue("1");
+				positioner.linkedJogEnableCheckBox.setParValue("1");
 			}
 			else
 			{
 				positioner.m = false;
-				positioner.motorEnableCheckBox.setParValue("0");
+				positioner.linkedJogEnableCheckBox.setParValue("0");
 			}
 			positioner.initToolTips();
 		}

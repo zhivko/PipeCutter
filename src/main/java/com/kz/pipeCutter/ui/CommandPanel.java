@@ -149,7 +149,7 @@ public class CommandPanel extends JPanel {
 			public void actionPerformed(ActionEvent e) {
 				try {
 					new ChangeMode(EmcTaskModeType.EMC_TASK_MODE_MANUAL).start();
-					for (int i = 0; i < 4; i++) {
+					for (int i = 0; i <= 4; i++) {
 						new HomeAxis(i).start();
 						Thread.sleep(10);
 					}

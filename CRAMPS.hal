@@ -176,7 +176,7 @@ setp hpg.stepgen.02.dirpin         818
 
 
 # ################
-# A [3] Axis (Extruder)
+# A [3] Rotator A
 # ################
 
 # axis enable chain
@@ -212,6 +212,45 @@ setp hpg.stepgen.03.maxaccel        [AXIS_3]STEPGEN_MAX_ACC
 setp hpg.stepgen.03.steppin        916
 # P8.21 GPIO1.30
 setp hpg.stepgen.03.dirpin         912
+
+
+# ################
+# B [4] Rotator B
+# ################
+
+# axis enable chain
+newsig emcmot.04.enable bit
+sets emcmot.04.enable FALSE
+
+net emcmot.04.enable <= axis.4.amp-enable-out
+net emcmot.04.enable => hpg.stepgen.04.enable
+
+
+# position command and feedback
+net emcmot.04.pos-cmd <= axis.4.motor-pos-cmd
+net emcmot.04.pos-cmd => hpg.stepgen.04.position-cmd
+
+net motor.04.pos-fb <= hpg.stepgen.04.position-fb
+net motor.04.pos-fb => axis.4.motor-pos-fb
+
+
+# timing parameters
+setp hpg.stepgen.04.dirsetup        [AXIS_4]DIRSETUP
+setp hpg.stepgen.04.dirhold         [AXIS_4]DIRHOLD
+
+setp hpg.stepgen.04.steplen         [AXIS_4]STEPLEN
+setp hpg.stepgen.04.stepspace       [AXIS_4]STEPSPACE
+
+setp hpg.stepgen.04.position-scale  [AXIS_4]SCALE
+
+setp hpg.stepgen.04.maxvel          [AXIS_4]STEPGEN_MAX_VEL
+setp hpg.stepgen.04.maxaccel        [AXIS_4]STEPGEN_MAX_ACC
+
+#setp hpg.stepgen.04.step_type       0
+# P8.30 GPIO2.25
+setp hpg.stepgen.04.steppin        917
+# P8.21 GPIO1.30
+setp hpg.stepgen.04.dirpin         918
 
 
 # ##################################################

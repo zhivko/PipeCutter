@@ -21,12 +21,36 @@ public class PlayGCode extends MachineTalkCommand {
 		Container container = builder.build();
 		byte[] buff = container.toByteArray();
 		getCommandSocket().send(buff, 0);
-		
-		
+		parseAndOutput();
+
 		builder = Container.newBuilder();
-		builder.setType(ContainerType.MT_EMC_OPEN);
-		
-		
+		builder.setType(ContainerType.MT_EMC_TASK_PLAN_INIT);
+		builder.setInterpName("execute");
+		builder.setTicket(ticket++);
+		container = builder.build();
+		buff = container.toByteArray();
+		getCommandSocket().send(buff, 0);
+		parseAndOutput();
+
+		builder = Container.newBuilder();
+		emcCommandParameter = pb.Status.EmcCommandParameters.newBuilder()
+				.setPath("/home/machinekit/machinekit/nc_files/prog.gcode").build();
+		builder.setType(ContainerType.MT_EMC_TASK_PLAN_OPEN);
+		builder.setEmcCommandParams(emcCommandParameter);
+		builder.setInterpName("execute");
+		builder.setTicket(ticket++);
+		container = builder.build();
+		buff = container.toByteArray();
+		getCommandSocket().send(buff, 0);
+		parseAndOutput();
+
+		builder = Container.newBuilder();
+		builder.setType(ContainerType.MT_EMC_TASK_PLAN_RUN);
+		builder.setInterpName("execute");
+		builder.setTicket(ticket++);
+		container = builder.build();
+		buff = container.toByteArray();
+		getCommandSocket().send(buff, 0);
 		parseAndOutput();
 		
 		return container;

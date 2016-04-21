@@ -23,6 +23,7 @@ import com.kz.pipeCutter.BBB.commands.MachinekitListProcesses;
 import com.kz.pipeCutter.BBB.commands.MachinekitStart;
 import com.kz.pipeCutter.BBB.commands.MachinekitStop;
 import com.kz.pipeCutter.BBB.commands.MachinekitUpload;
+import com.kz.pipeCutter.BBB.commands.PlayGCode;
 import com.kz.pipeCutter.BBB.commands.PowerOff;
 import com.kz.pipeCutter.BBB.commands.PowerOn;
 import com.kz.pipeCutter.BBB.commands.UnHomeAxis;
@@ -257,12 +258,11 @@ public class CommandPanel extends JPanel {
 		machineTalkPanel.add(uploadGCode);
 		
 		JButton playGCode = new JButton("Play prog.gcode");
-		uploadGCode.addActionListener(new ActionListener() {
+		playGCode.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				try {
-					new MachinekitUpload().start();
-
+					new PlayGCode().start();
 				} catch (Exception ex) {
 					ex.printStackTrace();
 				}

@@ -1,5 +1,7 @@
 package com.kz.pipeCutter.ui;
 
+
+//install bbonjour avahi sevice in windows: https://support.apple.com/kb/DL999?locale=sl_SI
 import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.Container;

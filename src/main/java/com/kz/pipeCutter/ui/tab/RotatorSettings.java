@@ -65,7 +65,7 @@ public class RotatorSettings extends JPanel {
 				Double distance = Double.valueOf(Settings.instance
 						.getSetting("rotator1_step"));
 			  //new Jog(3, velocity/60, distance).start();
-				RotatorSettings.this.jog(3, velocity / 60, distance);
+				RotatorSettings.this.jog(3, velocity, distance);
 			}
 		});
 
@@ -112,7 +112,7 @@ public class RotatorSettings extends JPanel {
 						.getSetting("rotator2_vel"));
 				Double distance = Double.valueOf(Settings.instance
 						.getSetting("rotator2_step"));
-				RotatorSettings.this.jog(4, velocity / 60, distance);
+				RotatorSettings.this.jog(4, velocity, distance);
 			}
 		});
 
@@ -155,11 +155,11 @@ public class RotatorSettings extends JPanel {
 		panelRotator3.add(jog3);
 		jog1.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				Double velocity = Double.valueOf(Settings.instance
+				Long velocity = Long.valueOf(Settings.instance
 						.getSetting("rotator3_vel"));
 				Double distance = Double.valueOf(Settings.instance
 						.getSetting("rotator3_step"));
-				RotatorSettings.this.jog(5, velocity / 60, distance);
+				RotatorSettings.this.jog(5, velocity, distance);
 			}
 		});
 		SavableText positionC = new SavableText();

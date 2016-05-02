@@ -384,7 +384,7 @@ public class Utils {
 			y = String.valueOf(point.xyz.y).replace(",", ".");
 			z = String.valueOf(point.xyz.z).replace(",", ".");
 		}
-		return String.format("X%s Y%s Z%s ; %d", x, y, z, point.id);
+		return String.format("X%s Y%s Z%s", x, y, z);
 	}
 
 	public String coordinateToGcode(Coord3d coord, float offset) {

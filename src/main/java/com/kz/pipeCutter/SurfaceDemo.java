@@ -715,9 +715,9 @@ public class SurfaceDemo extends AbstractAnalysis {
 		String gcode = SurfaceDemo.instance.utils.coordinateToGcode(tempPoint);
 		try (PrintWriter out = new PrintWriter(new BufferedWriter(new FileWriter("prog.gcode", true)))) {
 			if (cut)
-				out.println("G1 " + gcode);
+				out.println(String.format("G1 %s A%s B%s (pointId: %d)", gcode, SurfaceDemo.instance.angleTxt, SurfaceDemo.instance.angleTxt, tempPoint.id));
 			else
-				out.println("G0 " + gcode);
+				out.println(String.format("G0 %s A%s B%s (pointId: %d)", gcode, SurfaceDemo.instance.angleTxt, SurfaceDemo.instance.angleTxt, tempPoint.id));
 			out.close();
 		} catch (IOException e) {
 			e.printStackTrace();

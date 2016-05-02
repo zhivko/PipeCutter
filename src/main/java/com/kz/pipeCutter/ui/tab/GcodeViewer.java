@@ -30,6 +30,8 @@ import javax.swing.event.DocumentListener;
 import javax.swing.text.DefaultHighlighter;
 import javax.swing.text.DefaultHighlighter.DefaultHighlightPainter;
 
+import com.kz.pipeCutter.BBB.commands.AbortGCode;
+import com.kz.pipeCutter.BBB.commands.CloseGCode;
 import com.kz.pipeCutter.BBB.commands.OpenGCode;
 import com.kz.pipeCutter.BBB.commands.StepGCode;
 import com.kz.pipeCutter.ui.MyVerticalFlowLayout;
@@ -47,31 +49,40 @@ public class GcodeViewer extends JPanel {
 
 	public GcodeViewer() {
 		super();
-		
+
 		JPanel buttonPanel = new JPanel();
 		buttonPanel.setLayout(new FlowLayout());
-		
+
 		this.setLayout(new MyVerticalFlowLayout());
 
 		textArea = new JTextArea();
-		JScrollPane scroll = new JScrollPane(textArea); // place the JTextArea in a
-																										// scroll pane
+		JScrollPane scroll = new JScrollPane(textArea); // place the JTextArea
+														// in a
+														// scroll pane
 		scroll.setPreferredSize(new Dimension(800, 400));
 		this.add(scroll, BorderLayout.WEST);
-		
+
 		this.add(buttonPanel);
-		
 
 		JButton buttonOpen = new JButton("Open GCode");
-		buttonOpen .addActionListener(new ActionListener() {
+		buttonOpen.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				// TODO Auto-generated method stub
-				new OpenGCode().start();
+				try {
+					new AbortGCode().start();
+					Thread.sleep(1000);
+					new CloseGCode().start();
+					Thread.sleep(1000);
+					new OpenGCode().start();
+					Thread.sleep(1000);
+				} catch (Exception e1) {
+					e1.printStackTrace();
+				}
+
 			}
 		});
 		buttonPanel.add(buttonOpen);
-
 
 		JButton buttonPrevious = new JButton("Previous");
 		buttonPrevious.addActionListener(new ActionListener() {
@@ -105,17 +116,20 @@ public class GcodeViewer extends JPanel {
 						int startIndex = textArea.getLineStartOffset(lineNumber);
 						int endIndex = textArea.getLineEndOffset(lineNumber);
 
-						DefaultHighlightPainter painterWhite = new DefaultHighlighter.DefaultHighlightPainter(Color.WHITE);
-						DefaultHighlightPainter painterGray = new DefaultHighlighter.DefaultHighlightPainter(Color.GRAY);
+						DefaultHighlightPainter painterWhite = new DefaultHighlighter.DefaultHighlightPainter(
+								Color.WHITE);
+						DefaultHighlightPainter painterGray = new DefaultHighlighter.DefaultHighlightPainter(
+								Color.GRAY);
 
 						textArea.getHighlighter().removeAllHighlights();
 
 						textArea.getHighlighter().addHighlight(0, startIndex, painterWhite);
 						textArea.getHighlighter().addHighlight(startIndex, endIndex, painterGray);
 
-						textArea.getHighlighter().addHighlight(endIndex + 1, textArea.getDocument().getLength() - 1, painterWhite);
-						
-						Rectangle rect = textArea.modelToView(startIndex);						
+						textArea.getHighlighter().addHighlight(endIndex + 1, textArea.getDocument().getLength() - 1,
+								painterWhite);
+
+						Rectangle rect = textArea.modelToView(startIndex);
 						textArea.scrollRectToVisible(rect);
 					}
 
@@ -141,16 +155,11 @@ public class GcodeViewer extends JPanel {
 			public void actionPerformed(ActionEvent e) {
 				int lineNumber = Integer.valueOf(currentLine.getText());
 				currentLine.setText(String.valueOf(lineNumber + 1));
-				
-				new StepGCode(lineNumber+1).start();
+
+				new StepGCode(lineNumber + 1).start();
 			}
 		});
 		buttonPanel.add(buttonNext);
-		
-		
-		
-		
-		
 
 		this.addComponentListener(new ComponentListener() {
 
@@ -172,7 +181,8 @@ public class GcodeViewer extends JPanel {
 										refresh();
 										watcher = FileSystems.getDefault().newWatchService();
 										Path dir = Paths.get(f.getAbsolutePath());
-										// key = dir.register(watcher, ENTRY_CREATE, ENTRY_DELETE,
+										// key = dir.register(watcher,
+										// ENTRY_CREATE, ENTRY_DELETE,
 										// ENTRY_MODIFY);
 										key = dir.register(watcher, StandardWatchEventKinds.ENTRY_MODIFY);
 
@@ -189,10 +199,13 @@ public class GcodeViewer extends JPanel {
 											}
 										}
 
-										// Reset the key -- this step is critical if you want to
-										// receive further watch events. If the key is no longer
+										// Reset the key -- this step is
+										// critical if you want to
+										// receive further watch events. If the
+										// key is no longer
 										// valid,
-										// the directory is inaccessible so exit the loop.
+										// the directory is inaccessible so exit
+										// the loop.
 										boolean valid = key.reset();
 										if (!valid) {
 											break;

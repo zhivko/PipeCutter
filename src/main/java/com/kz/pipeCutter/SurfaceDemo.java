@@ -719,10 +719,10 @@ public class SurfaceDemo extends AbstractAnalysis {
 		try {
 			PrintWriter out = new PrintWriter(new BufferedWriter(new FileWriter(CutThread.gcodeFileName, true)));
 			if (cut)
-				out.println(String.format("G1 %s A%s B%s F%s (pointId: %d)", gcode, SurfaceDemo.instance.angleTxt,
+				out.println(String.format("G01 %s A%s B%s F%s (pointId: %d)", gcode, SurfaceDemo.instance.angleTxt,
 						SurfaceDemo.instance.angleTxt, Settings.getInstance().getSetting("gcode_feedrate_g1"), tempPoint.id));
 			else
-				out.println(String.format("G0 %s A%s B%s F%s (pointId: %d)", gcode, SurfaceDemo.instance.angleTxt,
+				out.println(String.format("G00 %s A%s B%s F%s (pointId: %d)", gcode, SurfaceDemo.instance.angleTxt,
 						SurfaceDemo.instance.angleTxt, Settings.getInstance().getSetting("gcode_feedrate_g0"), tempPoint.id));
 			out.close();
 		} catch (IOException e) {
@@ -758,11 +758,11 @@ public class SurfaceDemo extends AbstractAnalysis {
 			} catch (Exception ex) {
 				ex.printStackTrace();
 			}
-			out.println("G0 " + gcode + " F" + Settings.getInstance().getSetting("gcode_feedrate_g0"));
-			out.println("G1 " + gcode + " F" + Settings.getInstance().getSetting("gcode_feedrate_g1"));
+			out.println("G00 " + gcode + " F" + Settings.getInstance().getSetting("gcode_feedrate_g0"));
+			out.println("G01 " + gcode + " F" + Settings.getInstance().getSetting("gcode_feedrate_g1"));
 			plasma.setColor(Color.RED);
 			plasma.setWireframeColor(Color.RED);
-			out.println("G4 P" + pierceTimeMs);
+			out.println("G04 P" + pierceTimeMs/1000);
 			try {
 				Thread.sleep(Long.valueOf(pierceTimeMs));
 			} catch (Exception ex) {

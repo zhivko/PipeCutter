@@ -10,7 +10,7 @@ public class OpenGCode extends MachineTalkCommand {
 	public Container prepareContainer() throws Exception {
 		System.out.println(new Object() {
 		}.getClass().getEnclosingMethod().getName());
-
+		
 		
 		pb.Message.Container.Builder builder = Container.newBuilder();
 		pb.Status.EmcCommandParameters emcCommandParameter = pb.Status.EmcCommandParameters.newBuilder()
@@ -22,7 +22,9 @@ public class OpenGCode extends MachineTalkCommand {
 		Container container = builder.build();
 		byte[] buff = container.toByteArray();
 		getCommandSocket().send(buff, 0);
+		Thread.sleep(1000);
 		parseAndOutput();
+		
 
 		builder = Container.newBuilder();
 		builder.setType(ContainerType.MT_EMC_TASK_PLAN_INIT);
@@ -31,6 +33,7 @@ public class OpenGCode extends MachineTalkCommand {
 		container = builder.build();
 		buff = container.toByteArray();
 		getCommandSocket().send(buff, 0);
+		Thread.sleep(1000);
 		parseAndOutput();
 
 		builder = Container.newBuilder();
@@ -40,11 +43,8 @@ public class OpenGCode extends MachineTalkCommand {
 		builder.setEmcCommandParams(emcCommandParameter);
 		builder.setInterpName("execute");
 		builder.setTicket(ticket++);
+		Thread.sleep(1000);
 		container = builder.build();
-		buff = container.toByteArray();
-		getCommandSocket().send(buff, 0);
-		parseAndOutput();
-
 		
 		return container;
 	}

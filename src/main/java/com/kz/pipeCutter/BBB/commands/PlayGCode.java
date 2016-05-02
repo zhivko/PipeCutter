@@ -45,7 +45,14 @@ public class PlayGCode extends MachineTalkCommand {
 		parseAndOutput();
 		parseAndOutput();
 
+
+		
 		builder = Container.newBuilder();
+		
+		emcCommandParameter = pb.Status.EmcCommandParameters.newBuilder()
+				.setLineNumber(0).build();
+		builder.setEmcCommandParams(emcCommandParameter);
+		
 		builder.setType(ContainerType.MT_EMC_TASK_PLAN_RUN);
 		builder.setInterpName("execute");
 		builder.setTicket(ticket++);
@@ -55,6 +62,7 @@ public class PlayGCode extends MachineTalkCommand {
 		parseAndOutput();
 		parseAndOutput();
 
+		
 		return container;
 	}
 

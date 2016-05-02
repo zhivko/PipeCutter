@@ -41,10 +41,7 @@ public class PlasmaSettings extends JPanel {
 		SavableText plasmaCutOffsetMm = new SavableText();
 		plasmaCutOffsetMm.setLabelTxt("Plasma cut offset [mm]:");
 		plasmaCutOffsetMm.setParId("plasma_cut_offset_mm");
-		this.add(plasmaCutOffsetMm);		
-		
-		
-
+		this.add(plasmaCutOffsetMm);					
 
 	}
 }

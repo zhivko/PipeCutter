@@ -1,6 +1,10 @@
 package com.kz.pipeCutter;
 
+import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -111,6 +115,15 @@ public class CutThread extends SwingWorker<String, Object> {
 		// sumAngle = 0;
 		// SurfaceDemo.instance.utils.rotatePoints(-sumAngle,false);
 		cutSegment(minY, maxY, false, rotationDirection);
+		try {
+			PrintWriter out = new PrintWriter(new BufferedWriter(new FileWriter(CutThread.gcodeFileName, true)));
+			out.println("M2");
+			out.flush();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
 	}
 
 	private void cutSegment(float minY, double maxY, boolean withoutLastPoints, int rotationDirection) {

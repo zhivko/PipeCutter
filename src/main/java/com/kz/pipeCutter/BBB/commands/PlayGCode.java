@@ -20,11 +20,6 @@ public class PlayGCode extends MachineTalkCommand {
 		builder.setInterpName("execute");
 		builder.setTicket(ticket++);
 		Container container = builder.build();
-		byte[] buff = container.toByteArray();
-		getCommandSocket().send(buff, 0);
-		parseAndOutput();
-		parseAndOutput();
-
 		
 		return container;
 	}

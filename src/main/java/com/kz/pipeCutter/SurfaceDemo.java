@@ -1,6 +1,5 @@
 package com.kz.pipeCutter;
 
-import java.awt.MenuItem;
 import java.awt.MouseInfo;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -73,17 +72,16 @@ public class SurfaceDemo extends AbstractAnalysis {
 	private DrawableTextBitmap currentRotTxt = null;
 	public Point cylinderPoint;
 	public Settings settingsFrame;
-	
+
 	public float plasmaKerfOffset = 0.5f;
 
-	public SurfaceDemo()
-	{
+	public SurfaceDemo() {
 		System.setProperty("java.net.preferIPv4Stack", "true");
-		//discoverer = new Discoverer();
+		// discoverer = new Discoverer();
 		settingsFrame = new Settings();
 		settingsFrame.setVisible(true);
 	}
-	
+
 	public static void main(String[] args) throws Exception {
 		System.setProperty("java.util.Arrays.useLegacyMergeSort", "true");
 		instance = new SurfaceDemo();
@@ -145,19 +143,19 @@ public class SurfaceDemo extends AbstractAnalysis {
 		// remove horizontal edges that connect to separated surfaces
 		// edges with two point index 0 and 1
 
-//		// instance.centerObject();
-//		menu.addSeparator();
-//		MenuItem menuItem11 = new MenuItem("Start animator");
-//		menuItem11.addActionListener(new ActionListener() {
-//			@Override
-//			public void actionPerformed(ActionEvent arg0) {
-//				SurfaceDemo.instance.canvas.getAnimator().start();
-//				// SurfaceDemo.instance.resumeAnimator();
-//				// SurfaceDemo.instance.canvas.getAnimator().setUpdateFPSFrames(20,
-//				// System.out);
-//			}
-//		});
-//		menu.add(menuItem11);
+		// // instance.centerObject();
+		// menu.addSeparator();
+		// MenuItem menuItem11 = new MenuItem("Start animator");
+		// menuItem11.addActionListener(new ActionListener() {
+		// @Override
+		// public void actionPerformed(ActionEvent arg0) {
+		// SurfaceDemo.instance.canvas.getAnimator().start();
+		// // SurfaceDemo.instance.resumeAnimator();
+		// // SurfaceDemo.instance.canvas.getAnimator().setUpdateFPSFrames(20,
+		// // System.out);
+		// }
+		// });
+		// menu.add(menuItem11);
 
 		instance.getChart().getView().setViewPositionMode(ViewPositionMode.FREE);
 		instance.getChart().getView().setMaximized(true);
@@ -217,7 +215,8 @@ public class SurfaceDemo extends AbstractAnalysis {
 
 	private PickingSupport getPickingSupport() {
 		if (instance.pickingSupport == null) {
-			// TODO: Need to ask Martin about this next line of code not working in
+			// TODO: Need to ask Martin about this next line of code not working
+			// in
 			// Linux, but working
 			// in Windows
 			if (OSValidator.isWindows()) {
@@ -226,7 +225,8 @@ public class SurfaceDemo extends AbstractAnalysis {
 				instance.pickingSupport = mousePicker.getPickingSupport();
 			}
 			// AWTMousePickingController mousePicker = null;
-			// for (AbstractCameraController controller : chart.getControllers()) {
+			// for (AbstractCameraController controller :
+			// chart.getControllers()) {
 			// if (controller instanceof AWTMousePickingController) {
 			// mousePicker = (AWTMousePickingController) controller;
 			// instance.pickingSupport = mousePicker.getPickingSupport();
@@ -299,8 +299,10 @@ public class SurfaceDemo extends AbstractAnalysis {
 							// try to find edge with this two points
 							boolean found = false;
 							for (MyEdge e : utils.edges.values()) {
-								if ((e.getPointByIndex(0).distance(mp1) == 0 && (e.getPointByIndex(1).distance(mp2) == 0) || (e
-										.getPointByIndex(1).distance(mp1) == 0 && (e.getPointByIndex(0).distance(mp2) == 0)))) {
+								if ((e.getPointByIndex(0).distance(mp1) == 0
+										&& (e.getPointByIndex(1).distance(mp2) == 0)
+										|| (e.getPointByIndex(1).distance(mp1) == 0
+												&& (e.getPointByIndex(0).distance(mp2) == 0)))) {
 									found = true;
 									break;
 								}
@@ -325,7 +327,6 @@ public class SurfaceDemo extends AbstractAnalysis {
 
 			}
 
-			
 			splitLongEdges(pointId, edgeNo);
 			utils.establishNeighbourPoints();
 			utils.calculateContinuousEdges();
@@ -536,7 +537,8 @@ public class SurfaceDemo extends AbstractAnalysis {
 				ls.add(utils.points.get(point.id));
 				if (SurfaceDemo.NUMBER_POINTS) {
 					if (!alreadyAddedPointsText.contains(pointNo)) {
-						DrawableTextBitmap t4 = new DrawableTextBitmap(String.valueOf(point.id), point.xyz, Color.BLACK);
+						DrawableTextBitmap t4 = new DrawableTextBitmap(String.valueOf(point.id), point.xyz,
+								Color.BLACK);
 						t4.setHalign(Halign.CENTER); // TODO: invert
 						t4.setValign(Valign.CENTER); // TODO: invert
 						// left/right
@@ -545,13 +547,13 @@ public class SurfaceDemo extends AbstractAnalysis {
 					}
 				}
 			}
-			
-			//centers of continuous edges
+
+			// centers of continuous edges
 			for (MyEdge continuousEdge : utils.continuousEdges.values()) {
-				Point edgeCenter = new Point(continuousEdge.center,Color.RED,3.0f);
+				Point edgeCenter = new Point(continuousEdge.center, Color.RED, 3.0f);
 				myComposite.add(edgeCenter);
 			}
-			
+
 			if (plasma == null) {
 				plasma = new Sphere(new Coord3d(0, 0, 0), 0.4f, 4, Color.BLUE);
 				plasma.setWireframeColor(Color.BLUE);
@@ -603,14 +605,14 @@ public class SurfaceDemo extends AbstractAnalysis {
 							MyPickablePoint mp = ((MyPickablePoint) picked.get(0));
 							lastClickedPoint = mp;
 							float offset = Float.valueOf(Settings.instance.getSetting("plasma_pierce_offset_mm"));
-							move(mp,false,offset);
-							
+							move(mp, false, offset);
+
 							Point p = SurfaceDemo.instance.utils.calculateOffsetPoint(mp);
-							p.setColor(Color.GREEN );
+							p.setColor(Color.GREEN);
 							p.setWidth(6.0f);
-							
+
 							myComposite.add(p);
-							
+
 							System.out.println(mp.toString());
 						} else if (picked.get(0).getClass().getName()
 								.equals("org.jzy3d.plot3d.primitives.pickable.PickablePolygon")) {
@@ -710,14 +712,18 @@ public class SurfaceDemo extends AbstractAnalysis {
 		}
 
 		cylinderPoint.setCoord(tempPoint.xyz);
-		plasma.setPosition(cylinderPoint.xyz.add(new Coord3d(0,0,offset)) );
+		plasma.setPosition(cylinderPoint.xyz.add(new Coord3d(0, 0, offset)));
 
 		String gcode = SurfaceDemo.instance.utils.coordinateToGcode(tempPoint);
-		try (PrintWriter out = new PrintWriter(new BufferedWriter(new FileWriter("prog.gcode", true)))) {
+
+		try {
+			PrintWriter out = new PrintWriter(new BufferedWriter(new FileWriter(CutThread.gcodeFileName, true)));
 			if (cut)
-				out.println(String.format("G1 %s A%s B%s (pointId: %d)", gcode, SurfaceDemo.instance.angleTxt, SurfaceDemo.instance.angleTxt, tempPoint.id));
+				out.println(String.format("G1 %s A%s B%s (pointId: %d)", gcode, SurfaceDemo.instance.angleTxt,
+						SurfaceDemo.instance.angleTxt, tempPoint.id));
 			else
-				out.println(String.format("G0 %s A%s B%s (pointId: %d)", gcode, SurfaceDemo.instance.angleTxt, SurfaceDemo.instance.angleTxt, tempPoint.id));
+				out.println(String.format("G0 %s A%s B%s (pointId: %d)", gcode, SurfaceDemo.instance.angleTxt,
+						SurfaceDemo.instance.angleTxt, tempPoint.id));
 			out.close();
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -739,19 +745,17 @@ public class SurfaceDemo extends AbstractAnalysis {
 	}
 
 	public void moveAbove(MyPickablePoint tempPoint, float offset, long pierceTimeMs) {
-		Coord3d abovePoint= tempPoint.xyz.add(0f,0f,offset);
+		Coord3d abovePoint = tempPoint.xyz.add(0f, 0f, offset);
 		plasma.setPosition(abovePoint);
 
-		try (PrintWriter out = new PrintWriter(new BufferedWriter(new FileWriter("prog.gcode", true)))) {
-			String gcode = SurfaceDemo.instance.utils.coordinateToGcode(abovePoint,offset);
+		try {
+			PrintWriter out = new PrintWriter(new BufferedWriter(new FileWriter(CutThread.gcodeFileName, true)));
+			String gcode = SurfaceDemo.instance.utils.coordinateToGcode(abovePoint, offset);
 			plasma.setColor(Color.BLUE);
 			plasma.setWireframeColor(Color.BLUE);
-			try
-			{
+			try {
 				Thread.sleep(Long.valueOf(1000));
-			}
-			catch(Exception ex)
-			{
+			} catch (Exception ex) {
 				ex.printStackTrace();
 			}
 			out.println("G0 " + gcode);
@@ -759,12 +763,9 @@ public class SurfaceDemo extends AbstractAnalysis {
 			plasma.setColor(Color.RED);
 			plasma.setWireframeColor(Color.RED);
 			out.println("G4 P" + pierceTimeMs);
-			try
-			{
+			try {
 				Thread.sleep(Long.valueOf(pierceTimeMs));
-			}
-			catch(Exception ex)
-			{
+			} catch (Exception ex) {
 				ex.printStackTrace();
 			}
 			out.close();

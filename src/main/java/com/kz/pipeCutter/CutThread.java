@@ -16,6 +16,7 @@ public class CutThread extends SwingWorker<String, Object> {
 	public static int delay = 100;
 	public static float cutterYRange = 7;
 	private static long longDelay = 1000;
+	public static String gcodeFileName;
 	private MyPickablePoint point;
 	double sumAngle = 0;
 	float topZ;
@@ -32,15 +33,18 @@ public class CutThread extends SwingWorker<String, Object> {
 
 	// http://www.pirate4x4.com/forum/11214232-post17.html
 	// For cutting 19.05mm with your Powermax1650 (this info is in your Powermax
-	// 1650 operators manual) Use 100 Amp consumables, set Amps to 100, cut speed
+	// 1650 operators manual) Use 100 Amp consumables, set Amps to 100, cut
+	// speed
 	// to 660 mm/min (you can go up to 1168.4 mm/min,
 	// 660 mm/min will provide better edge quality), set pierce delay to 1.5
 	// seconds, pierce height must be at 5mm to 6.35 mm, set cut height to 3.175
 	// mm
 	// (adjust arc voltage during the cut to maintain 3.175mm torch to work
-	// distance...voltage should be roughly 161 volts depending on calibration of
+	// distance...voltage should be roughly 161 volts depending on calibration
+	// of
 	// your torch height control).
-	// On 19mm pay attention to pierce height....one pierce too close, or with too
+	// On 19mm pay attention to pierce height....one pierce too close, or with
+	// too
 	// short of a pierce delay- you will destroy the shield and nozzle at this
 	// power level.
 	// Use the FineCut consumables on everything under 4.76 mm for best
@@ -50,8 +54,7 @@ public class CutThread extends SwingWorker<String, Object> {
 
 	public CutThread(boolean wholePipe) {
 		this();
-		ArrayList<MyPickablePoint> sortedList = new ArrayList(
-				SurfaceDemo.instance.utils.points.values());
+		ArrayList<MyPickablePoint> sortedList = new ArrayList(SurfaceDemo.instance.utils.points.values());
 		Collections.sort(sortedList, new MyPickablePointZYXComparator());
 		topZ = sortedList.get(0).getZ();
 		this.wholePipe = wholePipe;
@@ -65,25 +68,21 @@ public class CutThread extends SwingWorker<String, Object> {
 	}
 
 	public CutThread() {
-		pierceOffsetMm = Float.valueOf(Settings.instance
-				.getSetting("plasma_pierce_offset_mm"));
-		Float pierceTimeMsFloat = (Float.valueOf(Settings.instance
-				.getSetting("plasma_pierce_time_s"))*1000.0f);
+		pierceOffsetMm = Float.valueOf(Settings.instance.getSetting("plasma_pierce_offset_mm"));
+		Float pierceTimeMsFloat = (Float.valueOf(Settings.instance.getSetting("plasma_pierce_time_s")) * 1000.0f);
 		pierceTimeMs = pierceTimeMsFloat.intValue();
-		cutOffsetMm = Float.valueOf(Settings.instance
-				.getSetting("plasma_cut_offset_mm"));
+		cutOffsetMm = Float.valueOf(Settings.instance.getSetting("plasma_cut_offset_mm"));
 	}
 
 	public void cut() throws InterruptedException {
 		int prevInventorEdge = 0;
-		ArrayList<MyPickablePoint> sortedList = new ArrayList(
-				SurfaceDemo.instance.utils.points.values());
+		ArrayList<MyPickablePoint> sortedList = new ArrayList(SurfaceDemo.instance.utils.points.values());
 		Collections.sort(sortedList, new MyPickablePointYComparator());
 
 		// SurfaceDemo.instance.utils.establishNeighbourPoints();
 		MyPickablePoint lastOuterPoint = sortedList.get(sortedList.size() - 1);
-		lastPoints = SurfaceDemo.instance.utils.findAllConnectedPoints(
-				lastOuterPoint, new ArrayList<MyPickablePoint>());
+		lastPoints = SurfaceDemo.instance.utils.findAllConnectedPoints(lastOuterPoint,
+				new ArrayList<MyPickablePoint>());
 
 		double mminY = sortedList.get(0).xyz.y;
 		double mmaxY = sortedList.get(sortedList.size() - 1).xyz.y;
@@ -102,8 +101,7 @@ public class CutThread extends SwingWorker<String, Object> {
 			// SurfaceDemo.instance.utils.rotatePoints(sumAngle,true);
 			// SurfaceDemo.instance.angleTxt = "0.0";
 			cutSegment(minY, maxY, true, rotationDirection);
-			double angle = Double.valueOf(SurfaceDemo.instance.angleTxt)
-					.doubleValue();
+			double angle = Double.valueOf(SurfaceDemo.instance.angleTxt).doubleValue();
 			if (angle > 0)
 				rotationDirection = -1;
 			else
@@ -115,14 +113,12 @@ public class CutThread extends SwingWorker<String, Object> {
 		cutSegment(minY, maxY, false, rotationDirection);
 	}
 
-	private void cutSegment(float minY, double maxY, boolean withoutLastPoints,
-			int rotationDirection) {
+	private void cutSegment(float minY, double maxY, boolean withoutLastPoints, int rotationDirection) {
 		System.out.println("Cutting segment " + minY + " " + maxY);
 		for (int i = 0; i < 4; i++) {
 			ArrayList<MyPickablePoint> pointsToCut = new ArrayList<MyPickablePoint>();
 			for (MyPickablePoint p : SurfaceDemo.instance.utils.points.values()) {
-				if (p.xyz.y > minY && p.xyz.y <= maxY
-						&& Math.abs(p.getZ() - topZ) < 0.1) {
+				if (p.xyz.y > minY && p.xyz.y <= maxY && Math.abs(p.getZ() - topZ) < 0.1) {
 					{
 						if (withoutLastPoints) {
 							if (!listContainsPoint(p, lastPoints)) {
@@ -144,10 +140,8 @@ public class CutThread extends SwingWorker<String, Object> {
 			Collections.sort(pointsToCut, new MyPickablePointMidXComparator());
 			if (pointsToCut.size() > 0) {
 				for (MyPickablePoint myPoint : pointsToCut) {
-					if (!listContainsPoint(myPoint, alAlreadyAddedPoints)
-							&& Math.abs(myPoint.getZ() - topZ) < 0.1) {
-						SurfaceDemo.instance.moveAbove(myPoint, pierceOffsetMm,
-								pierceTimeMs);
+					if (!listContainsPoint(myPoint, alAlreadyAddedPoints) && Math.abs(myPoint.getZ() - topZ) < 0.1) {
+						SurfaceDemo.instance.moveAbove(myPoint, pierceOffsetMm, pierceTimeMs);
 						double angle = folowThePath(myPoint, this.alAlreadyAddedPoints);
 						hasBeenCutting = true;
 					}
@@ -155,38 +149,37 @@ public class CutThread extends SwingWorker<String, Object> {
 			}
 			if (hasBeenCutting) {
 				double diagonal = (topZ * 2 * 1.41 / 2);
-				MyPickablePoint newPoint = new MyPickablePoint(-100000, new Coord3d(
-						SurfaceDemo.instance.cylinderPoint.xyz.x,
-						SurfaceDemo.instance.cylinderPoint.xyz.y, diagonal + 5),
+				MyPickablePoint newPoint = new MyPickablePoint(-100000,
+						new Coord3d(SurfaceDemo.instance.cylinderPoint.xyz.x, SurfaceDemo.instance.cylinderPoint.xyz.y,
+								diagonal + 5),
 						Color.BLACK, 0.4f, -200000);
-				SurfaceDemo.instance.move(newPoint, false,cutOffsetMm);
+				SurfaceDemo.instance.move(newPoint, false, cutOffsetMm);
 			}
 
 			double angle = rotationDirection * 90.0d;
 			SurfaceDemo.instance.utils.rotatePoints(angle, true);
-			sumAngle = Float.valueOf(SurfaceDemo.instance.angleTxt); // sumAngle +
-																																// angle;
+			sumAngle = Float.valueOf(SurfaceDemo.instance.angleTxt); // sumAngle
+																		// +
+																		// angle;
 			System.out.print("Angle: " + sumAngle);
 			System.out.println();
 		}
 	}
 
-	public double folowThePath(MyPickablePoint myPoint,
-			ArrayList<MyPickablePoint> alAlreadyAddedPoints) {
+	public double folowThePath(MyPickablePoint myPoint, ArrayList<MyPickablePoint> alAlreadyAddedPoints) {
 
 		MyPickablePoint tempPoint = myPoint;
 		MyPickablePoint prevPoint = myPoint;
 		prevPoint = tempPoint;
 		boolean shouldBreak = false;
 		while (!shouldBreak) {
-			SurfaceDemo.instance.move(tempPoint, true,cutOffsetMm);
+			SurfaceDemo.instance.move(tempPoint, true, cutOffsetMm);
 
 			if (tempPoint != null) {
 				tempPoint.setColor(Color.GREEN);
 				alAlreadyAddedPoints.add(tempPoint);
 			}
-			tempPoint = SurfaceDemo.instance.utils.findConnectedPoint(tempPoint,
-					alAlreadyAddedPoints);
+			tempPoint = SurfaceDemo.instance.utils.findConnectedPoint(tempPoint, alAlreadyAddedPoints);
 			if (tempPoint == null) {
 				shouldBreak = true;
 				tempPoint = myPoint;
@@ -199,8 +192,7 @@ public class CutThread extends SwingWorker<String, Object> {
 		}
 		SurfaceDemo.instance.move(tempPoint, true, cutOffsetMm);
 		prevPoint = tempPoint;
-		tempPoint = SurfaceDemo.instance.utils.findConnectedPoint(tempPoint,
-				alAlreadyAddedPoints);
+		tempPoint = SurfaceDemo.instance.utils.findConnectedPoint(tempPoint, alAlreadyAddedPoints);
 		if (tempPoint != null) {
 			double angle = rotation(prevPoint, tempPoint);
 			return angle;
@@ -213,8 +205,7 @@ public class CutThread extends SwingWorker<String, Object> {
 
 		double angleDeltaDeg = 0;
 		if (tempPoint != null && !tempPoint.equals(prevPoint)) {
-			double angleDelta = Math.atan2(tempPoint.xyz.z - prevPoint.xyz.z,
-					prevPoint.xyz.x - tempPoint.xyz.x);
+			double angleDelta = Math.atan2(tempPoint.xyz.z - prevPoint.xyz.z, prevPoint.xyz.x - tempPoint.xyz.x);
 			if (Math.abs(angleDelta - Math.PI) < Utils.Math_E)
 				angleDelta = 0;
 			if (Math.abs(angleDelta + Math.PI) < Utils.Math_E)
@@ -264,9 +255,10 @@ public class CutThread extends SwingWorker<String, Object> {
 	@Override
 	protected String doInBackground() throws Exception {
 
-		File myFile = new File("prog.gcode");
-		System.out.println("File " + myFile.getName() + " deleted?"
-				+ myFile.delete());
+		String gcodeFolder = Settings.instance.getSetting("gcode_folder");
+
+		File myFile = new File(gcodeFolder + File.separatorChar + "prog.gcode");
+		System.out.println("File " + myFile.getAbsolutePath() + " deleted?" + myFile.delete());
 		if (this.wholePipe)
 			cut();
 		else

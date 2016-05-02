@@ -11,7 +11,6 @@ import java.awt.event.ComponentEvent;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
@@ -36,6 +35,7 @@ import com.kz.pipeCutter.BBB.BBBError;
 import com.kz.pipeCutter.BBB.BBBStatus;
 import com.kz.pipeCutter.BBB.Discoverer;
 import com.kz.pipeCutter.ui.tab.MachinekitSettings;
+import com.kz.pipeCutter.ui.tab.OtherSettings;
 import com.kz.pipeCutter.ui.tab.PlasmaSettings;
 import com.kz.pipeCutter.ui.tab.RotatorSettings;
 import com.kz.pipeCutter.ui.tab.XYZSettings;
@@ -128,6 +128,7 @@ public class Settings extends JFrame {
 		tabbedPane.addTab("Rotators", new RotatorSettings());
 		tabbedPane.addTab("XYZ", new XYZSettings());
 		tabbedPane.addTab("Plasma", new PlasmaSettings());
+		tabbedPane.addTab("Other", new OtherSettings());
 
 		tabbedPane.setSelectedIndex(1);
 

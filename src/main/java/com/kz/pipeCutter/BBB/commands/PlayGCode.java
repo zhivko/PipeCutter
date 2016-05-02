@@ -12,8 +12,8 @@ public class PlayGCode extends MachineTalkCommand {
 		}.getClass().getEnclosingMethod().getName());
 
 		pb.Message.Container.Builder builder = Container.newBuilder();
-		pb.Status.EmcCommandParameters emcCommandParameter = pb.Status.EmcCommandParameters
-				.newBuilder().setTaskMode(EmcTaskModeType.EMC_TASK_MODE_AUTO).build();
+		pb.Status.EmcCommandParameters emcCommandParameter = pb.Status.EmcCommandParameters.newBuilder()
+				.setTaskMode(EmcTaskModeType.EMC_TASK_MODE_AUTO).build();
 		builder.setType(ContainerType.MT_EMC_TASK_SET_MODE);
 		builder.setEmcCommandParams(emcCommandParameter);
 		builder.setInterpName("execute");
@@ -43,6 +43,7 @@ public class PlayGCode extends MachineTalkCommand {
 		buff = container.toByteArray();
 		getCommandSocket().send(buff, 0);
 		parseAndOutput();
+		parseAndOutput();
 
 		builder = Container.newBuilder();
 		builder.setType(ContainerType.MT_EMC_TASK_PLAN_RUN);
@@ -52,7 +53,8 @@ public class PlayGCode extends MachineTalkCommand {
 		buff = container.toByteArray();
 		getCommandSocket().send(buff, 0);
 		parseAndOutput();
-		
+		parseAndOutput();
+
 		return container;
 	}
 

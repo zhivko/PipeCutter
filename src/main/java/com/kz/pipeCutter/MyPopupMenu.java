@@ -4,6 +4,7 @@ import java.awt.MenuItem;
 import java.awt.PopupMenu;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.File;
 import java.io.IOException;
 
 import javax.jmdns.JmDNS;
@@ -14,6 +15,8 @@ import javax.jmdns.ServiceListener;
 import org.jzy3d.maths.BoundingBox3d;
 import org.jzy3d.plot3d.rendering.view.modes.ViewBoundMode;
 
+import com.kz.pipeCutter.ui.Settings;
+
 public class MyPopupMenu extends PopupMenu {
 
 	public MyPopupMenu() {
@@ -21,6 +24,7 @@ public class MyPopupMenu extends PopupMenu {
 		menuItem.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
+				CutThread.gcodeFileName = Settings.instance.getSetting("gcode_folder") + File.separatorChar + "prog.gcode";
 				CutThread th = new CutThread(true);
 				th.execute();
 			}
@@ -117,8 +121,10 @@ public class MyPopupMenu extends PopupMenu {
 			public void actionPerformed(ActionEvent arg0) {
 				if (SurfaceDemo.instance.lastClickedPoint.getClass().getName()
 						.equals("com.kz.grbl.MyPickablePoint")) {
+					CutThread.gcodeFileName = Settings.instance.getSetting("gcode_folder") + File.separatorChar + "prog.gcode";
 					CutThread ct = new CutThread(false,
 							SurfaceDemo.instance.lastClickedPoint);
+					
 					ct.execute();
 				}
 

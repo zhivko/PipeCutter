@@ -10,6 +10,7 @@ import java.util.TimeZone;
 import com.jcraft.jsch.ChannelExec;
 import com.jcraft.jsch.ChannelSftp;
 import com.jcraft.jsch.SftpATTRS;
+import com.kz.pipeCutter.CutThread;
 import com.kz.pipeCutter.BBB.MyOutputStreamReader;
 import com.kz.pipeCutter.ui.Settings;
 
@@ -18,8 +19,9 @@ public class MachinekitUpload extends SSH_Command {
 	@Override
 	public void runSshCmd() throws Exception {
 		if (!SSH_CheckIfMachinekitRunning()) {
-			String fileName = "prog.gcode";
-			String localPath = "/home/kz/git/PipeCutter";
+			String fileName ="prog.gcode";
+			
+			String localPath = Settings.instance.getSetting("gcode_folder");
 			String remotePath = "/home/machinekit/machinekit/nc_files";
 			SimpleDateFormat sdf = new SimpleDateFormat("dd.MM.YYYY HH:mm.ss");
 
@@ -38,7 +40,9 @@ public class MachinekitUpload extends SSH_Command {
 			String from = localPath + File.separatorChar + fileName;
 			String to = remotePath + "/" + fileName;
 			FileInputStream fis = new FileInputStream(new File(from));
+			Settings.instance.log("Ftp put file to: " + to + "...\n");
 			channelSFtp.put(fis, "prog.gcode");
+			Settings.instance.log("Ftp put file to: " + to + "...DONE.\n");
 			
 			channelSFtp.setMtime(to, (int)((new Date().getTime())/1000));
 

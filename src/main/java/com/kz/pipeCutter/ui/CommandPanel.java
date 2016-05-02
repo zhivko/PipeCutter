@@ -23,6 +23,7 @@ import com.kz.pipeCutter.BBB.commands.MachinekitListProcesses;
 import com.kz.pipeCutter.BBB.commands.MachinekitStart;
 import com.kz.pipeCutter.BBB.commands.MachinekitStop;
 import com.kz.pipeCutter.BBB.commands.MachinekitUpload;
+import com.kz.pipeCutter.BBB.commands.OpenGCode;
 import com.kz.pipeCutter.BBB.commands.PlayGCode;
 import com.kz.pipeCutter.BBB.commands.PowerOff;
 import com.kz.pipeCutter.BBB.commands.PowerOn;
@@ -262,6 +263,7 @@ public class CommandPanel extends JPanel {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				try {
+					new OpenGCode().start();
 					new PlayGCode().start();
 				} catch (Exception ex) {
 					ex.printStackTrace();

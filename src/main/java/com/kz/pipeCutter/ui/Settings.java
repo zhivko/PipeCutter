@@ -34,6 +34,7 @@ import javax.swing.border.EmptyBorder;
 import com.kz.pipeCutter.BBB.BBBError;
 import com.kz.pipeCutter.BBB.BBBStatus;
 import com.kz.pipeCutter.BBB.Discoverer;
+import com.kz.pipeCutter.ui.tab.GcodeViewer;
 import com.kz.pipeCutter.ui.tab.MachinekitSettings;
 import com.kz.pipeCutter.ui.tab.OtherSettings;
 import com.kz.pipeCutter.ui.tab.PlasmaSettings;
@@ -129,6 +130,7 @@ public class Settings extends JFrame {
 		tabbedPane.addTab("XYZ", new XYZSettings());
 		tabbedPane.addTab("Plasma", new PlasmaSettings());
 		tabbedPane.addTab("Other", new OtherSettings());
+		tabbedPane.addTab("Gcode", new GcodeViewer());
 
 		tabbedPane.setSelectedIndex(1);
 

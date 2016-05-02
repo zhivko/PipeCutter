@@ -667,8 +667,8 @@ public class SurfaceDemo extends AbstractAnalysis {
 		currentRot.add(new Point(rotationPoint));
 
 		currentRotTxt = new DrawableTextBitmap("0.0", rotationPoint, Color.BLUE);
-		currentRotTxt.setHalign(Halign.CENTER); // TODO: invert
-		currentRotTxt.setValign(Valign.CENTER); // TODO: invert
+		currentRotTxt.setHalign(Halign.CENTER);
+		currentRotTxt.setValign(Valign.CENTER);
 		myComposite.add(currentRot);
 		myComposite.add(currentRotTxt);
 		float value = Float.valueOf(SurfaceDemo.instance.angleTxt).floatValue();

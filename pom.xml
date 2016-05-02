@@ -13,7 +13,7 @@
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<jdk.version>1.8</jdk.version>
-		<jogl.version>2.2.0</jogl.version>
+		<jogl.version>2.3.2</jogl.version>
 	</properties>
 
 	<repositories>
@@ -125,6 +125,20 @@
 			<version>${jogl.version}</version>
 		</dependency>
 
+
+
+		<!-- <dependency> -->
+		<!-- <groupId>org.jogamp.gluegen</groupId> -->
+		<!-- <artifactId>gluegen-rt-main</artifactId> -->
+		<!-- <version>2.3.2</version> -->
+		<!-- </dependency> -->
+		<!-- <dependency> -->
+		<!-- <groupId>org.jogamp.jogl</groupId> -->
+		<!-- <artifactId>jogl-all-main</artifactId> -->
+		<!-- <version>2.3.2</version> -->
+		<!-- </dependency> -->
+
+
 		<!-- <dependency> -->
 		<!-- <groupId>org.zeromq</groupId> -->
 		<!-- <artifactId>jzmq</artifactId> -->
@@ -187,6 +201,13 @@
 			<artifactId>tyrus-standalone-client</artifactId>
 			<version>1.12</version>
 		</dependency>
+
+		<dependency>
+			<groupId>log4j</groupId>
+			<artifactId>log4j</artifactId>
+			<version>1.2.17</version>
+		</dependency>
+
 
 	</dependencies>
 

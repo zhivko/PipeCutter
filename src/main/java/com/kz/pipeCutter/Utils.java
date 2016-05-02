@@ -373,33 +373,32 @@ public class Utils {
 		float offset = Float.valueOf(Settings.instance
 				.getSetting("plasma_pierce_offset_mm"));
 		boolean moveRelatively = false;
-		String x, y, z;
+		Float x, y, z;
 		if (moveRelatively) {
-			x = String.valueOf(Cylinder.offsetX - point.xyz.x).replace(",", ".");
-			y = String.valueOf(point.xyz.y + Cylinder.offsetY).replace(",", ".");
-			z = String.valueOf(point.xyz.z + Cylinder.offsetZ + offset).replace(",",
-					".");
+			x = Cylinder.offsetX - point.xyz.x;
+			y = point.xyz.y + Cylinder.offsetY;
+			z = point.xyz.z + Cylinder.offsetZ + offset;
 		} else {
-			x = String.valueOf(point.xyz.x).replace(",", ".");
-			y = String.valueOf(point.xyz.y).replace(",", ".");
-			z = String.valueOf(point.xyz.z).replace(",", ".");
+			x = point.xyz.x;
+			y = point.xyz.y;
+			z = point.xyz.z;
 		}
-		return String.format("X%s Y%s Z%s", x, y, z);
+		return String.format(java.util.Locale.US, "X%.3f Y%.3f Z%.3f", x, y, z);
 	}
 
 	public String coordinateToGcode(Coord3d coord, float offset) {
 		boolean moveRelatively = false;
-		String x, y, z;
+		Float x, y, z;
 		if (moveRelatively) {
-			x = String.valueOf(Cylinder.offsetX - coord.x).replace(",", ".");
-			y = String.valueOf(coord.y + Cylinder.offsetY).replace(",", ".");
-			z = String.valueOf(coord.z + Cylinder.offsetZ + offset).replace(",", ".");
+			x = Cylinder.offsetX - coord.x;
+			y = coord.y + Cylinder.offsetY;
+			z = coord.z + Cylinder.offsetZ + offset;
 		} else {
-			x = String.valueOf(coord.x).replace(",", ".");
-			y = String.valueOf(coord.y).replace(",", ".");
-			z = String.valueOf(coord.z).replace(",", ".");
+			x = coord.x;
+			y = coord.y;
+			z = coord.z;
 		}
-		return String.format("X%s Y%s Z%s", x, y, z);
+		return String.format(java.util.Locale.US, "X%.3f Y%.3f Z%.3f", x, y, z);
 	}
 
 	public Coord3d rotate(double x, double y, double z, double angle,

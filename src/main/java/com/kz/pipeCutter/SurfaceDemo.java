@@ -719,11 +719,11 @@ public class SurfaceDemo extends AbstractAnalysis {
 		try {
 			PrintWriter out = new PrintWriter(new BufferedWriter(new FileWriter(CutThread.gcodeFileName, true)));
 			if (cut)
-				out.println(String.format("G01 %s A%s B%s F%s (pointId: %d)", gcode, SurfaceDemo.instance.angleTxt,
-						SurfaceDemo.instance.angleTxt, Settings.getInstance().getSetting("gcode_feedrate_g1"), tempPoint.id));
+				out.println(String.format(java.util.Locale.US,"G01 %s A%.3f B%.3f F%s (pointId: %d)", gcode, Float.valueOf(SurfaceDemo.instance.angleTxt),
+						Float.valueOf(SurfaceDemo.instance.angleTxt), Settings.getInstance().getSetting("gcode_feedrate_g1"), tempPoint.id));
 			else
-				out.println(String.format("G00 %s A%s B%s F%s (pointId: %d)", gcode, SurfaceDemo.instance.angleTxt,
-						SurfaceDemo.instance.angleTxt, Settings.getInstance().getSetting("gcode_feedrate_g0"), tempPoint.id));
+				out.println(String.format(java.util.Locale.US,"G00 %s A%.3f B%.3f F%s (pointId: %d)", gcode, Float.valueOf(SurfaceDemo.instance.angleTxt),
+						Float.valueOf(SurfaceDemo.instance.angleTxt), Settings.getInstance().getSetting("gcode_feedrate_g0"), tempPoint.id));
 			out.close();
 		} catch (IOException e) {
 			e.printStackTrace();

@@ -33,5 +33,15 @@ public class OtherSettings extends JPanel {
 		gcodeFolder.setParId("gcode_folder");
 		this.add(gcodeFolder);
 		
+		SavableText G0feedRate = new SavableText();
+		G0feedRate.setLabelTxt("g0 feedrate:");
+		G0feedRate.setParId("gcode_feedrate_g0");
+		this.add(G0feedRate);		
+
+		SavableText G1feedRate = new SavableText();
+		G1feedRate.setLabelTxt("g1 feedrate:");
+		G1feedRate.setParId("gcode_feedrate_g1");
+		this.add(G1feedRate);			
+		
 	}
 }

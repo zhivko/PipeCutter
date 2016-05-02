@@ -157,7 +157,7 @@ public class CutThread extends SwingWorker<String, Object> {
 			}
 
 			double angle = rotationDirection * 90.0d;
-			SurfaceDemo.instance.utils.rotatePoints(angle, true);
+			SurfaceDemo.instance.utils.rotatePoints(angle, false);
 			sumAngle = Float.valueOf(SurfaceDemo.instance.angleTxt); // sumAngle
 																		// +
 																		// angle;

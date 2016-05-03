@@ -250,11 +250,8 @@ public class GcodeViewer extends JPanel {
 			@Override
 			public void componentHidden(ComponentEvent e) {
 				// TODO Auto-generated method stub
-
 			}
-
 		});
-
 	}
 
 	protected void refresh() {
@@ -262,6 +259,7 @@ public class GcodeViewer extends JPanel {
 		try {
 			reader = new FileReader(new File(folder + File.separatorChar + "prog.gcode"));
 			this.textArea.read(reader, "The force is strong with this one");
+			this.textArea.repaint();
 			currentLine.setText("0");
 		} catch (Exception e) {
 			// TODO Auto-generated catch block

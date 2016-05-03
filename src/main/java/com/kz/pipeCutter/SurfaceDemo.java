@@ -8,6 +8,7 @@ import java.awt.event.KeyListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.io.BufferedWriter;
+import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -260,7 +261,15 @@ public class SurfaceDemo extends AbstractAnalysis {
 			else
 				filePath = "./";
 
-			Path path = FileSystems.getDefault().getPath(filePath, "data.csv");
+			String fileName = Settings.instance.getSetting("gcode_input_file");
+			Path path;
+			if(fileName!=null)
+			{
+				File f = new File(fileName);
+				path = f.toPath();
+			}
+			else
+				path = FileSystems.getDefault().getPath(filePath, "data4.csv");
 			List<String> lines;
 			lines = Files.readAllLines(path, Charset.forName("UTF-8"));
 			utils = new Utils();

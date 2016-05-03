@@ -22,7 +22,7 @@ public class OpenGCode extends MachineTalkCommand {
 		Container container = builder.build();
 		byte[] buff = container.toByteArray();
 		getCommandSocket().send(buff, 0);
-		Thread.sleep(1000);
+		Thread.sleep(500);
 		parseAndOutput();
 		
 
@@ -33,7 +33,7 @@ public class OpenGCode extends MachineTalkCommand {
 		container = builder.build();
 		buff = container.toByteArray();
 		getCommandSocket().send(buff, 0);
-		Thread.sleep(1000);
+		Thread.sleep(500);
 		parseAndOutput();
 
 		builder = Container.newBuilder();
@@ -43,7 +43,6 @@ public class OpenGCode extends MachineTalkCommand {
 		builder.setEmcCommandParams(emcCommandParameter);
 		builder.setInterpName("execute");
 		builder.setTicket(ticket++);
-		Thread.sleep(1000);
 		container = builder.build();
 		
 		return container;

@@ -264,7 +264,7 @@ public class CommandPanel extends JPanel {
 			public void actionPerformed(ActionEvent e) {
 				try {
 					new OpenGCode().start();
-					Thread.sleep(1000);
+					Thread.sleep(500);
 					new PlayGCode().start();
 				} catch (Exception ex) {
 					ex.printStackTrace();

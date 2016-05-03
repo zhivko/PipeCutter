@@ -4,7 +4,6 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
-import java.awt.Panel;
 import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -21,13 +20,15 @@ import java.nio.file.WatchKey;
 import java.nio.file.WatchService;
 
 import javax.swing.JButton;
+import javax.swing.JEditorPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
-import javax.swing.JTextArea;
 import javax.swing.JTextField;
+import javax.swing.JTextPane;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import javax.swing.text.DefaultHighlighter;
+import javax.swing.text.EditorKit;
 import javax.swing.text.DefaultHighlighter.DefaultHighlightPainter;
 
 import com.kz.pipeCutter.BBB.commands.AbortGCode;
@@ -35,6 +36,7 @@ import com.kz.pipeCutter.BBB.commands.CloseGCode;
 import com.kz.pipeCutter.BBB.commands.OpenGCode;
 import com.kz.pipeCutter.BBB.commands.StepGCode;
 import com.kz.pipeCutter.ui.MyVerticalFlowLayout;
+import com.kz.pipeCutter.ui.NumberedEditorKit;
 import com.kz.pipeCutter.ui.Settings;
 
 public class GcodeViewer extends JPanel {
@@ -42,7 +44,7 @@ public class GcodeViewer extends JPanel {
 	WatchKey key;
 	WatchService watcher;
 
-	JTextArea textArea;
+	final JTextPane textArea;
 	String folder;
 
 	JTextField currentLine;
@@ -55,7 +57,11 @@ public class GcodeViewer extends JPanel {
 
 		this.setLayout(new MyVerticalFlowLayout());
 
-		textArea = new JTextArea();
+		textArea = new JTextPane();
+		textArea.setContentType("application/html");
+		textArea.setEditorKit(new NumberedEditorKit());
+
+
 		JScrollPane scroll = new JScrollPane(textArea); // place the JTextArea
 														// in a
 														// scroll pane
@@ -113,8 +119,9 @@ public class GcodeViewer extends JPanel {
 					if (textArea.getDocument().getLength() > 1) {
 						int lineNumber = Integer.valueOf(currentLine.getText());
 
-						int startIndex = textArea.getLineStartOffset(lineNumber);
-						int endIndex = textArea.getLineEndOffset(lineNumber);
+						
+						int startIndex = textArea.getDocument().getDefaultRootElement().getElement( lineNumber - 1 ).getStartOffset();
+						int endIndex = textArea.getDocument().getDefaultRootElement().getElement( lineNumber ).getStartOffset();
 
 						DefaultHighlightPainter painterWhite = new DefaultHighlighter.DefaultHighlightPainter(
 								Color.WHITE);
@@ -261,4 +268,6 @@ public class GcodeViewer extends JPanel {
 			e.printStackTrace();
 		}
 	}
+
+
 }

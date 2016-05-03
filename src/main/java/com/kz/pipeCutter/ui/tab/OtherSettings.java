@@ -42,6 +42,11 @@ public class OtherSettings extends JPanel {
 		G1feedRate.setLabelTxt("g1 feedrate:");
 		G1feedRate.setParId("gcode_feedrate_g1");
 		this.add(G1feedRate);			
+
+		SavableText parseFile = new SavableText();
+		parseFile.setLabelTxt("File to parse:");
+		parseFile.setParId("gcode_input_file");
+		this.add(parseFile);			
 		
 	}
 }

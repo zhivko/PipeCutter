@@ -263,12 +263,10 @@ public class SurfaceDemo extends AbstractAnalysis {
 
 			String fileName = Settings.instance.getSetting("gcode_input_file");
 			Path path;
-			if(fileName!=null)
-			{
+			if (fileName != null) {
 				File f = new File(fileName);
 				path = f.toPath();
-			}
-			else
+			} else
 				path = FileSystems.getDefault().getPath(filePath, "data4.csv");
 			List<String> lines;
 			lines = Files.readAllLines(path, Charset.forName("UTF-8"));
@@ -610,11 +608,11 @@ public class SurfaceDemo extends AbstractAnalysis {
 
 					if (picked.size() > 0) // && (System.currentTimeMillis() -
 					{
-						if (picked.get(0).getClass().getName().equals("com.kz.grbl.MyPickablePoint")) {
+						if (picked.get(0).getClass().getName().equals("com.kz.pipeCutter.MyPickablePoint")) {
 							MyPickablePoint mp = ((MyPickablePoint) picked.get(0));
 							lastClickedPoint = mp;
 							float offset = Float.valueOf(Settings.instance.getSetting("plasma_pierce_offset_mm"));
-							move(mp, false, offset);
+							move(mp, false, offset, false);
 
 							Point p = SurfaceDemo.instance.utils.calculateOffsetPoint(mp);
 							p.setColor(Color.GREEN);
@@ -630,6 +628,7 @@ public class SurfaceDemo extends AbstractAnalysis {
 
 					}
 				}
+
 			});
 		}
 	}
@@ -703,7 +702,11 @@ public class SurfaceDemo extends AbstractAnalysis {
 		instance.getChart().resumeAnimator();
 	}
 
-	public void move(MyPickablePoint tempPoint, boolean cut, float offset) {
+	public void move(MyPickablePoint mp, boolean b, float offset) {
+		move(mp, false, offset, true);
+	}
+
+	public void move(MyPickablePoint tempPoint, boolean cut, float offset, boolean writeToGCode) {
 		// if (cylinder == null) {
 		// cylinder = new Cylinder(tempPoint);
 
@@ -725,18 +728,21 @@ public class SurfaceDemo extends AbstractAnalysis {
 
 		String gcode = SurfaceDemo.instance.utils.coordinateToGcode(tempPoint);
 
-		try {
-			PrintWriter out = new PrintWriter(new BufferedWriter(new FileWriter(CutThread.gcodeFileName, true)));
-			if (cut)
-				out.println(String.format(java.util.Locale.US,"G01 %s A%.3f B%.3f F%s (pointId: %d)", gcode, Float.valueOf(SurfaceDemo.instance.angleTxt),
-						Float.valueOf(SurfaceDemo.instance.angleTxt), Settings.getInstance().getSetting("gcode_feedrate_g1"), tempPoint.id));
-			else
-				out.println(String.format(java.util.Locale.US,"G00 %s A%.3f B%.3f F%s (pointId: %d)", gcode, Float.valueOf(SurfaceDemo.instance.angleTxt),
-						Float.valueOf(SurfaceDemo.instance.angleTxt), Settings.getInstance().getSetting("gcode_feedrate_g0"), tempPoint.id));
-			out.close();
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
+		if (writeToGCode)
+			try {
+				PrintWriter out = new PrintWriter(new BufferedWriter(new FileWriter(CutThread.gcodeFileName, true)));
+				if (cut)
+					out.println(String.format(java.util.Locale.US, "G01 %s A%.3f B%.3f F%s (pointId: %d)", gcode,
+							Float.valueOf(SurfaceDemo.instance.angleTxt), Float.valueOf(SurfaceDemo.instance.angleTxt),
+							Settings.getInstance().getSetting("gcode_feedrate_g1"), tempPoint.id));
+				else
+					out.println(String.format(java.util.Locale.US, "G00 %s A%.3f B%.3f F%s (pointId: %d)", gcode,
+							Float.valueOf(SurfaceDemo.instance.angleTxt), Float.valueOf(SurfaceDemo.instance.angleTxt),
+							Settings.getInstance().getSetting("gcode_feedrate_g0"), tempPoint.id));
+				out.close();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
 
 		if (ZOOM_POINT) {
 			float edge = canvas.getView().getBounds().getXmax() - canvas.getView().getBounds().getXmin();
@@ -771,7 +777,7 @@ public class SurfaceDemo extends AbstractAnalysis {
 			out.println("G01 " + gcode + " F" + Settings.getInstance().getSetting("gcode_feedrate_g1"));
 			plasma.setColor(Color.RED);
 			plasma.setWireframeColor(Color.RED);
-			out.println("G04 P" + pierceTimeMs/1000);
+			out.println("G04 P" + pierceTimeMs / 1000);
 			try {
 				Thread.sleep(Long.valueOf(pierceTimeMs));
 			} catch (Exception ex) {

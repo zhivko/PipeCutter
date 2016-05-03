@@ -83,7 +83,7 @@ public class MyPopupMenu extends PopupMenu {
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
 				if (SurfaceDemo.instance.lastClickedPoint.getClass().getName()
-						.equals("com.kz.grbl.MyPickablePoint")) {
+						.equals("com.kz.pipeCutter.MyPickablePoint")) {
 					CutThread th = new CutThread(false,
 							SurfaceDemo.instance.lastClickedPoint);
 					th.execute();
@@ -120,7 +120,7 @@ public class MyPopupMenu extends PopupMenu {
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
 				if (SurfaceDemo.instance.lastClickedPoint.getClass().getName()
-						.equals("com.kz.grbl.MyPickablePoint")) {
+						.equals("com.kz.pipeCutter.MyPickablePoint")) {
 					CutThread.gcodeFileName = Settings.instance.getSetting("gcode_folder") + File.separatorChar + "prog.gcode";
 					CutThread ct = new CutThread(false,
 							SurfaceDemo.instance.lastClickedPoint);

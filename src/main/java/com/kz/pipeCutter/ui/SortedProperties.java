@@ -5,7 +5,7 @@ import java.util.Enumeration;
 import java.util.Properties;
 import java.util.Vector;
 
-class SortedProperties extends Properties {
+public class SortedProperties extends Properties {
 	public Enumeration keys() {
 		Enumeration keysEnum = super.keys();
 		Vector<String> keyList = new Vector<String>();

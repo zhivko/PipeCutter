@@ -58,12 +58,16 @@ public class CutThread extends SwingWorker<String, Object> {
 
 	public CutThread(boolean wholePipe) {
 		this();
-		ArrayList<MyPickablePoint> sortedList = new ArrayList(SurfaceDemo.instance.utils.points.values());
-		Collections.sort(sortedList, new MyPickablePointZYXComparator());
-		topZ = sortedList.get(0).getZ();
+		calculateTopZ();
 		this.wholePipe = wholePipe;
 		this.startPoint = point;
 		this.alAlreadyAddedPoints = new ArrayList<MyPickablePoint>();
+	}
+
+	private void calculateTopZ() {
+		ArrayList<MyPickablePoint> sortedList = new ArrayList(SurfaceDemo.instance.utils.points.values());
+		Collections.sort(sortedList, new MyPickablePointZYXComparator());
+		topZ = sortedList.get(0).getZ();
 	}
 
 	public CutThread(boolean wholePipe, MyPickablePoint point) {
@@ -129,6 +133,9 @@ public class CutThread extends SwingWorker<String, Object> {
 	private void cutSegment(float minY, double maxY, boolean withoutLastPoints, int rotationDirection) {
 		System.out.println("Cutting segment " + minY + " " + maxY);
 		for (int i = 0; i < 4; i++) {
+			calculateTopZ();
+			System.out.println("TopZ=" + topZ);
+
 			ArrayList<MyPickablePoint> pointsToCut = new ArrayList<MyPickablePoint>();
 			for (MyPickablePoint p : SurfaceDemo.instance.utils.points.values()) {
 				if (p.xyz.y > minY && p.xyz.y <= maxY && Math.abs(p.getZ() - topZ) < 0.1) {
@@ -170,7 +177,7 @@ public class CutThread extends SwingWorker<String, Object> {
 			}
 
 			double angle = rotationDirection * 90.0d;
-			SurfaceDemo.instance.utils.rotatePoints(angle, false);
+			SurfaceDemo.instance.utils.rotatePoints(angle, true);
 			sumAngle = Float.valueOf(SurfaceDemo.instance.angleTxt); // sumAngle
 																		// +
 																		// angle;

@@ -1,14 +1,20 @@
 package com.kz.pipeCutter;
 
+import java.awt.Component;
+import java.awt.Dimension;
 import java.awt.MouseInfo;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.ComponentEvent;
+import java.awt.event.ComponentListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -22,6 +28,7 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
+import com.kz.pipeCutter.ui.SortedProperties;
 
 import javax.swing.JMenuItem;
 import javax.swing.JPopupMenu;
@@ -169,6 +176,69 @@ public class SurfaceDemo extends AbstractAnalysis {
 		// itController.remove();
 		// }
 		// }
+		FileInputStream in = new FileInputStream(Settings.iniFullFileName);
+		SortedProperties props = new SortedProperties();
+		props.load(in);
+		in.close();
+
+		if (props.get("surfaceDemo") != null) {
+			String size = props.get("surfaceDemo").toString();
+			try {
+				String[] splittedSize = size.split("x");
+				instance.canvas.setPreferredSize(new Dimension(Double.valueOf(splittedSize[0]).intValue(),
+						Double.valueOf(splittedSize[1]).intValue()));
+				instance.canvas.validate();
+				instance.canvas.repaint();
+			} catch (Exception ex) {
+				ex.printStackTrace();
+			}
+		}
+
+		instance.canvas.addComponentListener(new ComponentListener() {
+
+			@Override
+			public void componentShown(ComponentEvent e) {
+				// TODO Auto-generated method stub
+
+			}
+
+			@Override
+			public void componentResized(ComponentEvent evt) {
+				Component c = (Component) evt.getSource();
+				System.out.println(c.getName() + " resized: " + c.getSize().toString());
+				if (c.getName().equals("frame0")) {
+					try {
+						FileInputStream in = new FileInputStream(Settings.iniFullFileName);
+						SortedProperties props = new SortedProperties();
+						props.load(in);
+						in.close();
+
+						FileOutputStream out = new FileOutputStream(Settings.iniFullFileName);
+						props.setProperty("surfaceDemo", c.getSize().getWidth() + "x" + c.getSize().getHeight());
+						props.store(out, null);
+						out.close();
+
+					} catch (Exception ex) {
+						ex.printStackTrace();
+					}
+					// splitPane.setDividerLocation(1 -
+					// (commandPanel.getHeight() /
+					// Settings.instance.getHeight()));
+				}
+			}
+
+			@Override
+			public void componentMoved(ComponentEvent e) {
+				// TODO Auto-generated method stub
+
+			}
+
+			@Override
+			public void componentHidden(ComponentEvent e) {
+				// TODO Auto-generated method stub
+
+			}
+		});
 
 	}
 

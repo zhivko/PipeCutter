@@ -1,6 +1,5 @@
 package com.kz.pipeCutter.ui;
 
-
 //install bbonjour avahi sevice in windows: https://support.apple.com/kb/DL999?locale=sl_SI
 import java.awt.BorderLayout;
 import java.awt.Component;
@@ -71,36 +70,34 @@ public class Settings extends JFrame {
 				Settings.instance.initServices();
 			}
 		});
-		
+
 		FileInputStream in;
 		try {
 			in = new FileInputStream(Settings.iniFullFileName);
 			SortedProperties props = new SortedProperties();
 			props.load(in);
-			in.close();	
-			
+			in.close();
+
 			String size = props.get("frame0").toString();
-			try
-			{
+			try {
 				String[] splittedSize = size.split("x");
-				frame.setPreferredSize(new Dimension(Double.valueOf(splittedSize[0]).intValue(), Double.valueOf(splittedSize[1]).intValue()));
-				
+				frame.setPreferredSize(new Dimension(Double.valueOf(splittedSize[0]).intValue(),
+						Double.valueOf(splittedSize[1]).intValue()));
+
 				frame.validate();
-        frame.repaint();
-        frame.pack();
-        frame.setVisible(true);
-			}
-			catch(Exception ex)
-			{
+				frame.repaint();
+				frame.pack();
+				frame.setVisible(true);
+			} catch (Exception ex) {
 				ex.printStackTrace();
 			}
-			
+
 			System.out.println("size: " + size);
 		} catch (Exception e1) {
 			// TODO Auto-generated catch block
 			e1.printStackTrace();
 		}
-	
+
 	}
 
 	protected void initServices() {
@@ -143,6 +140,13 @@ public class Settings extends JFrame {
 		splitPane.setTopComponent(tabbedPane);
 		splitPane.setBottomComponent(commandPanel);
 
+
+//		int minWidth = 860;
+//		int minHeight = 760;
+//		Settings.this.setSize(Math.max(minWidth, Settings.this.getWidth()),
+//				Math.max(minHeight, Settings.this.getHeight()));						
+		//this.setResizable(false);
+		
 		this.pack();
 		Settings.instance = this;
 
@@ -157,15 +161,16 @@ public class Settings extends JFrame {
 						props.load(in);
 						in.close();
 
-						FileOutputStream out = new FileOutputStream(
-								Settings.iniFullFileName);
+						FileOutputStream out = new FileOutputStream(Settings.iniFullFileName);
 						props.setProperty("frame0", c.getSize().getWidth() + "x" + c.getSize().getHeight());
 						props.store(out, null);
 						out.close();
+						
 					} catch (Exception ex) {
 						ex.printStackTrace();
 					}
-					// splitPane.setDividerLocation(1 - (commandPanel.getHeight() /
+					// splitPane.setDividerLocation(1 -
+					// (commandPanel.getHeight() /
 					// Settings.instance.getHeight()));
 				}
 			}
@@ -179,6 +184,13 @@ public class Settings extends JFrame {
 			public void componentShown(ComponentEvent e) {
 				// splitPane.setDividerLocation(1 - (commandPanel.getHeight() /
 				// Settings.instance.getHeight()));
+			}
+		});
+
+		// set minsize
+		this.addComponentListener(new java.awt.event.ComponentAdapter() {
+			public void componentResized(ComponentEvent event) {
+
 			}
 		});
 	}
@@ -225,8 +237,7 @@ public class Settings extends JFrame {
 
 	public void setSetting(String parameterId, String value) {
 		try {
-			List<SavableControl> savableControls = harvestMatches(
-					this.getContentPane(), SavableControl.class);
+			List<SavableControl> savableControls = harvestMatches(this.getContentPane(), SavableControl.class);
 			for (SavableControl savableControl : savableControls) {
 				if (savableControl.getParId().equals(parameterId)) {
 					savableControl.setParValue(value);
@@ -252,8 +263,7 @@ public class Settings extends JFrame {
 
 	public IParameter getParameter(String parameterId) {
 		IParameter ret = null;
-		List<SavableControl> savableControls = harvestMatches(
-				this.getContentPane(), SavableControl.class);
+		List<SavableControl> savableControls = harvestMatches(this.getContentPane(), SavableControl.class);
 		for (SavableControl savableControl : savableControls) {
 			System.out.println("control  id:" + savableControl.getParId());
 			if (savableControl.getParId().equals(parameterId)) {
@@ -275,8 +285,7 @@ public class Settings extends JFrame {
 		return null;
 	}
 
-	public static <T extends Component> List<T> harvestMatches(Container root,
-			Class<T> clazz) {
+	public static <T extends Component> List<T> harvestMatches(Container root, Class<T> clazz) {
 		List<Container> containers = new LinkedList<>();
 		List<T> harvested = new ArrayList<>();
 

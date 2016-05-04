@@ -24,7 +24,6 @@ public class MyPopupMenu extends PopupMenu {
 		menuItem.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
-				CutThread.gcodeFileName = Settings.instance.getSetting("gcode_folder") + File.separatorChar + "prog.gcode";
 				CutThread th = new CutThread(true);
 				th.execute();
 			}
@@ -84,6 +83,11 @@ public class MyPopupMenu extends PopupMenu {
 			public void actionPerformed(ActionEvent arg0) {
 				if (SurfaceDemo.instance.lastClickedPoint.getClass().getName()
 						.equals("com.kz.pipeCutter.MyPickablePoint")) {
+					
+					String folder = Settings.getInstance().getSetting("gcode_folder");
+					File f = new File(folder + File.separatorChar + "prog.gcode");
+					System.out.println("Delete file?" + f.delete());
+					
 					CutThread th = new CutThread(false,
 							SurfaceDemo.instance.lastClickedPoint);
 					th.execute();
@@ -121,7 +125,6 @@ public class MyPopupMenu extends PopupMenu {
 			public void actionPerformed(ActionEvent arg0) {
 				if (SurfaceDemo.instance.lastClickedPoint.getClass().getName()
 						.equals("com.kz.pipeCutter.MyPickablePoint")) {
-					CutThread.gcodeFileName = Settings.instance.getSetting("gcode_folder") + File.separatorChar + "prog.gcode";
 					CutThread ct = new CutThread(false,
 							SurfaceDemo.instance.lastClickedPoint);
 					

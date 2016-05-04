@@ -20,7 +20,6 @@ import java.nio.file.WatchKey;
 import java.nio.file.WatchService;
 
 import javax.swing.JButton;
-import javax.swing.JEditorPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextField;
@@ -28,15 +27,14 @@ import javax.swing.JTextPane;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import javax.swing.text.DefaultHighlighter;
-import javax.swing.text.EditorKit;
 import javax.swing.text.DefaultHighlighter.DefaultHighlightPainter;
 
 import com.kz.pipeCutter.BBB.commands.AbortGCode;
 import com.kz.pipeCutter.BBB.commands.CloseGCode;
 import com.kz.pipeCutter.BBB.commands.OpenGCode;
 import com.kz.pipeCutter.BBB.commands.StepGCode;
+import com.kz.pipeCutter.ui.LineNumberView;
 import com.kz.pipeCutter.ui.MyVerticalFlowLayout;
-import com.kz.pipeCutter.ui.NumberedEditorKit;
 import com.kz.pipeCutter.ui.Settings;
 
 public class GcodeViewer extends JPanel {
@@ -58,13 +56,14 @@ public class GcodeViewer extends JPanel {
 		this.setLayout(new MyVerticalFlowLayout());
 
 		textArea = new JTextPane();
-		textArea.setContentType("application/html");
-		textArea.setEditorKit(new NumberedEditorKit());
-
+		// textArea.setContentType("application/html");
+		// textArea.setEditorKit(new NumberedEditorKit());
 
 		JScrollPane scroll = new JScrollPane(textArea); // place the JTextArea
-														// in a
-														// scroll pane
+		// in a
+		// scroll pane
+		scroll.setRowHeaderView(new LineNumberView(textArea));
+
 		scroll.setPreferredSize(new Dimension(800, 400));
 		this.add(scroll, BorderLayout.WEST);
 
@@ -77,11 +76,11 @@ public class GcodeViewer extends JPanel {
 				// TODO Auto-generated method stub
 				try {
 					new AbortGCode().start();
-					Thread.sleep(1000);
+					Thread.sleep(300);
 					new CloseGCode().start();
-					Thread.sleep(1000);
+					Thread.sleep(300);
 					new OpenGCode().start();
-					Thread.sleep(1000);
+					Thread.sleep(300);
 				} catch (Exception e1) {
 					e1.printStackTrace();
 				}
@@ -97,7 +96,7 @@ public class GcodeViewer extends JPanel {
 			public void actionPerformed(ActionEvent e) {
 				// TODO Auto-generated method stub
 				int lineNumber = Integer.valueOf(currentLine.getText());
-				if (lineNumber > 0)
+				if (lineNumber > 1)
 					currentLine.setText(String.valueOf(lineNumber - 1));
 			}
 		});
@@ -119,22 +118,18 @@ public class GcodeViewer extends JPanel {
 					if (textArea.getDocument().getLength() > 1) {
 						int lineNumber = Integer.valueOf(currentLine.getText());
 
-						
-						int startIndex = textArea.getDocument().getDefaultRootElement().getElement( lineNumber - 1 ).getStartOffset();
-						int endIndex = textArea.getDocument().getDefaultRootElement().getElement( lineNumber ).getStartOffset();
+						int startIndex = textArea.getDocument().getDefaultRootElement().getElement(lineNumber - 1).getStartOffset();
+						int endIndex = textArea.getDocument().getDefaultRootElement().getElement(lineNumber).getStartOffset();
 
-						DefaultHighlightPainter painterWhite = new DefaultHighlighter.DefaultHighlightPainter(
-								Color.WHITE);
-						DefaultHighlightPainter painterGray = new DefaultHighlighter.DefaultHighlightPainter(
-								Color.GRAY);
+						DefaultHighlightPainter painterWhite = new DefaultHighlighter.DefaultHighlightPainter(Color.WHITE);
+						DefaultHighlightPainter painterGray = new DefaultHighlighter.DefaultHighlightPainter(Color.GRAY);
 
 						textArea.getHighlighter().removeAllHighlights();
 
 						textArea.getHighlighter().addHighlight(0, startIndex, painterWhite);
 						textArea.getHighlighter().addHighlight(startIndex, endIndex, painterGray);
 
-						textArea.getHighlighter().addHighlight(endIndex + 1, textArea.getDocument().getLength() - 1,
-								painterWhite);
+						textArea.getHighlighter().addHighlight(endIndex + 1, textArea.getDocument().getLength() - 1, painterWhite);
 
 						Rectangle rect = textArea.modelToView(startIndex);
 						textArea.scrollRectToVisible(rect);
@@ -152,7 +147,7 @@ public class GcodeViewer extends JPanel {
 
 			}
 		});
-		currentLine.setText("0");
+		currentLine.setText("1");
 		buttonPanel.add(currentLine);
 
 		JButton buttonNext = new JButton("Next");
@@ -162,18 +157,31 @@ public class GcodeViewer extends JPanel {
 			public void actionPerformed(ActionEvent e) {
 				int lineNumber = Integer.valueOf(currentLine.getText());
 				currentLine.setText(String.valueOf(lineNumber + 1));
-
-				new StepGCode(lineNumber + 1).start();
 			}
 		});
+
 		buttonPanel.add(buttonNext);
+
+		JButton runLine = new JButton("runLine");
+		runLine.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				int lineNumber = Integer.valueOf(currentLine.getText());
+				new Thread(new Runnable() {
+					public void run() {
+						new StepGCode(lineNumber).start();
+					}
+				}).run();
+
+			}
+		});
+		buttonPanel.add(runLine);
 
 		this.addComponentListener(new ComponentListener() {
 
 			@Override
 			public void componentShown(ComponentEvent e) {
 				// TODO Auto-generated method stub
-				folder = Settings.getInstance().getSetting("gcode_folder");
 				refresh();
 
 				try {
@@ -218,7 +226,7 @@ public class GcodeViewer extends JPanel {
 											break;
 										}
 									}
-									Thread.sleep(5000);
+									Thread.sleep(1000);
 
 								} catch (Exception e) {
 									// TODO Auto-generated catch block
@@ -257,15 +265,22 @@ public class GcodeViewer extends JPanel {
 	protected void refresh() {
 		FileReader reader;
 		try {
-			reader = new FileReader(new File(folder + File.separatorChar + "prog.gcode"));
-			this.textArea.read(reader, "The force is strong with this one");
-			this.textArea.repaint();
-			currentLine.setText("0");
+			folder = Settings.getInstance().getSetting("gcode_folder");
+			File f = new File(folder + File.separatorChar + "prog.gcode");
+			if (f.exists()) {
+				reader = new FileReader(new File(folder + File.separatorChar + "prog.gcode"));
+				this.textArea.read(reader, "The force is strong with this one");
+				reader.close();
+				// this.textArea.repaint();
+			}
+			else
+			{
+				this.textArea.setText("");
+			}
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}
-
 
 }

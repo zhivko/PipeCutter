@@ -78,21 +78,23 @@ public class Settings extends JFrame {
 			props.load(in);
 			in.close();
 
-			String size = props.get("frame0").toString();
-			try {
-				String[] splittedSize = size.split("x");
-				frame.setPreferredSize(new Dimension(Double.valueOf(splittedSize[0]).intValue(),
-						Double.valueOf(splittedSize[1]).intValue()));
+			if (props.get("frame0") != null) {
+				String size = props.get("frame0").toString();
+				try {
+					String[] splittedSize = size.split("x");
+					frame.setPreferredSize(
+							new Dimension(Double.valueOf(splittedSize[0]).intValue(), Double.valueOf(splittedSize[1]).intValue()));
 
-				frame.validate();
-				frame.repaint();
-				frame.pack();
-				frame.setVisible(true);
-			} catch (Exception ex) {
-				ex.printStackTrace();
+					frame.validate();
+					frame.repaint();
+					frame.pack();
+					frame.setVisible(true);
+				} catch (Exception ex) {
+					ex.printStackTrace();
+				}
+				System.out.println("size: " + size);
 			}
 
-			System.out.println("size: " + size);
 		} catch (Exception e1) {
 			// TODO Auto-generated catch block
 			e1.printStackTrace();
@@ -140,13 +142,12 @@ public class Settings extends JFrame {
 		splitPane.setTopComponent(tabbedPane);
 		splitPane.setBottomComponent(commandPanel);
 
+		// int minWidth = 860;
+		// int minHeight = 760;
+		// Settings.this.setSize(Math.max(minWidth, Settings.this.getWidth()),
+		// Math.max(minHeight, Settings.this.getHeight()));
+		// this.setResizable(false);
 
-//		int minWidth = 860;
-//		int minHeight = 760;
-//		Settings.this.setSize(Math.max(minWidth, Settings.this.getWidth()),
-//				Math.max(minHeight, Settings.this.getHeight()));						
-		//this.setResizable(false);
-		
 		this.pack();
 		Settings.instance = this;
 
@@ -165,7 +166,7 @@ public class Settings extends JFrame {
 						props.setProperty("frame0", c.getSize().getWidth() + "x" + c.getSize().getHeight());
 						props.store(out, null);
 						out.close();
-						
+
 					} catch (Exception ex) {
 						ex.printStackTrace();
 					}

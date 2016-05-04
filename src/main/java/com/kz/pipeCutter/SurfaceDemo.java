@@ -772,8 +772,8 @@ public class SurfaceDemo extends AbstractAnalysis {
 		instance.getChart().resumeAnimator();
 	}
 
-	public void move(MyPickablePoint mp, boolean b, float offset) {
-		move(mp, false, offset, true);
+	public void move(MyPickablePoint mp, boolean cut, float offset) {
+		move(mp, cut, offset, true);
 	}
 
 	public void move(MyPickablePoint tempPoint, boolean cut, float offset, boolean writeToGCode) {
@@ -800,7 +800,7 @@ public class SurfaceDemo extends AbstractAnalysis {
 
 		if (writeToGCode)
 			try {
-				PrintWriter out = new PrintWriter(new BufferedWriter(new FileWriter(CutThread.gcodeFileName, true)));
+				PrintWriter out = new PrintWriter(new BufferedWriter(new FileWriter(CutThread.gcodeFile.getAbsolutePath(), true)));
 				if (cut)
 					out.println(String.format(java.util.Locale.US, "G01 %s A%.3f B%.3f F%s (pointId: %d)", gcode,
 							Float.valueOf(SurfaceDemo.instance.angleTxt), Float.valueOf(SurfaceDemo.instance.angleTxt),
@@ -834,7 +834,7 @@ public class SurfaceDemo extends AbstractAnalysis {
 		plasma.setPosition(abovePoint);
 
 		try {
-			PrintWriter out = new PrintWriter(new BufferedWriter(new FileWriter(CutThread.gcodeFileName, true)));
+			PrintWriter out = new PrintWriter(new BufferedWriter(new FileWriter(CutThread.gcodeFile.getAbsolutePath(), true)));
 			String gcode = SurfaceDemo.instance.utils.coordinateToGcode(abovePoint, offset);
 			plasma.setColor(Color.BLUE);
 			plasma.setWireframeColor(Color.BLUE);

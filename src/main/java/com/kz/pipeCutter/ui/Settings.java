@@ -5,11 +5,13 @@ import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.Container;
 import java.awt.Dimension;
+import java.awt.Point;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
@@ -82,8 +84,9 @@ public class Settings extends JFrame {
 				String size = props.get("frame0").toString();
 				try {
 					String[] splittedSize = size.split("x");
-					frame.setPreferredSize(
-							new Dimension(Double.valueOf(splittedSize[0]).intValue(), Double.valueOf(splittedSize[1]).intValue()));
+					System.out.println(size);
+					frame.setPreferredSize(new Dimension(Double.valueOf(splittedSize[0]).intValue(),
+							Double.valueOf(splittedSize[1]).intValue()));
 
 					frame.validate();
 					frame.repaint();
@@ -93,6 +96,22 @@ public class Settings extends JFrame {
 					ex.printStackTrace();
 				}
 				System.out.println("size: " + size);
+			}
+
+			if (props.get("frame0_location") != null) {
+				String location_str = props.get("frame0_location").toString();
+				try {
+					String[] splittedSize = location_str.split("x");
+					System.out.println(location_str);
+					frame.setLocation(new Point(Integer.valueOf(splittedSize[0]), Integer.valueOf(splittedSize[1])));
+					frame.validate();
+					frame.repaint();
+					frame.pack();
+					frame.setVisible(true);
+				} catch (Exception ex) {
+					ex.printStackTrace();
+				}
+				System.out.println("size: " + location_str);
 			}
 
 		} catch (Exception e1) {
@@ -178,6 +197,29 @@ public class Settings extends JFrame {
 		});
 
 		this.addComponentListener(new ComponentAdapter() {
+			public void componentMoved(ComponentEvent evt) {
+				Component c = (Component) evt.getSource();
+				Point currentLocationOnScreen = c.getLocationOnScreen();
+				System.out.println("frame moved.");
+				FileInputStream in;
+				try {
+					in = new FileInputStream(Settings.iniFullFileName);
+
+					SortedProperties props = new SortedProperties();
+					props.load(in);
+					in.close();
+
+					FileOutputStream out = new FileOutputStream(Settings.iniFullFileName);
+					props.setProperty("frame0_location", String.format("%.0fx%.0f", currentLocationOnScreen.getX(), currentLocationOnScreen.getY()));
+					props.store(out, null);
+					out.close();
+				} catch (Exception e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+
+			}
+
 			public void componentHidden(ComponentEvent e) {
 				/* code run when component hidden */
 			}

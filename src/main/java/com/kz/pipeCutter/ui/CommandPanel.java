@@ -35,17 +35,17 @@ public class CommandPanel extends JPanel {
 	public CommandPanel() {
 		super();
 
-		this.setPreferredSize(new Dimension(420, 332));
+		//this.setPreferredSize(new Dimension(420, 332));
 		FlowLayout flowLayout = (FlowLayout) this.getLayout();
 		flowLayout.setAlignment(FlowLayout.LEFT);
 
 		// ----------machineKitPanel---------------------------
 
 		JPanel machineKitPanel = new JPanel();
-		machineKitPanel.setPreferredSize(new Dimension(200, 350));
+		machineKitPanel.setPreferredSize(new Dimension(110, 350));
 		this.add(machineKitPanel);
 
-		JButton startMachineKit = new JButton("Start MachineKit");
+		JButton startMachineKit = new JButton("Start MK");
 		startMachineKit.addActionListener(new ActionListener() {
 
 			@Override
@@ -55,7 +55,7 @@ public class CommandPanel extends JPanel {
 		});
 		machineKitPanel.add(startMachineKit);
 
-		JButton discoverMachineKit = new JButton("Discover MachineKit");
+		JButton discoverMachineKit = new JButton("Discover MK");
 		discoverMachineKit.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
@@ -64,7 +64,7 @@ public class CommandPanel extends JPanel {
 		});
 		machineKitPanel.add(discoverMachineKit);
 
-		JButton listMachineKit = new JButton("List MachineKit");
+		JButton listMachineKit = new JButton("List MK");
 		listMachineKit.addActionListener(new ActionListener() {
 
 			@Override
@@ -74,7 +74,7 @@ public class CommandPanel extends JPanel {
 		});
 		machineKitPanel.add(listMachineKit);
 
-		JButton MachineKitStop = new JButton("Kill MachineKit");
+		JButton MachineKitStop = new JButton("Kill MK");
 		MachineKitStop.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
@@ -86,7 +86,7 @@ public class CommandPanel extends JPanel {
 
 		// ----------machineTalkPanel---------------------------
 		JPanel machineTalkPanel = new JPanel();
-		machineTalkPanel.setPreferredSize(new Dimension(300, 350));
+		machineTalkPanel.setPreferredSize(new Dimension(130, 350));
 
 		this.add(machineTalkPanel);
 
@@ -277,7 +277,7 @@ public class CommandPanel extends JPanel {
 
 		JScrollPane sp = new JScrollPane(log);
 		sp.setAutoscrolls(true);
-		sp.setPreferredSize(new Dimension(600, 80));
+		sp.setPreferredSize(new Dimension(530, 80));
 		machineTalkPanel.add(sp);
 
 		machineTalkPanel.setPreferredSize(new Dimension(650, 400));

@@ -166,7 +166,7 @@ public class SurfaceDemo extends AbstractAnalysis {
 		// menu.add(menuItem11);
 
 		instance.getChart().getView().setViewPositionMode(ViewPositionMode.FREE);
-		instance.getChart().getView().setMaximized(true);
+		//instance.getChart().getView().setMaximized(true);
 		// Iterator<AbstractCameraController> itController =
 		// instance.getChart().getControllers().iterator();
 		// while (itController.hasNext()) {

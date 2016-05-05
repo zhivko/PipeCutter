@@ -281,6 +281,10 @@ public class CutThread extends SwingWorker<String, Object> {
 		else
 			try {
 				this.folowThePath(this.startPoint, this.alAlreadyAddedPoints);
+				PrintWriter out = new PrintWriter(new BufferedWriter(new FileWriter(CutThread.gcodeFile.getAbsolutePath(), true)));
+				out.println("M2");
+				out.flush();
+				out.close();
 			} catch (Exception ex) {
 				ex.printStackTrace();
 			}

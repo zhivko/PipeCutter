@@ -2,10 +2,10 @@ sudo: false
 language: java
 jdk:
   - oraclejdk8
+  - oraclejdk7
+  - openjdk6
 before_install:
-#  - sed -i.bak -e 's|https://nexus.codehaus.org/snapshots/|https://oss.sonatype.org/content/repositories/codehaus-snapshots/|g' ~/.m2/settings.xml
-script:
-  mvn install -DskipTests=true -Dmaven.javadoc.skip=true -B -V
+  - sed -i.bak -e 's|https://nexus.codehaus.org/snapshots/|https://oss.sonatype.org/content/repositories/codehaus-snapshots/|g' ~/.m2/settings.xml
 after_success:
-  mvn -e -X compile package
+  mvn compile package
   

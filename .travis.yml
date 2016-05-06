@@ -4,4 +4,5 @@ jdk:
 before_install:
 #  - sed -i.bak -e 's|https://nexus.codehaus.org/snapshots/|https://oss.sonatype.org/content/repositories/codehaus-snapshots/|g' ~/.m2/settings.xml
 after_success:
-  mvn deploy --settings settings-travis.xml
+  mvn -e -X compile package
+  

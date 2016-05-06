@@ -30,28 +30,8 @@
 				<updatePolicy>always</updatePolicy>
 			</snapshots>
 		</repository>
-		<repository>
-			<id>jogamp-remote</id>
-			<name>jogamp test mirror</name>
-			<url>http://www.jogamp.org/deployment/maven</url>
-			<layout>default</layout>
-		</repository>
 
-		<repository>
-			<id>jzy3d-releases</id>
-			<name>Jzy3d Releases</name>
-			<url>http://maven.jzy3d.org/releases</url>
-		</repository>
-		<repository>
-			<id>sonatype-nexus-snapshots</id>
-			<url>https://oss.sonatype.org/content/repositories/snapshots</url>
-			<releases>
-				<enabled>false</enabled>
-			</releases>
-			<snapshots>
-				<enabled>true</enabled>
-			</snapshots>
-		</repository>
+
 	</repositories>
 
 

@@ -1,4 +1,4 @@
-# PipeCutter
+# PipeCutter https://travis-ci.org/zhivko/PipeCutter.svg?branch=master
 Plasma 4 axis pipe cutter with BBB, CRAMPS and machinekit integration. Source code in JAVA.
 
 You can check my Google "Machinekit PipeCutter" album to better get idea of progress:

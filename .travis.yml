@@ -1,8 +1,7 @@
 language: java
 jdk:
-#- openjdk7
-- oraclejdk8
-#- oraclejdk7
-#- openjdk6
+  - oraclejdk8
+  - oraclejdk7
+  - openjdk6
 before_install: 
-after_success: mvn deploy
+after_success: mvn compile package

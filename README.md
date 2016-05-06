@@ -4,13 +4,12 @@
 Plasma 4 axis pipe cutter with BBB, CRAMPS and machinekit integration. Source code in JAVA.
 
 Used to generate GCODE of Autodesk Inventor pipe like this:
-<img src="./screenshots/pipe.png" alt="Pipe" width="400px" height="300px">
-![alt tag](./screenshots/pipe.png)
+<img src="./screenshots/pipe.png" alt="Pipe" width="400px" height="280px">
 
 ![alt tag](./screenshots/PipeCutter.gif)
 
 And allow to run it directly on [BeagleBone Black](https://beagleboard.org/black).
-![alt tag](./screenshots/cramps.jpg)
+<img src="./screenshots/cramps.jpg" alt="Cramps" width="400px" height="300px">
 
 You can check my Google "Machinekit PipeCutter" album to better get idea of project:
 https://goo.gl/photos/4A623DBE1DQRwYfcA

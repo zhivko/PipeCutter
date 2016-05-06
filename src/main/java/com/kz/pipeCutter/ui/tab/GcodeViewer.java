@@ -166,7 +166,7 @@ public class GcodeViewer extends JPanel {
 		runLine.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				int lineNumber = Integer.valueOf(currentLine.getText());
+				final int lineNumber = Integer.valueOf(currentLine.getText());
 				new Thread(new Runnable() {
 					public void run() {
 						new StepGCode(lineNumber).start();

@@ -102,7 +102,7 @@ public class SurfaceDemo extends AbstractAnalysis {
 		// instance.canvas.getAnimator().setUpdateFPSFrames(20, System.out);
 		instance.canvas.setSize(600, 600);
 
-		MyPopupMenu menu = new MyPopupMenu();
+		final MyPopupMenu menu = new MyPopupMenu();
 		instance.canvas.add(menu);
 		instance.canvas.addMouseListener(new MouseListener() {
 
@@ -113,7 +113,7 @@ public class SurfaceDemo extends AbstractAnalysis {
 			}
 
 			@Override
-			public void mousePressed(MouseEvent arg0) {
+			public void mousePressed(final MouseEvent arg0) {
 				// TODO Auto-generated method stub
 				if (arg0.getButton() == MouseEvent.BUTTON3) {
 

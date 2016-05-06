@@ -129,8 +129,8 @@ public class NamedList extends JPanel implements IParameter, IHasLabel {
 		}
 	}
 
-	public void addService(ServiceInfo serviceInfo) {
-		MyServiceInfo mi = new MyServiceInfo(serviceInfo);
+	public void addService(final ServiceInfo serviceInfo) {
+		final MyServiceInfo mi = new MyServiceInfo(serviceInfo);
 
 		SwingUtilities.invokeLater(new Runnable() {
 			@Override

@@ -178,7 +178,7 @@ public class CommandPanel extends JPanel {
 		});
 		machineTalkPanel.add(unHomeAll);
 
-		SavableText mdiCommand1 = new SavableText();
+		final SavableText mdiCommand1 = new SavableText();
 		mdiCommand1.setLabelTxt("MDI1:");
 		mdiCommand1.setParId("machinekit_mdi1");
 		machineTalkPanel.add(mdiCommand1);
@@ -211,7 +211,7 @@ public class CommandPanel extends JPanel {
 			}
 		});
 
-		SavableText mdiCommand2 = new SavableText();
+		final SavableText mdiCommand2 = new SavableText();
 		mdiCommand2.setLabelTxt("MDI2:");
 		mdiCommand2.setParId("machinekit_mdi2");
 		machineTalkPanel.add(mdiCommand2);

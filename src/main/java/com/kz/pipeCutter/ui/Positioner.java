@@ -79,7 +79,7 @@ public class Positioner extends JPanel {
 		add(linkedJogEnableCheckBox);
 		
 		
-		JSlider sliderVer = new JSlider();
+		final JSlider sliderVer = new JSlider();
 		sliderVer.setBounds(0, 0, 31, 97);
 		sliderVer.setSnapToTicks(true);
 		sliderVer.setPaintTicks(true);
@@ -181,7 +181,7 @@ public class Positioner extends JPanel {
 		add(btnRight);
 		add(btnDown);
 
-		JSlider sliderHor = new JSlider();
+		final JSlider sliderHor = new JSlider();
 		sliderHor.setBounds(27, 96, 155, 31);
 		sliderHor.setPaintLabels(true);
 		sliderHor.setPaintTicks(true);

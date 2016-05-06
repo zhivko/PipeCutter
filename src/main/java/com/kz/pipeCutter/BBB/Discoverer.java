@@ -47,11 +47,12 @@ public class Discoverer {
 			services.remove(arg0.getInfo());
 			Pattern p = Pattern.compile("(.*)service(.*)");
 			Matcher m = p.matcher(arg0.getInfo().getName());
+			final ServiceEvent arg1 = arg0;
 			if (m.find()) {
 				SwingUtilities.invokeLater(new Runnable() {
 					@Override
 					public void run() {
-						MachinekitSettings.instance.machinekitServices.removeService(arg0.getInfo());
+						MachinekitSettings.instance.machinekitServices.removeService(arg1.getInfo());
 					}
 				});
 			}
@@ -64,10 +65,11 @@ public class Discoverer {
 			Pattern p = Pattern.compile("(.*)service(.*)");
 			Matcher m = p.matcher(arg0.getInfo().getName());
 			if (m.find()) {
+				final ServiceEvent arg1 = arg0;
 				SwingUtilities.invokeLater(new Runnable() {
 					@Override
 					public void run() {
-						MachinekitSettings.instance.machinekitServices.addService(arg0.getInfo());
+						MachinekitSettings.instance.machinekitServices.addService(arg1.getInfo());
 					}
 				});
 			}

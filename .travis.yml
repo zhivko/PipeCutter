@@ -1,9 +1,11 @@
 language: java
 jdk:
-  - oraclejdk8
-  - openjdk7
+- oraclejdk8
+- openjdk7
 before_install:
-  - sed -i.bak -e 's|https://nexus.codehaus.org/snapshots/|https://oss.sonatype.org/content/repositories/codehaus-snapshots/|g' ~/.m2/settings.xml
-after_success:
-  mvn clean compile package
-  
+- sed -i.bak -e 's|https://nexus.codehaus.org/snapshots/|https://oss.sonatype.org/content/repositories/codehaus-snapshots/|g'
+  ~/.m2/settings.xml
+after_success: mvn clean compile package
+env:
+  global:
+    secure: Sr8UuWifNbhVcqRpcDPhPNELZWUqf3At37n3tADp8+eBtgLKfsoqfv4KrgQzkL207BAZTgVf0HeEH+Xu+c1fr6IVgWM/qQPjqi3aNxZooTJsVhtaQ6Fd1hqiIZrLw0yFGJ13k2tUwr1u+ppHI3gbEOtZu3FkbfUSLmGNkN/ZOnzj0Cx+69F6CVRGLdQ20Fb/ntKcGG68cmqMLqX0RWIhJTPO8Nzw1JXRfxlkLJNVvB9G36ByucpwNxQYeZQInG4YZ3jCSNa/HpSXCoy5iTgAJFWoc6MCHlw6N98PXs9EWbrnnIYsQP8A/QVjEMtpxWFQxoM8hWxMoA/e7nJwaDHuLwSMTBEGxxj7WtVYcGhJuACQGNbtBrA0gPJITAN7As4Lkl6MOXKTpLPyvqSjUnjcyXc2/985LdQwVcXBkS97C8EoKFzrJc/cKDN0lLrGYkp5o6gJE9zsFmkToL/A1FoVCxnwJtWfJc3TEjsCzh8zFAmiLTcs+IQyuWRM83s88QrUmFaGa5N7TzO4iJ0+AZGSqV8d/hGEYO3G7Fav1Z/byKM1Ikmxmgd7lGPAlxz9pKZDXcDXH3VdmZ9aMAjtBpB2Qc/JJA4/kDJvfEHj5kTBltZdQLzdKQwgklHOJ0psfS1MzXuy3+4NmofxgNBBXNYMAuKqb4+nNwGKBirvnv5ff0A=

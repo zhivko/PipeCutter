@@ -24,7 +24,7 @@
 	<!-- </repository> -->
 		<repository>
 			<id>jzy3d-api</id>
-			<url>https://github.com/zhivko/jzy3d-api/raw/mvn-repo/</url>
+			<url>https://github.com/zhivko/jzy3d-api/tree/mvn-repo/</url>
 			<snapshots>
 				<enabled>true</enabled>
 				<updatePolicy>always</updatePolicy>

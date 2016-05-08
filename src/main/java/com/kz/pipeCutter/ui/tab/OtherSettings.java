@@ -48,5 +48,12 @@ public class OtherSettings extends JPanel {
 		parseFile.setParId("gcode_input_file");
 		this.add(parseFile);			
 		
+		SavableText screenshotFolder = new SavableText();
+		screenshotFolder.setLabelTxt("Screenshot folder:");
+		screenshotFolder.setParId("screenshot_folder");
+		this.add(screenshotFolder);			
+		
+		
+		
 	}
 }

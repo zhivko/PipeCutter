@@ -54,6 +54,8 @@ public class Settings extends JFrame {
 	public JSplitPane splitPane;
 	CommandPanel commandPanel;
 
+	boolean repositioned = false;
+
 	/**
 	 * Launch the application.
 	 */
@@ -72,52 +74,6 @@ public class Settings extends JFrame {
 				Settings.instance.initServices();
 			}
 		});
-
-		FileInputStream in;
-		try {
-			in = new FileInputStream(Settings.iniFullFileName);
-			SortedProperties props = new SortedProperties();
-			props.load(in);
-			in.close();
-
-			if (props.get("frame0") != null) {
-				String size = props.get("frame0").toString();
-				try {
-					String[] splittedSize = size.split("x");
-					System.out.println(size);
-					frame.setPreferredSize(new Dimension(Double.valueOf(splittedSize[0]).intValue(),
-							Double.valueOf(splittedSize[1]).intValue()));
-
-					frame.validate();
-					frame.repaint();
-					frame.pack();
-					frame.setVisible(true);
-				} catch (Exception ex) {
-					ex.printStackTrace();
-				}
-				System.out.println("size: " + size);
-			}
-
-			if (props.get("frame0_location") != null) {
-				String location_str = props.get("frame0_location").toString();
-				try {
-					String[] splittedSize = location_str.split("x");
-					System.out.println(location_str);
-					frame.setLocation(new Point(Integer.valueOf(splittedSize[0]), Integer.valueOf(splittedSize[1])));
-					frame.validate();
-					frame.repaint();
-					frame.pack();
-					frame.setVisible(true);
-				} catch (Exception ex) {
-					ex.printStackTrace();
-				}
-				System.out.println("size: " + location_str);
-			}
-
-		} catch (Exception e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
-		}
 
 	}
 
@@ -161,12 +117,6 @@ public class Settings extends JFrame {
 		splitPane.setTopComponent(tabbedPane);
 		splitPane.setBottomComponent(commandPanel);
 
-		// int minWidth = 860;
-		// int minHeight = 760;
-		// Settings.this.setSize(Math.max(minWidth, Settings.this.getWidth()),
-		// Math.max(minHeight, Settings.this.getHeight()));
-		// this.setResizable(false);
-
 		this.pack();
 		Settings.instance = this;
 
@@ -174,7 +124,7 @@ public class Settings extends JFrame {
 			public void componentResized(ComponentEvent evt) {
 				Component c = (Component) evt.getSource();
 				System.out.println(c.getName() + " resized: " + c.getSize().toString());
-				if (c.getName().equals("frame0")) {
+				if (c.getName().equals("frame0") && repositioned) {
 					try {
 						FileInputStream in = new FileInputStream(Settings.iniFullFileName);
 						SortedProperties props = new SortedProperties();
@@ -198,26 +148,28 @@ public class Settings extends JFrame {
 
 		this.addComponentListener(new ComponentAdapter() {
 			public void componentMoved(ComponentEvent evt) {
-				Component c = (Component) evt.getSource();
-				Point currentLocationOnScreen = c.getLocationOnScreen();
-				System.out.println("frame moved.");
-				FileInputStream in;
-				try {
-					in = new FileInputStream(Settings.iniFullFileName);
+				if (repositioned) {
+					Component c = (Component) evt.getSource();
+					Point currentLocationOnScreen = c.getLocationOnScreen();
+					System.out.println("frame moved.");
+					FileInputStream in;
+					try {
+						in = new FileInputStream(Settings.iniFullFileName);
 
-					SortedProperties props = new SortedProperties();
-					props.load(in);
-					in.close();
+						SortedProperties props = new SortedProperties();
+						props.load(in);
+						in.close();
 
-					FileOutputStream out = new FileOutputStream(Settings.iniFullFileName);
-					props.setProperty("frame0_location", String.format("%.0fx%.0f", currentLocationOnScreen.getX(), currentLocationOnScreen.getY()));
-					props.store(out, null);
-					out.close();
-				} catch (Exception e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
+						FileOutputStream out = new FileOutputStream(Settings.iniFullFileName);
+						props.setProperty("frame0_location",
+								String.format("%.0fx%.0f", currentLocationOnScreen.getX(), currentLocationOnScreen.getY()));
+						props.store(out, null);
+						out.close();
+					} catch (Exception e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
 				}
-
 			}
 
 			public void componentHidden(ComponentEvent e) {
@@ -225,17 +177,52 @@ public class Settings extends JFrame {
 			}
 
 			public void componentShown(ComponentEvent e) {
-				// splitPane.setDividerLocation(1 - (commandPanel.getHeight() /
-				// Settings.instance.getHeight()));
+				FileInputStream in;
+				try {
+					in = new FileInputStream(Settings.iniFullFileName);
+					SortedProperties props = new SortedProperties();
+					props.load(in);
+					in.close();
+
+					if (props.get("frame0") != null) {
+						String size = props.get("frame0").toString();
+						try {
+							String[] splittedSize = size.split("x");
+							System.out.println(size);
+							Settings.this.setSize(new Dimension(Double.valueOf(splittedSize[0]).intValue(),
+									Double.valueOf(splittedSize[1]).intValue()));
+						} catch (Exception ex) {
+							ex.printStackTrace();
+						}
+						System.out.println("size: " + size);
+					}
+
+					if (props.get("frame0_location") != null) {
+						String location_str = props.get("frame0_location").toString();
+						try {
+							String[] splittedSize = location_str.split("x");
+							System.out.println(location_str);
+							Settings.this.setLocation(new Point(Integer.valueOf(splittedSize[0]), Integer.valueOf(splittedSize[1])));
+						} catch (Exception ex) {
+							ex.printStackTrace();
+						}
+						System.out.println("size: " + location_str);
+					}
+					
+					
+
+				} catch (Exception e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
+				finally {
+					repositioned=true;
+				}
 			}
 		});
 
-		// set minsize
-		this.addComponentListener(new java.awt.event.ComponentAdapter() {
-			public void componentResized(ComponentEvent event) {
+		this.setVisible(true);
 
-			}
-		});
 	}
 
 	private static String getIniPath() {

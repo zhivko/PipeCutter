@@ -28,7 +28,6 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
-import com.kz.pipeCutter.ui.SortedProperties;
 
 import javax.swing.JMenuItem;
 import javax.swing.JPopupMenu;
@@ -39,8 +38,11 @@ import org.jzy3d.analysis.AbstractAnalysis;
 import org.jzy3d.analysis.AnalysisLauncher;
 import org.jzy3d.chart.Chart;
 import org.jzy3d.chart.controllers.camera.AbstractCameraController;
+import org.jzy3d.chart.controllers.keyboard.screenshot.IScreenshotKeyController;
+import org.jzy3d.chart.controllers.keyboard.screenshot.IScreenshotKeyController.IScreenshotEventListener;
 import org.jzy3d.chart.controllers.mouse.picking.AWTMousePickingController;
 import org.jzy3d.chart.factories.AWTChartComponentFactory;
+import org.jzy3d.chart.factories.ChartComponentFactory;
 import org.jzy3d.colors.Color;
 import org.jzy3d.maths.BoundingBox3d;
 import org.jzy3d.maths.Coord3d;
@@ -57,7 +59,9 @@ import org.jzy3d.plot3d.text.align.Valign;
 import org.jzy3d.plot3d.text.drawable.DrawableTextBitmap;
 
 import com.kz.pipeCutter.BBB.Discoverer;
+import com.kz.pipeCutter.ui.MyScreenshotController;
 import com.kz.pipeCutter.ui.Settings;
+import com.kz.pipeCutter.ui.SortedProperties;
 
 public class SurfaceDemo extends AbstractAnalysis {
 	Utils utils;
@@ -87,7 +91,13 @@ public class SurfaceDemo extends AbstractAnalysis {
 		System.setProperty("java.net.preferIPv4Stack", "true");
 		// discoverer = new Discoverer();
 		settingsFrame = new Settings();
-		settingsFrame.setVisible(true);
+		
+		String folder = Settings.getInstance().getSetting("screenshot_folder");
+		if(folder!=null)
+		{
+			ChartComponentFactory.SCREENSHOT_FOLDER = folder;
+		}
+			
 	}
 
 	public static void main(String[] args) throws Exception {
@@ -239,7 +249,9 @@ public class SurfaceDemo extends AbstractAnalysis {
 
 			}
 		});
+		
 
+		
 	}
 
 	private void enablePickingTexts(ArrayList<PickableDrawableTextBitmap> edgeTexts, Chart chart, int i) {
@@ -376,10 +388,8 @@ public class SurfaceDemo extends AbstractAnalysis {
 							// try to find edge with this two points
 							boolean found = false;
 							for (MyEdge e : utils.edges.values()) {
-								if ((e.getPointByIndex(0).distance(mp1) == 0
-										&& (e.getPointByIndex(1).distance(mp2) == 0)
-										|| (e.getPointByIndex(1).distance(mp1) == 0
-												&& (e.getPointByIndex(0).distance(mp2) == 0)))) {
+								if ((e.getPointByIndex(0).distance(mp1) == 0 && (e.getPointByIndex(1).distance(mp2) == 0)
+										|| (e.getPointByIndex(1).distance(mp1) == 0 && (e.getPointByIndex(0).distance(mp2) == 0)))) {
 									found = true;
 									break;
 								}
@@ -614,8 +624,7 @@ public class SurfaceDemo extends AbstractAnalysis {
 				ls.add(utils.points.get(point.id));
 				if (SurfaceDemo.NUMBER_POINTS) {
 					if (!alreadyAddedPointsText.contains(pointNo)) {
-						DrawableTextBitmap t4 = new DrawableTextBitmap(String.valueOf(point.id), point.xyz,
-								Color.BLACK);
+						DrawableTextBitmap t4 = new DrawableTextBitmap(String.valueOf(point.id), point.xyz, Color.BLACK);
 						t4.setHalign(Halign.CENTER); // TODO: invert
 						t4.setValign(Valign.CENTER); // TODO: invert
 						// left/right
@@ -800,7 +809,8 @@ public class SurfaceDemo extends AbstractAnalysis {
 
 		if (writeToGCode)
 			try {
-				PrintWriter out = new PrintWriter(new BufferedWriter(new FileWriter(CutThread.gcodeFile.getAbsolutePath(), true)));
+				PrintWriter out = new PrintWriter(
+						new BufferedWriter(new FileWriter(CutThread.gcodeFile.getAbsolutePath(), true)));
 				if (cut)
 					out.println(String.format(java.util.Locale.US, "G01 %s A%.3f B%.3f F%s (pointId: %d)", gcode,
 							Float.valueOf(SurfaceDemo.instance.angleTxt), Float.valueOf(SurfaceDemo.instance.angleTxt),
@@ -834,7 +844,8 @@ public class SurfaceDemo extends AbstractAnalysis {
 		plasma.setPosition(abovePoint);
 
 		try {
-			PrintWriter out = new PrintWriter(new BufferedWriter(new FileWriter(CutThread.gcodeFile.getAbsolutePath(), true)));
+			PrintWriter out = new PrintWriter(
+					new BufferedWriter(new FileWriter(CutThread.gcodeFile.getAbsolutePath(), true)));
 			String gcode = SurfaceDemo.instance.utils.coordinateToGcode(abovePoint, offset);
 			plasma.setColor(Color.BLUE);
 			plasma.setWireframeColor(Color.BLUE);

@@ -9,7 +9,7 @@ Used to generate GCODE of Autodesk Inventor pipe like this:
 <br>
 ![alt tag](./screenshots/PipeCutter.gif)
 <br>
-And allow to run it on [BeagleBone Black](https://beagleboard.org/black).
+And runs that gcode on [BeagleBone Black](https://beagleboard.org/black).
 <br>
 <img src="./screenshots/cramps.jpg" alt="Cramps" width="50%" height="50%">
 <br>

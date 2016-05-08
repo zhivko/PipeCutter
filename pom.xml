@@ -8,7 +8,7 @@
 	<packaging>jar</packaging>
 
 	<name>PipeCutter</name>
-	<url>http://maven.apache.org</url>
+	<url>https://github.com/zhivko/PipeCutter</url>
 
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -50,7 +50,7 @@
 		<dependency>
 			<groupId>org.jzy3d</groupId>
 			<artifactId>jzy3d-api</artifactId>
-			<version>0.9.1</version>
+			<version>1.0.0-SNAPSHOT</version>
 		</dependency>
 
 

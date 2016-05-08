@@ -59,7 +59,6 @@ import org.jzy3d.plot3d.text.align.Valign;
 import org.jzy3d.plot3d.text.drawable.DrawableTextBitmap;
 
 import com.kz.pipeCutter.BBB.Discoverer;
-import com.kz.pipeCutter.ui.MyScreenshotController;
 import com.kz.pipeCutter.ui.Settings;
 import com.kz.pipeCutter.ui.SortedProperties;
 

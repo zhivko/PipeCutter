@@ -18,48 +18,52 @@
 
 	<repositories>
 		<repository>
-			<id>jzy3d-snapshots</id>
-			<name>Jzy3d Snapshots</name>
-			<url>http://maven.jzy3d.org/snapshots</url>
-		</repository>
-		<repository>
 			<id>jzy3d-releases</id>
 			<name>Jzy3d Snapshots</name>
 			<url>http://maven.jzy3d.org/releases</url>
 		</repository>
 
-		<!-- <repository> -->
-		<!-- <id>jzy3d-api</id> -->
-		<!-- <url>https://raw.githubusercontent.com/zhivko/jzy3d-api/mvn-repo/</url> -->
-		<!-- <snapshots> -->
-		<!-- <enabled>true</enabled> -->
-		<!-- <updatePolicy>always</updatePolicy> -->
-		<!-- </snapshots> -->
-		<!-- </repository> -->
+		<repository>
+			<id>jzy3d-snapshots</id>
+			<name>Jzy3d Snapshots</name>
+			<url>http://maven.jzy3d.org/snapshots</url>
+			<snapshots>
+				<enabled>true</enabled>
+				<updatePolicy>always</updatePolicy>
+			</snapshots>
+		</repository>
+		<repository>
+			<id>jzy3d-zhivko</id>
+			<url>https://raw.githubusercontent.com/zhivko/jzy3d-api/mvn-repo/</url>
+			<snapshots>
+				<enabled>true</enabled>
+				<updatePolicy>always</updatePolicy>
+			</snapshots>
+		</repository>
 
 	</repositories>
 
 
 	<dependencies>
 
-<!-- 		<dependency> -->
-<!-- 		<groupId>org.jzy3d</groupId> -->
-<!-- 		<artifactId>jzy3d-api</artifactId> -->
-<!-- 		<version>0.9.1</version> -->
-<!-- 		</dependency> -->
+		<!-- <dependency> -->
+		<!-- <groupId>org.jzy3d</groupId> -->
+		<!-- <artifactId>jzy3d-api</artifactId> -->
+		<!-- <version>0.9.1</version> -->
+		<!-- </dependency> -->
+
+		<!-- <dependency> -->
+		<!-- <groupId>org.jzy3d</groupId> -->
+		<!-- <artifactId>jzy3d-api</artifactId> -->
+		<!-- <version>0.9.2-SNAPSHOT</version> -->
+		<!-- </dependency> -->
+
 
 		<dependency>
-		<groupId>org.jzy3d</groupId>
-		<artifactId>jzy3d-api</artifactId>
-		<version>0.9.2-SNAPSHOT</version>
+			<groupId>org.jzy3d</groupId>
+			<artifactId>jzy3d-api</artifactId>
+			<version>1.0.0-SNAPSHOT</version>
 		</dependency>
-
-
-	<!-- <dependency> -->
-	<!-- <groupId>org.jzy3d</groupId> -->
-	<!-- <artifactId>jzy3d-api</artifactId> -->
-	<!-- <version>1.0.0-SNAPSHOT</version> -->
-	<!-- </dependency> -->
 
 
 		<dependency>
@@ -104,16 +108,16 @@
 		<!-- sudo apt-get install libjogl-java libjogl-jni libgluegen2-rt-java 
 			libgluegen2-build-java -->
 
-<!-- 		<dependency> -->
-<!-- 			<groupId>org.jogamp.gluegen</groupId> -->
-<!-- 			<artifactId>gluegen-rt-main</artifactId> -->
-<!-- 			<version>${jogl.version}</version> -->
-<!-- 		</dependency> -->
-<!-- 		<dependency> -->
-<!-- 			<groupId>org.jogamp.jogl</groupId> -->
-<!-- 			<artifactId>jogl-all-main</artifactId> -->
-<!-- 			<version>${jogl.version}</version> -->
-<!-- 		</dependency> -->
+		<!-- <dependency> -->
+		<!-- <groupId>org.jogamp.gluegen</groupId> -->
+		<!-- <artifactId>gluegen-rt-main</artifactId> -->
+		<!-- <version>${jogl.version}</version> -->
+		<!-- </dependency> -->
+		<!-- <dependency> -->
+		<!-- <groupId>org.jogamp.jogl</groupId> -->
+		<!-- <artifactId>jogl-all-main</artifactId> -->
+		<!-- <version>${jogl.version}</version> -->
+		<!-- </dependency> -->
 
 		<dependency>
 			<groupId>org.zeromq</groupId>

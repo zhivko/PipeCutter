@@ -21,7 +21,7 @@ public class PlayGCodeFromLine extends MachineTalkCommand {
 				.setLineNumber(this.lineNo).build();
 		builder.setEmcCommandParams(emcCommandParameter);
 
-		builder.setType(ContainerType.MT_EMC_TASK_PLAN_STEP);
+		builder.setType(ContainerType.MT_EMC_TASK_PLAN_RUN);
 		builder.setInterpName("execute");
 		builder.setTicket(ticket++);
 		Container container = builder.build();

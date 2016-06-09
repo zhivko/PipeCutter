@@ -43,7 +43,7 @@ public class CommandPanel extends JPanel {
 		// ----------machineKitPanel---------------------------
 
 		JPanel machineKitPanel = new JPanel();
-		machineKitPanel.setPreferredSize(new Dimension(110, 350));
+		machineKitPanel.setPreferredSize(new Dimension(150, 350));
 		this.add(machineKitPanel);
 
 		JButton startMachineKit = new JButton("Start MK");
@@ -245,7 +245,7 @@ public class CommandPanel extends JPanel {
 			}
 		});
 
-		JButton uploadGCode = new JButton("Upload prog.gcode");
+		JButton uploadGCode = new JButton("Upload GC");
 		uploadGCode.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
@@ -259,13 +259,24 @@ public class CommandPanel extends JPanel {
 		});
 		machineTalkPanel.add(uploadGCode);
 		
-		JButton playGCode = new JButton("Play prog.gcode");
-		playGCode.addActionListener(new ActionListener() {
+		JButton openGCode = new JButton("Open GC");
+		openGCode.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				try {
 					new OpenGCode().start();
-					Thread.sleep(500);
+				} catch (Exception ex) {
+					ex.printStackTrace();
+				}
+			}
+		});
+		machineTalkPanel.add(openGCode);		
+
+		JButton playGCode = new JButton("Play GC");
+		playGCode.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				try {
 					new PlayGCode().start();
 				} catch (Exception ex) {
 					ex.printStackTrace();
@@ -273,7 +284,8 @@ public class CommandPanel extends JPanel {
 			}
 		});
 		machineTalkPanel.add(playGCode);		
-
+		
+		
 		JButton abortGCode = new JButton("Abort GCODE");
 		abortGCode.addActionListener(new ActionListener() {
 			@Override

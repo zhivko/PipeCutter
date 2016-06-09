@@ -19,6 +19,7 @@ import org.zeromq.ZMQ.Context;
 import org.zeromq.ZMQ.Socket;
 import org.zeromq.ZMsg;
 
+import com.google.protobuf.Descriptors.FieldDescriptor;
 import com.jcraft.jsch.ChannelExec;
 import com.jcraft.jsch.JSch;
 import com.jcraft.jsch.Session;
@@ -61,6 +62,7 @@ public class BBBStatus {
 					for (ZFrame f : receivedMessage) {
 						byte[] returnedBytes = f.getData();
 						String messageType = new String(returnedBytes);
+//						System.out.println("type: " + messageType);
 						if (!messageType.equals("motion")) {
 							contReturned = Message.Container.parseFrom(returnedBytes);
 							if (contReturned.getType().equals(
@@ -68,6 +70,9 @@ public class BBBStatus {
 									|| contReturned.getType().equals(
 											ContainerType.MT_EMCSTAT_INCREMENTAL_UPDATE)) {
 
+//								System.out.println(contReturned.getInterpState().toString());
+//								System.out.println(contReturned.getEmcStatusInterp().getInterpreterErrcode().getValueDescriptor());
+								
 								Iterator<EmcStatusMotionAxis> itAxis = contReturned
 										.getEmcStatusMotion().getAxisList().iterator();
 								while (itAxis.hasNext()) {

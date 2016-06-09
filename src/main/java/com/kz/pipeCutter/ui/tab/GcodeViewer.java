@@ -35,6 +35,7 @@ import com.kz.pipeCutter.BBB.commands.OpenGCode;
 import com.kz.pipeCutter.BBB.commands.PauseGCode;
 import com.kz.pipeCutter.BBB.commands.PlayGCodeFromLine;
 import com.kz.pipeCutter.BBB.commands.ResumeGCode;
+import com.kz.pipeCutter.BBB.commands.StepGCode;
 import com.kz.pipeCutter.ui.LineNumberView;
 import com.kz.pipeCutter.ui.MyVerticalFlowLayout;
 import com.kz.pipeCutter.ui.Settings;
@@ -207,6 +208,23 @@ public class GcodeViewer extends JPanel {
 			}
 		});
 		buttonPanel.add(pause);		
+
+		JButton stepGCode = new JButton("Step gcode");
+		stepGCode.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				new Thread(new Runnable() {
+					public void run() {
+						new StepGCode().start();
+						int lineNumber = Integer.valueOf(currentLine.getText());
+						currentLine.setText(String.valueOf(lineNumber + 1));
+					}
+				}).run();
+
+			}
+		});
+		buttonPanel.add(stepGCode);		
+		
 		
 		this.addComponentListener(new ComponentListener() {
 
@@ -259,9 +277,9 @@ public class GcodeViewer extends JPanel {
 									}
 									Thread.sleep(1000);
 
-								} catch (Exception e) {
+								} catch (Exception e1) {
 									// TODO Auto-generated catch block
-									e.printStackTrace();
+									e1.printStackTrace();
 								}
 
 							}

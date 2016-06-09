@@ -8,7 +8,7 @@ public class MachinekitStop extends SSH_Command {
 
 	@Override
 	public void runSshCmd() throws Exception {
-		String command = "ps -aux | grep CRAMPS.ini";
+		String command = "ps -aux | grep 'CRAMPS.ini\\|rtapi'";
 		channelExec = (ChannelExec) session.openChannel("exec");
 		channelExec.setCommand(command);
 		MyOutputStreamReader myOut = new MyOutputStreamReader();

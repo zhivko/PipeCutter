@@ -32,6 +32,8 @@ import javax.swing.text.DefaultHighlighter.DefaultHighlightPainter;
 import com.kz.pipeCutter.BBB.commands.AbortGCode;
 import com.kz.pipeCutter.BBB.commands.CloseGCode;
 import com.kz.pipeCutter.BBB.commands.OpenGCode;
+import com.kz.pipeCutter.BBB.commands.PauseGCode;
+import com.kz.pipeCutter.BBB.commands.ResumeGCode;
 import com.kz.pipeCutter.BBB.commands.StepGCode;
 import com.kz.pipeCutter.ui.LineNumberView;
 import com.kz.pipeCutter.ui.MyVerticalFlowLayout;
@@ -177,6 +179,35 @@ public class GcodeViewer extends JPanel {
 		});
 		buttonPanel.add(runLine);
 
+		JButton resume = new JButton("resume");
+		resume.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				new Thread(new Runnable() {
+					public void run() {
+						new ResumeGCode().start();
+					}
+				}).run();
+
+			}
+		});
+		buttonPanel.add(resume);
+		
+		
+		JButton pause = new JButton("pause");
+		pause.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				new Thread(new Runnable() {
+					public void run() {
+						new PauseGCode().start();
+					}
+				}).run();
+
+			}
+		});
+		buttonPanel.add(pause);		
+		
 		this.addComponentListener(new ComponentListener() {
 
 			@Override

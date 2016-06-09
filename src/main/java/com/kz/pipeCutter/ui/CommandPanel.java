@@ -12,9 +12,8 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 
-import pb.Status.EmcTaskModeType;
-
 import com.kz.pipeCutter.BBB.Discoverer;
+import com.kz.pipeCutter.BBB.commands.AbortGCode;
 import com.kz.pipeCutter.BBB.commands.ChangeMode;
 import com.kz.pipeCutter.BBB.commands.EstopReset;
 import com.kz.pipeCutter.BBB.commands.ExecuteMdi;
@@ -28,6 +27,8 @@ import com.kz.pipeCutter.BBB.commands.PlayGCode;
 import com.kz.pipeCutter.BBB.commands.PowerOff;
 import com.kz.pipeCutter.BBB.commands.PowerOn;
 import com.kz.pipeCutter.BBB.commands.UnHomeAxis;
+
+import pb.Status.EmcTaskModeType;
 
 public class CommandPanel extends JPanel {
 	public JTextArea log;
@@ -273,6 +274,20 @@ public class CommandPanel extends JPanel {
 		});
 		machineTalkPanel.add(playGCode);		
 
+		JButton abortGCode = new JButton("Abort GCODE");
+		abortGCode.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				try {
+					new AbortGCode().start();
+				} catch (Exception ex) {
+					ex.printStackTrace();
+				}
+			}
+		});
+		machineTalkPanel.add(abortGCode);			
+		
+		
 		log = new JTextArea();
 
 		JScrollPane sp = new JScrollPane(log);

@@ -88,12 +88,12 @@ public class Utils {
 		MyEdge edge = new MyEdge(-1, -1);
 
 		MyPickablePoint tempPoint = findConnectedPoint(clickedPoint,
-				alAlreadyAddedPoints);
+				alAlreadyAddedPoints,true);
 		System.out.println("Point id: " + tempPoint.id);
 		edge.addPoint(tempPoint.id);
 		alAlreadyAddedPoints.add(tempPoint);
 		while (tempPoint != clickedPoint && tempPoint != null) {
-			tempPoint = findConnectedPoint(tempPoint, alAlreadyAddedPoints);
+			tempPoint = findConnectedPoint(tempPoint, alAlreadyAddedPoints,true);
 			if (tempPoint != null) {
 				edge.addPoint(tempPoint.id);
 				alAlreadyAddedPoints.add(tempPoint);
@@ -114,20 +114,33 @@ public class Utils {
 	}
 
 	public MyPickablePoint findConnectedPoint(MyPickablePoint point,
-			ArrayList<MyPickablePoint> alreadyAdded) {
+			ArrayList<MyPickablePoint> alreadyAdded, boolean order) {
 		MyPickablePoint ret = null;
 		for (MyEdge edge : edges.values()) {
-			if (edge.getPointByIndex(0).equals(point)) {
-				if (!alreadyAdded.contains(edge.getPointByIndex(1))) {
-					ret = edge.getPointByIndex(1);
+			int startInd, endInd;
+			if(order)
+			{
+				startInd = 0;
+				endInd = 1;
+			}
+			else
+			{
+				startInd=1;
+				endInd=0;
+			}
+			
+			if (edge.getPointByIndex(startInd).equals(point)) {
+				if (!alreadyAdded.contains(edge.getPointByIndex(endInd))) {
+					ret = edge.getPointByIndex(endInd);
 					break;
 				}
-			} else if (edge.getPointByIndex(1).equals(point)) {
-				if (!alreadyAdded.contains(edge.getPointByIndex(0))) {
-					ret = edge.getPointByIndex(0);
+			} else if (edge.getPointByIndex(endInd).equals(point)) {
+				if (!alreadyAdded.contains(edge.getPointByIndex(startInd))) {
+					ret = edge.getPointByIndex(startInd);
 					break;
 				}
 			}
+			
 		}
 		return ret;
 	}

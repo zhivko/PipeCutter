@@ -864,7 +864,7 @@ public class SurfaceDemo extends AbstractAnalysis {
 				ex.printStackTrace();
 			}
 			out.close();
-		} catch (IOException e) {
+		} catch (Exception e) {
 			e.printStackTrace();
 		}
 

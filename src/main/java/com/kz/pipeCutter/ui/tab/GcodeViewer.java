@@ -24,8 +24,10 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextField;
 import javax.swing.JTextPane;
+import javax.swing.SwingUtilities;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
+import javax.swing.text.BadLocationException;
 import javax.swing.text.DefaultHighlighter;
 import javax.swing.text.DefaultHighlighter.DefaultHighlightPainter;
 
@@ -193,8 +195,7 @@ public class GcodeViewer extends JPanel {
 			}
 		});
 		buttonPanel.add(resume);
-		
-		
+
 		JButton pause = new JButton("pause");
 		pause.addActionListener(new ActionListener() {
 			@Override
@@ -207,7 +208,7 @@ public class GcodeViewer extends JPanel {
 
 			}
 		});
-		buttonPanel.add(pause);		
+		buttonPanel.add(pause);
 
 		JButton stepGCode = new JButton("Step gcode");
 		stepGCode.addActionListener(new ActionListener() {
@@ -223,9 +224,8 @@ public class GcodeViewer extends JPanel {
 
 			}
 		});
-		buttonPanel.add(stepGCode);		
-		
-		
+		buttonPanel.add(stepGCode);
+
 		this.addComponentListener(new ComponentListener() {
 
 			@Override
@@ -320,10 +320,22 @@ public class GcodeViewer extends JPanel {
 				reader = new FileReader(new File(folder + File.separatorChar + "prog.gcode"));
 				this.textArea.read(reader, "The force is strong with this one");
 				reader.close();
-				// this.textArea.repaint();
-			}
-			else
-			{
+				SwingUtilities.invokeLater(new Runnable() {
+
+					@Override
+					public void run() {
+						Rectangle rect;
+						try {
+							rect = GcodeViewer.this.textArea.modelToView(GcodeViewer.this.textArea.getDocument().getLength());
+							GcodeViewer.this.textArea.scrollRectToVisible(rect);
+						} catch (BadLocationException e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						}
+					}
+				});
+
+			} else {
 				this.textArea.setText("");
 			}
 		} catch (Exception e) {

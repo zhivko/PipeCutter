@@ -86,7 +86,7 @@ public class Settings extends JFrame {
 	 * Create the frame.
 	 */
 	public Settings() {
-
+		//this.setAlwaysOnTop(true);
 		this.setTitle("PipeCutter settings");
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		// setBounds(400, 500, 800, 650);

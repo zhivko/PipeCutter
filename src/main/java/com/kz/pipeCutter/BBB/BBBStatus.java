@@ -1,17 +1,10 @@
 package com.kz.pipeCutter.BBB;
 
 import java.io.ByteArrayInputStream;
-import java.io.PrintStream;
-import java.text.DecimalFormat;
-import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
-
-import javax.jmdns.ServiceInfo;
-import javax.jmdns.ServiceListener;
-import javax.swing.SwingUtilities;
 
 import org.zeromq.ZFrame;
 import org.zeromq.ZMQ;
@@ -19,10 +12,7 @@ import org.zeromq.ZMQ.Context;
 import org.zeromq.ZMQ.Socket;
 import org.zeromq.ZMsg;
 
-import com.google.protobuf.Descriptors.FieldDescriptor;
 import com.jcraft.jsch.ChannelExec;
-import com.jcraft.jsch.JSch;
-import com.jcraft.jsch.Session;
 import com.kz.pipeCutter.ui.Settings;
 
 import pb.Message;
@@ -31,19 +21,13 @@ import pb.Status.EmcStatusMotionAxis;
 import pb.Types.ContainerType;
 
 public class BBBStatus {
-	ServiceListener bonjourServiceListener;
-	ArrayList<ServiceInfo> services;
 	static Socket statusSocket = null;
 	static BBBStatus instance = null;
 	public static ZMQ.Poller items = null;
 
 	ByteArrayInputStream is;
-	private JSch jsch;
 	public ChannelExec channelExec = null;
-	private Session session;
-	private PrintStream ps;
 
-	private static int ticket = 5000;
 	private final static ScheduledExecutorService scheduler = Executors
 			.newScheduledThreadPool(1);
 
@@ -57,7 +41,6 @@ public class BBBStatus {
 
 					Container contReturned;
 					ZMsg receivedMessage = ZMsg.recvMsg(getStatusSocket());
-					int i = 0;
 					// System.out.println("loop: " + i);
 					for (ZFrame f : receivedMessage) {
 						byte[] returnedBytes = f.getData();

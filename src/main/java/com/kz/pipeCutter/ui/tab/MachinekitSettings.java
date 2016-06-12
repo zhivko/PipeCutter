@@ -1,31 +1,15 @@
 package com.kz.pipeCutter.ui.tab;
 
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
+import java.awt.Dimension;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
-import java.util.Set;
 
-import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 
-import com.kz.pipeCutter.BBB.Discoverer;
-import com.kz.pipeCutter.BBB.commands.ChangeMode;
-import com.kz.pipeCutter.BBB.commands.EstopReset;
-import com.kz.pipeCutter.BBB.commands.ExecuteMdi;
-import com.kz.pipeCutter.BBB.commands.HomeAxis;
-import com.kz.pipeCutter.BBB.commands.MachinekitListProcesses;
-import com.kz.pipeCutter.BBB.commands.MachinekitStart;
-import com.kz.pipeCutter.BBB.commands.MachinekitStop;
-import com.kz.pipeCutter.BBB.commands.PowerOff;
-import com.kz.pipeCutter.BBB.commands.PowerOn;
 import com.kz.pipeCutter.ui.MyVerticalFlowLayout;
 import com.kz.pipeCutter.ui.NamedList;
 import com.kz.pipeCutter.ui.SavableText;
-import com.kz.pipeCutter.ui.Settings;
-
-import pb.Status.EmcTaskModeType;
 
 @SuppressWarnings("serial")
 public class MachinekitSettings extends JPanel {
@@ -80,14 +64,24 @@ public class MachinekitSettings extends JPanel {
 		SavableText previewUrl = new SavableText();
 		previewUrl.setLabelTxt("Preview service url:");
 		previewUrl.setParId("machinekit_previewstatusService_url");
-		add(previewUrl);				
+		add(previewUrl);
 
+		SavableText halGroupUrl = new SavableText();
+		halGroupUrl.setLabelTxt("HalGroup service url:");
+		halGroupUrl.setParId("machinekit_halGroupService_url");
+		add(halGroupUrl);		
+
+		SavableText halCmdUrl = new SavableText();
+		halCmdUrl.setLabelTxt("HalCmd service url:");
+		halCmdUrl.setParId("machinekit_halCmdService_url");
+		add(halCmdUrl);		
+		
 		machinekitServices = new NamedList();
 		machinekitServices.setParId("machinekit_services");
 		machinekitServices.setLabelTxt("MachineTalk services");
-		machinekitServices.setListPrefferedSize(350, 160);
 		add(machinekitServices);
-
+		
+		
 		MachinekitSettings.instance = this;
 	}
 }

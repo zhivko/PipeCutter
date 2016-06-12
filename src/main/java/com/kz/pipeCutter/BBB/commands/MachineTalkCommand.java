@@ -17,7 +17,7 @@ import pb.Message.Container;
 
 public abstract class MachineTalkCommand {
 	public static Socket commandSocket = null;
-	public int ticket = 0;
+	public static int ticket = 0;
 
 	public abstract Container prepareContainer() throws Exception;
 
@@ -98,4 +98,12 @@ public abstract class MachineTalkCommand {
 		}
 
 	}
+	
+	public synchronized static int getNextTicket()
+	{
+		ticket++;
+		return ticket;
+	}
+	
+	
 }

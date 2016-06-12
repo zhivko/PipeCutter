@@ -1,6 +1,12 @@
 package com.kz.pipeCutter.ui;
 
 import java.awt.Dimension;
+import java.awt.FlowLayout;
+import java.awt.Point;
+import java.awt.event.ComponentAdapter;
+import java.awt.event.ComponentEvent;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
 import java.util.ArrayList;
 
 import javax.jmdns.ServiceInfo;
@@ -8,9 +14,10 @@ import javax.swing.DefaultListModel;
 import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JPanel;
-import javax.swing.JScrollBar;
 import javax.swing.JScrollPane;
 import javax.swing.SwingUtilities;
+import javax.swing.event.AncestorEvent;
+import javax.swing.event.AncestorListener;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
@@ -20,7 +27,7 @@ import com.kz.pipeCutter.BBB.commands.MachineTalkCommand;
 @SuppressWarnings("serial")
 public class NamedList extends JPanel implements IParameter, IHasLabel {
 	private JLabel jLabel;
-	private JList myList;
+	private final JList myList;
 
 	private String parId;
 	private String parValue;
@@ -30,7 +37,7 @@ public class NamedList extends JPanel implements IParameter, IHasLabel {
 
 	public NamedList() {
 		super();
-		this.setLayout(new MyVerticalFlowLayout());
+		this.setLayout(new FlowLayout());
 
 		jLabel = new JLabel("this is label");
 		this.add(jLabel);
@@ -45,14 +52,26 @@ public class NamedList extends JPanel implements IParameter, IHasLabel {
 			}
 
 		});
-		JScrollPane pane = new JScrollPane(myList);
+		final JScrollPane pane = new JScrollPane(myList);
 		pane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);
 		pane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
 		listModel = new DefaultListModel();
 		// Border border = BorderFactory.createLineBorder(Color.black);
 		// this.setBorder(border);
 		myList.setModel(listModel);
+
+		//pane.setPreferredSize(new Dimension(400, 206));
+		// this.setPreferredSize(new Dimension(394, 216));
+		// myList.setPreferredSize(new Dimension(394-10, 216-10));
+
+		// pane.setPreferredSize(new Dimension(450,430));
 		this.add(pane);
+		Dimension d = new Dimension(450, 230);
+		// Dimension d1 = new Dimension(d.width-20, d.height-20);
+		// myList.setPreferredSize(d);
+		pane.setPreferredSize(d);
+		this.setPreferredSize(new Dimension(new Double(d.getWidth()).intValue(), new Double(d.getHeight()).intValue()+25));
+		// this.setPreferredSize(d1);
 	}
 
 	@Override
@@ -147,10 +166,8 @@ public class NamedList extends JPanel implements IParameter, IHasLabel {
 				getErrorServiceUrl(serviceInfo);
 				getStatusServiceUrl(serviceInfo);
 				getPreviewStatusServiceUrl(serviceInfo);
-
-				if (listModel.size() == 7) {
-					Settings.instance.initServices();
-				}
+				getHalGrpServiceUrl(serviceInfo);
+				getHalCmdServiceUrl(serviceInfo);
 			}
 		});
 
@@ -164,10 +181,8 @@ public class NamedList extends JPanel implements IParameter, IHasLabel {
 		if (ret != null) {
 			String ip = Settings.getInstance().getSetting("machinekit_ip");
 			String host = Settings.getInstance().getSetting("machinekit_host");
-			String commandUrl = "tcp://" + serviceInfo.getServer() + ":"
-					+ ret.getPort() + "/";
-			Settings.getInstance().setSetting("machinekit_commandService_url",
-					commandUrl);
+			String commandUrl = "tcp://" + serviceInfo.getServer() + ":" + ret.getPort() + "/";
+			Settings.getInstance().setSetting("machinekit_commandService_url", commandUrl);
 			MachineTalkCommand.commandSocket = null;
 		}
 	}
@@ -180,13 +195,10 @@ public class NamedList extends JPanel implements IParameter, IHasLabel {
 		if (ret != null) {
 			String ip = Settings.getInstance().getSetting("machinekit_ip");
 			String host = Settings.getInstance().getSetting("machinekit_host");
-			String errorUrl = "tcp://" + serviceInfo.getServer() + ":"
-					+ ret.getPort() + "/";
-			if (!errorUrl.equals(Settings.getInstance().getSetting(
-					"machinekit_errorService_url"))) {
-				Settings.getInstance().setSetting("machinekit_errorService_url",
-						errorUrl);
-				Settings.instance.initServices();
+			String errorUrl = "tcp://" + serviceInfo.getServer() + ":" + ret.getPort() + "/";
+			if (!errorUrl.equals(Settings.getInstance().getSetting("machinekit_errorService_url"))) {
+				Settings.getInstance().setSetting("machinekit_errorService_url", errorUrl);
+				Settings.instance.initErrorService();
 			}
 		}
 	}
@@ -199,13 +211,10 @@ public class NamedList extends JPanel implements IParameter, IHasLabel {
 		if (ret != null) {
 			String ip = Settings.getInstance().getSetting("machinekit_ip");
 			String host = Settings.getInstance().getSetting("machinekit_host");
-			String statusUrl = "tcp://" + serviceInfo.getServer() + ":"
-					+ ret.getPort() + "/";
-			if (!statusUrl.equals(Settings.getInstance().getSetting(
-					"machinekit_statusService_url"))) {
-				Settings.getInstance().setSetting("machinekit_statusService_url",
-						statusUrl);
-				Settings.instance.initServices();
+			String statusUrl = "tcp://" + serviceInfo.getServer() + ":" + ret.getPort() + "/";
+			if (!statusUrl.equals(Settings.getInstance().getSetting("machinekit_statusService_url"))) {
+				Settings.getInstance().setSetting("machinekit_statusService_url", statusUrl);
+				Settings.instance.initStatusService();
 			}
 
 		}
@@ -219,16 +228,48 @@ public class NamedList extends JPanel implements IParameter, IHasLabel {
 		if (ret != null) {
 			String ip = Settings.getInstance().getSetting("machinekit_ip");
 			String host = Settings.getInstance().getSetting("machinekit_host");
-			String previewStatusUrl = "tcp://" + serviceInfo.getServer() + ":"
-					+ ret.getPort() + "/";
-			if (!previewStatusUrl.equals(Settings.getInstance().getSetting(
-					"machinekit_previewstatusService_url"))) {
-				Settings.getInstance().setSetting(
-						"machinekit_previewstatusService_url", previewStatusUrl);
-				Settings.instance.initServices();
+			String previewStatusUrl = "tcp://" + serviceInfo.getServer() + ":" + ret.getPort() + "/";
+			if (!previewStatusUrl.equals(Settings.getInstance().getSetting("machinekit_previewstatusService_url"))) {
+				Settings.getInstance().setSetting("machinekit_previewstatusService_url", previewStatusUrl);
 			}
 		}
 	}
+	
+	public static void getHalGrpServiceUrl(ServiceInfo serviceInfo) {
+		ServiceInfo ret = null;
+		if (serviceInfo.getName().matches("HAL Group.*")) {
+			ret = serviceInfo;
+		}
+		if (ret != null) {
+			String ip = Settings.getInstance().getSetting("machinekit_ip");
+			String host = Settings.getInstance().getSetting("machinekit_host");
+			String hallGroupUrl = "tcp://" + serviceInfo.getServer() + ":" + ret.getPort() + "/";
+			if (!hallGroupUrl.equals(Settings.getInstance().getSetting("machinekit_halGroupService_url"))) {
+				Settings.getInstance().setSetting("machinekit_halGroupService_url", hallGroupUrl);
+				Settings.instance.initHalGroupService();
+			}
+		}
+	}
+	
+
+	public static void getHalCmdServiceUrl(ServiceInfo serviceInfo) {
+		ServiceInfo ret = null;
+		if (serviceInfo.getName().matches("HAL Rcommand.*")) {
+			ret = serviceInfo;
+		}
+		if (ret != null) {
+			String ip = Settings.getInstance().getSetting("machinekit_ip");
+			String host = Settings.getInstance().getSetting("machinekit_host");
+			String hallGroupUrl = "tcp://" + serviceInfo.getServer() + ":" + ret.getPort() + "/";
+			if (!hallGroupUrl.equals(Settings.getInstance().getSetting("machinekit_halCmdService_url"))) {
+				Settings.getInstance().setSetting("machinekit_halCmdService_url", hallGroupUrl);
+				Settings.instance.initHalGroupService();
+			}
+		}
+	}
+	
+	
+	
 
 	public void removeService(ServiceInfo serviceInfo) {
 		MyServiceInfo mi = new MyServiceInfo(serviceInfo);

@@ -11,7 +11,6 @@ import java.awt.event.ComponentEvent;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
@@ -33,6 +32,7 @@ import javax.swing.JTabbedPane;
 import javax.swing.border.EmptyBorder;
 
 import com.kz.pipeCutter.BBB.BBBError;
+import com.kz.pipeCutter.BBB.BBBHalGroup;
 import com.kz.pipeCutter.BBB.BBBStatus;
 import com.kz.pipeCutter.BBB.Discoverer;
 import com.kz.pipeCutter.ui.tab.GcodeViewer;
@@ -50,6 +50,7 @@ public class Settings extends JFrame {
 	public static Discoverer discoverer;
 	public static BBBError error;
 	public static BBBStatus status;
+	public static BBBHalGroup halGroup;
 
 	public JSplitPane splitPane;
 	CommandPanel commandPanel;
@@ -71,17 +72,20 @@ public class Settings extends JFrame {
 
 			public void componentShown(ComponentEvent e) {
 				// discoverer = Discoverer.getInstance();
-				Settings.instance.initServices();
+				// Settings.instance.initServices();
 			}
 		});
 
 	}
 
-	protected void initServices() {
+	protected void initErrorService() {
 		error = new BBBError();
-		status = new BBBStatus();
 	}
 
+	protected void initStatusService() {
+		status = new BBBStatus();
+	}	
+	
 	/**
 	 * Create the frame.
 	 */
@@ -106,18 +110,17 @@ public class Settings extends JFrame {
 		tabbedPane.addTab("Other", new OtherSettings());
 		tabbedPane.addTab("Gcode", new GcodeViewer());
 
-		tabbedPane.setSelectedIndex(1);
+		tabbedPane.setSelectedIndex(0);
 
 		JSplitPane splitPane = new JSplitPane();
 		splitPane.setOrientation(JSplitPane.VERTICAL_SPLIT);
 		contentPane.add(splitPane, BorderLayout.NORTH);
 		splitPane.setDividerLocation(490);
-
+		
 		commandPanel = new CommandPanel();
 		splitPane.setTopComponent(tabbedPane);
 		splitPane.setBottomComponent(commandPanel);
 
-		this.pack();
 		Settings.instance = this;
 
 		this.addComponentListener(new ComponentAdapter() {
@@ -191,10 +194,15 @@ public class Settings extends JFrame {
 							System.out.println(size);
 							Settings.this.setSize(new Dimension(Double.valueOf(splittedSize[0]).intValue(),
 									Double.valueOf(splittedSize[1]).intValue()));
+							
+							//MachinekitSettings.instance.machinekitServices.setPreferredSize(new Dimension(200,200));
+							Settings.instance.repaint();
+							
 						} catch (Exception ex) {
 							ex.printStackTrace();
 						}
 						System.out.println("size: " + size);
+						
 					}
 
 					if (props.get("frame0_location") != null) {
@@ -220,8 +228,10 @@ public class Settings extends JFrame {
 				}
 			}
 		});
-
+		
+		
 		this.setVisible(true);
+		this.pack();
 
 	}
 
@@ -345,5 +355,9 @@ public class Settings extends JFrame {
 		SimpleDateFormat sdf = new SimpleDateFormat("HH:mm:ss");
 		commandPanel.log.append(sdf.format(new Date()) + " " + txt);
 		commandPanel.log.setCaretPosition(commandPanel.log.getText().length());
+	}
+
+	public void initHalGroupService() {
+		halGroup = new BBBHalGroup();
 	}
 }

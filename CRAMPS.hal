@@ -7,7 +7,7 @@
 # ########################################
 
 # start haltalk server
-#loadusr -W haltalk
+loadusr -W haltalk -d 5
 
 # Launch the setup script to make sure hardware setup looks good
 loadusr -w ./setup.sh

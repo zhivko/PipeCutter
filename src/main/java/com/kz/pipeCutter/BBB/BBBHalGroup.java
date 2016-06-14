@@ -14,6 +14,7 @@ import pb.Message.Container;
 import pb.Types.ContainerType;
 
 import com.google.protobuf.InvalidProtocolBufferException;
+import com.kz.pipeCutter.BBB.commands.MachineTalkCommand;
 import com.kz.pipeCutter.ui.Settings;
 
 public class BBBHalGroup implements Runnable {
@@ -31,8 +32,8 @@ public class BBBHalGroup implements Runnable {
 
 		pb.Message.Container.Builder builder = Container.newBuilder();
 
-		//builder.setType(ContainerType.MT_HALRCOMMAND_DESCRIBE);
-		builder.setType(ContainerType.MT_PING);
+		builder.setType(ContainerType.MT_HALRCOMMAND_DESCRIBE);
+		//builder.setType(ContainerType.MT_PING);
 		//builder.setTicket(MachineTalkCommand.getNextTicket());
 
 		Container container = builder.build();

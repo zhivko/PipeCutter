@@ -252,7 +252,8 @@ public class NamedList extends JPanel implements IParameter, IHasLabel {
 	}
 	
 
-	public static void getHalCmdServiceUrl(ServiceInfo serviceInfo) {
+	public void getHalCmdServiceUrl(ServiceInfo serviceInfo) {
+		String hallGroupUrl=null;
 		ServiceInfo ret = null;
 		if (serviceInfo.getName().matches("HAL Rcommand.*")) {
 			ret = serviceInfo;
@@ -260,7 +261,7 @@ public class NamedList extends JPanel implements IParameter, IHasLabel {
 		if (ret != null) {
 			String ip = Settings.getInstance().getSetting("machinekit_ip");
 			String host = Settings.getInstance().getSetting("machinekit_host");
-			String hallGroupUrl = "tcp://" + serviceInfo.getServer() + ":" + ret.getPort() + "/";
+			hallGroupUrl = "tcp://" + serviceInfo.getServer() + ":" + ret.getPort() + "/";
 			if (!hallGroupUrl.equals(Settings.getInstance().getSetting("machinekit_halCmdService_url"))) {
 				Settings.getInstance().setSetting("machinekit_halCmdService_url", hallGroupUrl);
 				Settings.instance.initHalGroupService();

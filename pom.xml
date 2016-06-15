@@ -220,6 +220,26 @@
 
 				<executions>
 					<execution>
+						<id>make-Test_MT_HALRCOMMAND_DESCRIBE</id>
+						<!-- bind to the packaging phase -->
+						<phase>package</phase>
+						<goals>
+							<goal>single</goal>
+						</goals>
+						<configuration>
+							<finalName>test_MT_HALRCOMMAND_DESCRIBE</finalName>
+							<descriptorRefs>
+								<descriptorRef>jar-with-dependencies</descriptorRef>
+							</descriptorRefs>
+							<!-- MainClass in mainfest make a executable jar -->
+							<archive>
+								<manifest>
+									<mainClass>com.kz.pipeCutter.BBB.BBBHalGroup</mainClass>
+								</manifest>
+							</archive>
+						</configuration>
+					</execution>				
+					<execution>
 						<id>make-assembly</id>
 						<!-- bind to the packaging phase -->
 						<phase>package</phase>

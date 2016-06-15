@@ -52,7 +52,8 @@ public class Discoverer {
 				SwingUtilities.invokeLater(new Runnable() {
 					@Override
 					public void run() {
-						MachinekitSettings.instance.machinekitServices.removeService(arg1.getInfo());
+						if(MachinekitSettings.instance!=null)
+							MachinekitSettings.instance.machinekitServices.removeService(arg1.getInfo());
 					}
 				});
 			}
@@ -69,7 +70,8 @@ public class Discoverer {
 				SwingUtilities.invokeLater(new Runnable() {
 					@Override
 					public void run() {
-						MachinekitSettings.instance.machinekitServices.addService(arg1.getInfo());
+						if(MachinekitSettings.instance!=null)
+							MachinekitSettings.instance.machinekitServices.addService(arg1.getInfo());
 					}
 				});
 			}
@@ -81,7 +83,7 @@ public class Discoverer {
 	}
 
 	public Discoverer() {
-
+		instance = this;
 		boolean log = true;
 		if (log) {
 			Logger logger = Logger.getLogger(JmDNS.class.getName());
@@ -130,7 +132,7 @@ public class Discoverer {
 		// Timer discoveryTimer = new Timer("DiscoveryTimer");
 		// discoveryTimer.scheduleAtFixedRate(myDiscoveryTask, 0, 5000);
 		// discoveryTimer.schedule(myDiscoveryTask, 0, 5000);
-		//discover();
+		// discover();
 	}
 
 	public static Discoverer getInstance() {
@@ -154,10 +156,11 @@ public class Discoverer {
 					SwingUtilities.invokeAndWait(new Runnable() {
 						@Override
 						public void run() {
-							MachinekitSettings.instance.machinekitServices.removeAll();
+							if(MachinekitSettings.instance!=null)
+								MachinekitSettings.instance.machinekitServices.removeAll();
 						}
 					});
-					for (JmDNS jmDNS : Discoverer.getInstance().jMdnsS) {
+					for (JmDNS jmDNS : Discoverer.this.jMdnsS) {
 						System.out.println("Discovering Machinekit services...");
 						jmDNS.addServiceListener(bonjourServiceType, bonjourServiceListener);
 						ServiceInfo[] infos = jmDNS.list(bonjourServiceType);
@@ -177,4 +180,7 @@ public class Discoverer {
 		t.start();
 	}
 
+	public ArrayList<ServiceInfo> getDiscoveredServices() {
+		return this.services;
+	}
 }

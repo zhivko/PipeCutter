@@ -18,7 +18,32 @@ You can check my Google "Machinekit PipeCutter" album to better get idea of proj
 [G+ Album](https://goo.gl/photos/4A623DBE1DQRwYfcA)
 <br>
 
- 1. Linux notes
+
+**Steps to start SW**
+You would need:
+<br>
+OpenJDK Runtime Environment (build 1.8.0_45-internal-b14)
+<br>
+and
+<br>
+Apache Maven 3.3.3
+<br>
+
+1. clone this GIT repository
+<br>
+`git clone https://github.com/zhivko/PipeCutter`
+<br>
+2. build self contained jar with running this command in cloned repo:
+<br>
+`mvn package`
+<br>
+3. start SUrfaceDemo with with:
+<br>
+`java -jar ./target/SurfaceDemo-standalone-jar-with-dependencies.jar`
+<br>
+
+
+**Linux notes**
 <br>
 **Backing up BBB**
 <br>

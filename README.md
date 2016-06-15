@@ -16,5 +16,15 @@ And runs that gcode on [BeagleBone Black](https://beagleboard.org/black).
 You can check my Google "Machinekit PipeCutter" album to better get idea of project:
 <br>
 [G+ Album](https://goo.gl/photos/4A623DBE1DQRwYfcA)
+<br>
+
+ 1. Linux notes
+<br>
+**Backing up BBB**
+<br>
+follow instructions on:
+<br>
+http://elinux.org/BeagleBone_Black_Extracting_eMMC_contents
+
 
 

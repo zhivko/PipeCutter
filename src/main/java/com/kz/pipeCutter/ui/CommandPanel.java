@@ -11,6 +11,7 @@ import javax.swing.JButton;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
+import javax.swing.SwingUtilities;
 
 import com.kz.pipeCutter.BBB.Discoverer;
 import com.kz.pipeCutter.BBB.commands.AbortGCode;
@@ -60,7 +61,12 @@ public class CommandPanel extends JPanel {
 		discoverMachineKit.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				Discoverer.getInstance().discover();
+				SwingUtilities.invokeLater(new Runnable() {
+					@Override
+					public void run() {
+						Discoverer.getInstance().discover();
+					}
+				});
 			}
 		});
 		machineKitPanel.add(discoverMachineKit);
@@ -70,7 +76,12 @@ public class CommandPanel extends JPanel {
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				new MachinekitListProcesses().start();
+				SwingUtilities.invokeLater(new Runnable() {
+					@Override
+					public void run() {
+						new MachinekitListProcesses().start();
+					}
+				});
 			}
 		});
 		machineKitPanel.add(listMachineKit);

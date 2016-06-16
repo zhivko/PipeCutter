@@ -29,10 +29,11 @@ import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.JSplitPane;
 import javax.swing.JTabbedPane;
+import javax.swing.SwingUtilities;
 import javax.swing.border.EmptyBorder;
 
 import com.kz.pipeCutter.BBB.BBBError;
-import com.kz.pipeCutter.BBB.BBBHalGroup;
+import com.kz.pipeCutter.BBB.BBBHalCommand;
 import com.kz.pipeCutter.BBB.BBBStatus;
 import com.kz.pipeCutter.BBB.Discoverer;
 import com.kz.pipeCutter.ui.tab.GcodeViewer;
@@ -50,7 +51,7 @@ public class Settings extends JFrame {
 	public static Discoverer discoverer;
 	public static BBBError error;
 	public static BBBStatus status;
-	public static BBBHalGroup halGroup;
+	public static BBBHalCommand halCmd;
 
 	public JSplitPane splitPane;
 	CommandPanel commandPanel;
@@ -84,13 +85,13 @@ public class Settings extends JFrame {
 
 	protected void initStatusService() {
 		status = new BBBStatus();
-	}	
-	
+	}
+
 	/**
 	 * Create the frame.
 	 */
 	public Settings() {
-		//this.setAlwaysOnTop(true);
+		// this.setAlwaysOnTop(true);
 		this.setTitle("PipeCutter settings");
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		// setBounds(400, 500, 800, 650);
@@ -116,7 +117,7 @@ public class Settings extends JFrame {
 		splitPane.setOrientation(JSplitPane.VERTICAL_SPLIT);
 		contentPane.add(splitPane, BorderLayout.NORTH);
 		splitPane.setDividerLocation(490);
-		
+
 		commandPanel = new CommandPanel();
 		splitPane.setTopComponent(tabbedPane);
 		splitPane.setBottomComponent(commandPanel);
@@ -164,8 +165,8 @@ public class Settings extends JFrame {
 						in.close();
 
 						FileOutputStream out = new FileOutputStream(Settings.iniFullFileName);
-						props.setProperty("frame0_location",
-								String.format("%.0fx%.0f", currentLocationOnScreen.getX(), currentLocationOnScreen.getY()));
+						props.setProperty("frame0_location", String.format("%.0fx%.0f", currentLocationOnScreen.getX(),
+								currentLocationOnScreen.getY()));
 						props.store(out, null);
 						out.close();
 					} catch (Exception e) {
@@ -194,15 +195,16 @@ public class Settings extends JFrame {
 							System.out.println(size);
 							Settings.this.setSize(new Dimension(Double.valueOf(splittedSize[0]).intValue(),
 									Double.valueOf(splittedSize[1]).intValue()));
-							
-							//MachinekitSettings.instance.machinekitServices.setPreferredSize(new Dimension(200,200));
+
+							// MachinekitSettings.instance.machinekitServices.setPreferredSize(new
+							// Dimension(200,200));
 							Settings.instance.repaint();
-							
+
 						} catch (Exception ex) {
 							ex.printStackTrace();
 						}
 						System.out.println("size: " + size);
-						
+
 					}
 
 					if (props.get("frame0_location") != null) {
@@ -210,26 +212,33 @@ public class Settings extends JFrame {
 						try {
 							String[] splittedSize = location_str.split("x");
 							System.out.println(location_str);
-							Settings.this.setLocation(new Point(Integer.valueOf(splittedSize[0]), Integer.valueOf(splittedSize[1])));
+							Settings.this.setLocation(
+									new Point(Integer.valueOf(splittedSize[0]), Integer.valueOf(splittedSize[1])));
 						} catch (Exception ex) {
 							ex.printStackTrace();
 						}
 						System.out.println("size: " + location_str);
 					}
-					
-					
+
+					SwingUtilities.invokeLater(new Runnable() {
+						@Override
+						public void run() {
+							// TODO Auto-generated method stub
+							initErrorService();
+							initStatusService();
+							initHalCmdService();
+						}
+					});
 
 				} catch (Exception e1) {
 					// TODO Auto-generated catch block
 					e1.printStackTrace();
-				}
-				finally {
-					repositioned=true;
+				} finally {
+					repositioned = true;
 				}
 			}
 		});
-		
-		
+
 		this.setVisible(true);
 		this.pack();
 
@@ -357,7 +366,7 @@ public class Settings extends JFrame {
 		commandPanel.log.setCaretPosition(commandPanel.log.getText().length());
 	}
 
-	public void initHalGroupService() {
-		halGroup = new BBBHalGroup();
+	public void initHalCmdService() {
+		halCmd = new BBBHalCommand();
 	}
 }

@@ -51,7 +51,7 @@ public class GcodeViewer extends JPanel {
 	String folder;
 
 	JTextField currentLine;
-
+	static GcodeViewer instance;
 	public GcodeViewer() {
 		super();
 
@@ -217,8 +217,6 @@ public class GcodeViewer extends JPanel {
 				new Thread(new Runnable() {
 					public void run() {
 						new StepGCode().start();
-						int lineNumber = Integer.valueOf(currentLine.getText());
-						currentLine.setText(String.valueOf(lineNumber + 1));
 					}
 				}).run();
 
@@ -309,6 +307,7 @@ public class GcodeViewer extends JPanel {
 				// TODO Auto-generated method stub
 			}
 		});
+		instance = this;
 	}
 
 	protected void refresh() {
@@ -344,4 +343,16 @@ public class GcodeViewer extends JPanel {
 		}
 	}
 
+	public static void setLineNumber(int lineNo)
+	{
+		final int lineNo1=lineNo;
+		SwingUtilities.invokeLater(new Runnable() {
+			
+			@Override
+			public void run() {
+				// TODO Auto-generated method stub
+				GcodeViewer.instance.currentLine.setText(String.valueOf(lineNo1));
+			}
+		});
+	}
 }

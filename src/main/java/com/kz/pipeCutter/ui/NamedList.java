@@ -246,7 +246,6 @@ public class NamedList extends JPanel implements IParameter, IHasLabel {
 			String hallGroupUrl = "tcp://" + serviceInfo.getServer() + ":" + ret.getPort() + "/";
 			if (!hallGroupUrl.equals(Settings.getInstance().getSetting("machinekit_halGroupService_url"))) {
 				Settings.getInstance().setSetting("machinekit_halGroupService_url", hallGroupUrl);
-				Settings.instance.initHalGroupService();
 			}
 		}
 	}
@@ -264,7 +263,7 @@ public class NamedList extends JPanel implements IParameter, IHasLabel {
 			hallGroupUrl = "tcp://" + serviceInfo.getServer() + ":" + ret.getPort() + "/";
 			if (!hallGroupUrl.equals(Settings.getInstance().getSetting("machinekit_halCmdService_url"))) {
 				Settings.getInstance().setSetting("machinekit_halCmdService_url", hallGroupUrl);
-				Settings.instance.initHalGroupService();
+				Settings.instance.initHalCmdService();
 			}
 		}
 	}

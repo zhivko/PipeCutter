@@ -2,6 +2,7 @@ package com.kz.pipeCutter.BBB;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Random;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
@@ -17,6 +18,7 @@ import org.zeromq.ZMQ.Socket;
 import org.zeromq.ZMsg;
 
 import com.google.protobuf.InvalidProtocolBufferException;
+import com.kz.pipeCutter.ui.SavableControl;
 import com.kz.pipeCutter.ui.Settings;
 import com.kz.pipeCutter.ui.tab.GcodeViewer;
 
@@ -38,13 +40,13 @@ public class BBBHalCommand implements Runnable {
 	public BBBHalCommand() {
 		this.halCmdUri = Settings.getInstance().getSetting("machinekit_halCmdService_url");
 		getClient();
-		scheduler.scheduleAtFixedRate(this, 1000, 500, TimeUnit.MILLISECONDS);
+		//scheduler.scheduleAtFixedRate(this, 1000, 500, TimeUnit.MILLISECONDS);
 	}
 
 	public BBBHalCommand(String uri) {
 		this.halCmdUri = uri;
 		getClient();
-		scheduler.scheduleAtFixedRate(this, 1000, 500, TimeUnit.MILLISECONDS);
+		//scheduler.scheduleAtFixedRate(this, 1000, 500, TimeUnit.MILLISECONDS);
 	}	
 	
 	public static void main(String[] args) {

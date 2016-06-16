@@ -1,9 +1,5 @@
 package com.kz.pipeCutter.ui.tab;
 
-import java.awt.Dimension;
-import java.awt.event.KeyEvent;
-import java.awt.event.KeyListener;
-
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 
@@ -67,8 +63,8 @@ public class MachinekitSettings extends JPanel {
 		add(previewUrl);
 
 		SavableText halGroupUrl = new SavableText();
-		halGroupUrl.setLabelTxt("HalGroup service url:");
-		halGroupUrl.setParId("machinekit_halGroupService_url");
+		halGroupUrl.setLabelTxt("HalRemoteComp service url:");
+		halGroupUrl.setParId("machinekit_halRCompService_url");
 		add(halGroupUrl);		
 
 		SavableText halCmdUrl = new SavableText();
@@ -80,7 +76,6 @@ public class MachinekitSettings extends JPanel {
 		machinekitServices.setParId("machinekit_services");
 		machinekitServices.setLabelTxt("MachineTalk services");
 		add(machinekitServices);
-		
 		
 		MachinekitSettings.instance = this;
 	}

@@ -153,7 +153,8 @@ public class LineNumberView extends JComponent {
 			Element map = text.getDocument().getDefaultRootElement();
 			int lastChar = map.getElement(index).getEndOffset() - 1;
 			Rectangle r = text.modelToView(lastChar);
-			height = (r.y - lastPos) + r.height;
+			if(r!=null)
+				height = (r.y - lastPos) + r.height;
 		} catch (BadLocationException ex) {
 			ex.printStackTrace();
 		}

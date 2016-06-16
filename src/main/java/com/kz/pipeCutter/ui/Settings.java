@@ -34,6 +34,7 @@ import javax.swing.border.EmptyBorder;
 
 import com.kz.pipeCutter.BBB.BBBError;
 import com.kz.pipeCutter.BBB.BBBHalCommand;
+import com.kz.pipeCutter.BBB.BBBHalRComp;
 import com.kz.pipeCutter.BBB.BBBStatus;
 import com.kz.pipeCutter.BBB.Discoverer;
 import com.kz.pipeCutter.ui.tab.GcodeViewer;
@@ -52,7 +53,8 @@ public class Settings extends JFrame {
 	public static BBBError error;
 	public static BBBStatus status;
 	public static BBBHalCommand halCmd;
-
+	public static BBBHalRComp halRComp;
+	
 	public JSplitPane splitPane;
 	CommandPanel commandPanel;
 
@@ -135,8 +137,10 @@ public class Settings extends JFrame {
 						props.load(in);
 						in.close();
 
-						FileOutputStream out = new FileOutputStream(Settings.iniFullFileName);
-						props.setProperty("frame0", c.getSize().getWidth() + "x" + c.getSize().getHeight());
+						FileOutputStream out = new FileOutputStream(
+								Settings.iniFullFileName);
+						props.setProperty("frame0", c.getSize().getWidth() + "x"
+								+ c.getSize().getHeight());
 						props.store(out, null);
 						out.close();
 
@@ -164,9 +168,10 @@ public class Settings extends JFrame {
 						props.load(in);
 						in.close();
 
-						FileOutputStream out = new FileOutputStream(Settings.iniFullFileName);
-						props.setProperty("frame0_location", String.format("%.0fx%.0f", currentLocationOnScreen.getX(),
-								currentLocationOnScreen.getY()));
+						FileOutputStream out = new FileOutputStream(
+								Settings.iniFullFileName);
+						props.setProperty("frame0_location", String.format("%.0fx%.0f",
+								currentLocationOnScreen.getX(), currentLocationOnScreen.getY()));
 						props.store(out, null);
 						out.close();
 					} catch (Exception e) {
@@ -193,12 +198,17 @@ public class Settings extends JFrame {
 						try {
 							String[] splittedSize = size.split("x");
 							System.out.println(size);
-							Settings.this.setSize(new Dimension(Double.valueOf(splittedSize[0]).intValue(),
-									Double.valueOf(splittedSize[1]).intValue()));
+							Settings.this.setSize(new Dimension(Double.valueOf(
+									splittedSize[0]).intValue(), Double.valueOf(splittedSize[1])
+									.intValue()));
 
 							// MachinekitSettings.instance.machinekitServices.setPreferredSize(new
 							// Dimension(200,200));
+							Settings.instance.pack();
 							Settings.instance.repaint();
+							SavableText c = (SavableText) Settings.instance
+									.getParameter("machinekit_commandService_url");
+							System.out.println(c.jValue.getSize());
 
 						} catch (Exception ex) {
 							ex.printStackTrace();
@@ -212,8 +222,8 @@ public class Settings extends JFrame {
 						try {
 							String[] splittedSize = location_str.split("x");
 							System.out.println(location_str);
-							Settings.this.setLocation(
-									new Point(Integer.valueOf(splittedSize[0]), Integer.valueOf(splittedSize[1])));
+							Settings.this.setLocation(new Point(Integer
+									.valueOf(splittedSize[0]), Integer.valueOf(splittedSize[1])));
 						} catch (Exception ex) {
 							ex.printStackTrace();
 						}
@@ -227,6 +237,7 @@ public class Settings extends JFrame {
 							initErrorService();
 							initStatusService();
 							initHalCmdService();
+							initHalRcompService();
 						}
 					});
 
@@ -286,7 +297,8 @@ public class Settings extends JFrame {
 
 	public void setSetting(String parameterId, String value) {
 		try {
-			List<SavableControl> savableControls = harvestMatches(this.getContentPane(), SavableControl.class);
+			List<SavableControl> savableControls = harvestMatches(
+					Settings.instance.getContentPane(), SavableControl.class);
 			for (SavableControl savableControl : savableControls) {
 				if (savableControl.getParId().equals(parameterId)) {
 					savableControl.setParValue(value);
@@ -312,7 +324,8 @@ public class Settings extends JFrame {
 
 	public IParameter getParameter(String parameterId) {
 		IParameter ret = null;
-		List<SavableControl> savableControls = harvestMatches(this.getContentPane(), SavableControl.class);
+		List<SavableControl> savableControls = harvestMatches(
+				this.getContentPane(), SavableControl.class);
 		for (SavableControl savableControl : savableControls) {
 			System.out.println("control  id:" + savableControl.getParId());
 			if (savableControl.getParId().equals(parameterId)) {
@@ -334,7 +347,8 @@ public class Settings extends JFrame {
 		return null;
 	}
 
-	public static <T extends Component> List<T> harvestMatches(Container root, Class<T> clazz) {
+	public static <T extends Component> List<T> harvestMatches(Container root,
+			Class<T> clazz) {
 		List<Container> containers = new LinkedList<>();
 		List<T> harvested = new ArrayList<>();
 
@@ -368,5 +382,17 @@ public class Settings extends JFrame {
 
 	public void initHalCmdService() {
 		halCmd = new BBBHalCommand();
+	}
+
+	public void initHalRcompService() {
+		if(halRComp!=null)
+			halRComp.interrupt();
+		halRComp = new BBBHalRComp();
+	}	
+	
+	public List<SavableControl> getAllControls() {
+		List<SavableControl> savableControls = harvestMatches(
+				Settings.instance.getContentPane(), SavableControl.class);
+		return savableControls;
 	}
 }

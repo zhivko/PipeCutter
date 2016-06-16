@@ -76,7 +76,10 @@ public class BBBError {
 
 				} catch (Exception e) {
 					if (!e.getMessage().equals("Unknown message type."))
+					{
 						e.printStackTrace();
+						Settings.instance.log("Error: " + e.getMessage());
+					}
 				}
 			}
 		};

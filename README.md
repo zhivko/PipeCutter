@@ -17,6 +17,16 @@ You can check my Google "Machinekit PipeCutter" album to better get idea of proj
 <br>
 [G+ Album](https://goo.gl/photos/4A623DBE1DQRwYfcA)
 <br>
+<br>
+
+**Functionalities**
+<br>
+Produce GCODE
+<br>
+Stepping through GCODE reading motion.program-line hal pin
+<br>
+<img src="./screenshots/steppingThroughGcodeWorks.png" alt="SteppingThroughGcode" width="50%" height="50%">
+<br>
 
 
 **Steps to start SW**

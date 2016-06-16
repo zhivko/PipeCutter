@@ -57,8 +57,6 @@ Apache Maven 3.3.3
 <br>
 **Backing up BBB**
 <br>
-follow instructions on:
-<br>
 http://elinux.org/BeagleBone_Black_Extracting_eMMC_contents
 <br>
 **BBB becomes unresponsive**

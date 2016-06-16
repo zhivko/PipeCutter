@@ -60,6 +60,10 @@ Apache Maven 3.3.3
 follow instructions on:
 <br>
 http://elinux.org/BeagleBone_Black_Extracting_eMMC_contents
+<br>
+**BBB becomes unresponsive**
+<br>
+http://dave.cheney.net/2013/09/22/two-point-five-ways-to-access-the-serial-console-on-your-beaglebone-black
 
 
 

@@ -31,7 +31,7 @@ public class BBBHalRComp implements Runnable {
 	private pb.Message.Container.Builder builder;
 	private Thread readThread;
 
-	HashMap<String, String> halPin = new HashMap<>();
+	HashMap<String, String> halPins = new HashMap<>();
 
 	private final ScheduledExecutorService scheduler = Executors
 			.newScheduledThreadPool(1);
@@ -70,16 +70,17 @@ public class BBBHalRComp implements Runnable {
 					comp = components.get(compName);
 				} else {
 					comp = pb.Object.Component.newBuilder().setName(compName);
+					components.put(compName, comp);
 				}
 
-				pb.Object.Pin.Builder pin = null;
-				if (pins.containsKey(pinName)) {
-					pin = pins.get(pinName);
-				} else {
-					pin = pb.Object.Pin.newBuilder().setName(pinName);
-				}
-
-				comp.addPin(pin);
+//				pb.Object.Pin.Builder pin = null;
+//				if (pins.containsKey(pinName)) {
+//					pin = pins.get(pinName);
+//				} else {
+//					pin = pb.Object.Pin.newBuilder().setName(pinName);
+//				}
+//
+//				comp.addPin(pin);
 			}
 		}
 
@@ -124,12 +125,13 @@ public class BBBHalRComp implements Runnable {
 								value = Boolean.valueOf(
 										contReturned.getComp(i).getPin(j).getHalbit()).toString();
 							}
-							halPin.put(contReturned.getComp(i).getPin(j).getName(), value);
+							halPins.put(contReturned.getComp(i).getPin(j).getName(), value);
 						}
 					}
 					// System.out.println();
 					GcodeViewer.setLineNumber(Integer.valueOf(
-							halPin.get("motion.program-line")).intValue());
+							halPins.get("motion.program-line")).intValue());
+					
 				} catch (InvalidProtocolBufferException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
@@ -148,6 +150,7 @@ public class BBBHalRComp implements Runnable {
 				.format("%04X-%04X", rand.nextInt(), rand.nextInt());
 		client.setIdentity(identity.getBytes(ZMQ.CHARSET));
 		client.setLinger(0);
+		//client.subscribe("motion".getBytes(ZMQ.CHARSET));
 		client.connect(this.halRCompUri);
 	}
 

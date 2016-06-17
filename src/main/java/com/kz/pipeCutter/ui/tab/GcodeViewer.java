@@ -110,6 +110,9 @@ public class GcodeViewer extends JPanel {
 		buttonPanel.add(buttonPrevious, BorderLayout.EAST);
 
 		currentLine = new SavableText();
+		currentLine.setLabelTxt("line:");
+		currentLine.preventResize = true;
+		currentLine.jValue.setColumns(3);
 		currentLine.setNeedsSave(false);
 		currentLine.jValue.getDocument().addDocumentListener(new DocumentListener() {
 

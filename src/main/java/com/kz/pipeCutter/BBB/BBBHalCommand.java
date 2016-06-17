@@ -40,13 +40,13 @@ public class BBBHalCommand implements Runnable {
 	public BBBHalCommand() {
 		this.halCmdUri = Settings.getInstance().getSetting("machinekit_halCmdService_url");
 		getClient();
-		//scheduler.scheduleAtFixedRate(this, 1000, 500, TimeUnit.MILLISECONDS);
+		scheduler.scheduleAtFixedRate(this, 1000, 500, TimeUnit.MILLISECONDS);
 	}
 
 	public BBBHalCommand(String uri) {
 		this.halCmdUri = uri;
 		getClient();
-		//scheduler.scheduleAtFixedRate(this, 1000, 500, TimeUnit.MILLISECONDS);
+		scheduler.scheduleAtFixedRate(this, 1000, 500, TimeUnit.MILLISECONDS);
 	}	
 	
 	public static void main(String[] args) {

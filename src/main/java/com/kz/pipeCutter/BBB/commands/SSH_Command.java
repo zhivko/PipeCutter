@@ -1,18 +1,9 @@
 package com.kz.pipeCutter.BBB.commands;
 
-import java.util.concurrent.Callable;
-
-import org.zeromq.ZMQ;
-import org.zeromq.ZMQ.Context;
-import org.zeromq.ZMQ.Socket;
-
 import com.jcraft.jsch.ChannelExec;
 import com.jcraft.jsch.JSch;
 import com.jcraft.jsch.Session;
-import com.kz.pipeCutter.BBB.MyOutputStreamReader;
 import com.kz.pipeCutter.ui.Settings;
-
-import pb.Message.Container;
 
 public abstract class SSH_Command {
 	private static JSch jsch;

@@ -22,7 +22,6 @@ import java.nio.file.WatchService;
 import javax.swing.JButton;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
-import javax.swing.JTextField;
 import javax.swing.JTextPane;
 import javax.swing.SwingUtilities;
 import javax.swing.event.DocumentEvent;
@@ -30,6 +29,9 @@ import javax.swing.event.DocumentListener;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.DefaultHighlighter;
 import javax.swing.text.DefaultHighlighter.DefaultHighlightPainter;
+
+import pb.Types.HalPinDirection;
+import pb.Types.ValueType;
 
 import com.kz.pipeCutter.BBB.commands.AbortGCode;
 import com.kz.pipeCutter.BBB.commands.CloseGCode;
@@ -40,6 +42,7 @@ import com.kz.pipeCutter.BBB.commands.ResumeGCode;
 import com.kz.pipeCutter.BBB.commands.StepGCode;
 import com.kz.pipeCutter.ui.LineNumberView;
 import com.kz.pipeCutter.ui.MyVerticalFlowLayout;
+import com.kz.pipeCutter.ui.PinDef;
 import com.kz.pipeCutter.ui.SavableText;
 import com.kz.pipeCutter.ui.Settings;
 
@@ -167,7 +170,12 @@ public class GcodeViewer extends JPanel {
 			}
 		});
 		currentLine.setParValue("1");
-		currentLine.setPinName("motion.program-line");
+		currentLine.setPin(
+				new PinDef(
+				"mymotion.program-line", 
+				HalPinDirection.HAL_IN, 
+				ValueType.HAL_S32)
+				);
 		buttonPanel.add(currentLine);
 
 		JButton buttonNext = new JButton("Next");

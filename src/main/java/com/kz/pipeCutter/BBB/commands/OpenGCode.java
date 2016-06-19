@@ -21,7 +21,7 @@ public class OpenGCode extends MachineTalkCommand {
 		builder.setTicket(ticket++);
 		Container container = builder.build();
 		byte[] buff = container.toByteArray();
-		getCommandSocket().send(buff, 0);
+		getCommandSocket().send(buff);
 		Thread.sleep(500);
 		parseAndOutput();
 		
@@ -32,7 +32,7 @@ public class OpenGCode extends MachineTalkCommand {
 		builder.setTicket(ticket++);
 		container = builder.build();
 		buff = container.toByteArray();
-		getCommandSocket().send(buff, 0);
+		getCommandSocket().send(buff);
 		Thread.sleep(500);
 		parseAndOutput();
 

@@ -164,7 +164,7 @@ public class CommandPanel extends JPanel {
 					new ChangeMode(EmcTaskModeType.EMC_TASK_MODE_MANUAL).start();
 					for (int i = 0; i <= 4; i++) {
 						new HomeAxis(i).start();
-						Thread.sleep(10);
+						Thread.sleep(500);
 					}
 				} catch (Exception ex) {
 					ex.printStackTrace();

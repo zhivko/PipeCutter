@@ -7,6 +7,8 @@
 # ########################################
 
 # start haltalk server
+#loadusr -W haltalk -d 1
+#loadusr -W haltalk -d 5
 loadusr -W haltalk -d 5
 
 # Launch the setup script to make sure hardware setup looks good
@@ -457,3 +459,9 @@ setp pid.1.Dgain  0.0
 setp pid.1.maxerrorI 1.0
 setp pid.1.bias    0.5
 setp pid.1.enable   1
+
+
+newcomp mymotion timer=100
+newpin mymotion  mymotion.program-line    s32 in
+ready  mymotion
+net program-line	mymotion.program-line  <= motion.program-line

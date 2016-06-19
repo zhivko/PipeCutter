@@ -24,14 +24,10 @@ public abstract class SavableControl extends JPanel implements IParameter, ISave
 	private String parId;
 	public String iniFullFileName;
 	private String labelTxt;
-	private String pinName;
+	public PinDef pinDef;
 
-	public String getPinName() {
-		return pinName;
-	}
-
-	public void setPinName(String pinName) {
-		this.pinName = pinName;
+	public void setPin(PinDef pinDef) {
+		this.pinDef = pinDef;
 	}
 
 	public JLabel jLabel;

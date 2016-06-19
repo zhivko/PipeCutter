@@ -24,6 +24,7 @@ import javax.jmdns.impl.JmDNSImpl;
 import javax.swing.SwingUtilities;
 import javax.swing.SwingWorker;
 
+import com.kz.pipeCutter.ui.NamedList;
 import com.kz.pipeCutter.ui.Settings;
 import com.kz.pipeCutter.ui.tab.MachinekitSettings;
 
@@ -52,8 +53,9 @@ public class Discoverer {
 				SwingUtilities.invokeLater(new Runnable() {
 					@Override
 					public void run() {
-						if(MachinekitSettings.instance!=null)
-							MachinekitSettings.instance.machinekitServices.removeService(arg1.getInfo());
+						if (MachinekitSettings.instance != null)
+							MachinekitSettings.instance.machinekitServices.removeService(arg1
+									.getInfo());
 					}
 				});
 			}
@@ -70,8 +72,9 @@ public class Discoverer {
 				SwingUtilities.invokeLater(new Runnable() {
 					@Override
 					public void run() {
-						if(MachinekitSettings.instance!=null)
-							MachinekitSettings.instance.machinekitServices.addService(arg1.getInfo());
+						if (MachinekitSettings.instance != null)
+							MachinekitSettings.instance.machinekitServices.addService(arg1
+									.getInfo());
 					}
 				});
 			}
@@ -108,7 +111,8 @@ public class Discoverer {
 							if (!address.equals(InetAddress.getLoopbackAddress())) {
 								JmDNS jmdns = JmDNSImpl.create(address, bonjourServiceType);
 								jMdnsS.add(jmdns);
-								System.out.println("Adding bonjour listener on local IP: " + address.toString());
+								System.out.println("Adding bonjour listener on local IP: "
+										+ address.toString());
 							}
 						}
 					}
@@ -156,16 +160,19 @@ public class Discoverer {
 					SwingUtilities.invokeAndWait(new Runnable() {
 						@Override
 						public void run() {
-							if(MachinekitSettings.instance!=null)
+							if (MachinekitSettings.instance != null)
 								MachinekitSettings.instance.machinekitServices.removeAll();
+
+							for (JmDNS jmDNS : Discoverer.this.jMdnsS) {
+								System.out.println("Discovering Machinekit services...");
+								jmDNS.addServiceListener(bonjourServiceType,
+										bonjourServiceListener);
+								ServiceInfo[] infos = jmDNS.list(bonjourServiceType);
+								jmDNS.addServiceListener(bonjourServiceType,
+										bonjourServiceListener);
+							}
 						}
 					});
-					for (JmDNS jmDNS : Discoverer.this.jMdnsS) {
-						System.out.println("Discovering Machinekit services...");
-						jmDNS.addServiceListener(bonjourServiceType, bonjourServiceListener);
-						ServiceInfo[] infos = jmDNS.list(bonjourServiceType);
-						jmDNS.addServiceListener(bonjourServiceType, bonjourServiceListener);
-					}
 				} catch (InvocationTargetException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();

@@ -40,9 +40,13 @@
 				<updatePolicy>always</updatePolicy>
 			</snapshots>
 		</repository>
+		<repository>
+			<id>sonatype-nexus-snapshots</id>
+			<url>https://oss.sonatype.org/content/repositories/snapshots</url>
+		</repository>
+
 
 	</repositories>
-
 
 	<dependencies>
 
@@ -57,7 +61,7 @@
 		<!-- <artifactId>jzy3d-api</artifactId> -->
 		<!-- <version>0.9.2-SNAPSHOT</version> -->
 		<!-- </dependency> -->
-	
+
 
 		<dependency>
 			<groupId>org.jzy3d</groupId>
@@ -119,24 +123,28 @@
 		<!-- <version>${jogl.version}</version> -->
 		<!-- </dependency> -->
 
-		<dependency>
-			<groupId>org.zeromq</groupId>
-			<artifactId>jeromq</artifactId>
-			<version>0.3.5</version>
-		</dependency>
+		<!-- <dependency> -->
+		<!-- <groupId>org.zeromq</groupId> -->
+		<!-- <artifactId>jeromq</artifactId> -->
+		<!-- <version>0.3.5</version> -->
+		<!-- </dependency> -->
 
 
 		<!-- <dependency> -->
 		<!-- <groupId>org.zeromq</groupId> -->
 		<!-- <artifactId>jeromq</artifactId> -->
-		<!-- <version>0.3.6-SNAPSHOT</version> -->
+		<!-- <version>0.3.5</version> -->
 		<!-- </dependency> -->
 		<!-- <dependency> -->
 		<!-- <groupId>org.zeromq</groupId> -->
 		<!-- <artifactId>jzmq</artifactId> -->
 		<!-- <version>3.1.0</version> -->
 		<!-- </dependency> -->
-
+	<dependency>
+		<groupId>org.zeromq</groupId>
+		<artifactId>jzmq-api</artifactId>
+		<version>0.1.0-SNAPSHOT</version>
+	</dependency>
 
 		<dependency>
 			<groupId>javax.jmdns</groupId>
@@ -182,6 +190,12 @@
 			<groupId>log4j</groupId>
 			<artifactId>log4j</artifactId>
 			<version>1.2.17</version>
+		</dependency>
+		<!-- https://mvnrepository.com/artifact/org.slf4j/slf4j-log4j12 -->
+		<dependency>
+			<groupId>org.slf4j</groupId>
+			<artifactId>slf4j-log4j12</artifactId>
+			<version>1.7.21</version>
 		</dependency>
 
 
@@ -238,7 +252,7 @@
 								</manifest>
 							</archive>
 						</configuration>
-					</execution>				
+					</execution>
 					<execution>
 						<id>make-assembly</id>
 						<!-- bind to the packaging phase -->

@@ -1,0 +1,4 @@
+seqdiag {
+  "rCompZmqSocket\ntype=XSUB" -> "HAL Rcommand service" [label = "msg(ContainerType=MT_HALGROUP_BIND\ncomponent[\nname=motion])"];
+  "rCompZmqSocket\ntype=XSUB" <- "HAL Rcommand service" [label = "recvMsg(component[\nname=\"motion\"])"];
+}

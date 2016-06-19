@@ -21,7 +21,7 @@ public class PauseGCode extends MachineTalkCommand {
 		builder.setTicket(ticket++);
 		Container container = builder.build();
 		byte[] buff = container.toByteArray();
-		getCommandSocket().send(buff, 0);
+		getCommandSocket().send(buff);
 		parseAndOutput();
 
 		return container;

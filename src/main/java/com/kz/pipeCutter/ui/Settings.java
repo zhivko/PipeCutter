@@ -82,12 +82,33 @@ public class Settings extends JFrame {
 	}
 
 	protected void initErrorService() {
-		error = new BBBError();
+		if(error==null)
+			error = new BBBError();
+		else
+			error.initSocket();
 	}
 
 	protected void initStatusService() {
-		status = new BBBStatus();
+		if(status==null)
+			status = new BBBStatus();
+		else
+			status.initSocket();
 	}
+	
+	public void initHalCmdService() {
+		if(halCmd == null)
+			halCmd = new BBBHalCommand();
+		else
+			halCmd.initSocket();
+	}
+
+	public void initHalRcompService() {
+		if(halRComp==null)
+			halRComp = new BBBHalRComp();
+		else
+			halRComp.initSocket();
+	}	
+	
 
 	/**
 	 * Create the frame.
@@ -238,6 +259,7 @@ public class Settings extends JFrame {
 							initStatusService();
 							initHalCmdService();
 							initHalRcompService();
+							BBBHalRComp.getInstance().startBind();
 						}
 					});
 
@@ -379,16 +401,6 @@ public class Settings extends JFrame {
 		commandPanel.log.append(sdf.format(new Date()) + " " + txt);
 		commandPanel.log.setCaretPosition(commandPanel.log.getText().length());
 	}
-
-	public void initHalCmdService() {
-		halCmd = new BBBHalCommand();
-	}
-
-	public void initHalRcompService() {
-		if(halRComp!=null)
-			halRComp.interrupt();
-		halRComp = new BBBHalRComp();
-	}	
 	
 	public List<SavableControl> getAllControls() {
 		List<SavableControl> savableControls = harvestMatches(

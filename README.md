@@ -62,6 +62,10 @@ http://elinux.org/BeagleBone_Black_Extracting_eMMC_contents
 **BBB becomes unresponsive**
 <br>
 http://dave.cheney.net/2013/09/22/two-point-five-ways-to-access-the-serial-console-on-your-beaglebone-black
+<br>
+**machinekit hal remote components**
+<br>
+https://github.com/mhaberler/asciidoc-sandbox/wiki/Remote-HAL-Components
 
 
 

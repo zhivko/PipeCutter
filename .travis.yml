@@ -8,5 +8,8 @@ env:
 B3mFVsQUDSTtpBdLAGm12jSq8QykDzMB+yavta8x0sfYNLR54oTfmZFtio4QMauDxkv1TkHdoQDBN+0xS+WyXHCFiZ/1Yy7OxJU5KEvDYlyrPWkD/ZRlMiK0eMff9f9k0WNeJZJTSmR+snBAgRF8uFFZL+AzVkUJFWJHcT6mgrB2pbhZ3/FTPmBsXSpAAJUVbUdxOW8J
 Cn3SyKlOcEqENivfN4rvbOKjgdAeSHvPwR5xDygyWRF/2pzbYqdpWSeKwiU1PGwHjFhZS/lY7b3eQZoAD5Bremfvs5dIDO89qzca2O2zBYJKhByJUgyoY8CbYEd/LkaLzBThgyOwiVRAyVH5DXeKti/iRyi5E2yDySfM+bCfhyw7g1QvqBmu1QN6d4+F+/SbqD/+JPZe
 +w0sq0B+o/8ipb4+T2Mu1uaGPDT2rFeXpVCyb0lQkgZM2NnMSlj+i5Txr3GyQL7qdWYSpMpOlQCshnajGYDL3kqDPEjY24="
-after_success: mvn clean compile package
-
+before_install:
+  - sudo apt-get -qq update
+  - sudo apt-get install -y libzmq-dev libpgm-dev
+after_success:
+  mvn clean compile package

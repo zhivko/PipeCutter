@@ -32,6 +32,8 @@ import javax.swing.JTabbedPane;
 import javax.swing.SwingUtilities;
 import javax.swing.border.EmptyBorder;
 
+import org.apache.log4j.Logger;
+
 import com.kz.pipeCutter.BBB.BBBError;
 import com.kz.pipeCutter.BBB.BBBHalCommand;
 import com.kz.pipeCutter.BBB.BBBHalRComp;
@@ -398,8 +400,10 @@ public class Settings extends JFrame {
 		System.out.println(txt);
 		txt = txt.replaceAll("reply_ticket: (.*)\n", "");
 		SimpleDateFormat sdf = new SimpleDateFormat("HH:mm:ss");
-		commandPanel.log.append(sdf.format(new Date()) + " " + txt);
+		String logTxt = sdf.format(new Date()) + " " + txt;
+		commandPanel.log.append(logTxt + "\n");
 		commandPanel.log.setCaretPosition(commandPanel.log.getText().length());
+		Logger.getLogger(this.getClass()).info(logTxt);
 	}
 	
 	public List<SavableControl> getAllControls() {

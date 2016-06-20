@@ -19,7 +19,7 @@ public class MyWebsocketClient {
 	@OnOpen
 	public void onOpen(Session session) {
 		if(Settings.instance!=null)
-			Settings.instance.log("\tConnected to: " + session.getRequestURI() + "\n");
+			Settings.instance.log("\tConnected to: " + session.getRequestURI());
 		this.positioner.isConnected = true;
 	}
 

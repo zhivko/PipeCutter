@@ -10,6 +10,6 @@ Cn3SyKlOcEqENivfN4rvbOKjgdAeSHvPwR5xDygyWRF/2pzbYqdpWSeKwiU1PGwHjFhZS/lY7b3eQZoA
 +w0sq0B+o/8ipb4+T2Mu1uaGPDT2rFeXpVCyb0lQkgZM2NnMSlj+i5Txr3GyQL7qdWYSpMpOlQCshnajGYDL3kqDPEjY24="
 before_install:
   - sudo apt-get -qq update
-  - sudo apt-get install -y libzmq-dev libpgm-dev
+  - sudo apt-get install libzmq-dev libpgm-dev
 after_success:
   mvn clean compile package

@@ -157,10 +157,10 @@ public class BBBHalCommand implements Runnable {
 					requestDescribe();
 				} else if (contReturned.getType().equals(
 						ContainerType.MT_HALRCOMP_BIND_CONFIRM)) {
-					Settings.instance.log(contReturned.getType().toString() + "\n");
+					Settings.instance.log(contReturned.getType().toString());
 					BBBHalRComp.getInstance().subcribe();
 				} else {
-					Settings.instance.log(contReturned.getType().toString() + "\n");
+					Settings.instance.log(contReturned.getType().toString());
 				}
 			} catch (InvalidProtocolBufferException e) {
 				// TODO Auto-generated catch block

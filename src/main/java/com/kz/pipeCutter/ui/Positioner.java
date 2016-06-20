@@ -292,11 +292,11 @@ public class Positioner extends JPanel {
 			uri = new URI(positionerUrl.getParValue());
 			myWebsocketClient = new MyWebsocketClient(this);
 			if (Settings.instance != null)
-				Settings.instance.log("Connecting to: " + uri.toString() + "\n");
+				Settings.instance.log("Connecting to: " + uri.toString());
 			wsSession = cm.asyncConnectToServer(myWebsocketClient, uri).get(2000, TimeUnit.MILLISECONDS);
 		} catch (Exception e) {
 			if (Settings.instance != null)
-				Settings.instance.log("\t" + uri.toString() + " " + e.toString() + "\n");
+				Settings.instance.log("\t" + uri.toString() + " " + e.toString());
 		}
 
 	}

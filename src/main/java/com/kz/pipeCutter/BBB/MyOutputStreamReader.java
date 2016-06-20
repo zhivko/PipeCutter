@@ -21,7 +21,7 @@ public class MyOutputStreamReader extends OutputStream {
 		char c = (char) b;
 		if (c == '\n') {
 			//System.out.println(line);
-			Settings.instance.log(line + "\n");
+			Settings.instance.log(line);
 			lines.add(line);
 			line = "";
 		} else {

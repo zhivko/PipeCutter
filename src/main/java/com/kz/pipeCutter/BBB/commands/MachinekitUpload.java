@@ -40,9 +40,9 @@ public class MachinekitUpload extends SSH_Command {
 			String from = localPath + File.separatorChar + fileName;
 			String to = remotePath + "/" + fileName;
 			FileInputStream fis = new FileInputStream(new File(from));
-			Settings.instance.log("Ftp put file to: " + to + "...\n");
+			Settings.instance.log("Ftp put file to: " + to + "...");
 			channelSFtp.put(fis, "prog.gcode");
-			Settings.instance.log("Ftp put file to: " + to + "...DONE.\n");
+			Settings.instance.log("Ftp put file to: " + to + "...DONE.");
 			
 			channelSFtp.setMtime(to, (int)((new Date().getTime())/1000));
 

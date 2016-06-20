@@ -6,7 +6,6 @@ import java.util.List;
 import java.util.Random;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.TimeUnit;
 
 import javax.jmdns.ServiceInfo;
 
@@ -21,7 +20,6 @@ import pb.Message.Container;
 import pb.Types.ContainerType;
 import pb.Types.ValueType;
 
-import com.google.protobuf.InvalidProtocolBufferException;
 import com.kz.pipeCutter.ui.PinDef;
 import com.kz.pipeCutter.ui.SavableControl;
 import com.kz.pipeCutter.ui.Settings;
@@ -42,20 +40,14 @@ public class BBBHalRComp implements Runnable {
 	HashMap<String, String> halPins = new HashMap<>();
 	public boolean isAlive = true;
 
-	static String identity;
-	static {
-		Random rand = new Random(23424234);
-		identity = String.format("%04X-%04X", rand.nextInt(), rand.nextInt());
-	}
-
 	private final ScheduledExecutorService scheduler = Executors
-			.newScheduledThreadPool(1);
+			.newScheduledThreadPool(10);
 
 	public BBBHalRComp() {
-		initSocket();
 		prepareBindContainer();
-		scheduler.scheduleAtFixedRate(this, 1000, 500, TimeUnit.MILLISECONDS);
-		// new Thread(this).start();
+		initSocket();
+		// scheduler.scheduleAtFixedRate(new Thread(this), 1000, 1000,
+		// TimeUnit.MILLISECONDS);
 		instance = this;
 	}
 
@@ -114,84 +106,96 @@ public class BBBHalRComp implements Runnable {
 	public void run() {
 		// Tick once per second, pulling in arriving messages
 		// for (int centitick = 0; centitick < 4; centitick++) {
-		System.out.println(Thread.currentThread().getName());
-		ZMsg receivedMessage = ZMsg.recvMsg(socket);
+		// System.out.println(Thread.currentThread().getName());
 		while (true) {
+			ZMsg receivedMessage = ZMsg.recvMsg(socket);
 			// System.out.println("loop: " + i);
-			ZFrame frame = receivedMessage.poll();
-			if (frame == null) {
-				break;
-			}
-			Container contReturned;
-			try {
-				String data = new String(frame.getData());
-				if (!components.keySet().contains(data)) {
-					contReturned = Message.Container.parseFrom(frame.getData());
-					if (contReturned.getType().equals(
-							ContainerType.MT_HALRCOMP_FULL_UPDATE)) {
-						for (int i = 0; i < contReturned.getCompCount(); i++) {
-							for (int j = 0; j < contReturned.getComp(i).getPinCount(); j++) {
-								String value = null;
-								if (contReturned.getComp(i).getPin(j).getType() == ValueType.HAL_FLOAT) {
-									value = Double.valueOf(
-											contReturned.getComp(i).getPin(j).getHalfloat())
-											.toString();
-								} else if (contReturned.getComp(i).getPin(j).getType() == ValueType.HAL_S32) {
-									value = Integer.valueOf(
-											contReturned.getComp(i).getPin(j).getHals32()).toString();
-								} else if (contReturned.getComp(i).getPin(j).getType() == ValueType.HAL_U32) {
-									value = Integer.valueOf(
-											contReturned.getComp(i).getPin(j).getHalu32()).toString();
-								} else if (contReturned.getComp(i).getPin(j).getType() == ValueType.HAL_BIT) {
-									value = Boolean.valueOf(
-											contReturned.getComp(i).getPin(j).getHalbit()).toString();
-								}
-								halPins.put(contReturned.getComp(i).getPin(j).getName(), value);
-								pinsByHandle
-										.put(
+			if (receivedMessage != null) {
+				while (!receivedMessage.isEmpty()) {
+					ZFrame frame = receivedMessage.poll();
+					Container contReturned;
+					try {
+						String data = new String(frame.getData());
+						if (!components.keySet().contains(data)) {
+							contReturned = Message.Container.parseFrom(frame.getData());
+							if (contReturned.getType().equals(
+									ContainerType.MT_HALRCOMP_FULL_UPDATE)) {
+								for (int i = 0; i < contReturned.getCompCount(); i++) {
+									for (int j = 0; j < contReturned.getComp(i).getPinCount(); j++) {
+										String value = null;
+										if (contReturned.getComp(i).getPin(j).getType() == ValueType.HAL_FLOAT) {
+											value = Double.valueOf(
+													contReturned.getComp(i).getPin(j).getHalfloat())
+													.toString();
+										} else if (contReturned.getComp(i).getPin(j).getType() == ValueType.HAL_S32) {
+											value = Integer.valueOf(
+													contReturned.getComp(i).getPin(j).getHals32())
+													.toString();
+										} else if (contReturned.getComp(i).getPin(j).getType() == ValueType.HAL_U32) {
+											value = Integer.valueOf(
+													contReturned.getComp(i).getPin(j).getHalu32())
+													.toString();
+										} else if (contReturned.getComp(i).getPin(j).getType() == ValueType.HAL_BIT) {
+											value = Boolean.valueOf(
+													contReturned.getComp(i).getPin(j).getHalbit())
+													.toString();
+										}
+										halPins.put(contReturned.getComp(i).getPin(j).getName(),
+												value);
+										pinsByHandle.put(
 												contReturned.getComp(i).getPin(j).getHandle(),
 												pinsByName.get(contReturned.getComp(i).getPin(j)
 														.getName()));
+									}
+								}
+								GcodeViewer.setLineNumber(Integer.valueOf(
+										halPins.get("mymotion.program-line")).intValue());
+
+							} else if (contReturned.getType().equals(ContainerType.MT_PING)) {
+								this.isAlive = true;
+							} else if (contReturned.getType().equals(
+									ContainerType.MT_HALRCOMP_INCREMENTAL_UPDATE)) {
+								for (int j = 0; j < contReturned.getPinCount(); j++) {
+									String value = null;
+									PinDef pinDef = pinsByHandle.get(contReturned.getPin(j)
+											.getHandle());
+
+									if (pinDef.getPinType() == ValueType.HAL_FLOAT) {
+										value = Double
+												.valueOf(contReturned.getPin(j).getHalfloat())
+												.toString();
+									} else if (pinDef.getPinType() == ValueType.HAL_S32) {
+										value = Integer.valueOf(contReturned.getPin(j).getHals32())
+												.toString();
+									} else if (pinDef.getPinType() == ValueType.HAL_U32) {
+										value = Integer.valueOf(contReturned.getPin(j).getHalu32())
+												.toString();
+									} else if (pinDef.getPinType() == ValueType.HAL_BIT) {
+										value = Boolean.valueOf(contReturned.getPin(j).getHalbit())
+												.toString();
+									}
+									halPins.put(pinDef.getPinName(), value);
+								}
+								GcodeViewer.setLineNumber(Integer.valueOf(
+										halPins.get("mymotion.program-line")).intValue());
+							} else {
+								System.out.println(contReturned.getType().toString());
 							}
 						}
-						GcodeViewer.setLineNumber(Integer.valueOf(
-								halPins.get("mymotion.program-line")).intValue());
+						// System.out.println();
 
-					} else if (contReturned.getType().equals(ContainerType.MT_PING)) {
-						this.isAlive = true;
-					} else if (contReturned.getType().equals(
-							ContainerType.MT_HALRCOMP_INCREMENTAL_UPDATE)) {
-						for (int j = 0; j < contReturned.getPinCount(); j++) {
-							String value = null;
-							PinDef pinDef = pinsByHandle.get(contReturned.getPin(j)
-									.getHandle());
-
-							if (pinDef.getPinType() == ValueType.HAL_FLOAT) {
-								value = Double.valueOf(contReturned.getPin(j).getHalfloat())
-										.toString();
-							} else if (pinDef.getPinType() == ValueType.HAL_S32) {
-								value = Integer.valueOf(contReturned.getPin(j).getHals32())
-										.toString();
-							} else if (pinDef.getPinType() == ValueType.HAL_U32) {
-								value = Integer.valueOf(contReturned.getPin(j).getHalu32())
-										.toString();
-							} else if (pinDef.getPinType() == ValueType.HAL_BIT) {
-								value = Boolean.valueOf(contReturned.getPin(j).getHalbit())
-										.toString();
-							}
-							halPins.put(pinDef.getPinName(), value);
-						}
-						GcodeViewer.setLineNumber(Integer.valueOf(
-								halPins.get("mymotion.program-line")).intValue());
-					} else {
-						System.out.println(contReturned.getType().toString());
+					} catch (Exception e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+					try {
+						System.out.println("Running...");
+						Thread.sleep(100);
+					} catch (InterruptedException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
 					}
 				}
-				// System.out.println();
-
-			} catch (InvalidProtocolBufferException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
 			}
 		}
 	}
@@ -203,14 +207,28 @@ public class BBBHalRComp implements Runnable {
 			socket.close();
 			ctx.close();
 		}
+		if (readThread != null && readThread.isAlive())
+			readThread.interrupt();
+
 		this.halRCompUri = Settings.getInstance().getSetting(
 				"machinekit_halRCompService_url");
-		ctx = new ZContext();
+		ctx = new ZContext(10);
 		// Set random identity to make tracing easier
 		socket = ctx.createSocket(ZMQ.XSUB);
+
+		Random rand = new Random(23424234);
+		String identity = String
+				.format("%04X-%04X", rand.nextInt(), rand.nextInt());
+
 		socket.setIdentity(identity.getBytes(ZMQ.CHARSET));
-		socket.setReceiveTimeOut(100);
+		socket.setReceiveTimeOut(1000);
+		socket.setRcvHWM(10000);
 		socket.connect(this.halRCompUri);
+
+		readThread = new Thread(this);
+		readThread.start();
+
+		startBind();
 	}
 
 	public Socket getSocket() {
@@ -254,7 +272,7 @@ public class BBBHalRComp implements Runnable {
 	}
 
 	public void startBind() {
-		Container container = BBBHalRComp.instance.builder.build();
+		Container container = this.builder.build();
 		byte[] buff = container.toByteArray();
 		String hexOutput = javax.xml.bind.DatatypeConverter.printHexBinary(buff);
 		System.out.println("Message:  " + hexOutput);

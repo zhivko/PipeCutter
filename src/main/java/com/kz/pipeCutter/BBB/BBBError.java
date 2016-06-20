@@ -11,13 +11,10 @@ import java.util.concurrent.TimeUnit;
 import javax.jmdns.ServiceInfo;
 import javax.jmdns.ServiceListener;
 
-import org.zeromq.ContextFactory;
-import org.zeromq.api.Context;
-import org.zeromq.api.Message.Frame;
-import org.zeromq.api.MessageFlag;
-import org.zeromq.api.Socket;
-import org.zeromq.api.SocketType;
-import org.zeromq.jzmq.sockets.SocketBuilder;
+import org.zeromq.ZContext;
+import org.zeromq.ZFrame;
+import org.zeromq.ZMQ;
+import org.zeromq.ZMsg;
 
 import pb.Message;
 import pb.Message.Container;
@@ -29,12 +26,13 @@ import com.kz.pipeCutter.ui.Settings;
 public class BBBError implements Runnable {
 	ServiceListener bonjourServiceListener;
 	ArrayList<ServiceInfo> services;
-	Socket socket = null;
+	org.zeromq.ZMQ.Socket socket = null;
 	static BBBError instance = null;
 
 	ByteArrayInputStream is;
 	public ChannelExec channelExec = null;
-	Context ctx;
+	ZContext ctx;
+	private String uri;
 	
 	static String identity;
 	static
@@ -66,13 +64,15 @@ public class BBBError implements Runnable {
 	public void run() {
 		try {
 			Container contReturned;
-			org.zeromq.api.Message receivedMessage = socket
-					.receiveMessage(MessageFlag.DONT_WAIT);
-			int i = 0;
-			while (receivedMessage != null) {
+			ZMsg receivedMessage= ZMsg.recvMsg(socket);
+			while (true) {
 				// System.out.println("loop: " + i);
-				for (Frame f : receivedMessage.getFrames()) {
-					byte[] returnedBytes = f.getData();
+				ZFrame frame = receivedMessage.poll();
+				if(frame==null)
+				{
+					break;
+				}
+					byte[] returnedBytes = frame.getData();
 					String messageType = new String(returnedBytes);
 					if (!messageType.equals("error") && !messageType.equals("text")
 							&& !messageType.equals("display")
@@ -87,9 +87,6 @@ public class BBBError implements Runnable {
 							}
 						}
 					}
-				}
-				receivedMessage = socket.receiveMessage();
-				i++;
 			}
 
 		} catch (Exception e) {
@@ -101,34 +98,30 @@ public class BBBError implements Runnable {
 	}
 
 	public static void main(String[] args) {
-
 		Settings sett = new Settings();
 		sett.setVisible(true);
 		BBBError error = new BBBError();
 	}
 
 	public void initSocket() {
-		if(ctx!=null && socket!=null)
-		{
+		if (ctx != null && socket != null) {
 			socket.close();
 			ctx.close();
 		}
-		String errorUrl = Settings.getInstance().getSetting(
+		uri = Settings.getInstance().getSetting(
 				"machinekit_errorService_url");
-		ctx = ContextFactory.createContext(1);
+		ctx = new ZContext();
 		// Set random identity to make tracing easier
-		
-		SocketBuilder builder = ctx.buildSocket(SocketType.SUB).asSubscribable()
-				.subscribe("error".getBytes());
-		builder.asSubscribable().subscribe("display".getBytes());
-		builder.asSubscribable().subscribe("status".getBytes());
-		builder.asSubscribable().subscribe("text".getBytes());
-		builder.withIdentity(identity.getBytes());
-		builder.withReceiveTimeout(3000);
-		socket = builder.connect(errorUrl);
-	}
+		socket = ctx.createSocket(ZMQ.SUB);
+		socket.subscribe("display".getBytes(ZMQ.CHARSET));
+		socket.subscribe("status".getBytes(ZMQ.CHARSET));
+		socket.subscribe("text".getBytes(ZMQ.CHARSET));
+		socket.setReceiveTimeOut(100);
+		socket.setIdentity(identity.getBytes(ZMQ.CHARSET));
+		socket.connect(uri);
+	}	
 
-	public Socket getSocket()
+	public org.zeromq.ZMQ.Socket getSocket()
 	{
 		return socket;
 	}

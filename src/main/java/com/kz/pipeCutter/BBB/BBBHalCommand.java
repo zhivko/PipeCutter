@@ -9,10 +9,10 @@ import java.util.concurrent.TimeUnit;
 
 import javax.jmdns.ServiceInfo;
 
-import org.zeromq.ContextFactory;
-import org.zeromq.api.MessageFlag;
-import org.zeromq.api.Socket;
-import org.zeromq.api.SocketType;
+import org.zeromq.ZContext;
+import org.zeromq.ZMQ;
+import org.zeromq.ZMQ.Context;
+import org.zeromq.ZMQ.Socket;
 
 import pb.Message;
 import pb.Message.Container;
@@ -21,13 +21,12 @@ import pb.Types.ValueType;
 
 import com.google.protobuf.InvalidProtocolBufferException;
 import com.kz.pipeCutter.ui.Settings;
-import com.kz.pipeCutter.ui.tab.GcodeViewer;
 
 public class BBBHalCommand implements Runnable {
 	Random rand = new Random(23424234);
-	private String halCmdUri;
+	private String socketUri;
 	public Socket socket = null;
-	private org.zeromq.api.Context ctx;
+	private ZContext ctx;
 
 	public static BBBHalCommand instance;
 
@@ -43,7 +42,7 @@ public class BBBHalCommand implements Runnable {
 	}
 
 	public BBBHalCommand() {
-		this.halCmdUri = Settings.getInstance().getSetting(
+		this.socketUri = Settings.getInstance().getSetting(
 				"machinekit_halCmdService_url");
 		initSocket();
 		// socket reader
@@ -85,7 +84,7 @@ public class BBBHalCommand implements Runnable {
 	}
 
 	public BBBHalCommand(String uri) {
-		this.halCmdUri = uri;
+		this.socketUri = uri;
 		getSocket();
 		// scheduler.scheduleAtFixedRate(this, 1000, 500, TimeUnit.MILLISECONDS);
 	}
@@ -115,7 +114,7 @@ public class BBBHalCommand implements Runnable {
 
 		// String halCmdUri = "tcp://beaglebone.local.:49155/";
 		BBBHalCommand halCmd = new BBBHalCommand(halCmdUri);
-		halCmd.halCmdUri = halCmdUri;
+		halCmd.socketUri = halCmdUri;
 		halCmd.getSocket();
 		Thread myThread = new Thread(halCmd);
 		myThread.start();
@@ -126,7 +125,7 @@ public class BBBHalCommand implements Runnable {
 		// while (!Thread.currentThread().isInterrupted()) {
 		// Tick once per second, pulling in arriving messages
 		// for (int centitick = 0; centitick < 4; centitick++) {
-		byte[] received = socket.receive();
+		byte[] received = socket.recv();
 		if (received != null) {
 			Container contReturned;
 			try {
@@ -174,10 +173,12 @@ public class BBBHalCommand implements Runnable {
 			socket.close();
 			ctx.close();
 		}
-		ctx = ContextFactory.createContext(1);
+		ctx = new ZContext();
 		// Set random identity to make tracing easier
-		socket = ctx.buildSocket(SocketType.DEALER)
-				.withIdentity(identity.getBytes()).withReceiveTimeout(100).connect(this.halCmdUri);
+		socket = ctx.createSocket(ZMQ.DEALER);
+		socket.setIdentity(identity.getBytes(ZMQ.CHARSET));
+		socket.setReceiveTimeOut(100);		
+		socket.connect(this.socketUri);
 	}
 
 	public Socket getSocket() {

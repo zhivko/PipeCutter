@@ -7,10 +7,12 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 
-import org.zeromq.ContextFactory;
-import org.zeromq.api.Context;
-import org.zeromq.api.Socket;
-import org.zeromq.api.SocketType;
+import org.zeromq.ZContext;
+import org.zeromq.ZFrame;
+import org.zeromq.ZMQ;
+import org.zeromq.ZMQ.Context;
+import org.zeromq.ZMQ.Socket;
+import org.zeromq.ZMsg;
 
 import pb.Message;
 import pb.Message.Container;
@@ -19,17 +21,17 @@ import com.google.protobuf.InvalidProtocolBufferException;
 import com.kz.pipeCutter.ui.Settings;
 
 public abstract class MachineTalkCommand implements Callable<String> {
-	public Socket commandSocket = null;
-	Context ctx = null;
+	public Socket socket = null;
+	ZContext ctx = null;
 	public static int ticket = 0;
-	private String commandUri;
+	private String uri;
 	public static MachineTalkCommand instance;
 	ExecutorService executor = Executors.newSingleThreadExecutor();
 
 	public abstract Container prepareContainer() throws Exception;
 
 	public MachineTalkCommand() {
-		getSocket();
+		initSocket();
 	}
 
 	@Override
@@ -38,7 +40,7 @@ public abstract class MachineTalkCommand implements Callable<String> {
 			byte[] buff = prepareContainer().toByteArray();
 			String hexOutput = javax.xml.bind.DatatypeConverter.printHexBinary(buff);
 			System.out.println("Message: " + hexOutput);
-			commandSocket.send(buff);
+			socket.send(buff);
 			parseAndOutput();
 			close();
 		} catch (Exception ex) {
@@ -59,61 +61,53 @@ public abstract class MachineTalkCommand implements Callable<String> {
 		}
 	}
 
-	private void getSocket() {
-		this.commandUri = Settings.getInstance().getSetting(
-				"machinekit_commandService_url");
-		Random rand = new Random(23424234);
+	// private void initSocket() {
+	// this.commandUri = Settings.getInstance().getSetting(
+	// "machinekit_commandService_url");
+	// Random rand = new Random(23424234);
+	//
+	// ctx = ContextFactory.createContext(1);
+	// //ctx = ZMQ.context(1);
+	// // Set random identity to make tracing easier
+	// String identity = String
+	// .format("%04X-%04X", rand.nextInt(), rand.nextInt());
+	// commandSocket = ctx.buildSocket(SocketType.DEALER)
+	// .withIdentity(identity.getBytes()).connect(this.commandUri);
+	// }
 
-		ctx = ContextFactory.createContext(1);
-		//ctx = ZMQ.context(1);
-		// Set random identity to make tracing easier
+	public void initSocket() {
+		if (ctx != null && socket != null) {
+			socket.close();
+			ctx.close();
+		}
+		this.uri = Settings.getInstance().getSetting(
+				"machinekit_commandService_url");
+
+		Random rand = new Random(23424234);
 		String identity = String
 				.format("%04X-%04X", rand.nextInt(), rand.nextInt());
-		commandSocket = ctx.buildSocket(SocketType.DEALER)
-				.withIdentity(identity.getBytes()).connect(this.commandUri);
+
+		ctx = new ZContext();
+		// Set random identity to make tracing easier
+		socket = ctx.createSocket(ZMQ.DEALER);
+		socket.setIdentity(identity.getBytes(ZMQ.CHARSET));
+		socket.setReceiveTimeOut(100);
+		socket.connect(this.uri);
 	}
 
 	protected void parseAndOutput() throws InvalidProtocolBufferException {
 		System.out.println(Thread.currentThread().getName());
-		org.zeromq.api.Message receivedMessage = commandSocket.receiveMessage();
-		if (receivedMessage != null) {
-			for (org.zeromq.api.Message.Frame f : receivedMessage.getFrames()) {
-				byte[] returnedBytes = f.getData();
-				Container contReturned = Message.Container.parseFrom(returnedBytes);
-				Settings.instance.log(contReturned.toString());
-				// System.out.println(contReturned.toString());
-				// System.out.println(contReturned.getOperatorError().toString());
-				// List<String> notes = contReturned.getNoteList();
-				// for (String note : notes) {
-				// System.out.println("\t" + note);
-				// }
+		ZMsg receivedMessage = ZMsg.recvMsg(socket);
+		while (true) {
+			// System.out.println("loop: " + i);
+			ZFrame frame = receivedMessage.poll();
+			if (frame == null) {
+				break;
 			}
+			byte[] returnedBytes = frame.getData();
+			Container contReturned = Message.Container.parseFrom(returnedBytes);
+			Settings.instance.log(contReturned.toString());
 		}
-	}
-
-	protected void parseAndOutput1() {
-		byte[] received = null;
-		long nowMilis = System.currentTimeMillis();
-		long currentMilis = System.currentTimeMillis();
-		while (received == null && (currentMilis - nowMilis) < 1000) {
-			// received = getCommandSocket().recv();
-			org.zeromq.api.Message msg = commandSocket.receiveMessage();
-			received = msg.getFirstFrame().getData();
-			currentMilis = System.currentTimeMillis();
-		}
-		try {
-			if (received == null)
-				System.out.println("No response!");
-			else {
-				Container contReturned = Container.parseFrom(received);
-				contReturned.getType().toString();
-				System.out.println(contReturned.toString());
-			}
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-
 	}
 
 	public synchronized static int getNextTicket() {
@@ -122,12 +116,12 @@ public abstract class MachineTalkCommand implements Callable<String> {
 	}
 
 	public Socket getCommandSocket() {
-		return this.commandSocket;
+		return this.socket;
 	}
 
 	public void close() {
-		if (commandSocket != null)
-			commandSocket.close();
+		if (socket != null)
+			socket.close();
 		if (ctx != null)
 			ctx.close();
 	}

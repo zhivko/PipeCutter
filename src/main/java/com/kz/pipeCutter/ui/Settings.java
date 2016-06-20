@@ -34,6 +34,7 @@ import javax.swing.border.EmptyBorder;
 
 import org.apache.log4j.Logger;
 
+import com.kz.pipeCutter.StdOutErrLog;
 import com.kz.pipeCutter.BBB.BBBError;
 import com.kz.pipeCutter.BBB.BBBHalCommand;
 import com.kz.pipeCutter.BBB.BBBHalRComp;
@@ -67,6 +68,8 @@ public class Settings extends JFrame {
 	 */
 	public static void main(String[] args) {
 
+		StdOutErrLog.tieSystemOutAndErrToLog();
+		
 		System.setProperty("java.net.preferIPv4Stack", "true");
 		Settings frame = Settings.getInstance();
 		frame.addComponentListener(new ComponentAdapter() {
@@ -403,7 +406,6 @@ public class Settings extends JFrame {
 		String logTxt = sdf.format(new Date()) + " " + txt;
 		commandPanel.log.append(logTxt + "\n");
 		commandPanel.log.setCaretPosition(commandPanel.log.getText().length());
-		Logger.getLogger(this.getClass()).info(logTxt);
 	}
 	
 	public List<SavableControl> getAllControls() {

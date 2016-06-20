@@ -10,7 +10,9 @@ Cn3SyKlOcEqENivfN4rvbOKjgdAeSHvPwR5xDygyWRF/2pzbYqdpWSeKwiU1PGwHjFhZS/lY7b3eQZoA
 +w0sq0B+o/8ipb4+T2Mu1uaGPDT2rFeXpVCyb0lQkgZM2NnMSlj+i5Txr3GyQL7qdWYSpMpOlQCshnajGYDL3kqDPEjY24="
 before_install:
   - sudo apt-get -qq update
-  - sudo apt-get install libzmq3-dev
-  - sudo apt-get install libpgm-dev
+  - sudo add-apt-repository ppa:chris-lea/zeromq
+  - sudo apt-get update
+  - sudo apt-get install libzmq3-dbg libzmq3-dev libzmq3 
+  
 after_success:
   mvn clean compile package

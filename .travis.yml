@@ -10,7 +10,7 @@ Cn3SyKlOcEqENivfN4rvbOKjgdAeSHvPwR5xDygyWRF/2pzbYqdpWSeKwiU1PGwHjFhZS/lY7b3eQZoA
 +w0sq0B+o/8ipb4+T2Mu1uaGPDT2rFeXpVCyb0lQkgZM2NnMSlj+i5Txr3GyQL7qdWYSpMpOlQCshnajGYDL3kqDPEjY24="
 before_install:
   - sudo apt-get -qq update
-  - sudo add-apt-repository ppa:chris-lea/zeromq
+  - sudo add-apt-repository ppa:chris-lea/zeromq -y
   - sudo apt-get update
   - sudo apt-get install libzmq3-dbg libzmq3-dev libzmq3 
   

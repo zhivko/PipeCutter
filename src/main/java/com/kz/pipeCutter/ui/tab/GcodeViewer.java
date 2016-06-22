@@ -74,7 +74,7 @@ public class GcodeViewer extends JPanel {
 		// scroll pane
 		scroll.setRowHeaderView(new LineNumberView(textArea));
 
-		scroll.setPreferredSize(new Dimension(600, 400));
+		scroll.setPreferredSize(new Dimension(610, 436));
 		this.add(scroll, BorderLayout.WEST);
 
 		this.add(buttonPanel);

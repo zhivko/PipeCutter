@@ -178,12 +178,7 @@ public class Settings extends JFrame {
 		splitPane.setTopComponent(tabbedPane);
 		GcodeViewer gcodeViewer = new GcodeViewer();
 		tabbedPane.addTab("Gcode", gcodeViewer);
-		GridBagLayout gbl_gcodeViewer = new GridBagLayout();
-		gbl_gcodeViewer.columnWidths = new int[]{0};
-		gbl_gcodeViewer.rowHeights = new int[]{0};
-		gbl_gcodeViewer.columnWeights = new double[]{Double.MIN_VALUE};
-		gbl_gcodeViewer.rowWeights = new double[]{Double.MIN_VALUE};
-		gcodeViewer.setLayout(gbl_gcodeViewer);
+		gcodeViewer.setLayout(new FlowLayout(FlowLayout.CENTER, 5, 5));
 		splitPane.setBottomComponent(commandPanel);
 
 		Settings.instance = this;

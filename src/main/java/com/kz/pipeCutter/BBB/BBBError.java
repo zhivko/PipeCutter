@@ -58,7 +58,7 @@ public class BBBError implements Runnable {
 	public void run() {
 		Container contReturned;
 		while (true) {
-			ZMsg receivedMessage = ZMsg.recvMsg(socket);
+			ZMsg receivedMessage = ZMsg.recvMsg(socket,ZMQ.DONTWAIT);
 			// System.out.println("loop: " + i);
 			if (receivedMessage != null) {
 				while (!receivedMessage.isEmpty()) {

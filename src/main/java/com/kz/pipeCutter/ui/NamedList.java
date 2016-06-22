@@ -59,7 +59,7 @@ public class NamedList extends JPanel implements IParameter, IHasLabel {
 
 		// pane.setPreferredSize(new Dimension(450,430));
 		this.add(pane);
-		Dimension d = new Dimension(450, 230);
+		Dimension d = new Dimension(400, 230);
 		// Dimension d1 = new Dimension(d.width-20, d.height-20);
 		// myList.setPreferredSize(d);
 		pane.setPreferredSize(d);

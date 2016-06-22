@@ -125,7 +125,7 @@ public class BBBHalCommand implements Runnable {
 		// while (!Thread.currentThread().isInterrupted()) {
 		// Tick once per second, pulling in arriving messages
 		// for (int centitick = 0; centitick < 4; centitick++) {
-		byte[] received = socket.recv();
+		byte[] received = socket.recv(ZMQ.DONTWAIT);
 		if (received != null) {
 			Container contReturned;
 			try {

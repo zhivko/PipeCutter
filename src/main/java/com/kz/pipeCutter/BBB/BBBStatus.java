@@ -55,7 +55,7 @@ public class BBBStatus implements Runnable {
 
 		Container contReturned;
 		while (true) {
-			ZMsg receivedMessage = ZMsg.recvMsg(socket);
+			ZMsg receivedMessage = ZMsg.recvMsg(socket, ZMQ.DONTWAIT);
 			// System.out.println("loop: " + i);
 			if (receivedMessage != null) {
 				while (!receivedMessage.isEmpty()) {

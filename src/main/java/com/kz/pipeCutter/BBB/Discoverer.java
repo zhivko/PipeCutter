@@ -96,7 +96,7 @@ public class Discoverer {
 			handler.setLevel(Level.FINER);
 		}
 
-		System.out.println("Initializing discoverer...");
+		Settings.instance.log("Initializing discoverer...");
 
 		Enumeration<NetworkInterface> ifc;
 		try {

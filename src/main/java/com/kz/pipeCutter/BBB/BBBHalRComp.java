@@ -108,7 +108,7 @@ public class BBBHalRComp implements Runnable {
 		// for (int centitick = 0; centitick < 4; centitick++) {
 		// System.out.println(Thread.currentThread().getName());
 		while (true) {
-			ZMsg receivedMessage = ZMsg.recvMsg(socket);
+			ZMsg receivedMessage = ZMsg.recvMsg(socket,ZMQ.DONTWAIT);
 			// System.out.println("loop: " + i);
 			if (receivedMessage != null) {
 				while (!receivedMessage.isEmpty()) {
@@ -189,7 +189,6 @@ public class BBBHalRComp implements Runnable {
 						e.printStackTrace();
 					}
 					try {
-						System.out.println("Running...");
 						Thread.sleep(100);
 					} catch (InterruptedException e) {
 						// TODO Auto-generated catch block

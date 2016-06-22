@@ -8,6 +8,7 @@ import java.awt.Dimension;
 import java.awt.Point;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
+import java.awt.event.ComponentListener;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileInputStream;
@@ -46,6 +47,8 @@ import com.kz.pipeCutter.ui.tab.OtherSettings;
 import com.kz.pipeCutter.ui.tab.PlasmaSettings;
 import com.kz.pipeCutter.ui.tab.RotatorSettings;
 import com.kz.pipeCutter.ui.tab.XYZSettings;
+import java.awt.FlowLayout;
+import java.awt.GridBagLayout;
 
 public class Settings extends JFrame {
 
@@ -137,7 +140,6 @@ public class Settings extends JFrame {
 		tabbedPane.addTab("XYZ", new XYZSettings());
 		tabbedPane.addTab("Plasma", new PlasmaSettings());
 		tabbedPane.addTab("Other", new OtherSettings());
-		tabbedPane.addTab("Gcode", new GcodeViewer());
 
 		tabbedPane.setSelectedIndex(0);
 
@@ -145,9 +147,43 @@ public class Settings extends JFrame {
 		splitPane.setOrientation(JSplitPane.VERTICAL_SPLIT);
 		contentPane.add(splitPane, BorderLayout.NORTH);
 		splitPane.setDividerLocation(490);
+		splitPane.addComponentListener(new ComponentListener() {
+			
+			@Override
+			public void componentShown(ComponentEvent e) {
+				// TODO Auto-generated method stub
+				
+			}
+			
+			@Override
+			public void componentResized(ComponentEvent e) {
+				// TODO Auto-generated method stub
+				
+			}
+			
+			@Override
+			public void componentMoved(ComponentEvent e) {
+				// TODO Auto-generated method stub
+				
+			}
+			
+			@Override
+			public void componentHidden(ComponentEvent e) {
+				// TODO Auto-generated method stub
+				
+			}
+		});
 
 		commandPanel = new CommandPanel();
 		splitPane.setTopComponent(tabbedPane);
+		GcodeViewer gcodeViewer = new GcodeViewer();
+		tabbedPane.addTab("Gcode", gcodeViewer);
+		GridBagLayout gbl_gcodeViewer = new GridBagLayout();
+		gbl_gcodeViewer.columnWidths = new int[]{0};
+		gbl_gcodeViewer.rowHeights = new int[]{0};
+		gbl_gcodeViewer.columnWeights = new double[]{Double.MIN_VALUE};
+		gbl_gcodeViewer.rowWeights = new double[]{Double.MIN_VALUE};
+		gcodeViewer.setLayout(gbl_gcodeViewer);
 		splitPane.setBottomComponent(commandPanel);
 
 		Settings.instance = this;
@@ -226,7 +262,7 @@ public class Settings extends JFrame {
 							System.out.println(size);
 							Settings.this.setSize(new Dimension(Double.valueOf(
 									splittedSize[0]).intValue(), Double.valueOf(splittedSize[1])
-									.intValue()));
+									.intValue()+160));
 
 							// MachinekitSettings.instance.machinekitServices.setPreferredSize(new
 							// Dimension(200,200));
@@ -264,7 +300,6 @@ public class Settings extends JFrame {
 							initStatusService();
 							initHalCmdService();
 							initHalRcompService();
-							BBBHalRComp.getInstance().startBind();
 						}
 					});
 

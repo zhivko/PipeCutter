@@ -3,6 +3,7 @@ package com.kz.pipeCutter.BBB;
 import java.io.ByteArrayInputStream;
 import java.util.Iterator;
 import java.util.Random;
+import java.util.concurrent.TimeUnit;
 
 import org.zeromq.ZContext;
 import org.zeromq.ZFrame;
@@ -17,6 +18,8 @@ import pb.Types.ContainerType;
 
 import com.jcraft.jsch.ChannelExec;
 import com.kz.pipeCutter.ui.Settings;
+import com.kz.pipeCutter.ui.tab.GcodeViewer;
+import com.kz.pipeCutter.ui.tab.MachinekitSettings;
 
 public class BBBStatus implements Runnable {
 	private static BBBStatus instance;
@@ -55,56 +58,50 @@ public class BBBStatus implements Runnable {
 
 		Container contReturned;
 		while (true) {
-			ZMsg receivedMessage = ZMsg.recvMsg(socket, ZMQ.DONTWAIT);
-			// System.out.println("loop: " + i);
-			if (receivedMessage != null) {
-				while (!receivedMessage.isEmpty()) {
-					ZFrame frame = receivedMessage.poll();
-					byte[] returnedBytes = frame.getData();
-					String messageType = new String(returnedBytes);
-					// System.out.println("type: " + messageType);
-					if (!messageType.equals("motion")) {
-						try {
-							contReturned = Message.Container.parseFrom(returnedBytes);
-							if (contReturned.getType().equals(
-									ContainerType.MT_EMCSTAT_FULL_UPDATE)
-									|| contReturned.getType().equals(
-											ContainerType.MT_EMCSTAT_INCREMENTAL_UPDATE)) {
+			try {
+				ZMsg receivedMessage = ZMsg.recvMsg(socket, ZMQ.DONTWAIT);
+				// System.out.println("loop: " + i);
+				if (receivedMessage != null) {
+					while (!receivedMessage.isEmpty()) {
 
-								Iterator<EmcStatusMotionAxis> itAxis = contReturned
-										.getEmcStatusMotion().getAxisList().iterator();
+						ZFrame frame = receivedMessage.poll();
+						byte[] returnedBytes = frame.getData();
+						String messageType = new String(returnedBytes);
+						// System.out.println("type: " + messageType);
+						if (!messageType.equals("motion") && !messageType.equals("task") && !messageType.equals("io") && !messageType.equals("interp") ) {
+
+							contReturned = Message.Container.parseFrom(returnedBytes);
+							if (contReturned.getType().equals(ContainerType.MT_EMCSTAT_FULL_UPDATE)
+									|| contReturned.getType().equals(ContainerType.MT_EMCSTAT_INCREMENTAL_UPDATE)) {
+
+								Iterator<EmcStatusMotionAxis> itAxis = contReturned.getEmcStatusMotion().getAxisList()
+										.iterator();
 								while (itAxis.hasNext()) {
 									EmcStatusMotionAxis axis = itAxis.next();
 									int index = axis.getIndex();
 									switch (index) {
 									case 0:
-										final double x = contReturned.getEmcStatusMotion()
-												.getActualPosition().getX();
+										final double x = contReturned.getEmcStatusMotion().getActualPosition().getX();
 										Settings.instance.setSetting("position_x", x);
 										break;
 									case 1:
-										final double y = contReturned.getEmcStatusMotion()
-												.getActualPosition().getY();
+										final double y = contReturned.getEmcStatusMotion().getActualPosition().getY();
 										Settings.instance.setSetting("position_y", y);
 										break;
 									case 2:
-										final double z = contReturned.getEmcStatusMotion()
-												.getActualPosition().getZ();
+										final double z = contReturned.getEmcStatusMotion().getActualPosition().getZ();
 										Settings.instance.setSetting("position_z", z);
 										break;
 									case 3:
-										final double a = contReturned.getEmcStatusMotion()
-												.getActualPosition().getA();
+										final double a = contReturned.getEmcStatusMotion().getActualPosition().getA();
 										Settings.instance.setSetting("position_a", a);
 										break;
 									case 4:
-										final double b = contReturned.getEmcStatusMotion()
-												.getActualPosition().getB();
+										final double b = contReturned.getEmcStatusMotion().getActualPosition().getB();
 										Settings.instance.setSetting("position_b", b);
 										break;
 									case 5:
-										final double c = contReturned.getEmcStatusMotion()
-												.getActualPosition().getC();
+										final double c = contReturned.getEmcStatusMotion().getActualPosition().getC();
 										Settings.instance.setSetting("position_c", c);
 										break;
 									default:
@@ -112,21 +109,25 @@ public class BBBStatus implements Runnable {
 									}
 
 								}
+							} else if (contReturned.getType().equals(ContainerType.MT_PING)) {
+								MachinekitSettings.instance.pingStatus();
+							} else {
+								System.out.println(contReturned.getType());
 							}
-						} catch (Exception e) {
-							if (!e.getMessage().equals("Unknown message type."))
-								e.printStackTrace();
 						}
 					}
+					receivedMessage.clear();
 				}
-				try {
-					Thread.sleep(200);
-				} catch (InterruptedException e) {
-					// TODO Auto-generated catch block
+			} catch (Exception e) {
+				if (!e.getMessage().equals("Unknown message type."))
 					e.printStackTrace();
-				}
 			}
-
+			try {
+				TimeUnit.MILLISECONDS.sleep(200);
+			} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 		}
 
 	}
@@ -141,20 +142,23 @@ public class BBBStatus implements Runnable {
 
 		uri = Settings.getInstance().getSetting("machinekit_statusService_url");
 
-		ctx = new ZContext(10);
+		ctx = new ZContext(1);
 		// Set random identity to make tracing easier
 		socket = ctx.createSocket(ZMQ.SUB);
 
 		Random rand = new Random(23424234);
-		String identity = String
-				.format("%04X-%04X", rand.nextInt(), rand.nextInt());
+		String identity = String.format("%04X-%04X", rand.nextInt(), rand.nextInt());
 
 		socket.setIdentity(identity.getBytes(ZMQ.CHARSET));
 		socket.subscribe("motion".getBytes(ZMQ.CHARSET));
+		socket.subscribe("task".getBytes(ZMQ.CHARSET));
+//		socket.subscribe("io".getBytes(ZMQ.CHARSET));
+//		socket.subscribe("interp".getBytes(ZMQ.CHARSET));
 		socket.setReceiveTimeOut(100);
 		socket.connect(this.uri);
 
 		readThread = new Thread(this);
+		readThread.setName("BBBStatus");
 		readThread.start();
 	}
 

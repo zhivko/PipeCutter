@@ -10,15 +10,15 @@ import java.util.concurrent.TimeUnit;
 import org.zeromq.ZContext;
 import org.zeromq.ZFrame;
 import org.zeromq.ZMQ;
-import org.zeromq.ZMQ.Context;
 import org.zeromq.ZMQ.Socket;
 import org.zeromq.ZMsg;
 
-import pb.Message;
-import pb.Message.Container;
-
 import com.google.protobuf.InvalidProtocolBufferException;
 import com.kz.pipeCutter.ui.Settings;
+import com.kz.pipeCutter.ui.tab.MachinekitSettings;
+
+import pb.Message;
+import pb.Message.Container;
 
 public abstract class MachineTalkCommand implements Callable<String> {
 	public Socket socket = null;
@@ -106,6 +106,10 @@ public abstract class MachineTalkCommand implements Callable<String> {
 			}
 			byte[] returnedBytes = frame.getData();
 			Container contReturned = Message.Container.parseFrom(returnedBytes);
+			if(contReturned.equals(pb.Types.ContainerType.MT_PING))
+			{
+				MachinekitSettings.instance.pingCommand();
+			}
 			Settings.instance.log(contReturned.toString());
 		}
 	}

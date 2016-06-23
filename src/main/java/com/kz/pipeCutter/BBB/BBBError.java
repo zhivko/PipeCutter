@@ -16,12 +16,13 @@ import org.zeromq.ZFrame;
 import org.zeromq.ZMQ;
 import org.zeromq.ZMsg;
 
+import com.jcraft.jsch.ChannelExec;
+import com.kz.pipeCutter.ui.Settings;
+import com.kz.pipeCutter.ui.tab.MachinekitSettings;
+
 import pb.Message;
 import pb.Message.Container;
 import pb.Types.ContainerType;
-
-import com.jcraft.jsch.ChannelExec;
-import com.kz.pipeCutter.ui.Settings;
 
 public class BBBError implements Runnable {
 	ServiceListener bonjourServiceListener;
@@ -35,17 +36,15 @@ public class BBBError implements Runnable {
 	private String uri;
 
 	static String identity;
-	static {
-		Random rand = new Random(23424234);
-		identity = String.format("%04X-%04X", rand.nextInt(), rand.nextInt());
-	}
 
-	private final static ScheduledExecutorService scheduler = Executors
-			.newScheduledThreadPool(1);
+	private Thread readThread;
+
+	private final static ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
 
 	public BBBError() {
 		initSocket();
-		scheduler.scheduleAtFixedRate(this, 2000, 500, TimeUnit.MILLISECONDS);
+		// scheduler.scheduleAtFixedRate(this, 2000, 500,
+		// TimeUnit.MILLISECONDS);
 		instance = this;
 	}
 
@@ -58,38 +57,42 @@ public class BBBError implements Runnable {
 	public void run() {
 		Container contReturned;
 		while (true) {
-			ZMsg receivedMessage = ZMsg.recvMsg(socket,ZMQ.DONTWAIT);
-			// System.out.println("loop: " + i);
-			if (receivedMessage != null) {
-				while (!receivedMessage.isEmpty()) {
-					ZFrame frame = receivedMessage.poll();
-					byte[] returnedBytes = frame.getData();
-					String messageType = new String(returnedBytes);
-					if (!messageType.equals("error") && !messageType.equals("text")
-							&& !messageType.equals("display")
-							&& !messageType.equals("status")) {
-						// System.out.println(messageType);
-						try {
+			try {
+				ZMsg receivedMessage = ZMsg.recvMsg(socket, ZMQ.DONTWAIT);
+				// System.out.println("loop: " + i);
+				if (receivedMessage != null) {
+					while (!receivedMessage.isEmpty()) {
+						ZFrame frame = receivedMessage.poll();
+						byte[] returnedBytes = frame.getData();
+						String messageType = new String(returnedBytes);
+						if (!messageType.equals("error") && !messageType.equals("text")
+								&& !messageType.equals("display") && !messageType.equals("status")) {
+							// System.out.println(messageType);
+
 							contReturned = Message.Container.parseFrom(returnedBytes);
-							if (!contReturned.getType().equals(ContainerType.MT_PING)) {
+							if (contReturned.getType().equals(ContainerType.MT_PING)) {
+								MachinekitSettings.instance.pingError();
+							} else {
 								Settings.instance.log(contReturned.getType() + " " + contReturned.getTopic());
 								List<String> notes = contReturned.getNoteList();
 								for (String note : notes) {
 									Settings.instance.log("\t" + note);
 								}
 							}
-						} catch (Exception e) {
-							if (!e.getMessage().equals("Unknown message type.")) {
-								e.printStackTrace();
-								Settings.instance.log("Error: " + e.getMessage());
-							}
 
 						}
 					}
+					receivedMessage.clear();
 				}
+			} catch (Exception e) {
+				if (!e.getMessage().equals("Error:")) {
+					e.printStackTrace();
+					Settings.instance.log("Error: " + e.getMessage());
+				}
+
 			}
 			try {
-				Thread.sleep(200);
+				TimeUnit.MILLISECONDS.sleep(100);
 			} catch (Exception ex) {
 				ex.printStackTrace();
 			}
@@ -107,6 +110,12 @@ public class BBBError implements Runnable {
 			socket.close();
 			ctx.close();
 		}
+		if (readThread != null && readThread.isAlive())
+			readThread.interrupt();
+
+		Random rand = new Random(23424234);
+		String identity = String.format("%04X-%04X", rand.nextInt(), rand.nextInt());
+
 		uri = Settings.getInstance().getSetting("machinekit_errorService_url");
 		ctx = new ZContext();
 		// Set random identity to make tracing easier
@@ -115,9 +124,14 @@ public class BBBError implements Runnable {
 		socket.subscribe("status".getBytes(ZMQ.CHARSET));
 		socket.subscribe("text".getBytes(ZMQ.CHARSET));
 		socket.subscribe("error".getBytes(ZMQ.CHARSET));
+		socket.subscribe("config".getBytes(ZMQ.CHARSET));
 		socket.setReceiveTimeOut(100);
 		socket.setIdentity(identity.getBytes(ZMQ.CHARSET));
 		socket.connect(uri);
+
+		readThread = new Thread(this);
+		readThread.setName("BBBError");
+		readThread.start();
 	}
 
 	public org.zeromq.ZMQ.Socket getSocket() {

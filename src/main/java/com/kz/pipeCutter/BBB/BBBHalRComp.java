@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Random;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 import javax.jmdns.ServiceInfo;
 
@@ -189,7 +190,7 @@ public class BBBHalRComp implements Runnable {
 						e.printStackTrace();
 					}
 					try {
-						Thread.sleep(100);
+						TimeUnit.MILLISECONDS.sleep(100);
 					} catch (InterruptedException e) {
 						// TODO Auto-generated catch block
 						e.printStackTrace();
@@ -224,10 +225,11 @@ public class BBBHalRComp implements Runnable {
 		socket.setRcvHWM(10000);
 		socket.connect(this.halRCompUri);
 
-		readThread = new Thread(this);
-		readThread.start();
-
-		startBind();
+		Thread myThread = new Thread(this);
+		myThread.setName("BBBHalRComp");
+		myThread.start();
+		
+		//startBind();
 	}
 
 	public Socket getSocket() {
@@ -265,8 +267,7 @@ public class BBBHalRComp implements Runnable {
 		BBBHalRComp halRComp = new BBBHalRComp(halCmdUri);
 		halRComp.halRCompUri = halCmdUri;
 		halRComp.initSocket();
-		Thread myThread = new Thread(halRComp);
-		myThread.start();
+
 
 	}
 

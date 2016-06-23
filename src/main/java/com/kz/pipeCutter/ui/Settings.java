@@ -5,6 +5,7 @@ import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.Container;
 import java.awt.Dimension;
+import java.awt.FlowLayout;
 import java.awt.Point;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
@@ -33,8 +34,6 @@ import javax.swing.JTabbedPane;
 import javax.swing.SwingUtilities;
 import javax.swing.border.EmptyBorder;
 
-import org.apache.log4j.Logger;
-
 import com.kz.pipeCutter.StdOutErrLog;
 import com.kz.pipeCutter.BBB.BBBError;
 import com.kz.pipeCutter.BBB.BBBHalCommand;
@@ -47,8 +46,6 @@ import com.kz.pipeCutter.ui.tab.OtherSettings;
 import com.kz.pipeCutter.ui.tab.PlasmaSettings;
 import com.kz.pipeCutter.ui.tab.RotatorSettings;
 import com.kz.pipeCutter.ui.tab.XYZSettings;
-import java.awt.FlowLayout;
-import java.awt.GridBagLayout;
 
 public class Settings extends JFrame {
 
@@ -255,9 +252,9 @@ public class Settings extends JFrame {
 						try {
 							String[] splittedSize = size.split("x");
 							System.out.println(size);
-							Settings.this.setSize(new Dimension(Double.valueOf(
+							Settings.this.setMinimumSize(new Dimension(Double.valueOf(
 									splittedSize[0]).intValue(), Double.valueOf(splittedSize[1])
-									.intValue()+160));
+									.intValue()));
 
 							// MachinekitSettings.instance.machinekitServices.setPreferredSize(new
 							// Dimension(200,200));

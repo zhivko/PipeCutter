@@ -1,7 +1,11 @@
 package com.kz.pipeCutter.ui.tab;
 
+import java.awt.Color;
+import java.util.concurrent.TimeUnit;
+
 import javax.swing.JFrame;
 import javax.swing.JPanel;
+import javax.swing.SwingUtilities;
 
 import com.kz.pipeCutter.ui.MyVerticalFlowLayout;
 import com.kz.pipeCutter.ui.NamedList;
@@ -11,12 +15,23 @@ import com.kz.pipeCutter.ui.SavableText;
 public class MachinekitSettings extends JPanel {
 	public NamedList machinekitServices;
 	public static MachinekitSettings instance = null;
+	SavableText errorUrl;
+	SavableText statusUrl;
+	SavableText commandUrl;
 
 	public static void main(String[] args) {
-		MachinekitSettings sett = new MachinekitSettings();
-		JFrame my = new JFrame();
-		my.getContentPane().add(sett, null);
-		my.setVisible(true);
+		
+		SwingUtilities.invokeLater(new Runnable() {
+			
+			@Override
+			public void run() {
+				MachinekitSettings sett = new MachinekitSettings();
+				JFrame my = new JFrame();
+				my.getContentPane().add(sett, null);
+				my.setVisible(true);				
+			}
+		});
+
 	}
 
 	public MachinekitSettings() {
@@ -42,17 +57,17 @@ public class MachinekitSettings extends JPanel {
 		machinePass.setParId("machinekit_password");
 		add(machinePass);
 
-		SavableText commandUrl = new SavableText();
+		commandUrl = new SavableText();
 		commandUrl.setLabelTxt("Command Service url:");
 		commandUrl.setParId("machinekit_commandService_url");
 		add(commandUrl);
 
-		SavableText errorUrl = new SavableText();
+		errorUrl = new SavableText();
 		errorUrl.setLabelTxt("Error service url:");
 		errorUrl.setParId("machinekit_errorService_url");
 		add(errorUrl);
 
-		SavableText statusUrl = new SavableText();
+		statusUrl = new SavableText();
 		statusUrl.setLabelTxt("Status service url:");
 		statusUrl.setParId("machinekit_statusService_url");
 		add(statusUrl);		
@@ -79,4 +94,62 @@ public class MachinekitSettings extends JPanel {
 		
 		MachinekitSettings.instance = this;
 	}
+	
+	public void pingError()
+	{
+		SwingUtilities.invokeLater(new Runnable() {
+			
+			@Override
+			public void run() {
+				try {
+					errorUrl.jValue.setBackground(Color.GREEN);
+					TimeUnit.MILLISECONDS.sleep(100);
+					errorUrl.jValue.setBackground(Color.WHITE);
+				} catch (InterruptedException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				
+			}
+		});
+	}
+	
+	public void pingStatus()
+	{
+		SwingUtilities.invokeLater(new Runnable() {
+			
+			@Override
+			public void run() {
+				try {
+					statusUrl.jValue.setBackground(Color.GREEN);
+					TimeUnit.MILLISECONDS.sleep(100);
+					statusUrl.jValue.setBackground(Color.WHITE);
+				} catch (InterruptedException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				
+			}
+		});
+	}	
+	
+	
+	public void pingCommand()
+	{
+		SwingUtilities.invokeLater(new Runnable() {
+			
+			@Override
+			public void run() {
+				try {
+					commandUrl.jValue.setBackground(Color.GREEN);
+					TimeUnit.MILLISECONDS.sleep(100);
+					commandUrl.jValue.setBackground(Color.WHITE);
+				} catch (InterruptedException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				
+			}
+		});
+	}	
 }

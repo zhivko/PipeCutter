@@ -1,6 +1,9 @@
 package com.kz.pipeCutter.BBB.commands;
 
 import pb.Message.Container;
+
+import java.util.concurrent.TimeUnit;
+
 import pb.Status;
 import pb.Status.EmcTaskModeType;
 import pb.Types.ContainerType;
@@ -22,7 +25,7 @@ public class OpenGCode extends MachineTalkCommand {
 		Container container = builder.build();
 		byte[] buff = container.toByteArray();
 		getCommandSocket().send(buff);
-		Thread.sleep(500);
+		TimeUnit.MILLISECONDS.sleep(300);
 		parseAndOutput();
 		
 
@@ -33,7 +36,7 @@ public class OpenGCode extends MachineTalkCommand {
 		container = builder.build();
 		buff = container.toByteArray();
 		getCommandSocket().send(buff);
-		Thread.sleep(500);
+		TimeUnit.MILLISECONDS.sleep(300);
 		parseAndOutput();
 
 		builder = Container.newBuilder();

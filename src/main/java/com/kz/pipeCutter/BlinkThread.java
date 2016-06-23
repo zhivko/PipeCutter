@@ -1,6 +1,7 @@
 package com.kz.pipeCutter;
 
 import java.util.ArrayList;
+import java.util.concurrent.TimeUnit;
 
 import javax.swing.SwingUtilities;
 
@@ -38,7 +39,7 @@ public class BlinkThread extends Thread {
 				System.out.println("BELA");
 			}
 			try {
-				Thread.sleep(500);
+				TimeUnit.MILLISECONDS.sleep(300);
 				SurfaceDemo.instance.getChart().render();
 				count++;
 			} catch (InterruptedException e) {

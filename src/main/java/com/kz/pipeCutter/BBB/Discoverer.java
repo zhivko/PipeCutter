@@ -34,52 +34,7 @@ public class Discoverer {
 	private ArrayList<JmDNS> jMdnsS = new ArrayList<JmDNS>();
 	private static String bonjourServiceType = "_machinekit._tcp.local.";
 
-	ServiceListener bonjourServiceListener = new ServiceListener() {
-
-		@Override
-		public void serviceResolved(ServiceEvent arg0) {
-			// TODO Auto-generated method stub
-			System.out.println("resolved: " + arg0.toString());
-		}
-
-		@Override
-		public void serviceRemoved(ServiceEvent arg0) {
-			System.out.println("- " + arg0.getInfo().getName());
-			services.remove(arg0.getInfo());
-			Pattern p = Pattern.compile("(.*)service(.*)");
-			Matcher m = p.matcher(arg0.getInfo().getName());
-			final ServiceEvent arg1 = arg0;
-			if (m.find()) {
-				SwingUtilities.invokeLater(new Runnable() {
-					@Override
-					public void run() {
-						if (MachinekitSettings.instance != null)
-							MachinekitSettings.instance.machinekitServices.removeService(arg1
-									.getInfo());
-					}
-				});
-			}
-		}
-
-		@Override
-		public void serviceAdded(ServiceEvent arg0) {
-			System.out.println("+ " + arg0.getInfo().getName());
-			services.add(arg0.getInfo());
-			Pattern p = Pattern.compile("(.*)service(.*)");
-			Matcher m = p.matcher(arg0.getInfo().getName());
-			if (m.find()) {
-				final ServiceEvent arg1 = arg0;
-				SwingUtilities.invokeLater(new Runnable() {
-					@Override
-					public void run() {
-						if (MachinekitSettings.instance != null)
-							MachinekitSettings.instance.machinekitServices.addService(arg1
-									.getInfo());
-					}
-				});
-			}
-		}
-	};
+	ServiceListener bonjourServiceListener; 
 
 	public static void main(String[] args) {
 		Discoverer discoverer = Discoverer.getInstance();
@@ -101,6 +56,60 @@ public class Discoverer {
 		Enumeration<NetworkInterface> ifc;
 		try {
 			ifc = NetworkInterface.getNetworkInterfaces();
+			bonjourServiceListener = new ServiceListener() {
+
+				@Override
+				public void serviceResolved(ServiceEvent arg0) {
+					// TODO Auto-generated method stub
+					System.out.println("resolved: " + arg0.toString());
+				}
+
+				@Override
+				public void serviceRemoved(ServiceEvent arg0) {
+					System.out.println("- " + arg0.getInfo().getName());
+					
+					services.remove(arg0.getInfo());
+					Pattern p = Pattern.compile("(.*)service(.*)");
+					Matcher m = p.matcher(arg0.getInfo().getName());
+					final ServiceEvent arg1 = arg0;
+					if (m.find()) {
+						SwingUtilities.invokeLater(new Runnable() {
+							@Override
+							public void run() {
+								if (MachinekitSettings.instance != null)
+									MachinekitSettings.instance.machinekitServices.removeService(arg1
+											.getInfo());
+							}
+						});
+					}
+				}
+
+				@Override
+				public void serviceAdded(ServiceEvent arg0) {
+					String ip="";
+					if(arg0.getInfo().getInet4Address()!=null)
+						ip = arg0.getInfo().getInet4Address().toString();
+					if(arg0.getInfo().getInet6Address()!=null)
+						ip = arg0.getInfo().getInet6Addresses().toString();
+					
+					System.out.println("+ " + arg0.getInfo().getName() + " " + ip + " " + arg0.getInfo().getPort());
+					services.add(arg0.getInfo());
+					Pattern p = Pattern.compile("(.*)service(.*)");
+					Matcher m = p.matcher(arg0.getInfo().getName());
+					if (m.find()) {
+						final ServiceEvent arg1 = arg0;
+						SwingUtilities.invokeLater(new Runnable() {
+							@Override
+							public void run() {
+								if (MachinekitSettings.instance != null)
+									MachinekitSettings.instance.machinekitServices.addService(arg1
+											.getInfo());
+							}
+						});
+					}
+				}
+			};
+			
 			while (ifc.hasMoreElements()) {
 				NetworkInterface anInterface = ifc.nextElement();
 				try {

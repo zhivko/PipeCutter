@@ -55,7 +55,9 @@ public class GcodeViewer extends JPanel {
 	String folder;
 
 	SavableText currentLine;
-	static GcodeViewer instance;
+	public static GcodeViewer instance;
+
+	int lineNo;
 
 	public GcodeViewer() {
 		super();
@@ -132,10 +134,10 @@ public class GcodeViewer extends JPanel {
 						int lineNumber = Integer.valueOf(currentLine.getParValue());
 
 						if (lineNumber > 0) {
-							int startIndex = textArea.getDocument().getDefaultRootElement()
-									.getElement(lineNumber - 1).getStartOffset();
-							int endIndex = textArea.getDocument().getDefaultRootElement()
-									.getElement(lineNumber).getStartOffset();
+							int startIndex = textArea.getDocument().getDefaultRootElement().getElement(lineNumber - 1)
+									.getStartOffset();
+							int endIndex = textArea.getDocument().getDefaultRootElement().getElement(lineNumber)
+									.getStartOffset();
 
 							DefaultHighlightPainter painterWhite = new DefaultHighlighter.DefaultHighlightPainter(
 									Color.WHITE);
@@ -144,13 +146,11 @@ public class GcodeViewer extends JPanel {
 
 							textArea.getHighlighter().removeAllHighlights();
 
-							textArea.getHighlighter().addHighlight(0, startIndex,
-									painterWhite);
-							textArea.getHighlighter().addHighlight(startIndex, endIndex,
-									painterGray);
+							textArea.getHighlighter().addHighlight(0, startIndex, painterWhite);
+							textArea.getHighlighter().addHighlight(startIndex, endIndex, painterGray);
 
-							textArea.getHighlighter().addHighlight(endIndex + 1,
-									textArea.getDocument().getLength() - 1, painterWhite);
+							textArea.getHighlighter().addHighlight(endIndex + 1, textArea.getDocument().getLength() - 1,
+									painterWhite);
 
 							Rectangle rect = textArea.modelToView(startIndex);
 							textArea.scrollRectToVisible(rect);
@@ -170,12 +170,7 @@ public class GcodeViewer extends JPanel {
 			}
 		});
 		currentLine.setParValue("1");
-		currentLine.setPin(
-				new PinDef(
-				"mymotion.program-line", 
-				HalPinDirection.HAL_IN, 
-				ValueType.HAL_S32)
-				);
+		//currentLine.setPin(new PinDef("mymotion.program-line", HalPinDirection.HAL_IN, ValueType.HAL_S32));
 		buttonPanel.add(currentLine);
 
 		JButton buttonNext = new JButton("Next");
@@ -269,8 +264,7 @@ public class GcodeViewer extends JPanel {
 										// key = dir.register(watcher,
 										// ENTRY_CREATE, ENTRY_DELETE,
 										// ENTRY_MODIFY);
-										key = dir.register(watcher,
-												StandardWatchEventKinds.ENTRY_MODIFY);
+										key = dir.register(watcher, StandardWatchEventKinds.ENTRY_MODIFY);
 
 										final WatchKey wk = watcher.take();
 
@@ -340,8 +334,7 @@ public class GcodeViewer extends JPanel {
 			folder = Settings.getInstance().getSetting("gcode_folder");
 			File f = new File(folder + File.separatorChar + "prog.gcode");
 			if (f.exists()) {
-				reader = new FileReader(new File(folder + File.separatorChar
-						+ "prog.gcode"));
+				reader = new FileReader(new File(folder + File.separatorChar + "prog.gcode"));
 				this.textArea.read(reader, "The force is strong with this one");
 				reader.close();
 				SwingUtilities.invokeLater(new Runnable() {
@@ -351,8 +344,7 @@ public class GcodeViewer extends JPanel {
 						Rectangle rect;
 						try {
 							rect = GcodeViewer.this.textArea
-									.modelToView(GcodeViewer.this.textArea.getDocument()
-											.getLength());
+									.modelToView(GcodeViewer.this.textArea.getDocument().getLength());
 							GcodeViewer.this.textArea.scrollRectToVisible(rect);
 						} catch (BadLocationException e) {
 							// TODO Auto-generated catch block
@@ -370,14 +362,16 @@ public class GcodeViewer extends JPanel {
 		}
 	}
 
-	public static void setLineNumber(int lineNo) {
-		final int lineNo1 = lineNo;
-		SwingUtilities.invokeLater(new Runnable() {
-			@Override
-			public void run() {
-				// TODO Auto-generated method stub
-				GcodeViewer.instance.currentLine.setParValue(String.valueOf(lineNo1));
-			}
-		});
+	public void setLineNumber(int lineNo) {
+		if (this.lineNo != lineNo) {
+			this.lineNo = lineNo;
+			SwingUtilities.invokeLater(new Runnable() {
+				@Override
+				public void run() {
+					// TODO Auto-generated method stub
+					GcodeViewer.instance.currentLine.setParValue(String.valueOf(GcodeViewer.this.lineNo));
+				}
+			});
+		}
 	}
 }

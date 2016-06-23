@@ -140,15 +140,20 @@ public class BBBHalCommand implements Runnable {
 						}
 					}
 					if (halPin.get("motion.program-line") != null)
-						GcodeViewer.setLineNumber(Integer.valueOf(halPin.get("motion.program-line")).intValue());
+					{
+						int lineNo = Integer.valueOf(halPin.get("motion.program-line")).intValue();
+						GcodeViewer.instance.setLineNumber(lineNo);
+					}
 					try {
-						TimeUnit.MILLISECONDS.sleep(400);
+						TimeUnit.MILLISECONDS.sleep(100);
 						// requestDescribe();
 					} catch (InterruptedException e) {
 						// TODO Auto-generated catch block
 						e.printStackTrace();
 					}					
 					requestDescribe();
+					receivedMessage.destroy();
+					receivedMessage=null;
 				}
 			} catch (Exception e) {
 				// TODO Auto-generated catch block
@@ -166,7 +171,7 @@ public class BBBHalCommand implements Runnable {
 		if (readThread != null && readThread.isAlive())
 			readThread.interrupt();
 
-		ctx = new ZContext();
+		ctx = new ZContext(2);
 		// Set random identity to make tracing easier
 		socket = ctx.createSocket(ZMQ.DEALER);
 		socket.setIdentity(identity.getBytes(ZMQ.CHARSET));

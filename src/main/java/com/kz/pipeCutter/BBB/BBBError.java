@@ -82,7 +82,8 @@ public class BBBError implements Runnable {
 
 						}
 					}
-					receivedMessage.clear();
+					receivedMessage.destroy();
+					receivedMessage=null;
 				}
 			} catch (Exception e) {
 				if (!e.getMessage().equals("Error:")) {
@@ -117,7 +118,7 @@ public class BBBError implements Runnable {
 		String identity = String.format("%04X-%04X", rand.nextInt(), rand.nextInt());
 
 		uri = Settings.getInstance().getSetting("machinekit_errorService_url");
-		ctx = new ZContext();
+		ctx = new ZContext(2);
 		// Set random identity to make tracing easier
 		socket = ctx.createSocket(ZMQ.SUB);
 		socket.subscribe("display".getBytes(ZMQ.CHARSET));

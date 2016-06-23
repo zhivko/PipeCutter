@@ -9,6 +9,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.TimeUnit;
 
 import javax.vecmath.Vector3d;
 
@@ -45,8 +46,7 @@ public class Utils {
 	static double Math_E = 0.0001;
 	static double rotationAngleMin = 0.01;
 
-	public MyPickablePoint createOrFindMyPickablePoint(int id, Coord3d coord,
-			int inventorEdge) {
+	public MyPickablePoint createOrFindMyPickablePoint(int id, Coord3d coord, int inventorEdge) {
 		MyPickablePoint mp = null;
 		if (points == null)
 			init();
@@ -87,13 +87,12 @@ public class Utils {
 		// TODO Auto-generated method stub
 		MyEdge edge = new MyEdge(-1, -1);
 
-		MyPickablePoint tempPoint = findConnectedPoint(clickedPoint,
-				alAlreadyAddedPoints,true);
+		MyPickablePoint tempPoint = findConnectedPoint(clickedPoint, alAlreadyAddedPoints, true);
 		System.out.println("Point id: " + tempPoint.id);
 		edge.addPoint(tempPoint.id);
 		alAlreadyAddedPoints.add(tempPoint);
 		while (tempPoint != clickedPoint && tempPoint != null) {
-			tempPoint = findConnectedPoint(tempPoint, alAlreadyAddedPoints,true);
+			tempPoint = findConnectedPoint(tempPoint, alAlreadyAddedPoints, true);
 			if (tempPoint != null) {
 				edge.addPoint(tempPoint.id);
 				alAlreadyAddedPoints.add(tempPoint);
@@ -108,27 +107,23 @@ public class Utils {
 
 	public void establishNeighbourPoints() {
 		for (MyPickablePoint p : points.values()) {
-			p.neighbourPoints = findConnectedPoints(p,
-					new ArrayList<MyPickablePoint>());
+			p.neighbourPoints = findConnectedPoints(p, new ArrayList<MyPickablePoint>());
 		}
 	}
 
-	public MyPickablePoint findConnectedPoint(MyPickablePoint point,
-			ArrayList<MyPickablePoint> alreadyAdded, boolean order) {
+	public MyPickablePoint findConnectedPoint(MyPickablePoint point, ArrayList<MyPickablePoint> alreadyAdded,
+			boolean order) {
 		MyPickablePoint ret = null;
 		for (MyEdge edge : edges.values()) {
 			int startInd, endInd;
-			if(order)
-			{
+			if (order) {
 				startInd = 0;
 				endInd = 1;
+			} else {
+				startInd = 1;
+				endInd = 0;
 			}
-			else
-			{
-				startInd=1;
-				endInd=0;
-			}
-			
+
 			if (edge.getPointByIndex(startInd).equals(point)) {
 				if (!alreadyAdded.contains(edge.getPointByIndex(endInd))) {
 					ret = edge.getPointByIndex(endInd);
@@ -140,7 +135,7 @@ public class Utils {
 					break;
 				}
 			}
-			
+
 		}
 		return ret;
 	}
@@ -169,9 +164,8 @@ public class Utils {
 		edges.put(edge.edgeNo, edge);
 	}
 
-	public static ArrayList<Coord3d> CalculateLineLineIntersection(
-			Coord3d line1Point1, Coord3d line1Point2, Coord3d line2Point1,
-			Coord3d line2Point2) {
+	public static ArrayList<Coord3d> CalculateLineLineIntersection(Coord3d line1Point1, Coord3d line1Point2,
+			Coord3d line2Point1, Coord3d line2Point2) {
 		// Algorithm is ported from the C algorithm of
 		// Paul Bourke at
 		// http://local.wasp.uwa.edu.au/~pbourke/geometry/lineline3d/
@@ -195,16 +189,11 @@ public class Utils {
 			return null;
 		}
 
-		double d1343 = p13.x * (double) p43.x + (double) p13.y * p43.y
-				+ (double) p13.z * p43.z;
-		double d4321 = p43.x * (double) p21.x + (double) p43.y * p21.y
-				+ (double) p43.z * p21.z;
-		double d1321 = p13.x * (double) p21.x + (double) p13.y * p21.y
-				+ (double) p13.z * p21.z;
-		double d4343 = p43.x * (double) p43.x + (double) p43.y * p43.y
-				+ (double) p43.z * p43.z;
-		double d2121 = p21.x * (double) p21.x + (double) p21.y * p21.y
-				+ (double) p21.z * p21.z;
+		double d1343 = p13.x * (double) p43.x + (double) p13.y * p43.y + (double) p13.z * p43.z;
+		double d4321 = p43.x * (double) p21.x + (double) p43.y * p21.y + (double) p43.z * p21.z;
+		double d1321 = p13.x * (double) p21.x + (double) p13.y * p21.y + (double) p13.z * p21.z;
+		double d4343 = p43.x * (double) p43.x + (double) p43.y * p43.y + (double) p43.z * p43.z;
+		double d2121 = p21.x * (double) p21.x + (double) p21.y * p21.y + (double) p21.z * p21.z;
 
 		double denom = d2121 * d4343 - d4321 * d4321;
 		if (Math.abs(denom) < Math_E) {
@@ -283,16 +272,13 @@ public class Utils {
 		Coord3d c2 = new Coord3d(0, 0, 0);
 		Coord3d d2 = new Coord3d(0.5, 0, 0);
 
-		ArrayList<Coord3d> alCrossPoints2 = Utils.CalculateLineLineIntersection(a2,
-				b2, c2, d2);
+		ArrayList<Coord3d> alCrossPoints2 = Utils.CalculateLineLineIntersection(a2, b2, c2, d2);
 
 		// calculate edge surfaces
-		List<MySurface> surfacesSortedByCenterY = new ArrayList<MySurface>(
-				SurfaceDemo.instance.utils.surfaces.values());
+		List<MySurface> surfacesSortedByCenterY = new ArrayList<MySurface>(SurfaceDemo.instance.utils.surfaces.values());
 		Collections.sort(surfacesSortedByCenterY, new MySurfaceYComparator());
 		MySurface rightMostSurf = surfacesSortedByCenterY.get(0);
-		MySurface leftMostSurf = surfacesSortedByCenterY
-				.get(surfacesSortedByCenterY.size() - 1);
+		MySurface leftMostSurf = surfacesSortedByCenterY.get(surfacesSortedByCenterY.size() - 1);
 
 		ArrayList<MyPickablePoint> outerPoints = new ArrayList<MyPickablePoint>();
 		float sumAngle = 0;
@@ -321,8 +307,7 @@ public class Utils {
 		}
 	}
 
-	public boolean isAlreadyAdded(MyPickablePoint myPoint,
-			ArrayList<MyPickablePoint> alreadyAddedPoints) {
+	public boolean isAlreadyAdded(MyPickablePoint myPoint, ArrayList<MyPickablePoint> alreadyAddedPoints) {
 		for (MyPickablePoint p1 : alreadyAddedPoints) {
 			if (myPoint.xyz.distance(p1.xyz) == 0) {
 				return true;
@@ -360,8 +345,7 @@ public class Utils {
 		return null;
 	}
 
-	public ArrayList<MyPickablePoint> findAllConnectedPoints(MyPickablePoint p,
-			ArrayList<MyPickablePoint> points) {
+	public ArrayList<MyPickablePoint> findAllConnectedPoints(MyPickablePoint p, ArrayList<MyPickablePoint> points) {
 		for (MyPickablePoint p1 : p.neighbourPoints) {
 			if (!points.contains(p1)) {
 				points.add(p1);
@@ -372,8 +356,7 @@ public class Utils {
 	}
 
 	public void writeGcodeToFile(String gcode) {
-		try (PrintWriter out = new PrintWriter(new BufferedWriter(new FileWriter(
-				"prog.gcode", true)))) {
+		try (PrintWriter out = new PrintWriter(new BufferedWriter(new FileWriter("prog.gcode", true)))) {
 			out.println(gcode);
 			out.close();
 		} catch (IOException e) {
@@ -383,8 +366,7 @@ public class Utils {
 	}
 
 	public String coordinateToGcode(MyPickablePoint point) {
-		float offset = Float.valueOf(Settings.instance
-				.getSetting("plasma_pierce_offset_mm"));
+		float offset = Float.valueOf(Settings.instance.getSetting("plasma_pierce_offset_mm"));
 		boolean moveRelatively = false;
 		Float x, y, z;
 		if (moveRelatively) {
@@ -414,28 +396,34 @@ public class Utils {
 		return String.format(java.util.Locale.US, "X%.3f Y%.3f Z%.3f", x, y, z);
 	}
 
-	public Coord3d rotate(double x, double y, double z, double angle,
-			double axisX, double axisY, double axisZ) {
+	public Coord3d rotate(double x, double y, double z, double angle, double axisX, double axisY, double axisZ) {
 		Rotation rot = new Rotation(new Vector3D(axisX, axisY, axisZ), angle);
 		Vector3D rotated = rot.applyTo(new Vector3D(x, y, z));
 		return new Coord3d(rotated.getX(), rotated.getY(), rotated.getZ());
 	}
 
 	public void rotatePoints(double angle, boolean slow) {
+		rotatePoints(angle, slow, true);
+	}
+
+	public void rotatePoints(double angle, boolean slow, boolean delta) {
+		double value;
 		if (!slow) {
-			double value = Double.valueOf(SurfaceDemo.instance.angleTxt) + angle;
+
+			if (delta)
+				value = Double.valueOf(SurfaceDemo.instance.angleTxt) + angle;
+			else
+				value = angle;
+
 			double[] zAxisDouble = { 0.0d, 1.0d, 0.0d };
 			Vector3D zAxis = new Vector3D(zAxisDouble);
 			Rotation rotZ = new Rotation(zAxis, Math.toRadians(value));
-			for (MyPickablePoint point : SurfaceDemo.instance.utils.origPoints
-					.values()) {
+			for (MyPickablePoint point : SurfaceDemo.instance.utils.origPoints.values()) {
 				double[] myPointDouble = { point.getX(), point.getY(), point.getZ() };
 				Vector3D myPoint = new Vector3D(myPointDouble);
 				Vector3D result = rotZ.applyTo(myPoint);
-				points.get(point.id).xyz.set(
-						Double.valueOf(result.getX()).floatValue(),
-						Double.valueOf(result.getY()).floatValue(),
-						Double.valueOf(result.getZ()).floatValue());
+				points.get(point.id).xyz.set(Double.valueOf(result.getX()).floatValue(),
+						Double.valueOf(result.getY()).floatValue(), Double.valueOf(result.getZ()).floatValue());
 			}
 			for (MyEdge edge : continuousEdges.values()) {
 				edge.calculateCenter();
@@ -444,19 +432,20 @@ public class Utils {
 
 			int noSteps = 10;
 			for (int i = 0; i <= noSteps; i++) {
-				double value = Double.valueOf(SurfaceDemo.instance.angleTxt) + angle
-						* i / noSteps;
+				if (delta)
+					value = Double.valueOf(SurfaceDemo.instance.angleTxt) + angle * i / noSteps;
+				else
+					value = angle * i/noSteps;
+
 				double[] zAxisDouble = { 0.0d, 1.0d, 0.0d };
 				Vector3D zAxis = new Vector3D(zAxisDouble);
 				Rotation rotZ = new Rotation(zAxis, Math.toRadians(value));
-				for (MyPickablePoint point : SurfaceDemo.instance.utils.origPoints
-						.values()) {
+				for (MyPickablePoint point : SurfaceDemo.instance.utils.origPoints.values()) {
 					double[] myPointDouble = { point.getX(), point.getY(), point.getZ() };
 					Vector3D myPoint = new Vector3D(myPointDouble);
 					Vector3D result = rotZ.applyTo(myPoint);
-					points.get(point.id).xyz.set(Double.valueOf(result.getX())
-							.floatValue(), Double.valueOf(result.getY()).floatValue(), Double
-							.valueOf(result.getZ()).floatValue());
+					points.get(point.id).xyz.set(Double.valueOf(result.getX()).floatValue(),
+							Double.valueOf(result.getY()).floatValue(), Double.valueOf(result.getZ()).floatValue());
 				}
 				for (MyEdge edge : continuousEdges.values()) {
 					edge.calculateCenter();
@@ -464,7 +453,7 @@ public class Utils {
 				float val = (float) (value);
 				SurfaceDemo.instance.calculateRotationPoint(val);
 				try {
-					Thread.currentThread().sleep(100);
+					TimeUnit.MILLISECONDS.sleep(100);
 				} catch (InterruptedException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
@@ -476,7 +465,7 @@ public class Utils {
 				edge.calculateCenter();
 			}
 
-		double value = Double.valueOf(SurfaceDemo.instance.angleTxt);
+		value = Double.valueOf(SurfaceDemo.instance.angleTxt);
 		double newValue = value + angle;
 
 		// if((float)newValue == 360.0f)
@@ -487,7 +476,6 @@ public class Utils {
 		SurfaceDemo.instance.angleTxt = Double.valueOf(newValue).toString();
 		float val = Float.valueOf(SurfaceDemo.instance.angleTxt);
 		SurfaceDemo.instance.calculateRotationPoint(val);
-
 	}
 
 	public void calculateContinuousEdges() {
@@ -495,8 +483,7 @@ public class Utils {
 		continuousEdges = new ConcurrentHashMap<Integer, MyContinuousEdge>();
 		for (MyPickablePoint point : points.values()) {
 			if (point.continuousEdgeNo == -1) {
-				ArrayList<MyPickablePoint> pointsOfEdgeAl = findAllConnectedPoints(
-						point, new ArrayList<MyPickablePoint>());
+				ArrayList<MyPickablePoint> pointsOfEdgeAl = findAllConnectedPoints(point, new ArrayList<MyPickablePoint>());
 				MyContinuousEdge edge = new MyContinuousEdge(edgeNo, -1);
 				for (MyPickablePoint edgePoint : pointsOfEdgeAl) {
 					edge.addPoint(edgePoint.id);
@@ -508,8 +495,7 @@ public class Utils {
 		}
 
 		// calculate type of Edge START MIDDLE or END
-		ArrayList<MyContinuousEdge> sortedContinuousEdgeList = new ArrayList(
-				continuousEdges.values());
+		ArrayList<MyContinuousEdge> sortedContinuousEdgeList = new ArrayList(continuousEdges.values());
 		Collections.sort(sortedContinuousEdgeList, new MyEdgeYComparator());
 
 		sortedContinuousEdgeList.get(0).edgeType = MyContinuousEdge.EdgeType.START;
@@ -517,12 +503,10 @@ public class Utils {
 
 	}
 
-	public org.jzy3d.plot3d.primitives.Point calculateOffsetPoint(
-			MyPickablePoint point) {
+	public org.jzy3d.plot3d.primitives.Point calculateOffsetPoint(MyPickablePoint point) {
 		org.jzy3d.plot3d.primitives.Point ret = new org.jzy3d.plot3d.primitives.Point();
 
-		MyContinuousEdge continuousEdge = continuousEdges
-				.get(point.continuousEdgeNo);
+		MyContinuousEdge continuousEdge = continuousEdges.get(point.continuousEdgeNo);
 
 		System.out.println(continuousEdge.edgeType);
 		Vector3D result = null;
@@ -545,22 +529,17 @@ public class Utils {
 			MyPickablePoint nextPoint = continuousEdge.getPointByIndex(nextIndex);
 			System.out.println(prevPoint.id + " " + point.id + " " + nextPoint.id);
 
-			Vector3D centerVec = new Vector3D(continuousEdge.center.x,
-					continuousEdge.center.y, continuousEdge.center.z);
-			Vector3D vecPrevPoint = new Vector3D(prevPoint.xyz.x, prevPoint.xyz.y,
-					prevPoint.xyz.z);
-			Vector3D vecNextPoint = new Vector3D(nextPoint.xyz.x, nextPoint.xyz.y,
-					nextPoint.xyz.z);
+			Vector3D centerVec = new Vector3D(continuousEdge.center.x, continuousEdge.center.y, continuousEdge.center.z);
+			Vector3D vecPrevPoint = new Vector3D(prevPoint.xyz.x, prevPoint.xyz.y, prevPoint.xyz.z);
+			Vector3D vecNextPoint = new Vector3D(nextPoint.xyz.x, nextPoint.xyz.y, nextPoint.xyz.z);
 			Vector3D vecPoint = new Vector3D(point.xyz.x, point.xyz.y, point.xyz.z);
 			try {
 				Plane plane = getPlaneForPoint(point);
-				double vectorCrossLength = plane.getNormal()
-						.crossProduct(new Vector3D(0f, 1.0f, 0.0f)).getNorm();
+				double vectorCrossLength = plane.getNormal().crossProduct(new Vector3D(0f, 1.0f, 0.0f)).getNorm();
 				System.out.println(vectorCrossLength);
 				Vector3D pointOnPlane = (Vector3D) plane.project(centerVec);
 
-				if (Math.abs(vectorCrossLength) < Math_E
-						|| Math.abs(1 - vectorCrossLength) < Math_E) {
+				if (Math.abs(vectorCrossLength) < Math_E || Math.abs(1 - vectorCrossLength) < Math_E) {
 					System.out.println("is 0 or is 1");
 					Vector3D vecA = vecPrevPoint.subtract(vecPoint);
 					Vector3D vecB = vecNextPoint.subtract(vecPoint);
@@ -568,14 +547,10 @@ public class Utils {
 					Rotation rotationN = new Rotation(plane.getNormal(), -Math.PI / 2);
 					Vector3D rotatedA = rotationP.applyTo(vecA).normalize();
 					Vector3D rotatedB = rotationN.applyTo(vecB).normalize();
-					Vector3D vecAoffset = vecA.add(rotatedA
-							.scalarMultiply(SurfaceDemo.instance.plasmaKerfOffset));
-					Vector3D vecBoffset = vecB.add(rotatedB
-							.scalarMultiply(SurfaceDemo.instance.plasmaKerfOffset));
-					Line lineA = new Line(vecPrevPoint.add(vecAoffset),
-							vecPoint.add(vecAoffset), 0.0001);
-					Line lineB = new Line(vecNextPoint.add(vecBoffset),
-							vecPoint.add(vecBoffset), 0.0001);
+					Vector3D vecAoffset = vecA.add(rotatedA.scalarMultiply(SurfaceDemo.instance.plasmaKerfOffset));
+					Vector3D vecBoffset = vecB.add(rotatedB.scalarMultiply(SurfaceDemo.instance.plasmaKerfOffset));
+					Line lineA = new Line(vecPrevPoint.add(vecAoffset), vecPoint.add(vecAoffset), 0.0001);
+					Line lineB = new Line(vecNextPoint.add(vecBoffset), vecPoint.add(vecBoffset), 0.0001);
 					Vector3D intersect = lineA.intersection(lineB);
 					ret.xyz.x = (float) intersect.getX();
 					ret.xyz.y = (float) intersect.getY();
@@ -585,8 +560,7 @@ public class Utils {
 					// subtract y from center of edge to find signum of y to be added
 					float deltaY = point.getY() - continuousEdge.center.y;
 					ret.xyz.x = (float) point.getX();
-					ret.xyz.y = (float) point.getY() - Math.signum(deltaY)
-							* SurfaceDemo.instance.plasmaKerfOffset;
+					ret.xyz.y = (float) point.getY() - Math.signum(deltaY) * SurfaceDemo.instance.plasmaKerfOffset;
 					ret.xyz.z = (float) point.getZ();
 				}
 			} catch (org.apache.commons.math3.exception.MathArithmeticException ex) {
@@ -597,27 +571,23 @@ public class Utils {
 					prevPrevIndex = continuousEdge.points.size() - 1;
 				else
 					prevPrevIndex = prevIndex - 1;
-				MyPickablePoint prevPrevPoint = continuousEdge
-						.getPointByIndex(prevPrevIndex);
+				MyPickablePoint prevPrevPoint = continuousEdge.getPointByIndex(prevPrevIndex);
 				System.out.println("prevprevpoint=" + prevPrevPoint.id);
 				Plane plane = getPlaneForPoint(prevPoint);
 
-				Vector3D vecPrevPrevPoint = new Vector3D(prevPrevPoint.xyz.x,
-						prevPrevPoint.xyz.y, prevPrevPoint.xyz.z);
+				Vector3D vecPrevPrevPoint = new Vector3D(prevPrevPoint.xyz.x, prevPrevPoint.xyz.y, prevPrevPoint.xyz.z);
 				Vector3D vecA = vecPoint.subtract(vecPrevPoint);
 
 				Rotation rotationP = new Rotation(plane.getNormal(), -Math.PI / 2);
 				Vector3D rotatedA = rotationP.applyTo(vecA).normalize();
-				result = vecPoint.add(rotatedA
-						.scalarMultiply(SurfaceDemo.instance.plasmaKerfOffset));
+				result = vecPoint.add(rotatedA.scalarMultiply(SurfaceDemo.instance.plasmaKerfOffset));
 				ret.xyz.x = (float) result.getX();
 				ret.xyz.y = (float) result.getY();
 				ret.xyz.z = (float) result.getZ();
 			}
 		} else {
 			Vector3D vecPoint = new Vector3D(point.xyz.x, point.xyz.y, point.xyz.z);
-			Vector3D vecOffset = new Vector3D(0, Math.signum(point.xyz.y)
-					* SurfaceDemo.instance.plasmaKerfOffset, 0);
+			Vector3D vecOffset = new Vector3D(0, Math.signum(point.xyz.y) * SurfaceDemo.instance.plasmaKerfOffset, 0);
 			result = vecPoint.add(vecOffset);
 			ret.xyz.x = (float) result.getX();
 			ret.xyz.y = (float) result.getY();
@@ -649,12 +619,9 @@ public class Utils {
 		MyPickablePoint nextPoint = continuousEdge.getPointByIndex(nextIndex);
 		System.out.println(prevPoint.id + " " + point.id + " " + nextPoint.id);
 
-		Vector3D centerVec = new Vector3D(continuousEdge.center.x,
-				continuousEdge.center.y, continuousEdge.center.z);
-		Vector3D vecPrevPoint = new Vector3D(prevPoint.xyz.x, prevPoint.xyz.y,
-				prevPoint.xyz.z);
-		Vector3D vecNextPoint = new Vector3D(nextPoint.xyz.x, nextPoint.xyz.y,
-				nextPoint.xyz.z);
+		Vector3D centerVec = new Vector3D(continuousEdge.center.x, continuousEdge.center.y, continuousEdge.center.z);
+		Vector3D vecPrevPoint = new Vector3D(prevPoint.xyz.x, prevPoint.xyz.y, prevPoint.xyz.z);
+		Vector3D vecNextPoint = new Vector3D(nextPoint.xyz.x, nextPoint.xyz.y, nextPoint.xyz.z);
 		Vector3D vecPoint = new Vector3D(point.xyz.x, point.xyz.y, point.xyz.z);
 		Plane plane = new Plane(vecPoint, vecPrevPoint, vecNextPoint, 0.0001);
 		return plane;

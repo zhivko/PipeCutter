@@ -2,6 +2,7 @@ package com.kz.pipeCutter;
 
 import java.io.IOException;
 import java.io.OutputStream;
+import java.util.concurrent.TimeUnit;
 
 /** */
 public class SerialWriter extends Thread {
@@ -15,7 +16,7 @@ public class SerialWriter extends Thread {
 		while(true)
 		{
 			try {
-				Thread.sleep(1000);
+				TimeUnit.MILLISECONDS.sleep(300);
 			} catch (InterruptedException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();

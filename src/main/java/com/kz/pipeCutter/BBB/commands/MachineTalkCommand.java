@@ -80,12 +80,10 @@ public abstract class MachineTalkCommand implements Callable<String> {
 			socket.close();
 			ctx.close();
 		}
-		this.uri = Settings.getInstance().getSetting(
-				"machinekit_commandService_url");
+		this.uri = Settings.getInstance().getSetting("machinekit_commandService_url");
 
 		Random rand = new Random(23424234);
-		String identity = String
-				.format("%04X-%04X", rand.nextInt(), rand.nextInt());
+		String identity = String.format("%04X-%04X", rand.nextInt(), rand.nextInt());
 
 		ctx = new ZContext();
 		// Set random identity to make tracing easier
@@ -97,20 +95,25 @@ public abstract class MachineTalkCommand implements Callable<String> {
 
 	protected void parseAndOutput() throws InvalidProtocolBufferException {
 		System.out.println(Thread.currentThread().getName());
-		ZMsg receivedMessage = ZMsg.recvMsg(socket);
 		while (true) {
 			// System.out.println("loop: " + i);
-			ZFrame frame = receivedMessage.poll();
-			if (frame == null) {
+			ZMsg receivedMessage = ZMsg.recvMsg(socket,ZMQ.DONTWAIT);
+			if (receivedMessage != null) {
+				ZFrame frame = receivedMessage.poll();
+				byte[] returnedBytes = frame.getData();
+				Container contReturned = Message.Container.parseFrom(returnedBytes);
+				if (contReturned.equals(pb.Types.ContainerType.MT_PING)) {
+					MachinekitSettings.instance.pingCommand();
+				}
+				Settings.instance.log(contReturned.toString());
 				break;
 			}
-			byte[] returnedBytes = frame.getData();
-			Container contReturned = Message.Container.parseFrom(returnedBytes);
-			if(contReturned.equals(pb.Types.ContainerType.MT_PING))
-			{
-				MachinekitSettings.instance.pingCommand();
+			try {
+				TimeUnit.MILLISECONDS.sleep(100);
+			} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
 			}
-			Settings.instance.log(contReturned.toString());
 		}
 	}
 

@@ -41,8 +41,7 @@ public class BBBHalRComp implements Runnable {
 	HashMap<String, String> halPins = new HashMap<>();
 	public boolean isAlive = true;
 
-	private final ScheduledExecutorService scheduler = Executors
-			.newScheduledThreadPool(10);
+	private final ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(10);
 
 	public BBBHalRComp() {
 		prepareBindContainer();
@@ -109,7 +108,7 @@ public class BBBHalRComp implements Runnable {
 		// for (int centitick = 0; centitick < 4; centitick++) {
 		// System.out.println(Thread.currentThread().getName());
 		while (true) {
-			ZMsg receivedMessage = ZMsg.recvMsg(socket,ZMQ.DONTWAIT);
+			ZMsg receivedMessage = ZMsg.recvMsg(socket, ZMQ.DONTWAIT);
 			// System.out.println("loop: " + i);
 			if (receivedMessage != null) {
 				while (!receivedMessage.isEmpty()) {
@@ -119,66 +118,51 @@ public class BBBHalRComp implements Runnable {
 						String data = new String(frame.getData());
 						if (!components.keySet().contains(data)) {
 							contReturned = Message.Container.parseFrom(frame.getData());
-							if (contReturned.getType().equals(
-									ContainerType.MT_HALRCOMP_FULL_UPDATE)) {
+							if (contReturned.getType().equals(ContainerType.MT_HALRCOMP_FULL_UPDATE)) {
 								for (int i = 0; i < contReturned.getCompCount(); i++) {
 									for (int j = 0; j < contReturned.getComp(i).getPinCount(); j++) {
 										String value = null;
 										if (contReturned.getComp(i).getPin(j).getType() == ValueType.HAL_FLOAT) {
-											value = Double.valueOf(
-													contReturned.getComp(i).getPin(j).getHalfloat())
+											value = Double.valueOf(contReturned.getComp(i).getPin(j).getHalfloat())
 													.toString();
 										} else if (contReturned.getComp(i).getPin(j).getType() == ValueType.HAL_S32) {
-											value = Integer.valueOf(
-													contReturned.getComp(i).getPin(j).getHals32())
+											value = Integer.valueOf(contReturned.getComp(i).getPin(j).getHals32())
 													.toString();
 										} else if (contReturned.getComp(i).getPin(j).getType() == ValueType.HAL_U32) {
-											value = Integer.valueOf(
-													contReturned.getComp(i).getPin(j).getHalu32())
+											value = Integer.valueOf(contReturned.getComp(i).getPin(j).getHalu32())
 													.toString();
 										} else if (contReturned.getComp(i).getPin(j).getType() == ValueType.HAL_BIT) {
-											value = Boolean.valueOf(
-													contReturned.getComp(i).getPin(j).getHalbit())
+											value = Boolean.valueOf(contReturned.getComp(i).getPin(j).getHalbit())
 													.toString();
 										}
-										halPins.put(contReturned.getComp(i).getPin(j).getName(),
-												value);
-										pinsByHandle.put(
-												contReturned.getComp(i).getPin(j).getHandle(),
-												pinsByName.get(contReturned.getComp(i).getPin(j)
-														.getName()));
+										halPins.put(contReturned.getComp(i).getPin(j).getName(), value);
+										pinsByHandle.put(contReturned.getComp(i).getPin(j).getHandle(),
+												pinsByName.get(contReturned.getComp(i).getPin(j).getName()));
 									}
 								}
-								GcodeViewer.setLineNumber(Integer.valueOf(
-										halPins.get("mymotion.program-line")).intValue());
+								GcodeViewer.instance.setLineNumber(
+										Integer.valueOf(halPins.get("mymotion.program-line")).intValue());
 
 							} else if (contReturned.getType().equals(ContainerType.MT_PING)) {
 								this.isAlive = true;
-							} else if (contReturned.getType().equals(
-									ContainerType.MT_HALRCOMP_INCREMENTAL_UPDATE)) {
+							} else if (contReturned.getType().equals(ContainerType.MT_HALRCOMP_INCREMENTAL_UPDATE)) {
 								for (int j = 0; j < contReturned.getPinCount(); j++) {
 									String value = null;
-									PinDef pinDef = pinsByHandle.get(contReturned.getPin(j)
-											.getHandle());
+									PinDef pinDef = pinsByHandle.get(contReturned.getPin(j).getHandle());
 
 									if (pinDef.getPinType() == ValueType.HAL_FLOAT) {
-										value = Double
-												.valueOf(contReturned.getPin(j).getHalfloat())
-												.toString();
+										value = Double.valueOf(contReturned.getPin(j).getHalfloat()).toString();
 									} else if (pinDef.getPinType() == ValueType.HAL_S32) {
-										value = Integer.valueOf(contReturned.getPin(j).getHals32())
-												.toString();
+										value = Integer.valueOf(contReturned.getPin(j).getHals32()).toString();
 									} else if (pinDef.getPinType() == ValueType.HAL_U32) {
-										value = Integer.valueOf(contReturned.getPin(j).getHalu32())
-												.toString();
+										value = Integer.valueOf(contReturned.getPin(j).getHalu32()).toString();
 									} else if (pinDef.getPinType() == ValueType.HAL_BIT) {
-										value = Boolean.valueOf(contReturned.getPin(j).getHalbit())
-												.toString();
+										value = Boolean.valueOf(contReturned.getPin(j).getHalbit()).toString();
 									}
 									halPins.put(pinDef.getPinName(), value);
 								}
-								GcodeViewer.setLineNumber(Integer.valueOf(
-										halPins.get("mymotion.program-line")).intValue());
+								GcodeViewer.instance.setLineNumber(
+										Integer.valueOf(halPins.get("mymotion.program-line")).intValue());
 							} else {
 								System.out.println(contReturned.getType().toString());
 							}
@@ -196,6 +180,8 @@ public class BBBHalRComp implements Runnable {
 						e.printStackTrace();
 					}
 				}
+				receivedMessage.destroy();
+				receivedMessage=null;
 			}
 		}
 	}
@@ -210,15 +196,13 @@ public class BBBHalRComp implements Runnable {
 		if (readThread != null && readThread.isAlive())
 			readThread.interrupt();
 
-		this.halRCompUri = Settings.getInstance().getSetting(
-				"machinekit_halRCompService_url");
-		ctx = new ZContext(10);
+		this.halRCompUri = Settings.getInstance().getSetting("machinekit_halRCompService_url");
+		ctx = new ZContext(2);
 		// Set random identity to make tracing easier
 		socket = ctx.createSocket(ZMQ.XSUB);
 
 		Random rand = new Random(23424234);
-		String identity = String
-				.format("%04X-%04X", rand.nextInt(), rand.nextInt());
+		String identity = String.format("%04X-%04X", rand.nextInt(), rand.nextInt());
 
 		socket.setIdentity(identity.getBytes(ZMQ.CHARSET));
 		socket.setReceiveTimeOut(1000);
@@ -228,8 +212,8 @@ public class BBBHalRComp implements Runnable {
 		Thread myThread = new Thread(this);
 		myThread.setName("BBBHalRComp");
 		myThread.start();
-		
-		//startBind();
+
+		// startBind();
 	}
 
 	public Socket getSocket() {
@@ -267,7 +251,6 @@ public class BBBHalRComp implements Runnable {
 		BBBHalRComp halRComp = new BBBHalRComp(halCmdUri);
 		halRComp.halRCompUri = halCmdUri;
 		halRComp.initSocket();
-
 
 	}
 

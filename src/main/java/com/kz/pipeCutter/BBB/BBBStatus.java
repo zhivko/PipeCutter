@@ -5,21 +5,24 @@ import java.util.Iterator;
 import java.util.Random;
 import java.util.concurrent.TimeUnit;
 
+import org.jzy3d.colors.Color;
+import org.jzy3d.maths.Coord3d;
 import org.zeromq.ZContext;
 import org.zeromq.ZFrame;
 import org.zeromq.ZMQ;
 import org.zeromq.ZMQ.Socket;
 import org.zeromq.ZMsg;
 
+import com.jcraft.jsch.ChannelExec;
+import com.kz.pipeCutter.MyPickablePoint;
+import com.kz.pipeCutter.SurfaceDemo;
+import com.kz.pipeCutter.ui.Settings;
+import com.kz.pipeCutter.ui.tab.MachinekitSettings;
+
 import pb.Message;
 import pb.Message.Container;
 import pb.Status.EmcStatusMotionAxis;
 import pb.Types.ContainerType;
-
-import com.jcraft.jsch.ChannelExec;
-import com.kz.pipeCutter.ui.Settings;
-import com.kz.pipeCutter.ui.tab.GcodeViewer;
-import com.kz.pipeCutter.ui.tab.MachinekitSettings;
 
 public class BBBStatus implements Runnable {
 	private static BBBStatus instance;
@@ -68,46 +71,54 @@ public class BBBStatus implements Runnable {
 						byte[] returnedBytes = frame.getData();
 						String messageType = new String(returnedBytes);
 						// System.out.println("type: " + messageType);
-						if (!messageType.equals("motion") && !messageType.equals("task") && !messageType.equals("io") && !messageType.equals("interp") ) {
+						if (!messageType.equals("motion") && !messageType.equals("task") && !messageType.equals("io")
+								&& !messageType.equals("interp")) {
 
 							contReturned = Message.Container.parseFrom(returnedBytes);
 							if (contReturned.getType().equals(ContainerType.MT_EMCSTAT_FULL_UPDATE)
 									|| contReturned.getType().equals(ContainerType.MT_EMCSTAT_INCREMENTAL_UPDATE)) {
 
-								Iterator<EmcStatusMotionAxis> itAxis = contReturned.getEmcStatusMotion().getAxisList()
-										.iterator();
+								double x = 0,y=0,z=0,a = 0,b,c;
+								Iterator<EmcStatusMotionAxis> itAxis = contReturned.getEmcStatusMotion().getAxisList().iterator();
 								while (itAxis.hasNext()) {
 									EmcStatusMotionAxis axis = itAxis.next();
 									int index = axis.getIndex();
 									switch (index) {
 									case 0:
-										final double x = contReturned.getEmcStatusMotion().getActualPosition().getX();
+										x = contReturned.getEmcStatusMotion().getActualPosition().getX();
 										Settings.instance.setSetting("position_x", x);
 										break;
 									case 1:
-										final double y = contReturned.getEmcStatusMotion().getActualPosition().getY();
+										y = contReturned.getEmcStatusMotion().getActualPosition().getY();
 										Settings.instance.setSetting("position_y", y);
 										break;
 									case 2:
-										final double z = contReturned.getEmcStatusMotion().getActualPosition().getZ();
+										z = contReturned.getEmcStatusMotion().getActualPosition().getZ();
 										Settings.instance.setSetting("position_z", z);
 										break;
 									case 3:
-										final double a = contReturned.getEmcStatusMotion().getActualPosition().getA();
+										a = contReturned.getEmcStatusMotion().getActualPosition().getA();
 										Settings.instance.setSetting("position_a", a);
 										break;
 									case 4:
-										final double b = contReturned.getEmcStatusMotion().getActualPosition().getB();
+										b = contReturned.getEmcStatusMotion().getActualPosition().getB();
 										Settings.instance.setSetting("position_b", b);
 										break;
 									case 5:
-										final double c = contReturned.getEmcStatusMotion().getActualPosition().getC();
+										c = contReturned.getEmcStatusMotion().getActualPosition().getC();
 										Settings.instance.setSetting("position_c", c);
 										break;
 									default:
 										break;
 									}
-
+								}
+								
+								if(SurfaceDemo.instance!=null)
+								{
+									Coord3d coord = new Coord3d(x, y, z);
+									MyPickablePoint mp = new MyPickablePoint(-2, coord, Color.MAGENTA, 1, -1);
+									SurfaceDemo.instance.move(mp, false, 0, false);
+									SurfaceDemo.instance.utils.rotatePoints(a, false,false);
 								}
 							} else if (contReturned.getType().equals(ContainerType.MT_PING)) {
 								MachinekitSettings.instance.pingStatus();
@@ -116,7 +127,8 @@ public class BBBStatus implements Runnable {
 							}
 						}
 					}
-					receivedMessage.clear();
+					receivedMessage.destroy();
+					receivedMessage = null;
 				}
 			} catch (Exception e) {
 				if (!e.getMessage().equals("Unknown message type."))
@@ -142,7 +154,7 @@ public class BBBStatus implements Runnable {
 
 		uri = Settings.getInstance().getSetting("machinekit_statusService_url");
 
-		ctx = new ZContext(1);
+		ctx = new ZContext(2);
 		// Set random identity to make tracing easier
 		socket = ctx.createSocket(ZMQ.SUB);
 
@@ -152,8 +164,8 @@ public class BBBStatus implements Runnable {
 		socket.setIdentity(identity.getBytes(ZMQ.CHARSET));
 		socket.subscribe("motion".getBytes(ZMQ.CHARSET));
 		socket.subscribe("task".getBytes(ZMQ.CHARSET));
-//		socket.subscribe("io".getBytes(ZMQ.CHARSET));
-//		socket.subscribe("interp".getBytes(ZMQ.CHARSET));
+		// socket.subscribe("io".getBytes(ZMQ.CHARSET));
+		// socket.subscribe("interp".getBytes(ZMQ.CHARSET));
 		socket.setReceiveTimeOut(100);
 		socket.connect(this.uri);
 

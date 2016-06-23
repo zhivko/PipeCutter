@@ -6,6 +6,7 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.TimeZone;
+import java.util.concurrent.TimeUnit;
 
 import com.jcraft.jsch.ChannelExec;
 import com.jcraft.jsch.ChannelSftp;
@@ -31,7 +32,7 @@ public class MachinekitUpload extends SSH_Command {
 			channelSFtp.connect(3 * 1000);
 			while (channelExec.getExitStatus() == -1) {
 				try {
-					Thread.sleep(1000);
+					TimeUnit.MILLISECONDS.sleep(1000);
 				} catch (Exception e) {
 					System.out.println(e);
 				}
@@ -91,7 +92,7 @@ public class MachinekitUpload extends SSH_Command {
 			channelExec.connect();
 			while (channelExec.getExitStatus() == -1) {
 				try {
-					Thread.sleep(1000);
+					TimeUnit.MILLISECONDS.sleep(300);
 				} catch (Exception e) {
 					System.out.println(e);
 				}
@@ -103,7 +104,7 @@ public class MachinekitUpload extends SSH_Command {
 			channelExec.connect();
 			while (channelExec.getExitStatus() == -1) {
 				try {
-					Thread.sleep(1000);
+					TimeUnit.MILLISECONDS.sleep(300);
 				} catch (Exception e) {
 					System.out.println(e);
 				}

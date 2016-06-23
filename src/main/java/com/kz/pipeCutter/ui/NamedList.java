@@ -174,9 +174,16 @@ public class NamedList extends JPanel implements IParameter, IHasLabel {
 		if (ret != null) {
 			String ip = Settings.getInstance().getSetting("machinekit_ip");
 			String host = Settings.getInstance().getSetting("machinekit_host");
-			String commandUrl = "tcp://" + serviceInfo.getServer() + ":" + ret.getPort();
+			
+			String commandUrl = "tcp://" + getServer(serviceInfo.getServer()) + ":" + ret.getPort();
 			Settings.getInstance().setSetting("machinekit_commandService_url", commandUrl);
 		}
+	}
+
+	private static String getServer(String server) {
+		if(server.endsWith("."))
+			return server.substring(0, server.length()-1);
+		return server;
 	}
 
 	public static void getErrorServiceUrl(ServiceInfo serviceInfo) {
@@ -187,7 +194,7 @@ public class NamedList extends JPanel implements IParameter, IHasLabel {
 		if (ret != null) {
 			String ip = Settings.getInstance().getSetting("machinekit_ip");
 			String host = Settings.getInstance().getSetting("machinekit_host");
-			String errorUrl = "tcp://" + serviceInfo.getServer() + ":" + ret.getPort();
+			String errorUrl = "tcp://" + getServer(serviceInfo.getServer()) + ":" + ret.getPort();
 			if (!errorUrl.equals(Settings.getInstance().getSetting("machinekit_errorService_url"))) {
 				Settings.getInstance().setSetting("machinekit_errorService_url", errorUrl);
 				Settings.instance.initErrorService();
@@ -203,7 +210,7 @@ public class NamedList extends JPanel implements IParameter, IHasLabel {
 		if (ret != null) {
 			String ip = Settings.getInstance().getSetting("machinekit_ip");
 			String host = Settings.getInstance().getSetting("machinekit_host");
-			String statusUrl = "tcp://" + serviceInfo.getServer() + ":" + ret.getPort();
+			String statusUrl = "tcp://" + getServer(serviceInfo.getServer()) + ":" + ret.getPort();
 			if (!statusUrl.equals(Settings.getInstance().getSetting("machinekit_statusService_url"))) {
 				Settings.getInstance().setSetting("machinekit_statusService_url", statusUrl);
 				Settings.instance.initStatusService();
@@ -220,7 +227,7 @@ public class NamedList extends JPanel implements IParameter, IHasLabel {
 		if (ret != null) {
 			String ip = Settings.getInstance().getSetting("machinekit_ip");
 			String host = Settings.getInstance().getSetting("machinekit_host");
-			String previewStatusUrl = "tcp://" + serviceInfo.getServer() + ":" + ret.getPort();
+			String previewStatusUrl = "tcp://" + getServer(serviceInfo.getServer()) + ":" + ret.getPort();
 			if (!previewStatusUrl.equals(Settings.getInstance().getSetting("machinekit_previewstatusService_url"))) {
 				Settings.getInstance().setSetting("machinekit_previewstatusService_url", previewStatusUrl);
 			}
@@ -235,7 +242,7 @@ public class NamedList extends JPanel implements IParameter, IHasLabel {
 		if (ret != null) {
 			String ip = Settings.getInstance().getSetting("machinekit_ip");
 			String host = Settings.getInstance().getSetting("machinekit_host");
-			String hallRCompUri = "tcp://" + serviceInfo.getServer() + ":" + ret.getPort();
+			String hallRCompUri = "tcp://" + getServer(serviceInfo.getServer()) + ":" + ret.getPort();
 			if (!hallRCompUri.equals(Settings.getInstance().getSetting("machinekit_halRCompService_url"))) {
 				Settings.getInstance().setSetting("machinekit_halRCompService_url", hallRCompUri);
 				Settings.getInstance().initHalRcompService();
@@ -253,7 +260,7 @@ public class NamedList extends JPanel implements IParameter, IHasLabel {
 		if (ret != null) {
 			String ip = Settings.getInstance().getSetting("machinekit_ip");
 			String host = Settings.getInstance().getSetting("machinekit_host");
-			hallGroupUrl = "tcp://" + serviceInfo.getServer() + ":" + ret.getPort();
+			hallGroupUrl = "tcp://" + getServer(serviceInfo.getServer()) + ":" + ret.getPort();
 			if (!hallGroupUrl.equals(Settings.getInstance().getSetting("machinekit_halCmdService_url"))) {
 				Settings.getInstance().setSetting("machinekit_halCmdService_url", hallGroupUrl);
 				Settings.instance.initHalCmdService();

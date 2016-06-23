@@ -28,6 +28,7 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.TimeUnit;
 
 import javax.swing.JMenuItem;
 import javax.swing.JPopupMenu;
@@ -63,7 +64,7 @@ import com.kz.pipeCutter.ui.Settings;
 import com.kz.pipeCutter.ui.SortedProperties;
 
 public class SurfaceDemo extends AbstractAnalysis {
-	Utils utils;
+	public Utils utils;
 	Discoverer discoverer;
 	MyTelnetClient smoothie;
 	// private Cylinder cylinder = null;
@@ -830,7 +831,7 @@ public class SurfaceDemo extends AbstractAnalysis {
 
 		// instance.getChart().render();
 		try {
-			Thread.sleep(Cylinder.sleep);
+			TimeUnit.MILLISECONDS.sleep(Cylinder.sleep);
 		} catch (InterruptedException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -859,7 +860,7 @@ public class SurfaceDemo extends AbstractAnalysis {
 			plasma.setWireframeColor(Color.RED);
 			out.println("G04 P" + pierceTimeMs / 1000);
 			try {
-				Thread.sleep(Long.valueOf(pierceTimeMs));
+				TimeUnit.MILLISECONDS.sleep(pierceTimeMs);
 			} catch (Exception ex) {
 				ex.printStackTrace();
 			}
@@ -875,7 +876,7 @@ public class SurfaceDemo extends AbstractAnalysis {
 
 		// instance.getChart().render();
 		try {
-			Thread.sleep(Cylinder.sleep);
+			TimeUnit.MILLISECONDS.sleep(Cylinder.sleep);
 		} catch (InterruptedException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

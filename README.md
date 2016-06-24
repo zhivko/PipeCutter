@@ -63,6 +63,14 @@ http://elinux.org/BeagleBone_Black_Extracting_eMMC_contents
 <br>
 http://dave.cheney.net/2013/09/22/two-point-five-ways-to-access-the-serial-console-on-your-beaglebone-black
 <br>
+***AVAHI Daemon doesn't always bring up beaglebone.local***
+<br>
+```
+sudo systemctl --system daemon-reload'
+sudo systemctl start avahi-daemon.service
+sudo systemctl status avahi-daemon.service
+```
+
 **machinekit hal remote components**
 <br>
 https://github.com/mhaberler/asciidoc-sandbox/wiki/Remote-HAL-Components

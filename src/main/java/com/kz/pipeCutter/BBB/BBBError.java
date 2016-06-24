@@ -92,11 +92,11 @@ public class BBBError implements Runnable {
 				}
 
 			}
-			try {
-				TimeUnit.MILLISECONDS.sleep(100);
-			} catch (Exception ex) {
-				ex.printStackTrace();
-			}
+//			try {
+//				TimeUnit.MILLISECONDS.sleep(100);
+//			} catch (Exception ex) {
+//				ex.printStackTrace();
+//			}
 		}
 	}
 

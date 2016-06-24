@@ -213,7 +213,7 @@ public class Settings extends JFrame {
 				if (repositioned) {
 					Component c = (Component) evt.getSource();
 					Point currentLocationOnScreen = c.getLocationOnScreen();
-					System.out.println("frame moved.");
+					//System.out.println("frame moved.");
 					FileInputStream in;
 					try {
 						in = new FileInputStream(Settings.iniFullFileName);

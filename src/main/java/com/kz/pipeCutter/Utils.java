@@ -406,11 +406,10 @@ public class Utils {
 		rotatePoints(angle, slow, true);
 	}
 
-	public void rotatePoints(double angle, boolean slow, boolean delta) {
+	public void rotatePoints(double angle, boolean slow, boolean angleInDelta) {
 		double value;
 		if (!slow) {
-
-			if (delta)
+			if (angleInDelta)
 				value = Double.valueOf(SurfaceDemo.instance.angleTxt) + angle;
 			else
 				value = angle;
@@ -432,10 +431,10 @@ public class Utils {
 
 			int noSteps = 10;
 			for (int i = 0; i <= noSteps; i++) {
-				if (delta)
+				if (angleInDelta)
 					value = Double.valueOf(SurfaceDemo.instance.angleTxt) + angle * i / noSteps;
 				else
-					value = angle * i/noSteps;
+					value = angle * i / noSteps;
 
 				double[] zAxisDouble = { 0.0d, 1.0d, 0.0d };
 				Vector3D zAxis = new Vector3D(zAxisDouble);
@@ -465,15 +464,17 @@ public class Utils {
 				edge.calculateCenter();
 			}
 
-		value = Double.valueOf(SurfaceDemo.instance.angleTxt);
-		double newValue = value + angle;
-
 		// if((float)newValue == 360.0f)
 		// {
 		// newValue = 0.0f;
 		// }
+		if (angleInDelta) {
+			value = Double.valueOf(SurfaceDemo.instance.angleTxt);
+			double newValue = value + angle;
+			SurfaceDemo.instance.angleTxt = Double.valueOf(newValue).toString();
+		} else
+			SurfaceDemo.instance.angleTxt = Double.valueOf(angle).toString();
 
-		SurfaceDemo.instance.angleTxt = Double.valueOf(newValue).toString();
 		float val = Float.valueOf(SurfaceDemo.instance.angleTxt);
 		SurfaceDemo.instance.calculateRotationPoint(val);
 	}

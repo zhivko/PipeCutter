@@ -88,22 +88,22 @@ public class SurfaceDemo extends AbstractAnalysis {
 	public float plasmaKerfOffset = 0.5f;
 
 	public SurfaceDemo() {
+		instance=this;
 		System.setProperty("java.net.preferIPv4Stack", "true");
 		// discoverer = new Discoverer();
-		settingsFrame = new Settings();
-		
+		settingsFrame = Settings.getInstance();
+
 		String folder = Settings.getInstance().getSetting("screenshot_folder");
-		if(folder!=null)
-		{
+		if (folder != null) {
 			ChartComponentFactory.SCREENSHOT_FOLDER = folder;
 		}
-			
-	}
 
-	public static void main(String[] args) throws Exception {
-		System.setProperty("java.util.Arrays.useLegacyMergeSort", "true");
-		instance = new SurfaceDemo();
-		AnalysisLauncher.open(instance);
+		try {
+			AnalysisLauncher.open(instance);
+		} catch (Exception e2) {
+			// TODO Auto-generated catch block
+			e2.printStackTrace();
+		}
 		System.out.println("Is daemon: " + Thread.currentThread().isDaemon());
 		System.out.println("Is eventdispatched thread? " + javax.swing.SwingUtilities.isEventDispatchThread());
 
@@ -176,7 +176,7 @@ public class SurfaceDemo extends AbstractAnalysis {
 		// menu.add(menuItem11);
 
 		instance.getChart().getView().setViewPositionMode(ViewPositionMode.FREE);
-		//instance.getChart().getView().setMaximized(true);
+		// instance.getChart().getView().setMaximized(true);
 		// Iterator<AbstractCameraController> itController =
 		// instance.getChart().getControllers().iterator();
 		// while (itController.hasNext()) {
@@ -186,22 +186,28 @@ public class SurfaceDemo extends AbstractAnalysis {
 		// itController.remove();
 		// }
 		// }
-		FileInputStream in = new FileInputStream(Settings.iniFullFileName);
-		SortedProperties props = new SortedProperties();
-		props.load(in);
-		in.close();
 
-		if (props.get("surfaceDemo") != null) {
-			String size = props.get("surfaceDemo").toString();
-			try {
-				String[] splittedSize = size.split("x");
-				instance.canvas.setPreferredSize(new Dimension(Double.valueOf(splittedSize[0]).intValue(),
-						Double.valueOf(splittedSize[1]).intValue()));
-				instance.canvas.validate();
-				instance.canvas.repaint();
-			} catch (Exception ex) {
-				ex.printStackTrace();
+		try {
+			FileInputStream in = new FileInputStream(Settings.iniFullFileName);
+			SortedProperties props = new SortedProperties();
+			props.load(in);
+			in.close();
+
+			if (props.get("surfaceDemo") != null) {
+				String size = props.get("surfaceDemo").toString();
+				try {
+					String[] splittedSize = size.split("x");
+					instance.canvas.setPreferredSize(
+							new Dimension(Double.valueOf(splittedSize[0]).intValue(), Double.valueOf(splittedSize[1]).intValue()));
+					instance.canvas.validate();
+					instance.canvas.repaint();
+				} catch (Exception ex) {
+					ex.printStackTrace();
+				}
 			}
+		} catch (IOException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
 		}
 
 		instance.canvas.addComponentListener(new ComponentListener() {
@@ -249,9 +255,20 @@ public class SurfaceDemo extends AbstractAnalysis {
 
 			}
 		});
-		
 
-		
+	}
+
+	public static SurfaceDemo getInstance() {
+		if (instance == null)
+			instance = new SurfaceDemo();
+		return instance;
+	}
+
+	public static void main(String[] args) throws Exception {
+		System.setProperty("java.util.Arrays.useLegacyMergeSort", "true");
+
+		getInstance();
+
 	}
 
 	private void enablePickingTexts(ArrayList<PickableDrawableTextBitmap> edgeTexts, Chart chart, int i) {
@@ -640,12 +657,7 @@ public class SurfaceDemo extends AbstractAnalysis {
 				myComposite.add(edgeCenter);
 			}
 
-			if (plasma == null) {
-				plasma = new Sphere(new Coord3d(0, 0, 0), 0.4f, 4, Color.BLUE);
-				plasma.setWireframeColor(Color.BLUE);
-			} else
-				plasma.setPosition(plasma.getPosition());
-			instance.myComposite.add(plasma);
+			getPlasma();
 
 			myComposite.add(ls);
 		}
@@ -661,6 +673,16 @@ public class SurfaceDemo extends AbstractAnalysis {
 		instance.enablePicking(instance.utils.points.values(), instance.chart, 10);
 		// instance.canvas.getAnimator().start();
 		System.out.println("Composite element size: " + myComposite.getDrawables().size());
+	}
+
+	private Sphere getPlasma() {
+		if (plasma == null) {
+			plasma = new Sphere(new Coord3d(0, 0, 0), 0.4f, 4, Color.BLUE);
+			plasma.setWireframeColor(Color.BLUE);
+			plasma.setPosition(plasma.getPosition());
+		}
+		instance.myComposite.add(plasma);
+		return plasma;
 	}
 
 	private void clearPicking() {
@@ -830,12 +852,12 @@ public class SurfaceDemo extends AbstractAnalysis {
 		}
 
 		// instance.getChart().render();
-		try {
-			TimeUnit.MILLISECONDS.sleep(Cylinder.sleep);
-		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+//		try {
+//			TimeUnit.MILLISECONDS.sleep(Cylinder.sleep);
+//		} catch (InterruptedException e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		}
 
 	}
 

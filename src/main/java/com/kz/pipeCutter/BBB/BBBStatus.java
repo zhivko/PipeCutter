@@ -32,6 +32,8 @@ public class BBBStatus implements Runnable {
 	ZContext ctx;
 	private String uri;
 	private Thread readThread;
+	double x = 0, y = 0, z = 0, a = 0, b=0, c=0;
+
 
 	public BBBStatus() {
 		initSocket();
@@ -78,7 +80,6 @@ public class BBBStatus implements Runnable {
 							if (contReturned.getType().equals(ContainerType.MT_EMCSTAT_FULL_UPDATE)
 									|| contReturned.getType().equals(ContainerType.MT_EMCSTAT_INCREMENTAL_UPDATE)) {
 
-								double x = 0,y=0,z=0,a = 0,b,c;
 								Iterator<EmcStatusMotionAxis> itAxis = contReturned.getEmcStatusMotion().getAxisList().iterator();
 								while (itAxis.hasNext()) {
 									EmcStatusMotionAxis axis = itAxis.next();
@@ -112,13 +113,15 @@ public class BBBStatus implements Runnable {
 										break;
 									}
 								}
-								
-								if(SurfaceDemo.instance!=null)
-								{
-									Coord3d coord = new Coord3d(x, y, z);
-									MyPickablePoint mp = new MyPickablePoint(-2, coord, Color.MAGENTA, 1, -1);
-									SurfaceDemo.instance.move(mp, false, 0, false);
-									SurfaceDemo.instance.utils.rotatePoints(a, false,false);
+
+								if (SurfaceDemo.getInstance() != null) {
+									if (SurfaceDemo.instance.getChart() != null) {
+										//System.out.println(String.format("%1$,.2f, %2$,.2f, %3$,.2f",x,y,z));
+										Coord3d coord = new Coord3d(x, y, z);
+										MyPickablePoint mp = new MyPickablePoint(-2, coord, Color.MAGENTA, 1, -1);
+										SurfaceDemo.instance.move(mp, false, 0, false);
+										SurfaceDemo.instance.utils.rotatePoints(a, false, false);
+									}
 								}
 							} else if (contReturned.getType().equals(ContainerType.MT_PING)) {
 								MachinekitSettings.instance.pingStatus();
@@ -131,15 +134,14 @@ public class BBBStatus implements Runnable {
 					receivedMessage = null;
 				}
 			} catch (Exception e) {
-				if (!e.getMessage().equals("Unknown message type."))
 					e.printStackTrace();
 			}
-			try {
-				TimeUnit.MILLISECONDS.sleep(200);
-			} catch (InterruptedException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
+			// try {
+			// TimeUnit.MILLISECONDS.sleep(200);
+			// } catch (InterruptedException e) {
+			// // TODO Auto-generated catch block
+			// e.printStackTrace();
+			// }
 		}
 
 	}

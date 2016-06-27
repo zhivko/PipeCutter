@@ -14,8 +14,10 @@ import org.zeromq.ZMsg;
 import org.zeromq.ZMQ.Socket;
 
 import com.google.protobuf.InvalidProtocolBufferException;
+import com.kz.pipeCutter.SurfaceDemo;
 import com.kz.pipeCutter.ui.Settings;
 import com.kz.pipeCutter.ui.tab.GcodeViewer;
+import com.kz.pipeCutter.ui.tab.MachinekitSettings;
 
 import pb.Message;
 import pb.Message.Container;
@@ -52,7 +54,7 @@ public class BBBHalCommand implements Runnable {
 		return instance;
 	}
 
-	protected void requestDescribe() {
+	public void requestDescribe() {
 		pb.Message.Container.Builder builder = Container.newBuilder();
 		builder.setType(ContainerType.MT_HALRCOMMAND_DESCRIBE);
 		Container container = builder.build();
@@ -121,39 +123,42 @@ public class BBBHalCommand implements Runnable {
 							for (int i = 0; i < contReturned.getCompCount(); i++) {
 								for (int j = 0; j < contReturned.getComp(i).getPinCount(); j++) {
 									String value = null;
+									if(contReturned.getComp(i).getPin(j).getName().equals("motion.spindle-on"))
+										System.out.println("");
 									if (contReturned.getComp(i).getPin(j).getType() == ValueType.HAL_FLOAT) {
-										value = Double.valueOf(contReturned.getComp(i).getPin(j).getHalfloat())
-												.toString();
+										value = Double.valueOf(contReturned.getComp(i).getPin(j).getHalfloat()).toString();
 									} else if (contReturned.getComp(i).getPin(j).getType() == ValueType.HAL_S32) {
-										value = Integer.valueOf(contReturned.getComp(i).getPin(j).getHals32())
-												.toString();
+										value = Integer.valueOf(contReturned.getComp(i).getPin(j).getHals32()).toString();
 									} else if (contReturned.getComp(i).getPin(j).getType() == ValueType.HAL_U32) {
-										value = Integer.valueOf(contReturned.getComp(i).getPin(j).getHalu32())
-												.toString();
+										value = Integer.valueOf(contReturned.getComp(i).getPin(j).getHalu32()).toString();
 									} else if (contReturned.getComp(i).getPin(j).getType() == ValueType.HAL_BIT) {
-										value = Boolean.valueOf(contReturned.getComp(i).getPin(j).getHalbit())
-												.toString();
+										value = Boolean.valueOf(contReturned.getComp(i).getPin(j).getHalbit()).toString();
 									}
 									halPin.put(contReturned.getComp(i).getPin(j).getName(), value);
 								}
 							}
+						} else if (contReturned.getType().equals(ContainerType.MT_PING)) {
+							MachinekitSettings.instance.pingHalCommand();
+						} else {
+							System.out.println(contReturned.getType());
 						}
 					}
-					if (halPin.get("motion.program-line") != null)
-					{
+					if (halPin.get("motion.program-line") != null && SurfaceDemo.instance!=null) {
 						int lineNo = Integer.valueOf(halPin.get("motion.program-line")).intValue();
 						GcodeViewer.instance.setLineNumber(lineNo);
 					}
-					try {
-						TimeUnit.MILLISECONDS.sleep(100);
-						// requestDescribe();
-					} catch (InterruptedException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					}					
-					requestDescribe();
+					if (halPin.get("motion.spindle-on") != null && SurfaceDemo.instance!=null) {
+						System.out.println(halPin.get("motion.spindle-on"));
+						boolean spindleOn = Boolean.valueOf(halPin.get("motion.spindle-on")).booleanValue();
+						SurfaceDemo.instance.spindleOn=spindleOn;
+					}
 					receivedMessage.destroy();
-					receivedMessage=null;
+					receivedMessage = null;
+					//TimeUnit.MILLISECONDS.sleep(1000);
+					requestDescribe();
+				} else
+				{
+					//requestDescribe();
 				}
 			} catch (Exception e) {
 				// TODO Auto-generated catch block
@@ -164,18 +169,28 @@ public class BBBHalCommand implements Runnable {
 	}
 
 	public void initSocket() {
+		if (readThread != null && readThread.isAlive()) {
+			readThread.interrupt();
+			while (readThread.isAlive()) {
+				try {
+					TimeUnit.MILLISECONDS.sleep(500);
+				} catch (InterruptedException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}
+		}
 		if (ctx != null && socket != null) {
 			socket.close();
 			ctx.close();
 		}
-		if (readThread != null && readThread.isAlive())
-			readThread.interrupt();
 
-		ctx = new ZContext(2);
+		ctx = new ZContext(5);
 		// Set random identity to make tracing easier
 		socket = ctx.createSocket(ZMQ.DEALER);
 		socket.setIdentity(identity.getBytes(ZMQ.CHARSET));
-		socket.setReceiveTimeOut(100);
+		socket.setReceiveTimeOut(200);
+		socket.setSendTimeOut(200);
 		socket.connect(this.socketUri);
 
 		readThread = new Thread(this);

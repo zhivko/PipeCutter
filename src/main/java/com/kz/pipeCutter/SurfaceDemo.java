@@ -86,9 +86,11 @@ public class SurfaceDemo extends AbstractAnalysis {
 	public Settings settingsFrame;
 
 	public float plasmaKerfOffset = 0.5f;
+	private boolean alreadyCutting;
+	public boolean spindleOn;
 
 	public SurfaceDemo() {
-		instance=this;
+		instance = this;
 		System.setProperty("java.net.preferIPv4Stack", "true");
 		// discoverer = new Discoverer();
 		settingsFrame = Settings.getInstance();
@@ -825,22 +827,29 @@ public class SurfaceDemo extends AbstractAnalysis {
 		}
 
 		cylinderPoint.setCoord(tempPoint.xyz);
-		plasma.setPosition(cylinderPoint.xyz.add(new Coord3d(0, 0, offset)));
+		Coord3d offsetedPoint = cylinderPoint.xyz.add(new Coord3d(0, 0, offset));
+		plasma.setPosition(offsetedPoint);
 
-		String gcode = SurfaceDemo.instance.utils.coordinateToGcode(tempPoint);
 
 		if (writeToGCode)
 			try {
+				String gcode = SurfaceDemo.instance.utils.coordinateToGcode(offsetedPoint);
 				PrintWriter out = new PrintWriter(
 						new BufferedWriter(new FileWriter(CutThread.gcodeFile.getAbsolutePath(), true)));
-				if (cut)
+				if (cut) {
 					out.println(String.format(java.util.Locale.US, "G01 %s A%.3f B%.3f F%s (pointId: %d)", gcode,
 							Float.valueOf(SurfaceDemo.instance.angleTxt), Float.valueOf(SurfaceDemo.instance.angleTxt),
 							Settings.getInstance().getSetting("gcode_feedrate_g1"), tempPoint.id));
-				else
+					alreadyCutting=true;
+				} else {
+					if (alreadyCutting) {
+						out.println("M5");
+					}
 					out.println(String.format(java.util.Locale.US, "G00 %s A%.3f B%.3f F%s (pointId: %d)", gcode,
 							Float.valueOf(SurfaceDemo.instance.angleTxt), Float.valueOf(SurfaceDemo.instance.angleTxt),
 							Settings.getInstance().getSetting("gcode_feedrate_g0"), tempPoint.id));
+					alreadyCutting=false;
+				}
 				out.close();
 			} catch (IOException e) {
 				e.printStackTrace();
@@ -851,13 +860,13 @@ public class SurfaceDemo extends AbstractAnalysis {
 			canvas.getView().setBoundManual(new BoundingBox3d(plasma.getPosition(), edge));
 		}
 
-		// instance.getChart().render();
-//		try {
-//			TimeUnit.MILLISECONDS.sleep(Cylinder.sleep);
-//		} catch (InterruptedException e) {
-//			// TODO Auto-generated catch block
-//			e.printStackTrace();
-//		}
+		instance.getChart().render();
+		// try {
+		// TimeUnit.MILLISECONDS.sleep(Cylinder.sleep);
+		// } catch (InterruptedException e) {
+		// // TODO Auto-generated catch block
+		// e.printStackTrace();
+		// }
 
 	}
 
@@ -876,8 +885,11 @@ public class SurfaceDemo extends AbstractAnalysis {
 			} catch (Exception ex) {
 				ex.printStackTrace();
 			}
-			out.println("G00 " + gcode + " F" + Settings.getInstance().getSetting("gcode_feedrate_g0"));
-			out.println("G01 " + gcode + " F" + Settings.getInstance().getSetting("gcode_feedrate_g1"));
+			out.println("G00 " + gcode + " F" + Settings.getInstance().getSetting("gcode_feedrate_g1"));
+			if (!alreadyCutting) {
+				out.println("M3");
+				alreadyCutting=true;
+			}	
 			plasma.setColor(Color.RED);
 			plasma.setWireframeColor(Color.RED);
 			out.println("G04 P" + pierceTimeMs / 1000);

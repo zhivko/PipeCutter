@@ -86,14 +86,14 @@ public class Settings extends JFrame {
 
 	}
 
-	protected void initErrorService() {
+	public void initErrorService() {
 		if(error==null)
 			error = new BBBError();
 		else
 			error.initSocket();
 	}
 
-	protected void initStatusService() {
+	public void initStatusService() {
 		if(status==null)
 			status = new BBBStatus();
 		else

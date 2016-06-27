@@ -365,18 +365,18 @@ public class Utils {
 
 	}
 
-	public String coordinateToGcode(MyPickablePoint point) {
+	public String coordinateToGcode(Coord3d point) {
 		float offset = Float.valueOf(Settings.instance.getSetting("plasma_pierce_offset_mm"));
 		boolean moveRelatively = false;
 		Float x, y, z;
 		if (moveRelatively) {
-			x = Cylinder.offsetX - point.xyz.x;
-			y = point.xyz.y + Cylinder.offsetY;
-			z = point.xyz.z + Cylinder.offsetZ + offset;
+			x = Cylinder.offsetX - point.x;
+			y = point.y + Cylinder.offsetY;
+			z = point.z + Cylinder.offsetZ + offset;
 		} else {
-			x = point.xyz.x;
-			y = point.xyz.y;
-			z = point.xyz.z;
+			x = point.x;
+			y = point.y;
+			z = point.z;
 		}
 		return String.format(java.util.Locale.US, "X%.3f Y%.3f Z%.3f", x, y, z);
 	}

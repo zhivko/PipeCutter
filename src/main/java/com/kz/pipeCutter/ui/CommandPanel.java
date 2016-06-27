@@ -13,12 +13,13 @@ import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.SwingUtilities;
 
+import com.kz.pipeCutter.BBB.BBBHalCommand;
 import com.kz.pipeCutter.BBB.Discoverer;
 import com.kz.pipeCutter.BBB.commands.AbortGCode;
 import com.kz.pipeCutter.BBB.commands.ChangeMode;
 import com.kz.pipeCutter.BBB.commands.EstopReset;
 import com.kz.pipeCutter.BBB.commands.ExecuteMdi;
-import com.kz.pipeCutter.BBB.commands.HomeAxis;
+import com.kz.pipeCutter.BBB.commands.HomeAllAxis;
 import com.kz.pipeCutter.BBB.commands.MachinekitListProcesses;
 import com.kz.pipeCutter.BBB.commands.MachinekitStart;
 import com.kz.pipeCutter.BBB.commands.MachinekitStop;
@@ -161,11 +162,7 @@ public class CommandPanel extends JPanel {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				try {
-					new ChangeMode(EmcTaskModeType.EMC_TASK_MODE_MANUAL).start();
-					for (int i = 0; i <= 4; i++) {
-						new HomeAxis(i).start();
-						Thread.sleep(500);
-					}
+					new HomeAllAxis().start();
 				} catch (Exception ex) {
 					ex.printStackTrace();
 				}
@@ -181,7 +178,7 @@ public class CommandPanel extends JPanel {
 					new ChangeMode(EmcTaskModeType.EMC_TASK_MODE_MANUAL).start();
 					for (int i = 0; i < 4; i++) {
 						new UnHomeAxis(i).start();
-						Thread.sleep(10);
+						Thread.sleep(100);
 					}
 				} catch (Exception ex) {
 					ex.printStackTrace();
@@ -289,6 +286,7 @@ public class CommandPanel extends JPanel {
 			public void actionPerformed(ActionEvent e) {
 				try {
 					new PlayGCode().start();
+					BBBHalCommand.getInstance().requestDescribe();
 				} catch (Exception ex) {
 					ex.printStackTrace();
 				}

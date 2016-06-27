@@ -41,8 +41,6 @@ public class BBBHalRComp implements Runnable {
 	HashMap<String, String> halPins = new HashMap<>();
 	public boolean isAlive = true;
 
-	private final ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(10);
-
 	public BBBHalRComp() {
 		prepareBindContainer();
 		initSocket();
@@ -107,7 +105,7 @@ public class BBBHalRComp implements Runnable {
 		// Tick once per second, pulling in arriving messages
 		// for (int centitick = 0; centitick < 4; centitick++) {
 		// System.out.println(Thread.currentThread().getName());
-		while (true) {
+		while (!readThread.isInterrupted()) {
 			ZMsg receivedMessage = ZMsg.recvMsg(socket, ZMQ.DONTWAIT);
 			// System.out.println("loop: " + i);
 			if (receivedMessage != null) {
@@ -123,25 +121,20 @@ public class BBBHalRComp implements Runnable {
 									for (int j = 0; j < contReturned.getComp(i).getPinCount(); j++) {
 										String value = null;
 										if (contReturned.getComp(i).getPin(j).getType() == ValueType.HAL_FLOAT) {
-											value = Double.valueOf(contReturned.getComp(i).getPin(j).getHalfloat())
-													.toString();
+											value = Double.valueOf(contReturned.getComp(i).getPin(j).getHalfloat()).toString();
 										} else if (contReturned.getComp(i).getPin(j).getType() == ValueType.HAL_S32) {
-											value = Integer.valueOf(contReturned.getComp(i).getPin(j).getHals32())
-													.toString();
+											value = Integer.valueOf(contReturned.getComp(i).getPin(j).getHals32()).toString();
 										} else if (contReturned.getComp(i).getPin(j).getType() == ValueType.HAL_U32) {
-											value = Integer.valueOf(contReturned.getComp(i).getPin(j).getHalu32())
-													.toString();
+											value = Integer.valueOf(contReturned.getComp(i).getPin(j).getHalu32()).toString();
 										} else if (contReturned.getComp(i).getPin(j).getType() == ValueType.HAL_BIT) {
-											value = Boolean.valueOf(contReturned.getComp(i).getPin(j).getHalbit())
-													.toString();
+											value = Boolean.valueOf(contReturned.getComp(i).getPin(j).getHalbit()).toString();
 										}
 										halPins.put(contReturned.getComp(i).getPin(j).getName(), value);
 										pinsByHandle.put(contReturned.getComp(i).getPin(j).getHandle(),
 												pinsByName.get(contReturned.getComp(i).getPin(j).getName()));
 									}
 								}
-								GcodeViewer.instance.setLineNumber(
-										Integer.valueOf(halPins.get("mymotion.program-line")).intValue());
+								GcodeViewer.instance.setLineNumber(Integer.valueOf(halPins.get("mymotion.program-line")).intValue());
 
 							} else if (contReturned.getType().equals(ContainerType.MT_PING)) {
 								this.isAlive = true;
@@ -161,8 +154,7 @@ public class BBBHalRComp implements Runnable {
 									}
 									halPins.put(pinDef.getPinName(), value);
 								}
-								GcodeViewer.instance.setLineNumber(
-										Integer.valueOf(halPins.get("mymotion.program-line")).intValue());
+								GcodeViewer.instance.setLineNumber(Integer.valueOf(halPins.get("mymotion.program-line")).intValue());
 							} else {
 								System.out.println(contReturned.getType().toString());
 							}
@@ -173,15 +165,15 @@ public class BBBHalRComp implements Runnable {
 						// TODO Auto-generated catch block
 						e.printStackTrace();
 					}
-//					try {
-//						TimeUnit.MILLISECONDS.sleep(100);
-//					} catch (InterruptedException e) {
-//						// TODO Auto-generated catch block
-//						e.printStackTrace();
-//					}
+					// try {
+					// TimeUnit.MILLISECONDS.sleep(100);
+					// } catch (InterruptedException e) {
+					// // TODO Auto-generated catch block
+					// e.printStackTrace();
+					// }
 				}
 				receivedMessage.destroy();
-				receivedMessage=null;
+				receivedMessage = null;
 			}
 		}
 	}
@@ -193,8 +185,17 @@ public class BBBHalRComp implements Runnable {
 			socket.close();
 			ctx.close();
 		}
-		if (readThread != null && readThread.isAlive())
+		if (readThread != null && readThread.isAlive()) {
 			readThread.interrupt();
+			while (readThread.isAlive()) {
+				try {
+					TimeUnit.MILLISECONDS.sleep(500);
+				} catch (InterruptedException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}
+		}
 
 		this.halRCompUri = Settings.getInstance().getSetting("machinekit_halRCompService_url");
 		ctx = new ZContext(2);
@@ -209,9 +210,9 @@ public class BBBHalRComp implements Runnable {
 		socket.setRcvHWM(10000);
 		socket.connect(this.halRCompUri);
 
-		Thread myThread = new Thread(this);
-		myThread.setName("BBBHalRComp");
-		myThread.start();
+		readThread = new Thread(this);
+		readThread.setName("BBBHalRComp");
+		readThread.start();
 
 		// startBind();
 	}

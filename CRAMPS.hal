@@ -1,4 +1,4 @@
-# #######################################
+  # #######################################
 #
 # HAL file for BeagleBone + BeBoPr cape with 4 steppers
 #
@@ -10,6 +10,7 @@
 #loadusr -W haltalk -d 1
 #loadusr -W haltalk -d 5
 loadusr -W haltalk -d 5
+
 
 # Launch the setup script to make sure hardware setup looks good
 loadusr -w ./setup.sh
@@ -29,7 +30,7 @@ loadrt [EMCMOT]EMCMOT servo_period_nsec=[EMCMOT]SERVO_PERIOD num_joints=[TRAJ]AX
 
 
 # load low-level drivers
-loadrt hal_bb_gpio output_pins=816,822,823,824,825,826,914,923,925 input_pins=807,808,809,810,817,911,913
+loadrt hal_bb_gpio output_pins=816,822,823,824,825,826,914,923,925,811 input_pins=807,808,809,810,817,911,913
 loadrt [PRUCONF](DRIVER) prucode=$(HAL_RTMOD_DIR)/[PRUCONF](PRUBIN) [PRUCONF](CONFIG) halname=hpg
 loadrt pid count=2
 loadrt limit1 count=2
@@ -43,16 +44,16 @@ loadusr -Wn Therm hal_temp_bbb -n Therm -c 04:epcos_B57560G1104,05:epcos_B57560G
 # THREADS
 # ################################################
 
-addf hpg.capture-position   servo-thread
-addf bb_gpio.read                         servo-thread
-addf motion-command-handler               servo-thread
-addf motion-controller                    servo-thread
-addf pid.0.do-pid-calcs                   servo-thread
-addf pid.1.do-pid-calcs                   servo-thread
-addf limit1.0                             servo-thread
-addf limit1.1                             servo-thread
-addf hpg.update             servo-thread
-addf bb_gpio.write                        servo-thread
+addf hpg.capture-position   		servo-thread
+addf bb_gpio.read                       servo-thread
+addf motion-command-handler             servo-thread
+addf motion-controller                  servo-thread
+addf pid.0.do-pid-calcs                 servo-thread
+addf pid.1.do-pid-calcs                 servo-thread
+addf limit1.0                           servo-thread
+addf limit1.1                           servo-thread
+addf hpg.update             		servo-thread
+addf bb_gpio.write                      servo-thread
 
 
 # ######################################################
@@ -76,8 +77,10 @@ net emcmot.00.enable => hpg.stepgen.00.enable
 net emcmot.00.pos-cmd <= axis.0.motor-pos-cmd
 net emcmot.00.pos-cmd => hpg.stepgen.00.position-cmd
 
-net motor.00.pos-fb <= hpg.stepgen.00.position-fb
-net motor.00.pos-fb => axis.0.motor-pos-fb
+#net motor.00.pos-fb <= hpg.stepgen.00.position-fb
+#net motor.00.pos-fb => axis.0.motor-pos-fb
+net emcmot.00.pos-cmd => axis.0.motor-pos-fb 
+
 
 
 # timing parameters
@@ -115,8 +118,9 @@ net emcmot.01.enable => hpg.stepgen.01.enable
 net emcmot.01.pos-cmd <= axis.1.motor-pos-cmd
 net emcmot.01.pos-cmd => hpg.stepgen.01.position-cmd
 
-net motor.01.pos-fb <= hpg.stepgen.01.position-fb
-net motor.01.pos-fb => axis.1.motor-pos-fb
+#net motor.01.pos-fb <= hpg.stepgen.01.position-fb
+#net motor.01.pos-fb => axis.1.motor-pos-fb
+net emcmot.01.pos-cmd => axis.1.motor-pos-fb 
 
 
 # timing parameters
@@ -154,8 +158,9 @@ net emcmot.02.enable => hpg.stepgen.02.enable
 net emcmot.02.pos-cmd <= axis.2.motor-pos-cmd
 net emcmot.02.pos-cmd => hpg.stepgen.02.position-cmd
 
-net motor.02.pos-fb <= hpg.stepgen.02.position-fb
-net motor.02.pos-fb => axis.2.motor-pos-fb
+#net motor.02.pos-fb <= hpg.stepgen.02.position-fb
+#net motor.02.pos-fb => axis.2.motor-pos-fb
+net emcmot.02.pos-cmd => axis.2.motor-pos-fb 
 
 
 # timing parameters
@@ -193,8 +198,9 @@ net emcmot.03.enable => hpg.stepgen.03.enable
 net emcmot.03.pos-cmd <= axis.3.motor-pos-cmd
 net emcmot.03.pos-cmd => hpg.stepgen.03.position-cmd
 
-net motor.03.pos-fb <= hpg.stepgen.03.position-fb
-net motor.03.pos-fb => axis.3.motor-pos-fb
+#net motor.03.pos-fb <= hpg.stepgen.03.position-fb
+#net motor.03.pos-fb => axis.3.motor-pos-fb
+net emcmot.03.pos-cmd => axis.3.motor-pos-fb 
 
 
 # timing parameters
@@ -232,8 +238,9 @@ net emcmot.04.enable => hpg.stepgen.04.enable
 net emcmot.04.pos-cmd <= axis.4.motor-pos-cmd
 net emcmot.04.pos-cmd => hpg.stepgen.04.position-cmd
 
-net motor.04.pos-fb <= hpg.stepgen.04.position-fb
-net motor.04.pos-fb => axis.4.motor-pos-fb
+#net motor.04.pos-fb <= hpg.stepgen.04.position-fb
+#net motor.04.pos-fb => axis.4.motor-pos-fb
+net emcmot.04.pos-cmd => axis.4.motor-pos-fb 
 
 
 # timing parameters
@@ -360,108 +367,113 @@ net servo.2 bb_gpio.p8.out-24
 net servo.3 bb_gpio.p8.out-23
 net servo.4 bb_gpio.p8.out-22
 
-
+#  KLEMEN: COMMENTED HEATER SECTION START
 # ##################################################
 # PWM and Temperature Signals
 # ##################################################
 
-# Define signals to use elsewhere (ie: M1xx codes)
-# If you change any names here, lots of things will break!
-newsig e0.temp.set   float
-newsig e0.temp.meas  float
-newsig bed.temp.set  float
-newsig bed.temp.meas float
+## Define signals to use elsewhere (ie: M1xx codes)
+## If you change any names here, lots of things will break!
+#newsig e0.temp.set   float
+#newsig e0.temp.meas  float
+#newsig bed.temp.set  float
+#newsig bed.temp.meas float
 
+#setp hpg.pwmgen.00.pwm_period       10000000
 
-setp hpg.pwmgen.00.pwm_period       10000000
+## Bed Heater FET 1
+#setp hpg.pwmgen.00.out.00.pin       811
+#setp hpg.pwmgen.00.out.00.enable    1
+#setp hpg.pwmgen.00.out.00.value     0.0
 
-# Bed Heater FET 1
-setp hpg.pwmgen.00.out.00.pin       811
-setp hpg.pwmgen.00.out.00.enable    1
-setp hpg.pwmgen.00.out.00.value     0.0
+## E0 Heater FET 2
+#setp hpg.pwmgen.00.out.01.pin       915
+#setp hpg.pwmgen.00.out.01.enable    1
+#setp hpg.pwmgen.00.out.01.value     0.0
 
-# E0 Heater FET 2
-setp hpg.pwmgen.00.out.01.pin       915
-setp hpg.pwmgen.00.out.01.enable    1
-setp hpg.pwmgen.00.out.01.value     0.0
+## E1 Heater FET 3
+#setp hpg.pwmgen.00.out.02.pin       927
+#setp hpg.pwmgen.00.out.02.enable    1
+#setp hpg.pwmgen.00.out.02.value     0.0
 
-# E1 Heater FET 3
-setp hpg.pwmgen.00.out.02.pin       927
-setp hpg.pwmgen.00.out.02.enable    1
-setp hpg.pwmgen.00.out.02.value     0.0
+## E2 Heater FET 4
+#setp hpg.pwmgen.00.out.03.pin       921
+#setp hpg.pwmgen.00.out.03.enable    1
+#setp hpg.pwmgen.00.out.03.value     0.0
 
-# E2 Heater FET 4
-setp hpg.pwmgen.00.out.03.pin       921
-setp hpg.pwmgen.00.out.03.enable    1
-setp hpg.pwmgen.00.out.03.value     0.0
+## FET 5 - Fan / LED
+#setp hpg.pwmgen.00.out.04.pin       941
+#setp hpg.pwmgen.00.out.04.enable    1
+#setp hpg.pwmgen.00.out.04.value     0.0
 
-# FET 5 - Fan / LED
-setp hpg.pwmgen.00.out.04.pin       941
-setp hpg.pwmgen.00.out.04.enable    1
-setp hpg.pwmgen.00.out.04.value     0.0
+## FET 6 - Fan / LED
+#setp hpg.pwmgen.00.out.05.pin       922
+#setp hpg.pwmgen.00.out.05.enable    1
+#setp hpg.pwmgen.00.out.05.value     0.0
 
-# FET 6 - Fan / LED
-setp hpg.pwmgen.00.out.05.pin       922
-setp hpg.pwmgen.00.out.05.enable    1
-setp hpg.pwmgen.00.out.05.value     0.0
+## PID for Extruder 0 temperature control
+#net e0.temp.meas    <= Therm.ch-04.value
+#net e0.temp.meas    => pid.0.feedback
 
-# PID for Extruder 0 temperature control
-net e0.temp.meas    <= Therm.ch-04.value
-net e0.temp.meas    => pid.0.feedback
+#sets e0.temp.set  0
+#net e0.temp.set     => pid.0.command
 
-sets e0.temp.set  0
-net e0.temp.set     => pid.0.command
+#net e0.heater  <= pid.0.output
+#net e0.heater  => limit1.0.in
+#net e0.heaterl <= limit1.0.out
+#net e0.heaterl => hpg.pwmgen.00.out.01.value
 
-net e0.heater  <= pid.0.output
-net e0.heater  => limit1.0.in
-net e0.heaterl <= limit1.0.out
-net e0.heaterl => hpg.pwmgen.00.out.01.value
-
-# Limit heater PWM to positive values
-# PWM mimics hm2 implementation, which generates output for negative values
-setp limit1.0.min 0
+## Limit heater PWM to positive values
+## PWM mimics hm2 implementation, which generates output for negative values
+#setp limit1.0.min 0
 
 # PID for Bed temperature control
-net bed.temp.meas    <= Therm.ch-05.value
-net bed.temp.meas    => pid.1.feedback
+#net bed.temp.meas    <= Therm.ch-05.value
+#net bed.temp.meas    => pid.1.feedback
 
-sets bed.temp.set  0
-net bed.temp.set     => pid.1.command
+#sets bed.temp.set  0
+#net bed.temp.set     => pid.1.command
 
-net bed.heater  <= pid.1.output
-net bed.heater  => limit1.1.in
-net bed.heaterl <= limit1.1.out
-net bed.heaterl => hpg.pwmgen.00.out.00.value
+#net bed.heater  <= pid.1.output
+#net bed.heater  => limit1.1.in
+#net bed.heaterl <= limit1.1.out
+#net bed.heaterl => hpg.pwmgen.00.out.00.value
 
 # Limit heater PWM to positive values
 # PWM mimics hm2 implementation, which generates output for negative values
-setp limit1.1.min 0
+#setp limit1.1.min 0
 
-# PID Parameters for adjusting temperature control
-# Extruder
-#setp pid.0.FF0      0
-#setp pid.0.FF1      0
-#setp pid.0.FF2      0
-setp pid.0.Pgain  0.30
-setp pid.0.Igain  0.00001
-setp pid.0.Dgain  0.9375
-setp pid.0.maxerrorI 1.0
-setp pid.0.bias    0.5
-setp pid.0.enable   1
+## PID Parameters for adjusting temperature control
+## Extruder
+##setp pid.0.FF0      0
+##setp pid.0.FF1      0
+##setp pid.0.FF2      0
+#setp pid.0.Pgain  0.30
+#setp pid.0.Igain  0.00001
+#setp pid.0.Dgain  0.9375
+#setp pid.0.maxerrorI 1.0
+#setp pid.0.bias    0.5
+#setp pid.0.enable   1
 
-# Bed
-#setp pid.1.FF0      0
-#setp pid.1.FF1      0
-#setp pid.1.FF2      0
-setp pid.1.Pgain  1
-setp pid.1.Igain  0.0
-setp pid.1.Dgain  0.0
-setp pid.1.maxerrorI 1.0
-setp pid.1.bias    0.5
-setp pid.1.enable   1
+## Bed
+##setp pid.1.FF0      0
+##setp pid.1.FF1      0
+##setp pid.1.FF2      0
+#setp pid.1.Pgain  1
+#setp pid.1.Igain  0.0
+#setp pid.1.Dgain  0.0
+#setp pid.1.maxerrorI 1.0
+#setp pid.1.bias    0.5
+#setp pid.1.enable   1
+# COMMENTED HEATER SECTION END KLEMEN
 
 
-newcomp mymotion timer=100
-newpin mymotion  mymotion.program-line    s32 in
-ready  mymotion
-net program-line	mymotion.program-line  <= motion.program-line
+#newcomp mymotion timer=100
+#newpin mymotion  mymotion.program-line    s32 in
+#ready  mymotion
+#net program-line	mymotion.program-line  <= motion.program-line
+
+### Spindle ###
+net spindleEnable <= motion.spindle-on
+net spindleEnable => bb_gpio.p8.out-11
+

@@ -155,6 +155,7 @@ public class NamedList extends JPanel implements IParameter, IHasLabel {
 					}
 				}
 				listModel.addElement(mi.toString());
+				myList.repaint();
 				getCommandServiceUrl(serviceInfo);
 				getErrorServiceUrl(serviceInfo);
 				getStatusServiceUrl(serviceInfo);

@@ -5,6 +5,8 @@ import java.util.Iterator;
 import java.util.Random;
 import java.util.concurrent.TimeUnit;
 
+import javax.swing.SwingUtilities;
+
 import org.jzy3d.colors.Color;
 import org.jzy3d.maths.Coord3d;
 import org.zeromq.ZContext;
@@ -62,7 +64,7 @@ public class BBBStatus implements Runnable {
 			return;
 
 		Container contReturned;
-		while (true) {
+		while (!readThread.isInterrupted()) {
 			try {
 				ZMsg receivedMessage = ZMsg.recvMsg(socket, ZMQ.DONTWAIT);
 				// System.out.println("loop: " + i);
@@ -114,12 +116,12 @@ public class BBBStatus implements Runnable {
 									}
 								}
 
-								if (SurfaceDemo.getInstance() != null) {
+								if (SurfaceDemo.instance != null) {
 									if (SurfaceDemo.instance.getChart() != null) {
 										//System.out.println(String.format("%1$,.2f, %2$,.2f, %3$,.2f",x,y,z));
 										Coord3d coord = new Coord3d(x, y, z);
 										MyPickablePoint mp = new MyPickablePoint(-2, coord, Color.MAGENTA, 1, -1);
-										SurfaceDemo.instance.move(mp, false, 0, false);
+										SurfaceDemo.instance.move(mp, SurfaceDemo.instance.spindleOn, 0, false);
 										SurfaceDemo.instance.utils.rotatePoints(a, false, false);
 									}
 								}
@@ -147,16 +149,27 @@ public class BBBStatus implements Runnable {
 	}
 
 	public void initSocket() {
+		if (readThread != null && readThread.isAlive())
+		{
+			readThread.interrupt();
+			while(readThread.isAlive())
+			{
+				try {
+					TimeUnit.MILLISECONDS.sleep(500);
+				} catch (InterruptedException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}
+		}
 		if (ctx != null && socket != null) {
 			socket.close();
 			ctx.close();
 		}
-		if (readThread != null && readThread.isAlive())
-			readThread.interrupt();
 
 		uri = Settings.getInstance().getSetting("machinekit_statusService_url");
 
-		ctx = new ZContext(2);
+		ctx = new ZContext(5);
 		// Set random identity to make tracing easier
 		socket = ctx.createSocket(ZMQ.SUB);
 
@@ -166,9 +179,10 @@ public class BBBStatus implements Runnable {
 		socket.setIdentity(identity.getBytes(ZMQ.CHARSET));
 		socket.subscribe("motion".getBytes(ZMQ.CHARSET));
 		socket.subscribe("task".getBytes(ZMQ.CHARSET));
-		// socket.subscribe("io".getBytes(ZMQ.CHARSET));
-		// socket.subscribe("interp".getBytes(ZMQ.CHARSET));
-		socket.setReceiveTimeOut(100);
+		//socket.subscribe("io".getBytes(ZMQ.CHARSET));
+		//socket.subscribe("interp".getBytes(ZMQ.CHARSET));
+		socket.setReceiveTimeOut(200);
+		socket.setSendTimeOut(200);
 		socket.connect(this.uri);
 
 		readThread = new Thread(this);

@@ -56,7 +56,7 @@ public class BBBError implements Runnable {
 
 	public void run() {
 		Container contReturned;
-		while (true) {
+		while (!readThread.isInterrupted()) {
 			try {
 				ZMsg receivedMessage = ZMsg.recvMsg(socket, ZMQ.DONTWAIT);
 				// System.out.println("loop: " + i);
@@ -65,8 +65,8 @@ public class BBBError implements Runnable {
 						ZFrame frame = receivedMessage.poll();
 						byte[] returnedBytes = frame.getData();
 						String messageType = new String(returnedBytes);
-						if (!messageType.equals("error") && !messageType.equals("text")
-								&& !messageType.equals("display") && !messageType.equals("status")) {
+						if (!messageType.equals("error") && !messageType.equals("text") && !messageType.equals("display")
+								&& !messageType.equals("status")) {
 							// System.out.println(messageType);
 
 							contReturned = Message.Container.parseFrom(returnedBytes);
@@ -83,7 +83,7 @@ public class BBBError implements Runnable {
 						}
 					}
 					receivedMessage.destroy();
-					receivedMessage=null;
+					receivedMessage = null;
 				}
 			} catch (Exception e) {
 				if (!e.getMessage().equals("Error:")) {
@@ -92,11 +92,11 @@ public class BBBError implements Runnable {
 				}
 
 			}
-//			try {
-//				TimeUnit.MILLISECONDS.sleep(100);
-//			} catch (Exception ex) {
-//				ex.printStackTrace();
-//			}
+			// try {
+			// TimeUnit.MILLISECONDS.sleep(100);
+			// } catch (Exception ex) {
+			// ex.printStackTrace();
+			// }
 		}
 	}
 
@@ -107,12 +107,21 @@ public class BBBError implements Runnable {
 	}
 
 	public void initSocket() {
+		if (readThread != null && readThread.isAlive()) {
+			readThread.interrupt();
+			while (readThread.isAlive()) {
+				try {
+					TimeUnit.MILLISECONDS.sleep(500);
+				} catch (InterruptedException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}
+		}
 		if (ctx != null && socket != null) {
 			socket.close();
 			ctx.close();
 		}
-		if (readThread != null && readThread.isAlive())
-			readThread.interrupt();
 
 		Random rand = new Random(23424234);
 		String identity = String.format("%04X-%04X", rand.nextInt(), rand.nextInt());
@@ -126,7 +135,8 @@ public class BBBError implements Runnable {
 		socket.subscribe("text".getBytes(ZMQ.CHARSET));
 		socket.subscribe("error".getBytes(ZMQ.CHARSET));
 		socket.subscribe("config".getBytes(ZMQ.CHARSET));
-		socket.setReceiveTimeOut(100);
+		socket.setReceiveTimeOut(200);
+		socket.setSendTimeOut(200);
 		socket.setIdentity(identity.getBytes(ZMQ.CHARSET));
 		socket.connect(uri);
 

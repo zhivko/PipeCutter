@@ -11,6 +11,7 @@ import java.awt.event.ComponentEvent;
 import java.awt.event.ComponentListener;
 import java.io.File;
 import java.io.FileReader;
+import java.io.IOException;
 import java.nio.file.FileSystems;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -24,14 +25,12 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextPane;
 import javax.swing.SwingUtilities;
+import javax.swing.SwingWorker;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.DefaultHighlighter;
 import javax.swing.text.DefaultHighlighter.DefaultHighlightPainter;
-
-import pb.Types.HalPinDirection;
-import pb.Types.ValueType;
 
 import com.kz.pipeCutter.BBB.commands.AbortGCode;
 import com.kz.pipeCutter.BBB.commands.CloseGCode;
@@ -42,7 +41,6 @@ import com.kz.pipeCutter.BBB.commands.ResumeGCode;
 import com.kz.pipeCutter.BBB.commands.StepGCode;
 import com.kz.pipeCutter.ui.LineNumberView;
 import com.kz.pipeCutter.ui.MyVerticalFlowLayout;
-import com.kz.pipeCutter.ui.PinDef;
 import com.kz.pipeCutter.ui.SavableText;
 import com.kz.pipeCutter.ui.Settings;
 
@@ -58,6 +56,9 @@ public class GcodeViewer extends JPanel {
 	public static GcodeViewer instance;
 
 	int lineNo;
+	private String fileName;
+
+	Thread refreshThread;
 
 	public GcodeViewer() {
 		super();
@@ -136,13 +137,10 @@ public class GcodeViewer extends JPanel {
 						if (lineNumber > 0) {
 							int startIndex = textArea.getDocument().getDefaultRootElement().getElement(lineNumber - 1)
 									.getStartOffset();
-							int endIndex = textArea.getDocument().getDefaultRootElement().getElement(lineNumber)
-									.getStartOffset();
+							int endIndex = textArea.getDocument().getDefaultRootElement().getElement(lineNumber).getStartOffset();
 
-							DefaultHighlightPainter painterWhite = new DefaultHighlighter.DefaultHighlightPainter(
-									Color.WHITE);
-							DefaultHighlightPainter painterGray = new DefaultHighlighter.DefaultHighlightPainter(
-									Color.GRAY);
+							DefaultHighlightPainter painterWhite = new DefaultHighlighter.DefaultHighlightPainter(Color.WHITE);
+							DefaultHighlightPainter painterGray = new DefaultHighlighter.DefaultHighlightPainter(Color.GRAY);
 
 							textArea.getHighlighter().removeAllHighlights();
 
@@ -170,7 +168,8 @@ public class GcodeViewer extends JPanel {
 			}
 		});
 		currentLine.setParValue("1");
-		//currentLine.setPin(new PinDef("mymotion.program-line", HalPinDirection.HAL_IN, ValueType.HAL_S32));
+		// currentLine.setPin(new PinDef("mymotion.program-line",
+		// HalPinDirection.HAL_IN, ValueType.HAL_S32));
 		buttonPanel.add(currentLine);
 
 		JButton buttonNext = new JButton("Next");
@@ -248,64 +247,51 @@ public class GcodeViewer extends JPanel {
 			public void componentShown(ComponentEvent e) {
 				// TODO Auto-generated method stub
 				refresh();
+				if (refreshThread == null)
+				{
+					refreshThread = new Thread(new Runnable() {
 
-				try {
-					new Thread(new Runnable() {
 						@Override
 						public void run() {
-							// TODO Auto-generated method stub
-							while (true) {
+							File f = new File(folder);
+							if (f.exists()) {
 								try {
-									File f = new File(folder);
-									if (f.exists()) {
-										refresh();
-										watcher = FileSystems.getDefault().newWatchService();
-										Path dir = Paths.get(f.getAbsolutePath());
-										// key = dir.register(watcher,
-										// ENTRY_CREATE, ENTRY_DELETE,
-										// ENTRY_MODIFY);
-										key = dir.register(watcher, StandardWatchEventKinds.ENTRY_MODIFY);
+									WatchService watcher = FileSystems.getDefault().newWatchService();
+									Path dir = Paths.get(f.getAbsolutePath());
 
-										final WatchKey wk = watcher.take();
+									dir.register(watcher, StandardWatchEventKinds.ENTRY_MODIFY);
 
-										for (WatchEvent<?> event : wk.pollEvents()) {
+									while (true) {
+										WatchKey key;
+										try {
+											key = watcher.take();
+										} catch (InterruptedException ex) {
+											break;
+										}
+
+										for (WatchEvent<?> event : key.pollEvents()) {
 											WatchEvent.Kind<?> kind = event.kind();
-
+											@SuppressWarnings("unchecked")
 											WatchEvent<Path> ev = (WatchEvent<Path>) event;
-											Path filename = ev.context();
-
-											if (filename.endsWith("prog.gcode")) {
-												GcodeViewer.this.refresh();
+											Path fileName = ev.context();
+											if (kind == StandardWatchEventKinds.ENTRY_MODIFY && fileName.toString().equals("prog.gcode")) {
+												refresh();
 											}
 										}
 
-										// Reset the key -- this step is
-										// critical if you want to
-										// receive further watch events. If the
-										// key is no longer
-										// valid,
-										// the directory is inaccessible so exit
-										// the loop.
 										boolean valid = key.reset();
 										if (!valid) {
 											break;
 										}
 									}
-									Thread.sleep(1000);
-
-								} catch (Exception e1) {
-									// TODO Auto-generated catch block
-									e1.printStackTrace();
+								} catch (IOException ex) {
+									System.err.println(ex);
 								}
-
 							}
 						}
-					}).start();
-
-				} catch (Exception ex) {
-					ex.printStackTrace();
+					});
+					refreshThread.start();
 				}
-
 			}
 
 			@Override
@@ -325,6 +311,7 @@ public class GcodeViewer extends JPanel {
 				// TODO Auto-generated method stub
 			}
 		});
+
 		instance = this;
 	}
 
@@ -332,9 +319,11 @@ public class GcodeViewer extends JPanel {
 		FileReader reader;
 		try {
 			folder = Settings.getInstance().getSetting("gcode_folder");
+			fileName = "prog.gcode";
+
 			File f = new File(folder + File.separatorChar + "prog.gcode");
 			if (f.exists()) {
-				reader = new FileReader(new File(folder + File.separatorChar + "prog.gcode"));
+				reader = new FileReader(new File(folder + File.separatorChar + fileName));
 				this.textArea.read(reader, "The force is strong with this one");
 				reader.close();
 				SwingUtilities.invokeLater(new Runnable() {
@@ -343,8 +332,7 @@ public class GcodeViewer extends JPanel {
 					public void run() {
 						Rectangle rect;
 						try {
-							rect = GcodeViewer.this.textArea
-									.modelToView(GcodeViewer.this.textArea.getDocument().getLength());
+							rect = GcodeViewer.this.textArea.modelToView(GcodeViewer.this.textArea.getDocument().getLength());
 							GcodeViewer.this.textArea.scrollRectToVisible(rect);
 						} catch (BadLocationException e) {
 							// TODO Auto-generated catch block

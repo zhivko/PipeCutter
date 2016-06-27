@@ -112,7 +112,7 @@ public class MyPopupMenu extends PopupMenu {
 			public void actionPerformed(ActionEvent arg0) {
 
 				MyPickablePoint mp = SurfaceDemo.instance.lastClickedPoint;
-				String gCode = SurfaceDemo.instance.utils.coordinateToGcode(mp);
+				String gCode = SurfaceDemo.instance.utils.coordinateToGcode(mp.xyz);
 				SurfaceDemo.instance.smoothie.send(gCode);
 
 			}

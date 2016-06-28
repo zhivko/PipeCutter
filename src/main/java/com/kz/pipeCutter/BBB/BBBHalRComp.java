@@ -25,6 +25,7 @@ import com.kz.pipeCutter.ui.PinDef;
 import com.kz.pipeCutter.ui.SavableControl;
 import com.kz.pipeCutter.ui.Settings;
 import com.kz.pipeCutter.ui.tab.GcodeViewer;
+import com.kz.pipeCutter.ui.tab.MachinekitSettings;
 
 public class BBBHalRComp implements Runnable {
 	private String halRCompUri;
@@ -39,7 +40,6 @@ public class BBBHalRComp implements Runnable {
 	HashMap<String, PinDef> pinsByName = new HashMap<>();
 
 	HashMap<String, String> halPins = new HashMap<>();
-	public boolean isAlive = true;
 
 	public BBBHalRComp() {
 		prepareBindContainer();
@@ -57,8 +57,8 @@ public class BBBHalRComp implements Runnable {
 
 	public BBBHalRComp(String uri) {
 		this.halRCompUri = uri;
-		initSocket();
 		prepareBindContainer();
+		initSocket();
 		readThread = new Thread(this);
 		readThread.start();
 	}
@@ -135,9 +135,9 @@ public class BBBHalRComp implements Runnable {
 									}
 								}
 								GcodeViewer.instance.setLineNumber(Integer.valueOf(halPins.get("mymotion.program-line")).intValue());
-
+								GcodeViewer.instance.setPlasmaOn(Boolean.valueOf(halPins.get("mymotion.spindle-on")).booleanValue());
 							} else if (contReturned.getType().equals(ContainerType.MT_PING)) {
-								this.isAlive = true;
+								MachinekitSettings.instance.pingHalGroupCommand();
 							} else if (contReturned.getType().equals(ContainerType.MT_HALRCOMP_INCREMENTAL_UPDATE)) {
 								for (int j = 0; j < contReturned.getPinCount(); j++) {
 									String value = null;
@@ -155,6 +155,7 @@ public class BBBHalRComp implements Runnable {
 									halPins.put(pinDef.getPinName(), value);
 								}
 								GcodeViewer.instance.setLineNumber(Integer.valueOf(halPins.get("mymotion.program-line")).intValue());
+								GcodeViewer.instance.setPlasmaOn(Boolean.valueOf(halPins.get("mymotion.spindle-on")).booleanValue());
 							} else {
 								System.out.println(contReturned.getType().toString());
 							}
@@ -214,7 +215,7 @@ public class BBBHalRComp implements Runnable {
 		readThread.setName("BBBHalRComp");
 		readThread.start();
 
-		// startBind();
+		startBind();
 	}
 
 	public Socket getSocket() {

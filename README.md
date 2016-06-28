@@ -74,6 +74,21 @@ sudo systemctl status avahi-daemon.service
 **machinekit hal remote components**
 <br>
 https://github.com/mhaberler/asciidoc-sandbox/wiki/Remote-HAL-Components
+<br>
+***Linux CNC notes***
+<br>
+halcmd
+show pin motion.spindle-*
+<br>
+
+(
+  while true
+  do
+    halcmd show pin *.f-error >> ~/f-error.log
+    sleep 1
+  done
+) &
+disown
 
 
 

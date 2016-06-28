@@ -887,7 +887,7 @@ public class SurfaceDemo extends AbstractAnalysis {
 			}
 			out.println("G00 " + gcode + " F" + Settings.getInstance().getSetting("gcode_feedrate_g1"));
 			if (!alreadyCutting) {
-				out.println("M3");
+				out.println("M3 S400");
 				alreadyCutting=true;
 			}	
 			plasma.setColor(Color.RED);

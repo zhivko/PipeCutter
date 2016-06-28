@@ -139,23 +139,25 @@ public class BBBHalCommand implements Runnable {
 							}
 						} else if (contReturned.getType().equals(ContainerType.MT_PING)) {
 							MachinekitSettings.instance.pingHalCommand();
+						} else if (contReturned.getType().equals(ContainerType.MT_HALRCOMP_BIND_CONFIRM)){
+							BBBHalRComp.getInstance().subcribe();
 						} else {
 							System.out.println(contReturned.getType());
 						}
 					}
-					if (halPin.get("motion.program-line") != null && SurfaceDemo.instance!=null) {
-						int lineNo = Integer.valueOf(halPin.get("motion.program-line")).intValue();
-						GcodeViewer.instance.setLineNumber(lineNo);
-					}
-					if (halPin.get("motion.spindle-on") != null && SurfaceDemo.instance!=null) {
-						System.out.println(halPin.get("motion.spindle-on"));
-						boolean spindleOn = Boolean.valueOf(halPin.get("motion.spindle-on")).booleanValue();
-						SurfaceDemo.instance.spindleOn=spindleOn;
-					}
+//					if (halPin.get("motion.program-line") != null && SurfaceDemo.instance!=null) {
+//						int lineNo = Integer.valueOf(halPin.get("motion.program-line")).intValue();
+//						GcodeViewer.instance.setLineNumber(lineNo);
+//					}
+//					if (halPin.get("motion.spindle-on") != null && SurfaceDemo.instance!=null) {
+//						System.out.println(halPin.get("motion.spindle-on"));
+//						boolean spindleOn = Boolean.valueOf(halPin.get("motion.spindle-on")).booleanValue();
+//						SurfaceDemo.instance.spindleOn=spindleOn;
+//					}
 					receivedMessage.destroy();
 					receivedMessage = null;
 					//TimeUnit.MILLISECONDS.sleep(1000);
-					requestDescribe();
+					//requestDescribe();
 				} else
 				{
 					//requestDescribe();
@@ -197,7 +199,7 @@ public class BBBHalCommand implements Runnable {
 		readThread.setName("BBBHalCommand");
 		readThread.start();
 
-		requestDescribe();
+		//requestDescribe();
 	}
 
 	public Socket getSocket() {

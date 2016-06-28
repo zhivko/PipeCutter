@@ -25,7 +25,6 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextPane;
 import javax.swing.SwingUtilities;
-import javax.swing.SwingWorker;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import javax.swing.text.BadLocationException;
@@ -41,8 +40,12 @@ import com.kz.pipeCutter.BBB.commands.ResumeGCode;
 import com.kz.pipeCutter.BBB.commands.StepGCode;
 import com.kz.pipeCutter.ui.LineNumberView;
 import com.kz.pipeCutter.ui.MyVerticalFlowLayout;
+import com.kz.pipeCutter.ui.PinDef;
 import com.kz.pipeCutter.ui.SavableText;
 import com.kz.pipeCutter.ui.Settings;
+
+import pb.Types.HalPinDirection;
+import pb.Types.ValueType;
 
 public class GcodeViewer extends JPanel {
 
@@ -56,9 +59,11 @@ public class GcodeViewer extends JPanel {
 	public static GcodeViewer instance;
 
 	int lineNo;
+	boolean plasmaOn;
 	private String fileName;
 
 	Thread refreshThread;
+	private SavableText spindleOn;
 
 	public GcodeViewer() {
 		super();
@@ -168,9 +173,19 @@ public class GcodeViewer extends JPanel {
 			}
 		});
 		currentLine.setParValue("1");
-		// currentLine.setPin(new PinDef("mymotion.program-line",
-		// HalPinDirection.HAL_IN, ValueType.HAL_S32));
+		currentLine.setPin(new PinDef("mymotion.program-line", HalPinDirection.HAL_IN, ValueType.HAL_S32));
 		buttonPanel.add(currentLine);
+		
+		
+		spindleOn = new SavableText();
+		spindleOn.setLabelTxt("Spindle:");
+		spindleOn.preventResize = true;
+		spindleOn.jValue.setColumns(3);
+		spindleOn.setNeedsSave(false);
+		spindleOn.setParValue("0");
+		spindleOn.setPin(new PinDef("mymotion.spindle-on", HalPinDirection.HAL_IN, ValueType.HAL_BIT));
+		buttonPanel.add(spindleOn);
+		
 
 		JButton buttonNext = new JButton("Next");
 		buttonNext.addActionListener(new ActionListener() {
@@ -247,8 +262,7 @@ public class GcodeViewer extends JPanel {
 			public void componentShown(ComponentEvent e) {
 				// TODO Auto-generated method stub
 				refresh();
-				if (refreshThread == null)
-				{
+				if (refreshThread == null) {
 					refreshThread = new Thread(new Runnable() {
 
 						@Override
@@ -362,4 +376,16 @@ public class GcodeViewer extends JPanel {
 			});
 		}
 	}
+	public void setPlasmaOn(boolean on) {
+		if (this.plasmaOn != on) {
+			this.plasmaOn = on;
+			SwingUtilities.invokeLater(new Runnable() {
+				@Override
+				public void run() {
+					// TODO Auto-generated method stub
+					GcodeViewer.instance.spindleOn.setParValue(String.valueOf(GcodeViewer.this.plasmaOn));
+				}
+			});
+		}
+	}	
 }

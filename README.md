@@ -52,9 +52,7 @@ Apache Maven 3.3.3
 `java -jar ./target/SurfaceDemo-standalone-jar-with-dependencies.jar`
 <br>
 
-
-**Linux notes**
-<br>
+# Linux notes
 **Backing up BBB**
 <br>
 http://elinux.org/BeagleBone_Black_Extracting_eMMC_contents
@@ -75,7 +73,7 @@ sudo systemctl status avahi-daemon.service
 <br>
 https://github.com/mhaberler/asciidoc-sandbox/wiki/Remote-HAL-Components
 <br>
-***Linux CNC notes***
+##Linux CNC notes
 <br>
 halcmd
 show pin motion.spindle-*

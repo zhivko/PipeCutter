@@ -79,13 +79,11 @@ https://github.com/mhaberler/asciidoc-sandbox/wiki/Remote-HAL-Components
 <br>
 halcmd
 show pin motion.spindle-*
-<br>
-
 (
   while true
   do
     halcmd show pin *.f-error >> ~/f-error.log
-    sleep 1
+    usleep 50
   done
 ) &
 disown

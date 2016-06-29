@@ -73,7 +73,7 @@ sudo mkswap /var/cache/swap/swapfile
 sudo swapon /var/cache/swap/swapfile
 ```
 ##flashing eMMC from uSD card
-Navigate to /opt/scripts/tools/eMMC/
+Login to machinekit BBB instance and navigate to /opt/scripts/tools/eMMC/
 ```
 cd /opt/scripts/tools/eMMC/
 ```
@@ -81,7 +81,7 @@ and run the file manually...
 ```
 sudo ./init-eMMC-flasher-v3.sh
 ```
-##BBB image
+##flashing BBB from RobertNelson Machinekit image
 Get image from:
 ```
 wget https://rcn-ee.com/rootfs/bb.org/testing/2016-06-19/machinekit/bone-debian-8.5-machinekit-armhf-2016-06-19-4gb.img.xz

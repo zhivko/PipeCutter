@@ -59,7 +59,7 @@ public class GcodeViewer extends JPanel {
 	public static GcodeViewer instance;
 
 	int lineNo;
-	boolean plasmaOn;
+	public boolean plasmaOn;
 	private String fileName;
 
 	Thread refreshThread;

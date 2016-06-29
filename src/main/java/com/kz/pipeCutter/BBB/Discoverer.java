@@ -75,7 +75,7 @@ public class Discoverer {
 
 				@Override
 				public void serviceAdded(ServiceEvent arg0) {
-					System.out.println("+ " + arg0.getInfo().getName() + arg0.getInfo().getPort());
+					System.out.println("+ " + arg0.getInfo().getName() + " (" + arg0.getInfo().getServer()+ " :" + arg0.getInfo().getPort() + ")");
 					services.add(arg0.getInfo());
 					Pattern p = Pattern.compile("(.*)service(.*)");
 					Matcher m = p.matcher(arg0.getInfo().getName());

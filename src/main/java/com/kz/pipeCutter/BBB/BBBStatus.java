@@ -19,6 +19,7 @@ import com.jcraft.jsch.ChannelExec;
 import com.kz.pipeCutter.MyPickablePoint;
 import com.kz.pipeCutter.SurfaceDemo;
 import com.kz.pipeCutter.ui.Settings;
+import com.kz.pipeCutter.ui.tab.GcodeViewer;
 import com.kz.pipeCutter.ui.tab.MachinekitSettings;
 
 import pb.Message;
@@ -121,7 +122,7 @@ public class BBBStatus implements Runnable {
 										//System.out.println(String.format("%1$,.2f, %2$,.2f, %3$,.2f",x,y,z));
 										Coord3d coord = new Coord3d(x, y, z);
 										MyPickablePoint mp = new MyPickablePoint(-2, coord, Color.MAGENTA, 1, -1);
-										SurfaceDemo.instance.move(mp, SurfaceDemo.instance.spindleOn, 0, false);
+										SurfaceDemo.instance.move(mp, GcodeViewer.instance.plasmaOn , 0, false);
 										SurfaceDemo.instance.utils.rotatePoints(a, false, false);
 									}
 								}
@@ -181,6 +182,7 @@ public class BBBStatus implements Runnable {
 		socket.subscribe("task".getBytes(ZMQ.CHARSET));
 		//socket.subscribe("io".getBytes(ZMQ.CHARSET));
 		//socket.subscribe("interp".getBytes(ZMQ.CHARSET));
+		socket.setHWM(10000);
 		socket.setReceiveTimeOut(200);
 		socket.setSendTimeOut(200);
 		socket.connect(this.uri);

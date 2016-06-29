@@ -55,7 +55,6 @@ Apache Maven 3.3.3
 # Linux notes
 ##Backing up BBB
 http://elinux.org/BeagleBone_Black_Extracting_eMMC_contents
-<br>
 ##BBB becomes unresponsive
 http://dave.cheney.net/2013/09/22/two-point-five-ways-to-access-the-serial-console-on-your-beaglebone-black
 <br>
@@ -75,9 +74,13 @@ sudo swapon /var/cache/swap/swapfile
 ```
 ##flashing eMMC from uSD card
 Navigate to /opt/scripts/tools/eMMC/
-```cd /opt/scripts/tools/eMMC/```
+```
+cd /opt/scripts/tools/eMMC/
+```
 and run the file manually...
-```sudo ./init-eMMC-flasher-v3.sh```
+```
+sudo ./init-eMMC-flasher-v3.sh
+```
 ##BBB image
 Get image from:
 ```
@@ -95,6 +98,7 @@ http://elinux.org/Beagleboard:BeagleBoneBlack_Debian#microSD.2FStandalone:_.28ma
 https://github.com/mhaberler/asciidoc-sandbox/wiki/Remote-HAL-Components
 ###LinuxCnc related
 **halcmd**
+```
 show pin motion.spindle-*
 (
   while true
@@ -104,3 +108,4 @@ show pin motion.spindle-*
   done
 ) &
 disown
+```

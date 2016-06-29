@@ -66,16 +66,18 @@ sudo systemctl start avahi-daemon.service
 sudo systemctl status avahi-daemon.service
 ```
 ##Adding swap file on BBB
+```
 sudo mkdir -p /var/cache/swap/
 sudo dd if=/dev/zero of=/var/cache/swap/swapfile bs=1M count=256
 sudo chmod 0600 /var/cache/swap/swapfile
 sudo mkswap /var/cache/swap/swapfile
 sudo swapon /var/cache/swap/swapfile
+```
 ##flashing eMMC from uSD card
 Navigate to /opt/scripts/tools/eMMC/
-cd /opt/scripts/tools/eMMC/
+```cd /opt/scripts/tools/eMMC/```
 and run the file manually...
-sudo ./init-eMMC-flasher-v3.sh
+```sudo ./init-eMMC-flasher-v3.sh```
 ##BBB image
 Get image from:
 ```

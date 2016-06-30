@@ -108,19 +108,20 @@ sudo mkswap /var/cache/swap/swapfile
 sudo swapon /var/cache/swap/swapfile
 ```
 ##flashing eMMC from uSD card
-Login to machinekit BBB instance and navigate to /opt/scripts/tools/eMMC/
+Login to machinekit BBB instance
 ```
 cd /opt/scripts/tools/eMMC/
 ```
-and run the file manually...
+and run the file manually...  
 ```
 sudo ./init-eMMC-flasher-v3.sh
 ```
 ##flashing BBB from RobertNelson Machinekit image
-Get image from:
-```wget https://rcn-ee.com/rootfs/bb.org/testing/2016-06-19/machinekit/bone-debian-8.5-machinekit-armhf-2016-06-19-4gb.img.xz```
-<br>
-Write image to uSD card with:
+Get image from:  
+```
+wget https://rcn-ee.com/rootfs/bb.org/testing/2016-06-19/machinekit/bone-debian-8.5-machinekit-armhf-2016-06-19-4gb.img.xz
+```
+Write image to uSD card with:  
 ```
 xzcat bone-debian-8.5-machinekit-armhf-2016-06-19-4gb.img.xz | sudo dd of=/dev/sdX
 ```

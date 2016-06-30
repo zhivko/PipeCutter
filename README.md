@@ -14,7 +14,7 @@ And runs that gcode on [BeagleBone Black]
 
 ![pipe]({{site.baseurl}}/screenshots/cramps.jpg)
 You can check my Google "Machinekit PipeCutter" album to better get idea of project:
-[G+ Album](https://goo.gl/photos/4A623DBE1DQRwYfcA)
+[G+ Album](https://goo.gl/photos/4A623DBE1DQRwYfcA "Google+ Album")
 
 **Functionalities**
 Produce GCODE

@@ -93,15 +93,19 @@ http://elinux.org/BeagleBone_Black_Extracting_eMMC_contents
 ##BBB becomes unresponsive
 http://dave.cheney.net/2013/09/22/two-point-five-ways-to-access-the-serial-console-on-your-beaglebone-black
 ##AVAHI Daemon doesn't always bring up beaglebone.local
-```sudo systemctl --system daemon-reload'
+```
+sudo systemctl --system daemon-reload'
 sudo systemctl start avahi-daemon.service
 sudo systemctl status avahi-daemon.service```
+```
 ##Adding swap file on BBB
-```sudo mkdir -p /var/cache/swap/
+```
+sudo mkdir -p /var/cache/swap/
 sudo dd if=/dev/zero of=/var/cache/swap/swapfile bs=1M count=256
 sudo chmod 0600 /var/cache/swap/swapfile
 sudo mkswap /var/cache/swap/swapfile
-sudo swapon /var/cache/swap/swapfile```
+sudo swapon /var/cache/swap/swapfile
+```
 ##flashing eMMC from uSD card
 Login to machinekit BBB instance and navigate to /opt/scripts/tools/eMMC/
 ```

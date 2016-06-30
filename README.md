@@ -16,7 +16,7 @@ And runs that gcode on [BeagleBone Black]
 You can check my Google "Machinekit PipeCutter" album to better get idea of project:
 [G+ Album](https://goo.gl/photos/4A623DBE1DQRwYfcA "Google+ Album")
 
-**Functionalities**
+**Functionalities**  
 Produce GCODE  
 Stepping through GCODE reading motion.program-line hal pin  
 ![steppingThroughCode]({{site.baseurl}}/screenshots/steppingThroughGcodeWorks.png")

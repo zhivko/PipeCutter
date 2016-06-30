@@ -98,6 +98,25 @@ http://dave.cheney.net/2013/09/22/two-point-five-ways-to-access-the-serial-conso
 sudo systemctl --system daemon-reload'
 sudo systemctl start avahi-daemon.service
 sudo systemctl status avahi-daemon.service```
+***avahi service on pc host wont start***
+check avahi service status with:
+```
+sudo systemctl status avahi-daemon
+```
+additional log available with
+```
+journalctl -xe
+```
+change domain name in /etc/avahi/avahi-daemon.conf to
+```
+domain-name=alocal
+```
+reload avahi daemon with
+```
+sudo systemctl restart avahi-daemon
+```
+
+
 ```
 ##Adding swap file on BBB
 ```

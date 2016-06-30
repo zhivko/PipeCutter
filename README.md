@@ -53,6 +53,56 @@ Apache Maven 3.3.3
 <br>
 
 # Linux notes
+##Network setup, name resolution, internet sharing
+###Nameserver on BBB
+```sudo echo "nameserver 193.189.160.13" >> /etc/resolv.conf
+sudo echo "nameserver 193.189.160.13" >> /etc/resolv.conf```
+<br>
+###Internet sharing
+On host pc:
+This should show you interface that has ip 192.168.7.1. For me it is enx544a16c5d02c
+```klemen@dell:~$ ifconfig
+enp3s0    Link encap:Ethernet  HWaddr f8:ca:b8:2b:6a:25  
+          UP BROADCAST MULTICAST  MTU:1500  Metric:1
+          RX packets:0 errors:0 dropped:0 overruns:0 frame:0
+          TX packets:0 errors:0 dropped:0 overruns:0 carrier:0
+          collisions:0 txqueuelen:1000 
+          RX bytes:0 (0.0 B)  TX bytes:0 (0.0 B)
+
+enx544a16c5d02c Link encap:Ethernet  HWaddr 54:4a:16:c5:d0:2c  
+          inet addr:192.168.7.1  Bcast:192.168.7.3  Mask:255.255.255.252
+          inet6 addr: fe80::494b:835b:a0ea:8f72/64 Scope:Link
+          UP BROADCAST RUNNING MULTICAST  MTU:1500  Metric:1
+          RX packets:1678 errors:0 dropped:0 overruns:0 frame:0
+          TX packets:1662 errors:0 dropped:0 overruns:0 carrier:0
+          collisions:0 txqueuelen:1000 
+          RX bytes:192962 (192.9 KB)  TX bytes:140059 (140.0 KB)
+
+lo        Link encap:Local Loopback  
+          inet addr:127.0.0.1  Mask:255.0.0.0
+          inet6 addr: ::1/128 Scope:Host
+          UP LOOPBACK RUNNING  MTU:65536  Metric:1
+          RX packets:33259 errors:0 dropped:0 overruns:0 frame:0
+          TX packets:33259 errors:0 dropped:0 overruns:0 carrier:0
+          collisions:0 txqueuelen:1 
+          RX bytes:3308053 (3.3 MB)  TX bytes:3308053 (3.3 MB)
+
+wlp2s0    Link encap:Ethernet  HWaddr 78:0c:b8:b3:33:c3  
+          inet addr:192.168.2.120  Bcast:192.168.2.255  Mask:255.255.255.0
+          inet6 addr: fe80::3e4f:2c0a:3a59:eb81/64 Scope:Link
+          UP BROADCAST RUNNING MULTICAST  MTU:1500  Metric:1
+          RX packets:1046848 errors:0 dropped:0 overruns:0 frame:0
+          TX packets:876534 errors:0 dropped:0 overruns:0 carrier:0
+          collisions:0 txqueuelen:1000 
+          RX bytes:1071362743 (1.0 GB)  TX bytes:532466200 (532.4 MB)```
+With interface that has ip of 192.168.7.2:
+```sudo iptables --append FORWARD --in-interface enx544a16c5d02c -j ACCEPT```
+<br>
+With interface that has internet connection (in my case that is: wlp2s0)
+```sudo iptables --table nat --append POSTROUTING --out-interface wlp2s0 -j MASQUERADE```
+
+
+
 ##Backing up BBB
 http://elinux.org/BeagleBone_Black_Extracting_eMMC_contents
 ##BBB becomes unresponsive
@@ -76,8 +126,13 @@ and run the file manually...
 ##flashing BBB from RobertNelson Machinekit image
 Get image from:
 ```wget https://rcn-ee.com/rootfs/bb.org/testing/2016-06-19/machinekit/bone-debian-8.5-machinekit-armhf-2016-06-19-4gb.img.xz```
+<br>
 Write image to uSD card with:
+<br>
 ```xzcat bone-debian-8.5-machinekit-armhf-2016-06-19-4gb.img.xz | sudo dd of=/dev/sdX```
+<br>
+Where sdX is sdA, sdB or sdC...
+To find out check command 
 More detailed instructions in:
 http://elinux.org/Beagleboard:BeagleBoneBlack_Debian#microSD.2FStandalone:_.28machinekit.29_Based_on_Debian_Jessie_.28new.29
 
@@ -86,9 +141,13 @@ http://elinux.org/Beagleboard:BeagleBoneBlack_Debian#microSD.2FStandalone:_.28ma
 https://github.com/mhaberler/asciidoc-sandbox/wiki/Remote-HAL-Components
 ###LinuxCnc related
 **halcmd**
+<br>
 To show one pin value:
+<br>
 ```halcmd && show pin motion.spindle-*```
+<br>
 To monitor pin value:
+<br>
 ```(
   while true
   do

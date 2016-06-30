@@ -89,7 +89,7 @@ With interface that has internet connection (in my case that is: wlp2s0)
 sudo iptables --table nat --append POSTROUTING --out-interface wlp2s0 -j MASQUERADE
 ```
 
-##Backing up BBB
+##Back-up BBB
 http://elinux.org/BeagleBone_Black_Extracting_eMMC_contents
 ##BBB becomes unresponsive
 http://dave.cheney.net/2013/09/22/two-point-five-ways-to-access-the-serial-console-on-your-beaglebone-black

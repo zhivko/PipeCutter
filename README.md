@@ -153,7 +153,7 @@ To show one pin value:
 ```
 halcmd && show pin motion.spindle-*
 ```
-To monitor pin value:
+To log pin value to file:
 ```
 (
   while true

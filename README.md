@@ -117,8 +117,6 @@ reload avahi daemon with
 sudo systemctl restart avahi-daemon
 ```
 
-
-```
 ##Adding swap file on BBB
 ```
 sudo mkdir -p /var/cache/swap/

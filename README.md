@@ -20,7 +20,7 @@ You can check my Google "Machinekit PipeCutter" album to better get idea of proj
 You would need:
 minimum java 1.7
 Apache Maven 3.3.3
-clone this GIT repository
+clone GIT repository
 ```
 git clone https://github.com/zhivko/PipeCutter
 ```

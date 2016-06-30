@@ -144,7 +144,7 @@ Write image to uSD card with:
 xzcat bone-debian-8.5-machinekit-armhf-2016-06-19-4gb.img.xz | sudo dd of=/dev/sdX
 ```
 Where sdX is sdA, sdB or sdC...
-To find out wich one check command and compare size of each partition with your uSD card capacity
+To find out which one check command and compare size of each partition with your uSD card capacity
 ```
 klemen@dell:~$ df
 Filesystem     1K-blocks     Used Available Use% Mounted on

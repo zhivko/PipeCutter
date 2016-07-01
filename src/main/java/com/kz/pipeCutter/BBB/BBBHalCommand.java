@@ -35,6 +35,7 @@ public class BBBHalCommand implements Runnable {
 	HashMap<String, String> halPin = new HashMap<>();
 
 	private Thread readThread;
+	private Thread pingThread;
 
 	static String identity;
 	static {
@@ -123,7 +124,7 @@ public class BBBHalCommand implements Runnable {
 							for (int i = 0; i < contReturned.getCompCount(); i++) {
 								for (int j = 0; j < contReturned.getComp(i).getPinCount(); j++) {
 									String value = null;
-									if(contReturned.getComp(i).getPin(j).getName().equals("motion.spindle-on"))
+									if (contReturned.getComp(i).getPin(j).getName().equals("motion.spindle-on"))
 										System.out.println("");
 									if (contReturned.getComp(i).getPin(j).getType() == ValueType.HAL_FLOAT) {
 										value = Double.valueOf(contReturned.getComp(i).getPin(j).getHalfloat()).toString();
@@ -137,30 +138,38 @@ public class BBBHalCommand implements Runnable {
 									halPin.put(contReturned.getComp(i).getPin(j).getName(), value);
 								}
 							}
-						} else if (contReturned.getType().equals(ContainerType.MT_PING)) {
+						} else if (contReturned.getType().equals(ContainerType.MT_PING_ACKNOWLEDGE)) {
 							MachinekitSettings.instance.pingHalCommand();
-						} else if (contReturned.getType().equals(ContainerType.MT_HALRCOMP_BIND_CONFIRM)){
+							if (!BBBHalRComp.getInstance().isBinded && !BBBHalRComp.getInstance().isTryingToBind) {
+								BBBHalRComp.getInstance().startBind();
+							}
+						} else if (contReturned.getType().equals(ContainerType.MT_HALRCOMP_BIND_CONFIRM)) {
+							BBBHalRComp.getInstance().isBinded = true;
+							BBBHalRComp.getInstance().isTryingToBind = false;
 							BBBHalRComp.getInstance().subcribe();
 						} else {
 							System.out.println(contReturned.getType());
 						}
 					}
-//					if (halPin.get("motion.program-line") != null && SurfaceDemo.instance!=null) {
-//						int lineNo = Integer.valueOf(halPin.get("motion.program-line")).intValue();
-//						GcodeViewer.instance.setLineNumber(lineNo);
-//					}
-//					if (halPin.get("motion.spindle-on") != null && SurfaceDemo.instance!=null) {
-//						System.out.println(halPin.get("motion.spindle-on"));
-//						boolean spindleOn = Boolean.valueOf(halPin.get("motion.spindle-on")).booleanValue();
-//						SurfaceDemo.instance.spindleOn=spindleOn;
-//					}
+					// if (halPin.get("motion.program-line") != null &&
+					// SurfaceDemo.instance!=null) {
+					// int lineNo =
+					// Integer.valueOf(halPin.get("motion.program-line")).intValue();
+					// GcodeViewer.instance.setLineNumber(lineNo);
+					// }
+					// if (halPin.get("motion.spindle-on") != null &&
+					// SurfaceDemo.instance!=null) {
+					// System.out.println(halPin.get("motion.spindle-on"));
+					// boolean spindleOn =
+					// Boolean.valueOf(halPin.get("motion.spindle-on")).booleanValue();
+					// SurfaceDemo.instance.spindleOn=spindleOn;
+					// }
 					receivedMessage.destroy();
 					receivedMessage = null;
-					//TimeUnit.MILLISECONDS.sleep(1000);
-					//requestDescribe();
-				} else
-				{
-					//requestDescribe();
+					// TimeUnit.MILLISECONDS.sleep(1000);
+					// requestDescribe();
+				} else {
+					// requestDescribe();
 				}
 			} catch (Exception e) {
 				// TODO Auto-generated catch block
@@ -182,6 +191,18 @@ public class BBBHalCommand implements Runnable {
 				}
 			}
 		}
+		if (pingThread != null && pingThread.isAlive()) {
+			pingThread.interrupt();
+			while (pingThread.isAlive()) {
+				try {
+					TimeUnit.MILLISECONDS.sleep(500);
+				} catch (InterruptedException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}
+		}
+
 		if (ctx != null && socket != null) {
 			socket.close();
 			ctx.close();
@@ -191,16 +212,40 @@ public class BBBHalCommand implements Runnable {
 		// Set random identity to make tracing easier
 		socket = ctx.createSocket(ZMQ.DEALER);
 		socket.setIdentity(identity.getBytes(ZMQ.CHARSET));
-		socket.setReceiveTimeOut(200);
-		socket.setSendTimeOut(200);
+		socket.setReceiveTimeOut(1000);
+		socket.setSendTimeOut(1000);
 		socket.connect(this.socketUri);
 
 		readThread = new Thread(this);
 		readThread.setName("BBBHalCommand");
 		readThread.start();
 
-		//requestDescribe();
+		startPingThread();
 	}
+
+	private void startPingThread() {
+		pingThread = new Thread(new Runnable() {
+			
+			@Override
+			public void run() {
+				while(!pingThread.isInterrupted())
+				{
+					pb.Message.Container.Builder builder = Container.newBuilder();
+					builder.setType(ContainerType.MT_PING);
+					Container container = builder.build();
+					byte[] buff = container.toByteArray();
+					socket.send(buff);
+					try {
+						Thread.sleep(2000);
+					} catch (InterruptedException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+				}
+			}
+		});
+		pingThread.start();
+}
 
 	public Socket getSocket() {
 		return socket;

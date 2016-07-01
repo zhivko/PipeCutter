@@ -40,6 +40,9 @@ public class BBBHalRComp implements Runnable {
 	HashMap<String, PinDef> pinsByName = new HashMap<>();
 
 	HashMap<String, String> halPins = new HashMap<>();
+	
+	public boolean isBinded=false;
+	public boolean isTryingToBind=false;
 
 	public BBBHalRComp() {
 		prepareBindContainer();
@@ -214,8 +217,6 @@ public class BBBHalRComp implements Runnable {
 		readThread = new Thread(this);
 		readThread.setName("BBBHalRComp");
 		readThread.start();
-
-		startBind();
 	}
 
 	public Socket getSocket() {
@@ -257,6 +258,7 @@ public class BBBHalRComp implements Runnable {
 	}
 
 	public void startBind() {
+		this.isTryingToBind=true;
 		Container container = this.builder.build();
 		byte[] buff = container.toByteArray();
 		String hexOutput = javax.xml.bind.DatatypeConverter.printHexBinary(buff);

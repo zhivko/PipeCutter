@@ -35,8 +35,7 @@ public class BBBStatus implements Runnable {
 	ZContext ctx;
 	private String uri;
 	private Thread readThread;
-	double x = 0, y = 0, z = 0, a = 0, b=0, c=0;
-
+	double x = 0, y = 0, z = 0, a = 0, b = 0, c = 0;
 
 	public BBBStatus() {
 		initSocket();
@@ -119,11 +118,17 @@ public class BBBStatus implements Runnable {
 
 								if (SurfaceDemo.instance != null) {
 									if (SurfaceDemo.instance.getChart() != null) {
-										//System.out.println(String.format("%1$,.2f, %2$,.2f, %3$,.2f",x,y,z));
-										Coord3d coord = new Coord3d(x, y, z);
-										MyPickablePoint mp = new MyPickablePoint(-2, coord, Color.MAGENTA, 1, -1);
-										SurfaceDemo.instance.move(mp, GcodeViewer.instance.plasmaOn , 0, false);
-										SurfaceDemo.instance.utils.rotatePoints(a, false, false);
+										// System.out.println(String.format("%1$,.2f, %2$,.2f,
+										// %3$,.2f",x,y,z));
+										SwingUtilities.invokeLater(new Runnable() {
+											@Override
+											public void run() {
+												Coord3d coord = new Coord3d(x, y, z);
+												MyPickablePoint mp = new MyPickablePoint(-2, coord, Color.MAGENTA, 1, -1);
+												SurfaceDemo.instance.move(mp, GcodeViewer.instance.plasmaOn, 0, false);
+												SurfaceDemo.instance.utils.rotatePoints(a, false, false);
+											}
+										});
 									}
 								}
 							} else if (contReturned.getType().equals(ContainerType.MT_PING)) {
@@ -137,7 +142,7 @@ public class BBBStatus implements Runnable {
 					receivedMessage = null;
 				}
 			} catch (Exception e) {
-					e.printStackTrace();
+				e.printStackTrace();
 			}
 			// try {
 			// TimeUnit.MILLISECONDS.sleep(200);
@@ -150,11 +155,9 @@ public class BBBStatus implements Runnable {
 	}
 
 	public void initSocket() {
-		if (readThread != null && readThread.isAlive())
-		{
+		if (readThread != null && readThread.isAlive()) {
 			readThread.interrupt();
-			while(readThread.isAlive())
-			{
+			while (readThread.isAlive()) {
 				try {
 					TimeUnit.MILLISECONDS.sleep(500);
 				} catch (InterruptedException e) {
@@ -163,6 +166,7 @@ public class BBBStatus implements Runnable {
 				}
 			}
 		}
+		
 		if (ctx != null && socket != null) {
 			socket.close();
 			ctx.close();
@@ -180,8 +184,8 @@ public class BBBStatus implements Runnable {
 		socket.setIdentity(identity.getBytes(ZMQ.CHARSET));
 		socket.subscribe("motion".getBytes(ZMQ.CHARSET));
 		socket.subscribe("task".getBytes(ZMQ.CHARSET));
-		//socket.subscribe("io".getBytes(ZMQ.CHARSET));
-		//socket.subscribe("interp".getBytes(ZMQ.CHARSET));
+		// socket.subscribe("io".getBytes(ZMQ.CHARSET));
+		// socket.subscribe("interp".getBytes(ZMQ.CHARSET));
 		socket.setHWM(10000);
 		socket.setReceiveTimeOut(200);
 		socket.setSendTimeOut(200);
@@ -190,6 +194,8 @@ public class BBBStatus implements Runnable {
 		readThread = new Thread(this);
 		readThread.setName("BBBStatus");
 		readThread.start();
+		
 	}
-
+	
+	
 }

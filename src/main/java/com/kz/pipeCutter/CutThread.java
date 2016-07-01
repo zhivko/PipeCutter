@@ -97,6 +97,16 @@ public class CutThread extends SwingWorker<String, Object> {
 		double mminY = sortedList.get(0).xyz.y;
 		double mmaxY = sortedList.get(sortedList.size() - 1).xyz.y;
 
+		try {
+			PrintWriter out = new PrintWriter(new BufferedWriter(new FileWriter(this.gcodeFile.getAbsolutePath(), true)));
+			out.println("G0 A0 B0");
+			out.flush();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		
 		float currentY = (float) mminY;
 		alAlreadyAddedPoints = new ArrayList<MyPickablePoint>();
 		float minY = 0;

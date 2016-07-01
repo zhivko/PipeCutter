@@ -38,8 +38,7 @@ java -jar ./target/SurfaceDemo-standalone-jar-with-dependencies.jar
 ###Nameserver on BBB
 On beaglebone  issue add nameservers with following:
 ```
-sudo echo "nameserver 193.189.160.13" >> /etc/resolv.conf
-sudo echo "nameserver 193.189.160.13" >> /etc/resolv.conf
+echo nameserver 8.8.8.8 | sudo tee /etc/resolv.conf  #prints to screen as well
 ```
 ###Internet sharing
 On host pc:

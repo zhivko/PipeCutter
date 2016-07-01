@@ -88,6 +88,11 @@ With interface that has internet connection (in my case that is: wlp2s0)
 ```
 sudo iptables --table nat --append POSTROUTING --out-interface wlp2s0 -j MASQUERADE
 ```
+Enable IP forwarding with:
+```
+sudo sysctl -w net.ipv4.ip_forward=1
+sudo /etc/init.d/procps restart
+```
 
 ##Back-up BBB
 http://elinux.org/BeagleBone_Black_Extracting_eMMC_contents
@@ -161,6 +166,19 @@ tmpfs             806708       80    806628   1% /run/user/1000
 ```
 More detailed instructions in:
 http://elinux.org/Beagleboard:BeagleBoneBlack_Debian#microSD.2FStandalone:_.28machinekit.29_Based_on_Debian_Jessie_.28new.29
+***PostInstall procedure***  
+Configure locale
+```
+sudo dpkg-reconfigure locales
+```
+Configure timezone
+```
+sudo dpkg-reconfigure tzdata
+```
+Test if xenomai is working
+```
+latency-test
+```
 
 ##Machinekit notes
 ###Hal remote components

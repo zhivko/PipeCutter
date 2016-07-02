@@ -28,7 +28,7 @@ public class CutThread extends SwingWorker<String, Object> {
 
 	float pierceOffsetMm = 0;
 	float cutOffsetMm = 0;
-	int pierceTimeMs = 0;
+	long pierceTimeMs = 0;
 
 	ArrayList<MyPickablePoint> lastPoints;
 	ArrayList<MyPickablePoint> alAlreadyAddedPoints;
@@ -77,9 +77,13 @@ public class CutThread extends SwingWorker<String, Object> {
 	}
 
 	public CutThread() {
+		String folder = Settings.getInstance().getSetting("gcode_folder");
+		File f = new File(folder + File.separatorChar + "prog.gcode");
+		Settings.instance.log(String.format("Delete file %s %b", f.getAbsolutePath(), f.delete()));
+
 		pierceOffsetMm = Float.valueOf(Settings.instance.getSetting("plasma_pierce_offset_mm"));
-		Float pierceTimeMsFloat = (Float.valueOf(Settings.instance.getSetting("plasma_pierce_time_s")) * 1000.0f);
-		pierceTimeMs = pierceTimeMsFloat.intValue();
+		double pierceTimeMsFloat = (Float.valueOf(Settings.instance.getSetting("plasma_pierce_time_s")) * 1000.0f);
+		pierceTimeMs = Long.valueOf((long) pierceTimeMsFloat);
 		cutOffsetMm = Float.valueOf(Settings.instance.getSetting("plasma_cut_offset_mm"));
 		String gcodeFolder = Settings.instance.getSetting("gcode_folder");
 		gcodeFile = new File(gcodeFolder + File.separatorChar + "prog.gcode");
@@ -97,16 +101,16 @@ public class CutThread extends SwingWorker<String, Object> {
 		double mminY = sortedList.get(0).xyz.y;
 		double mmaxY = sortedList.get(sortedList.size() - 1).xyz.y;
 
+		SurfaceDemo.instance.angleTxt = "0.0";
 		try {
 			PrintWriter out = new PrintWriter(new BufferedWriter(new FileWriter(this.gcodeFile.getAbsolutePath(), true)));
-			out.println("G0 A0 B0");
+			out.println("G00 A0 B0");
 			out.flush();
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		
-		
+
 		float currentY = (float) mminY;
 		alAlreadyAddedPoints = new ArrayList<MyPickablePoint>();
 		float minY = 0;
@@ -174,35 +178,40 @@ public class CutThread extends SwingWorker<String, Object> {
 			if (pointsToCut.size() > 0) {
 				for (MyPickablePoint myPoint : pointsToCut) {
 					if (!listContainsPoint(myPoint, alAlreadyAddedPoints) && Math.abs(myPoint.getZ() - topZ) < 0.1) {
+
+						// try {
+						// PrintWriter out = new PrintWriter(
+						// new BufferedWriter(new
+						// FileWriter(CutThread.gcodeFile.getAbsolutePath(), true)));
+						// out.println(String.format(java.util.Locale.US, "G01 A%.3f B%.3f
+						// F%s",
+						// Float.valueOf(SurfaceDemo.instance.angleTxt),
+						// Float.valueOf(SurfaceDemo.instance.angleTxt),
+						// Settings.getInstance().getSetting("gcode_feedrate_g0")));
+						// out.close();
+						// } catch (Exception e) {
+						// e.printStackTrace();
+						// }
+
 						SurfaceDemo.instance.moveAbove(myPoint, pierceOffsetMm, pierceTimeMs);
-						double angle = folowThePath(myPoint, this.alAlreadyAddedPoints, (rotationDirection==-1? true:false));
+						double angle = folowThePath(myPoint, this.alAlreadyAddedPoints, (rotationDirection == -1 ? true : false));
 						hasBeenCutting = true;
 					}
 				}
 			}
 			if (hasBeenCutting) {
 				double diagonal = (topZ * 2 * 1.41 / 2);
-				MyPickablePoint newPoint = new MyPickablePoint(-100000,
-						new Coord3d(SurfaceDemo.instance.cylinderPoint.xyz.x, SurfaceDemo.instance.cylinderPoint.xyz.y, diagonal + 5),
-						Color.BLACK, 0.4f, -200000);
+				MyPickablePoint newPoint = new MyPickablePoint(-100000, new Coord3d(SurfaceDemo.instance.cylinderPoint.xyz.x,
+						SurfaceDemo.instance.cylinderPoint.xyz.y, diagonal + 5), Color.BLACK, 0.4f, -200000);
 				SurfaceDemo.instance.move(newPoint, false, cutOffsetMm);
 			}
 
-			
 			sumAngle = Float.valueOf(SurfaceDemo.instance.angleTxt); // sumAngle
 			if (sumAngle >= 360.0)
 				rotationDirection = -1;
 			double angle = rotationDirection * 90.0d;
 			SurfaceDemo.instance.utils.rotatePoints(angle, true);
-			try {
-				PrintWriter out = new PrintWriter(new BufferedWriter(new FileWriter(CutThread.gcodeFile.getAbsolutePath(), true)));
-				out.println(String.format(java.util.Locale.US, "G00 A%.3f B%.3f F%s", Float.valueOf(SurfaceDemo.instance.angleTxt),
-						Float.valueOf(SurfaceDemo.instance.angleTxt), Settings.getInstance().getSetting("gcode_feedrate_g0")));
-				out.close();
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
-		
+
 		}
 	}
 
@@ -219,7 +228,7 @@ public class CutThread extends SwingWorker<String, Object> {
 				tempPoint.setColor(Color.GREEN);
 				alAlreadyAddedPoints.add(tempPoint);
 			}
-			tempPoint = SurfaceDemo.instance.utils.findConnectedPoint(tempPoint, alAlreadyAddedPoints,true);
+			tempPoint = SurfaceDemo.instance.utils.findConnectedPoint(tempPoint, alAlreadyAddedPoints, true);
 			if (tempPoint == null) {
 				shouldBreak = true;
 				tempPoint = myPoint;
@@ -232,7 +241,7 @@ public class CutThread extends SwingWorker<String, Object> {
 		}
 		SurfaceDemo.instance.move(tempPoint, true, cutOffsetMm);
 		prevPoint = tempPoint;
-		tempPoint = SurfaceDemo.instance.utils.findConnectedPoint(tempPoint, alAlreadyAddedPoints,true);
+		tempPoint = SurfaceDemo.instance.utils.findConnectedPoint(tempPoint, alAlreadyAddedPoints, true);
 		if (tempPoint != null) {
 			double angle = rotation(prevPoint, tempPoint);
 			return angle;
@@ -300,8 +309,9 @@ public class CutThread extends SwingWorker<String, Object> {
 			cut();
 		else
 			try {
-				this.folowThePath(this.startPoint, this.alAlreadyAddedPoints,true);
-				PrintWriter out = new PrintWriter(new BufferedWriter(new FileWriter(CutThread.gcodeFile.getAbsolutePath(), true)));
+				this.folowThePath(this.startPoint, this.alAlreadyAddedPoints, true);
+				PrintWriter out = new PrintWriter(
+						new BufferedWriter(new FileWriter(CutThread.gcodeFile.getAbsolutePath(), true)));
 				out.println("M2");
 				out.flush();
 				out.close();

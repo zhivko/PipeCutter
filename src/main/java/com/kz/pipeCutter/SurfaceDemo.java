@@ -837,16 +837,14 @@ public class SurfaceDemo extends AbstractAnalysis {
 				PrintWriter out = new PrintWriter(
 						new BufferedWriter(new FileWriter(CutThread.gcodeFile.getAbsolutePath(), true)));
 				if (cut) {
-					out.println(String.format(java.util.Locale.US, "G01 %s A%.3f B%.3f F%s (pointId: %d)", gcode,
-							Float.valueOf(SurfaceDemo.instance.angleTxt), Float.valueOf(SurfaceDemo.instance.angleTxt),
+					out.println(String.format(java.util.Locale.US, "G01 %s F%s (pointId: %d)", gcode,
 							Settings.getInstance().getSetting("gcode_feedrate_g1"), tempPoint.id));
 					alreadyCutting=true;
 				} else {
 					if (alreadyCutting) {
 						out.println("M5");
 					}
-					out.println(String.format(java.util.Locale.US, "G00 %s A%.3f B%.3f F%s (pointId: %d)", gcode,
-							Float.valueOf(SurfaceDemo.instance.angleTxt), Float.valueOf(SurfaceDemo.instance.angleTxt),
+					out.println(String.format(java.util.Locale.US, "G00 %s F%s (pointId: %d)", gcode,
 							Settings.getInstance().getSetting("gcode_feedrate_g0"), tempPoint.id));
 					alreadyCutting=false;
 				}
@@ -885,14 +883,14 @@ public class SurfaceDemo extends AbstractAnalysis {
 			} catch (Exception ex) {
 				ex.printStackTrace();
 			}
-			out.println("G00 " + gcode + " F" + Settings.getInstance().getSetting("gcode_feedrate_g1"));
+			out.println("G00 " + gcode + " F" + Settings.getInstance().getSetting("gcode_feedrate_g0"));
 			if (!alreadyCutting) {
 				out.println("M3 S400");
 				alreadyCutting=true;
 			}	
 			plasma.setColor(Color.RED);
 			plasma.setWireframeColor(Color.RED);
-			out.println("G04 P" + pierceTimeMs / 1000);
+			out.println(String.format("G04 P%f", (pierceTimeMs / 1000.0)));
 			try {
 				TimeUnit.MILLISECONDS.sleep(pierceTimeMs);
 			} catch (Exception ex) {

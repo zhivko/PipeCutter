@@ -36,7 +36,7 @@ public class BBBHalCommand implements Runnable {
 
 	private Thread readThread;
 	private Thread pingThread;
-	private long lastPingMs;
+	private long lastPingMs = 0;
 
 	static String identity;
 	static {
@@ -142,8 +142,9 @@ public class BBBHalCommand implements Runnable {
 						} else if (contReturned.getType().equals(ContainerType.MT_PING_ACKNOWLEDGE)) {
 							this.lastPingMs = System.currentTimeMillis();
 							MachinekitSettings.instance.pingHalCommand();
-							if (!BBBHalRComp.getInstance().isBinded && !BBBHalRComp.getInstance().isTryingToBind) {
-								if(BBBHalRComp.getInstance().isAlive())
+							if (BBBStatus.getInstance().isAlive() && !BBBHalRComp.getInstance().isBinded
+									&& !BBBHalRComp.getInstance().isTryingToBind) {
+								//if (BBBHalRComp.getInstance().isAlive())
 									BBBHalRComp.getInstance().startBind();
 							}
 						} else if (contReturned.getType().equals(ContainerType.MT_HALRCOMP_BIND_CONFIRM)) {
@@ -228,11 +229,10 @@ public class BBBHalCommand implements Runnable {
 
 	private void startPingThread() {
 		pingThread = new Thread(new Runnable() {
-			
+
 			@Override
 			public void run() {
-				while(!pingThread.isInterrupted())
-				{
+				while (!pingThread.isInterrupted()) {
 					pb.Message.Container.Builder builder = Container.newBuilder();
 					builder.setType(ContainerType.MT_PING);
 					Container container = builder.build();
@@ -248,14 +248,16 @@ public class BBBHalCommand implements Runnable {
 			}
 		});
 		pingThread.start();
-}
+	}
 
 	public Socket getSocket() {
 		return socket;
 	}
-	
-	public boolean isAlive()
-	{
-		return (System.currentTimeMillis()-this.lastPingMs > 1000);
+
+	public boolean isAlive() {
+		if (this.lastPingMs != 0)
+			return (System.currentTimeMillis() - this.lastPingMs > 1000);
+		else
+			return false;
 	}
 }

@@ -37,6 +37,7 @@ public class BBBStatus implements Runnable {
 	private Thread readThread;
 	double x = 0, y = 0, z = 0, a = 0, b = 0, c = 0;
 	private long lastPingMs;
+	Thread pingThread;
 
 	public BBBStatus() {
 		initSocket();
@@ -168,6 +169,17 @@ public class BBBStatus implements Runnable {
 				}
 			}
 		}
+		if (pingThread != null && pingThread.isAlive()) {
+			pingThread.interrupt();
+			while (pingThread.isAlive()) {
+				try {
+					TimeUnit.MILLISECONDS.sleep(500);
+				} catch (InterruptedException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}
+		}
 		
 		if (ctx != null && socket != null) {
 			socket.close();
@@ -187,20 +199,23 @@ public class BBBStatus implements Runnable {
 		socket.subscribe("motion".getBytes(ZMQ.CHARSET));
 		socket.subscribe("task".getBytes(ZMQ.CHARSET));
 		// socket.subscribe("io".getBytes(ZMQ.CHARSET));
-		// socket.subscribe("interp".getBytes(ZMQ.CHARSET));
-		socket.setHWM(10000);
-		socket.setReceiveTimeOut(200);
-		socket.setSendTimeOut(200);
+		socket.subscribe("interp".getBytes(ZMQ.CHARSET));
+		//socket.setHWM(10000);
+		//socket.setReceiveTimeOut(200);
+		//socket.setSendTimeOut(200);
 		socket.connect(this.uri);
 
 		readThread = new Thread(this);
 		readThread.setName("BBBStatus");
 		readThread.start();
-		
 	}
+
 	
 	public boolean isAlive()
 	{
-		return (System.currentTimeMillis()-this.lastPingMs > 1000);
+		if(this.lastPingMs!=0)
+			return (System.currentTimeMillis()-this.lastPingMs > 1000);
+		else
+			return false;
 	}
 }

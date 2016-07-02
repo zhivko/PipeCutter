@@ -378,7 +378,8 @@ public class Utils {
 			y = point.y;
 			z = point.z;
 		}
-		return String.format(java.util.Locale.US, "X%.3f Y%.3f Z%.3f", x, y, z);
+		float angle = Float.valueOf(SurfaceDemo.instance.angleTxt);
+		return String.format(java.util.Locale.US, "X%.3f Y%.3f Z%.3f A%.3f B%.3f", x, y, z, angle, angle);
 	}
 
 	public String coordinateToGcode(Coord3d coord, float offset) {
@@ -393,7 +394,8 @@ public class Utils {
 			y = coord.y;
 			z = coord.z;
 		}
-		return String.format(java.util.Locale.US, "X%.3f Y%.3f Z%.3f", x, y, z);
+		float angle = Float.valueOf(SurfaceDemo.instance.angleTxt);
+		return String.format(java.util.Locale.US, "X%.3f Y%.3f Z%.3f A%.3f B%.3f", x, y, z, angle, angle);
 	}
 
 	public Coord3d rotate(double x, double y, double z, double angle, double axisX, double axisY, double axisZ) {
@@ -429,7 +431,7 @@ public class Utils {
 			}
 		} else {
 
-			int noSteps = 10;
+			int noSteps = 5;
 			for (int i = 0; i <= noSteps; i++) {
 				if (angleInDelta)
 					value = Double.valueOf(SurfaceDemo.instance.angleTxt) + angle * i / noSteps;

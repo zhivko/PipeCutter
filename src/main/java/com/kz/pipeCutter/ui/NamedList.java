@@ -162,7 +162,7 @@ public class NamedList extends JPanel implements IParameter, IHasLabel {
 						break;
 					}
 				}
-				listModel.addElement(mi.name + ":" + mi.url);
+				listModel.addElement(mi.name + " (" + mi.url + ")");
 				myList.repaint();
 			}
 		});

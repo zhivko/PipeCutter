@@ -38,7 +38,7 @@ public class BBBError implements Runnable {
 	static String identity;
 
 	private Thread readThread;
-	private long lastPingMs;
+	private long lastPingMs=0;
 
 	private final static ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
 
@@ -153,7 +153,10 @@ public class BBBError implements Runnable {
 	
 	public boolean isAlive()
 	{
-		return (System.currentTimeMillis()-this.lastPingMs > 1000);
+		if(this.lastPingMs!=0)
+			return (System.currentTimeMillis()-this.lastPingMs > 1000);
+		else
+			return false;
 	}
 
 }

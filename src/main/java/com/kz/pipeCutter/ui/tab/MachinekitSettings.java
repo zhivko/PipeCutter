@@ -23,7 +23,7 @@ public class MachinekitSettings extends JPanel {
 	SavableText statusUrl;
 	SavableText commandUrl;
 	SavableText halCmdUrl;
-	SavableText halGroupUrl;
+	SavableText halRCompUrl;
 	
 	public static void main(String[] args) {
 
@@ -83,10 +83,10 @@ public class MachinekitSettings extends JPanel {
 		previewUrl.setParId("machinekit_previewstatusService_url");
 		add(previewUrl);
 
-		halGroupUrl = new SavableText();
-		halGroupUrl.setLabelTxt("HalRemoteComp service url:");
-		halGroupUrl.setParId("machinekit_halRCompService_url");
-		add(halGroupUrl);
+		halRCompUrl = new SavableText();
+		halRCompUrl.setLabelTxt("HalRemoteComp service url:");
+		halRCompUrl.setParId("machinekit_halRCompService_url");
+		add(halRCompUrl);
 
 		halCmdUrl = new SavableText();
 		halCmdUrl.setLabelTxt("HalCmd service url:");
@@ -133,7 +133,7 @@ public class MachinekitSettings extends JPanel {
 		flash(halCmdUrl.jValue);
 	}
 	
-	public void pingHalGroupCommand() {
-		flash(halGroupUrl.jValue);
+	public void pingHalRcomp() {
+		flash(halRCompUrl.jValue);
 	}	
 }

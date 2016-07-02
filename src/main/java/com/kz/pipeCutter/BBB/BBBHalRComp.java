@@ -43,6 +43,7 @@ public class BBBHalRComp implements Runnable {
 	public boolean isBinded=false;
 	public boolean isTryingToBind=false;
 	private long lastPingMs;
+	private Thread pingThread;
 
 	public BBBHalRComp() {
 		prepareBindContainer();
@@ -141,7 +142,7 @@ public class BBBHalRComp implements Runnable {
 								GcodeViewer.instance.setPlasmaOn(Boolean.valueOf(halPins.get("mymotion.spindle-on")).booleanValue());
 							} else if (contReturned.getType().equals(ContainerType.MT_PING)) {
 								this.lastPingMs = System.currentTimeMillis();
-								MachinekitSettings.instance.pingHalGroupCommand();
+								MachinekitSettings.instance.pingHalRcomp();
 							} else if (contReturned.getType().equals(ContainerType.MT_HALRCOMP_INCREMENTAL_UPDATE)) {
 								for (int j = 0; j < contReturned.getPinCount(); j++) {
 									String value = null;
@@ -201,6 +202,17 @@ public class BBBHalRComp implements Runnable {
 				}
 			}
 		}
+		if (pingThread != null && pingThread.isAlive()) {
+			pingThread.interrupt();
+			while (pingThread.isAlive()) {
+				try {
+					TimeUnit.MILLISECONDS.sleep(500);
+				} catch (InterruptedException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}
+		}		
 
 		this.halRCompUri = Settings.getInstance().getSetting("machinekit_halRCompService_url");
 		ctx = new ZContext(2);
@@ -211,8 +223,8 @@ public class BBBHalRComp implements Runnable {
 		String identity = String.format("%04X-%04X", rand.nextInt(), rand.nextInt());
 
 		socket.setIdentity(identity.getBytes(ZMQ.CHARSET));
-		socket.setReceiveTimeOut(1000);
-		socket.setRcvHWM(10000);
+		//socket.setReceiveTimeOut(1000);
+		//socket.setRcvHWM(10000);
 		socket.connect(this.halRCompUri);
 
 		readThread = new Thread(this);
@@ -278,9 +290,13 @@ public class BBBHalRComp implements Runnable {
 		}
 	}
 
+
 	public boolean isAlive()
 	{
-		return (System.currentTimeMillis()-this.lastPingMs > 1000);
+		if(this.lastPingMs!=0)
+			return (System.currentTimeMillis()-this.lastPingMs > 1000);
+		else
+			return false;
 	}
 	
 }

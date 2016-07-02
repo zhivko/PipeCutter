@@ -36,6 +36,7 @@ public class BBBHalCommand implements Runnable {
 
 	private Thread readThread;
 	private Thread pingThread;
+	private long lastPingMs;
 
 	static String identity;
 	static {
@@ -139,9 +140,11 @@ public class BBBHalCommand implements Runnable {
 								}
 							}
 						} else if (contReturned.getType().equals(ContainerType.MT_PING_ACKNOWLEDGE)) {
+							this.lastPingMs = System.currentTimeMillis();
 							MachinekitSettings.instance.pingHalCommand();
 							if (!BBBHalRComp.getInstance().isBinded && !BBBHalRComp.getInstance().isTryingToBind) {
-								BBBHalRComp.getInstance().startBind();
+								if(BBBHalRComp.getInstance().isAlive())
+									BBBHalRComp.getInstance().startBind();
 							}
 						} else if (contReturned.getType().equals(ContainerType.MT_HALRCOMP_BIND_CONFIRM)) {
 							BBBHalRComp.getInstance().isBinded = true;
@@ -249,5 +252,10 @@ public class BBBHalCommand implements Runnable {
 
 	public Socket getSocket() {
 		return socket;
+	}
+	
+	public boolean isAlive()
+	{
+		return (System.currentTimeMillis()-this.lastPingMs > 1000);
 	}
 }

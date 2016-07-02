@@ -53,6 +53,20 @@
 			</snapshots>
 		</repository>
 
+
+
+		<repository>
+			<id>jcenter</id>
+			<url>https://jcenter.bintray.com/org/openhab/jmdns/jmdns/3.4.2</url>
+			<releases>
+				<enabled>true</enabled>
+			</releases>
+			<snapshots>
+				<enabled>true</enabled>
+			</snapshots>
+		</repository>
+
+
 	</repositories>
 
 	<dependencies>

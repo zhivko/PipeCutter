@@ -36,6 +36,7 @@ public class BBBStatus implements Runnable {
 	private String uri;
 	private Thread readThread;
 	double x = 0, y = 0, z = 0, a = 0, b = 0, c = 0;
+	private long lastPingMs;
 
 	public BBBStatus() {
 		initSocket();
@@ -132,6 +133,7 @@ public class BBBStatus implements Runnable {
 									}
 								}
 							} else if (contReturned.getType().equals(ContainerType.MT_PING)) {
+								this.lastPingMs = System.currentTimeMillis();
 								MachinekitSettings.instance.pingStatus();
 							} else {
 								System.out.println(contReturned.getType());
@@ -197,5 +199,8 @@ public class BBBStatus implements Runnable {
 		
 	}
 	
-	
+	public boolean isAlive()
+	{
+		return (System.currentTimeMillis()-this.lastPingMs > 1000);
+	}
 }

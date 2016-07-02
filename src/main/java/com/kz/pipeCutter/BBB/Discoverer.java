@@ -1,8 +1,6 @@
 package com.kz.pipeCutter.BBB;
 
-import java.awt.Color;
 import java.io.IOException;
-import java.lang.reflect.InvocationTargetException;
 import java.net.Inet4Address;
 import java.net.InetAddress;
 import java.net.NetworkInterface;
@@ -20,7 +18,6 @@ import javax.jmdns.ServiceEvent;
 import javax.jmdns.ServiceInfo;
 import javax.jmdns.ServiceListener;
 import javax.jmdns.impl.JmDNSImpl;
-import javax.swing.SwingUtilities;
 import javax.swing.SwingWorker;
 
 import com.kz.pipeCutter.ui.Settings;
@@ -77,6 +74,9 @@ public class Discoverer {
 				public void serviceAdded(ServiceEvent arg0) {
 					System.out.println("+ " + arg0.getInfo().getName() + " (" + arg0.getInfo().getServer()+ " :" + arg0.getInfo().getPort() + ")");
 					services.add(arg0.getInfo());
+					arg0.getInfo().getPort();
+					arg0.getInfo().getProtocol();
+					
 					Pattern p = Pattern.compile("(.*)service(.*)");
 					Matcher m = p.matcher(arg0.getInfo().getName());
 					if (m.find() && MachinekitSettings.instance != null) {

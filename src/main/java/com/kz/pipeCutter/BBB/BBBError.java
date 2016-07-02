@@ -38,6 +38,7 @@ public class BBBError implements Runnable {
 	static String identity;
 
 	private Thread readThread;
+	private long lastPingMs;
 
 	private final static ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
 
@@ -71,6 +72,7 @@ public class BBBError implements Runnable {
 
 							contReturned = Message.Container.parseFrom(returnedBytes);
 							if (contReturned.getType().equals(ContainerType.MT_PING)) {
+								this.lastPingMs = System.currentTimeMillis();
 								MachinekitSettings.instance.pingError();
 							} else {
 								Settings.instance.log(contReturned.getType() + " " + contReturned.getTopic());
@@ -147,6 +149,11 @@ public class BBBError implements Runnable {
 
 	public org.zeromq.ZMQ.Socket getSocket() {
 		return socket;
+	}
+	
+	public boolean isAlive()
+	{
+		return (System.currentTimeMillis()-this.lastPingMs > 1000);
 	}
 
 }

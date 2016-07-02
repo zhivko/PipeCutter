@@ -1,11 +1,10 @@
 package com.kz.pipeCutter.BBB;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Random;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
 import javax.jmdns.ServiceInfo;
@@ -16,16 +15,16 @@ import org.zeromq.ZMQ;
 import org.zeromq.ZMQ.Socket;
 import org.zeromq.ZMsg;
 
-import pb.Message;
-import pb.Message.Container;
-import pb.Types.ContainerType;
-import pb.Types.ValueType;
-
 import com.kz.pipeCutter.ui.PinDef;
 import com.kz.pipeCutter.ui.SavableControl;
 import com.kz.pipeCutter.ui.Settings;
 import com.kz.pipeCutter.ui.tab.GcodeViewer;
 import com.kz.pipeCutter.ui.tab.MachinekitSettings;
+
+import pb.Message;
+import pb.Message.Container;
+import pb.Types.ContainerType;
+import pb.Types.ValueType;
 
 public class BBBHalRComp implements Runnable {
 	private String halRCompUri;
@@ -43,6 +42,7 @@ public class BBBHalRComp implements Runnable {
 	
 	public boolean isBinded=false;
 	public boolean isTryingToBind=false;
+	private long lastPingMs;
 
 	public BBBHalRComp() {
 		prepareBindContainer();
@@ -140,6 +140,7 @@ public class BBBHalRComp implements Runnable {
 								GcodeViewer.instance.setLineNumber(Integer.valueOf(halPins.get("mymotion.program-line")).intValue());
 								GcodeViewer.instance.setPlasmaOn(Boolean.valueOf(halPins.get("mymotion.spindle-on")).booleanValue());
 							} else if (contReturned.getType().equals(ContainerType.MT_PING)) {
+								this.lastPingMs = System.currentTimeMillis();
 								MachinekitSettings.instance.pingHalGroupCommand();
 							} else if (contReturned.getType().equals(ContainerType.MT_HALRCOMP_INCREMENTAL_UPDATE)) {
 								for (int j = 0; j < contReturned.getPinCount(); j++) {
@@ -277,4 +278,9 @@ public class BBBHalRComp implements Runnable {
 		}
 	}
 
+	public boolean isAlive()
+	{
+		return (System.currentTimeMillis()-this.lastPingMs > 1000);
+	}
+	
 }

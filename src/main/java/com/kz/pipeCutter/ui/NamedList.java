@@ -142,6 +142,14 @@ public class NamedList extends JPanel implements IParameter, IHasLabel {
 	}
 
 	public void addService(final ServiceInfo serviceInfo) {
+
+		getCommandServiceUrl(serviceInfo);
+		getErrorServiceUrl(serviceInfo);
+		getStatusServiceUrl(serviceInfo);
+		getPreviewStatusServiceUrl(serviceInfo);
+		getHalRCompServiceUrl(serviceInfo);
+		getHalCmdServiceUrl(serviceInfo);		
+		
 		final MyServiceInfo mi = new MyServiceInfo(serviceInfo);
 
 		SwingUtilities.invokeLater(new Runnable() {
@@ -154,14 +162,8 @@ public class NamedList extends JPanel implements IParameter, IHasLabel {
 						break;
 					}
 				}
-				listModel.addElement(mi.toString());
+				listModel.addElement(mi.name + ":" + mi.url);
 				myList.repaint();
-				getCommandServiceUrl(serviceInfo);
-				getErrorServiceUrl(serviceInfo);
-				getStatusServiceUrl(serviceInfo);
-				getPreviewStatusServiceUrl(serviceInfo);
-				getHalRCompServiceUrl(serviceInfo);
-				getHalCmdServiceUrl(serviceInfo);
 			}
 		});
 
@@ -175,6 +177,10 @@ public class NamedList extends JPanel implements IParameter, IHasLabel {
 		if (ret != null) {
 			String ip = Settings.getInstance().getSetting("machinekit_ip");
 			String host = Settings.getInstance().getSetting("machinekit_host");
+			
+			
+			serviceInfo.getQualifiedName();
+			serviceInfo.getPort();
 			
 			String commandUrl = "tcp://" + getServer(serviceInfo.getServer()) + ":" + ret.getPort();
 			Settings.getInstance().setSetting("machinekit_commandService_url", commandUrl);

@@ -29,7 +29,7 @@ public class MachinekitStop extends SSH_Command {
 //			}
 //		}
 		
-		String command = avahiRestart + "\nps -aux | grep 'CRAMPS.ini\\|rtapi\\|msgd\\|haltalk\\|halcmd'";
+		String command = avahiRestart + "\nps -aux | grep 'CRAMPS.ini\\|rtapi\\|msgd\\|haltalk\\|halcmd\\|hal_temp_bbb'";
 		channelExec.setCommand(command);
 		channelExec.connect(3 * 1000);
 		while (channelExec.getExitStatus() == -1) {

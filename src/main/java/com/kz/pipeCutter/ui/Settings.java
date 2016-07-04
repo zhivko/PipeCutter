@@ -382,7 +382,7 @@ public class Settings extends JFrame {
 				this.getContentPane(), SavableControl.class);
 		for (SavableControl savableControl : savableControls) {
 			System.out.println("control  id:" + savableControl.getParId());
-			if (savableControl.getParId().equals(parameterId)) {
+			if (savableControl.getParId()!=null && savableControl.getParId().equals(parameterId)) {
 				ret = savableControl;
 				break;
 			}

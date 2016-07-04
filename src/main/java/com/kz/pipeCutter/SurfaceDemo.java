@@ -844,7 +844,7 @@ public class SurfaceDemo extends AbstractAnalysis {
 					if (alreadyCutting) {
 						out.println("M5");
 					}
-					out.println(String.format(java.util.Locale.US, "G00 %s F%s (pointId: %d)", gcode,
+					out.println(String.format(java.util.Locale.US, "G01 %s F%s (pointId: %d)", gcode,
 							Settings.getInstance().getSetting("gcode_feedrate_g0"), tempPoint.id));
 					alreadyCutting=false;
 				}
@@ -883,7 +883,7 @@ public class SurfaceDemo extends AbstractAnalysis {
 			} catch (Exception ex) {
 				ex.printStackTrace();
 			}
-			out.println("G00 " + gcode + " F" + Settings.getInstance().getSetting("gcode_feedrate_g0"));
+			out.println("G01 " + gcode + " F" + Settings.getInstance().getSetting("gcode_feedrate_g0"));
 			if (!alreadyCutting) {
 				out.println("M3 S400");
 				alreadyCutting=true;

@@ -153,7 +153,7 @@ public class RotatorSettings extends JPanel {
 		JButton jog3 = new JButton("JOG");
 		jog3.setPreferredSize(new Dimension(100, 50));
 		panelRotator3.add(jog3);
-		jog1.addActionListener(new ActionListener() {
+		jog3.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				Long velocity = Long.valueOf(Settings.instance
 						.getSetting("rotator3_vel"));

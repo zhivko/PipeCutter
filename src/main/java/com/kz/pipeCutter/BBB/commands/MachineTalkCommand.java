@@ -104,7 +104,7 @@ public abstract class MachineTalkCommand implements Callable<String> {
 	// .withIdentity(identity.getBytes()).connect(this.commandUri);
 	// }
 
-	public void initSocket() {
+	public synchronized void initSocket() {
 		if (ctx != null && socket != null) {
 			socket.close();
 			ctx.close();
@@ -123,7 +123,7 @@ public abstract class MachineTalkCommand implements Callable<String> {
 		socket.connect(this.uri);
 	}
 
-	protected void parseAndOutput() throws InvalidProtocolBufferException {
+	protected synchronized void parseAndOutput() throws InvalidProtocolBufferException {
 		System.out.println(Thread.currentThread().getName());
 		while (true) {
 			// System.out.println("loop: " + i);

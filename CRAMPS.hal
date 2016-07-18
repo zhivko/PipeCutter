@@ -77,9 +77,9 @@ net emcmot.00.enable => hpg.stepgen.00.enable
 net emcmot.00.pos-cmd <= axis.0.motor-pos-cmd
 net emcmot.00.pos-cmd => hpg.stepgen.00.position-cmd
 
-#net motor.00.pos-fb <= hpg.stepgen.00.position-fb
-#net motor.00.pos-fb => axis.0.motor-pos-fb
-net emcmot.00.pos-cmd => axis.0.motor-pos-fb 
+net motor.00.pos-fb <= hpg.stepgen.00.position-fb
+net motor.00.pos-fb => axis.0.motor-pos-fb
+#net emcmot.00.pos-cmd => axis.0.motor-pos-fb 
 
 
 
@@ -118,9 +118,9 @@ net emcmot.01.enable => hpg.stepgen.01.enable
 net emcmot.01.pos-cmd <= axis.1.motor-pos-cmd
 net emcmot.01.pos-cmd => hpg.stepgen.01.position-cmd
 
-#net motor.01.pos-fb <= hpg.stepgen.01.position-fb
-#net motor.01.pos-fb => axis.1.motor-pos-fb
-net emcmot.01.pos-cmd => axis.1.motor-pos-fb 
+net motor.01.pos-fb <= hpg.stepgen.01.position-fb
+net motor.01.pos-fb => axis.1.motor-pos-fb
+#net emcmot.01.pos-cmd => axis.1.motor-pos-fb 
 
 
 # timing parameters
@@ -158,9 +158,9 @@ net emcmot.02.enable => hpg.stepgen.02.enable
 net emcmot.02.pos-cmd <= axis.2.motor-pos-cmd
 net emcmot.02.pos-cmd => hpg.stepgen.02.position-cmd
 
-#net motor.02.pos-fb <= hpg.stepgen.02.position-fb
-#net motor.02.pos-fb => axis.2.motor-pos-fb
-net emcmot.02.pos-cmd => axis.2.motor-pos-fb 
+net motor.02.pos-fb <= hpg.stepgen.02.position-fb
+net motor.02.pos-fb => axis.2.motor-pos-fb
+#net emcmot.02.pos-cmd => axis.2.motor-pos-fb 
 
 
 # timing parameters
@@ -198,9 +198,9 @@ net emcmot.03.enable => hpg.stepgen.03.enable
 net emcmot.03.pos-cmd <= axis.3.motor-pos-cmd
 net emcmot.03.pos-cmd => hpg.stepgen.03.position-cmd
 
-#net motor.03.pos-fb <= hpg.stepgen.03.position-fb
-#net motor.03.pos-fb => axis.3.motor-pos-fb
-net emcmot.03.pos-cmd => axis.3.motor-pos-fb 
+net motor.03.pos-fb <= hpg.stepgen.03.position-fb
+net motor.03.pos-fb => axis.3.motor-pos-fb
+#net emcmot.03.pos-cmd => axis.3.motor-pos-fb 
 
 
 # timing parameters
@@ -238,9 +238,9 @@ net emcmot.04.enable => hpg.stepgen.04.enable
 net emcmot.04.pos-cmd <= axis.4.motor-pos-cmd
 net emcmot.04.pos-cmd => hpg.stepgen.04.position-cmd
 
-#net motor.04.pos-fb <= hpg.stepgen.04.position-fb
-#net motor.04.pos-fb => axis.4.motor-pos-fb
-net emcmot.04.pos-cmd => axis.4.motor-pos-fb 
+net motor.04.pos-fb <= hpg.stepgen.04.position-fb
+net motor.04.pos-fb => axis.4.motor-pos-fb
+#net emcmot.04.pos-cmd => axis.4.motor-pos-fb 
 
 
 # timing parameters
@@ -468,12 +468,14 @@ net servo.4 bb_gpio.p8.out-22
 # COMMENTED HEATER SECTION END KLEMEN
 
 
-#newcomp mymotion timer=100
-#newpin mymotion  mymotion.program-line    s32 in
-#ready  mymotion
-#net program-line	mymotion.program-line  <= motion.program-line
+newcomp mymotion timer=100
+newpin mymotion  mymotion.program-line    s32 in
+newpin mymotion  mymotion.spindle-on      bit in
+ready  mymotion
 
-### Spindle ###
-net spindleEnable <= motion.spindle-on
-net spindleEnable => bb_gpio.p8.out-11
+net spindle-enable  	motion.spindle-on => bb_gpio.p8.out-11
+net spindle-enable  	motion.spindle-on => mymotion.spindle-on
+
+net net_program-line    mymotion.program-line <=  motion.program-line
+
 

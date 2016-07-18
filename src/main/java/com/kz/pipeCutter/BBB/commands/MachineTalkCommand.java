@@ -65,7 +65,7 @@ public abstract class MachineTalkCommand implements Callable<String> {
 				try {
 					Future<String> future = MachineTalkCommand.this.executor.submit(MachineTalkCommand.this);
 					try {
-						future.get(100000, TimeUnit.SECONDS);
+						future.get(20, TimeUnit.SECONDS);
 					} catch (Exception e) {
 						e.printStackTrace();
 					} finally {

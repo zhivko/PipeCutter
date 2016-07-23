@@ -30,7 +30,7 @@ public class CutThread extends SwingWorker<String, Object> {
 	float cutOffsetMm = 0;
 	long pierceTimeMs = 0;
 
-	ArrayList<MyPickablePoint> lastPoints;
+	ArrayList<MyPickablePoint> firstPoints;
 	ArrayList<MyPickablePoint> alAlreadyAddedPoints;
 
 	private boolean wholePipe = false;
@@ -96,7 +96,8 @@ public class CutThread extends SwingWorker<String, Object> {
 
 		// SurfaceDemo.instance.utils.establishNeighbourPoints();
 		MyPickablePoint lastOuterPoint = sortedList.get(sortedList.size() - 1);
-		lastPoints = SurfaceDemo.instance.utils.findAllConnectedPoints(lastOuterPoint, new ArrayList<MyPickablePoint>());
+		MyPickablePoint firstOuterPoint = sortedList.get(0);
+		firstPoints = SurfaceDemo.instance.utils.findAllConnectedPoints(firstOuterPoint, new ArrayList<MyPickablePoint>());
 
 		double mminY = sortedList.get(0).xyz.y;
 		double mmaxY = sortedList.get(sortedList.size() - 1).xyz.y;
@@ -111,12 +112,12 @@ public class CutThread extends SwingWorker<String, Object> {
 			e.printStackTrace();
 		}
 
-		float currentY = (float) mminY;
+		float currentY = (float) mmaxY;
 		alAlreadyAddedPoints = new ArrayList<MyPickablePoint>();
 		float minY = 0;
 		float maxY = 0;
 		int rotationDirection = 1;
-		while (currentY - cutterYRange / 2 < mmaxY) {
+		while (currentY - cutterYRange / 2 > mminY) {
 			minY = currentY - cutterYRange / 2;
 			maxY = currentY + cutterYRange / 2;
 
@@ -130,7 +131,7 @@ public class CutThread extends SwingWorker<String, Object> {
 				rotationDirection = -1;
 			else
 				rotationDirection = 1;
-			currentY = currentY + cutterYRange;
+			currentY = currentY - cutterYRange;
 		}
 		sumAngle = Float.valueOf(SurfaceDemo.instance.angleTxt); // sumAngle
 		if (sumAngle >= 360.0)
@@ -158,7 +159,7 @@ public class CutThread extends SwingWorker<String, Object> {
 				if (p.xyz.y > minY && p.xyz.y <= maxY && Math.abs(p.getZ() - topZ) < 0.1) {
 					{
 						if (withoutLastPoints) {
-							if (!listContainsPoint(p, lastPoints)) {
+							if (!listContainsPoint(p, firstPoints)) {
 								if (!listContainsPoint(p, alAlreadyAddedPoints)) {
 									pointsToCut.add(p);
 									p.setColor(Color.MAGENTA);

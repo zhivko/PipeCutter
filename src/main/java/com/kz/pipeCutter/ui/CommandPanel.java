@@ -7,7 +7,6 @@ import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 
-import javax.swing.JButton;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
@@ -28,7 +27,7 @@ import com.kz.pipeCutter.BBB.commands.OpenGCode;
 import com.kz.pipeCutter.BBB.commands.PlayGCode;
 import com.kz.pipeCutter.BBB.commands.PowerOff;
 import com.kz.pipeCutter.BBB.commands.PowerOn;
-import com.kz.pipeCutter.BBB.commands.UnHomeAxis;
+import com.kz.pipeCutter.BBB.commands.UnHomeAllAxis;
 
 import pb.Status.EmcTaskModeType;
 
@@ -38,7 +37,7 @@ public class CommandPanel extends JPanel {
 	public CommandPanel() {
 		super();
 
-		//this.setPreferredSize(new Dimension(420, 332));
+		// this.setPreferredSize(new Dimension(420, 332));
 		FlowLayout flowLayout = (FlowLayout) this.getLayout();
 		flowLayout.setAlignment(FlowLayout.LEFT);
 
@@ -48,53 +47,36 @@ public class CommandPanel extends JPanel {
 		machineKitPanel.setPreferredSize(new Dimension(150, 350));
 		this.add(machineKitPanel);
 
-		JButton startMachineKit = new JButton("Start MK");
-		startMachineKit.addActionListener(new ActionListener() {
-
+		MyButton startMachineKit = new MyButton("Start MK") {
 			@Override
-			public void actionPerformed(ActionEvent e) {
+			public void doIt() {
 				new MachinekitStart().start();
 			}
-		});
+		};
 		machineKitPanel.add(startMachineKit);
 
-		JButton discoverMachineKit = new JButton("Discover MK");
-		discoverMachineKit.addActionListener(new ActionListener() {
+		MyButton discoverMachineKit = new MyButton("Discover MK") {
 			@Override
-			public void actionPerformed(ActionEvent e) {
-				SwingUtilities.invokeLater(new Runnable() {
-					@Override
-					public void run() {
-						Discoverer.getInstance().discover();
-					}
-				});
+			public void doIt() {
+				Discoverer.getInstance().discover();
 			}
-		});
+		};
 		machineKitPanel.add(discoverMachineKit);
 
-		JButton listMachineKit = new JButton("List MK");
-		listMachineKit.addActionListener(new ActionListener() {
-
+		MyButton listMachineKit = new MyButton("List MK") {
 			@Override
-			public void actionPerformed(ActionEvent e) {
-				SwingUtilities.invokeLater(new Runnable() {
-					@Override
-					public void run() {
-						new MachinekitListProcesses().start();
-					}
-				});
+			public void doIt() {
+				new MachinekitListProcesses().start();
 			}
-		});
+		};
 		machineKitPanel.add(listMachineKit);
 
-		JButton MachineKitStop = new JButton("Kill MK");
-		MachineKitStop.addActionListener(new ActionListener() {
+		MyButton MachineKitStop = new MyButton("Kill MK") {
 			@Override
-			public void actionPerformed(ActionEvent e) {
+			public void doIt() {
 				new MachinekitStop().start();
 			}
-		});
-
+		};
 		machineKitPanel.add(MachineKitStop);
 
 		// ----------machineTalkPanel---------------------------
@@ -103,88 +85,68 @@ public class CommandPanel extends JPanel {
 
 		this.add(machineTalkPanel);
 
-		JButton estopReset = new JButton("EStop reset");
-		estopReset.addActionListener(new ActionListener() {
+		MyButton estopReset = new MyButton("EStop reset") {
 			@Override
-			public void actionPerformed(ActionEvent e) {
+			public void doIt() {
 				new EstopReset().start();
 			}
-		});
+		};
 		machineTalkPanel.add(estopReset);
 
-		JButton powerOn = new JButton("Power ON");
-		powerOn.addActionListener(new ActionListener() {
+		MyButton powerOn = new MyButton("Power ON") {
 			@Override
-			public void actionPerformed(ActionEvent e) {
+			public void doIt() {
 				new PowerOn().start();
 			}
-		});
+		};
 		machineTalkPanel.add(powerOn);
 
-		JButton PowerOff = new JButton("Power OFF");
-		PowerOff.addActionListener(new ActionListener() {
+		MyButton PowerOff = new MyButton("Power OFF") {
 			@Override
-			public void actionPerformed(ActionEvent e) {
+			public void doIt() {
 				new PowerOff().start();
 			}
-		});
+		};
 		machineTalkPanel.add(PowerOff);
 
-		JButton modeManual = new JButton("Mode: MANUAL");
-		modeManual.addActionListener(new ActionListener() {
+		MyButton modeManual = new MyButton("Mode: MANUAL") {
 			@Override
-			public void actionPerformed(ActionEvent e) {
+			public void doIt() {
 				new ChangeMode(EmcTaskModeType.EMC_TASK_MODE_MANUAL).start();
 			}
-		});
+		};
 		machineTalkPanel.add(modeManual);
 
-		JButton modeMDI = new JButton("Mode: MDI");
-		modeMDI.addActionListener(new ActionListener() {
+		MyButton modeMDI = new MyButton("Mode: MDI") {
 			@Override
-			public void actionPerformed(ActionEvent e) {
+			public void doIt() {
 				new ChangeMode(EmcTaskModeType.EMC_TASK_MODE_MDI).start();
 			}
-		});
+		};
 		machineTalkPanel.add(modeMDI);
 
-		JButton modeAutomatic = new JButton("Mode: AUTOMATIC");
-		modeAutomatic.addActionListener(new ActionListener() {
+		MyButton modeAutomatic = new MyButton("Mode: AUTOMATIC") {
 			@Override
-			public void actionPerformed(ActionEvent e) {
+			public void doIt() {
 				new ChangeMode(EmcTaskModeType.EMC_TASK_MODE_AUTO).start();
 			}
-		});
+		};
 		machineTalkPanel.add(modeAutomatic);
 
-		JButton homeAll = new JButton("Home ALL");
-		homeAll.addActionListener(new ActionListener() {
+		MyButton homeAll = new MyButton("Home ALL") {
 			@Override
-			public void actionPerformed(ActionEvent e) {
-				try {
-					new HomeAllAxis().start();
-				} catch (Exception ex) {
-					ex.printStackTrace();
-				}
+			public void doIt() {
+				new HomeAllAxis().start();
 			}
-		});
+		};
 		machineTalkPanel.add(homeAll);
 
-		JButton unHomeAll = new JButton("UnHome ALL");
-		unHomeAll.addActionListener(new ActionListener() {
+		MyButton unHomeAll = new MyButton("UnHome ALL") {
 			@Override
-			public void actionPerformed(ActionEvent e) {
-				try {
-					new ChangeMode(EmcTaskModeType.EMC_TASK_MODE_MANUAL).start();
-					for (int i = 0; i < 4; i++) {
-						new UnHomeAxis(i).start();
-						Thread.sleep(100);
-					}
-				} catch (Exception ex) {
-					ex.printStackTrace();
-				}
+			public void doIt() {
+				new UnHomeAllAxis().start();
 			}
-		});
+		};
 		machineTalkPanel.add(unHomeAll);
 
 		final SavableText mdiCommand1 = new SavableText();
@@ -253,62 +215,39 @@ public class CommandPanel extends JPanel {
 			}
 		});
 
-		JButton uploadGCode = new JButton("Upload GC");
-		uploadGCode.addActionListener(new ActionListener() {
+		MyButton uploadGCode = new MyButton("Upload GC") {
 			@Override
-			public void actionPerformed(ActionEvent e) {
-				try {
-					new MachinekitUpload().start();
-
-				} catch (Exception ex) {
-					ex.printStackTrace();
-				}
+			public void doIt() {
+				new MachinekitUpload().start();
 			}
-		});
+		};
 		machineTalkPanel.add(uploadGCode);
-		
-		JButton openGCode = new JButton("Open GC");
-		openGCode.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				try {
-					new OpenGCode().start();
-				} catch (Exception ex) {
-					ex.printStackTrace();
-				}
-			}
-		});
-		machineTalkPanel.add(openGCode);		
 
-		JButton playGCode = new JButton("Play GC");
-		playGCode.addActionListener(new ActionListener() {
+		MyButton openGCode = new MyButton("Open GC"){
 			@Override
-			public void actionPerformed(ActionEvent e) {
-				try {
+			public void doIt() {
+					new OpenGCode().start();
+			}
+		};
+		machineTalkPanel.add(openGCode);
+
+		MyButton playGCode = new MyButton("Play GC"){
+			@Override
+			public void doIt() {
 					new PlayGCode().start();
-					BBBHalCommand.getInstance().requestDescribe();
-				} catch (Exception ex) {
-					ex.printStackTrace();
-				}
+					//BBBHalCommand.getInstance().requestDescribe();
 			}
-		});
-		machineTalkPanel.add(playGCode);		
-		
-		
-		JButton abortGCode = new JButton("Abort GCODE");
-		abortGCode.addActionListener(new ActionListener() {
+		};
+		machineTalkPanel.add(playGCode);
+
+		MyButton abortGCode = new MyButton("Abort GCODE"){
 			@Override
-			public void actionPerformed(ActionEvent e) {
-				try {
+			public void doIt() {
 					new AbortGCode().start();
-				} catch (Exception ex) {
-					ex.printStackTrace();
-				}
 			}
-		});
-		machineTalkPanel.add(abortGCode);			
-		
-		
+		};
+		machineTalkPanel.add(abortGCode);
+
 		log = new JTextArea();
 
 		JScrollPane sp = new JScrollPane(log);

@@ -7,9 +7,9 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 
-import javax.jmdns.JmDNS;
-import javax.jmdns.ServiceInfo;
 import javax.swing.SwingWorker;
 
 import org.zeromq.ZContext;
@@ -19,7 +19,6 @@ import org.zeromq.ZMQ.Socket;
 import org.zeromq.ZMsg;
 
 import com.google.protobuf.InvalidProtocolBufferException;
-import com.kz.pipeCutter.BBB.Discoverer;
 import com.kz.pipeCutter.ui.Settings;
 import com.kz.pipeCutter.ui.tab.MachinekitSettings;
 
@@ -27,6 +26,7 @@ import pb.Message;
 import pb.Message.Container;
 
 public abstract class MachineTalkCommand implements Callable<String> {
+	private static Lock lock = new ReentrantLock();
 	public Socket socket = null;
 	ZContext ctx = null;
 	public static int ticket = 0;
@@ -36,23 +36,25 @@ public abstract class MachineTalkCommand implements Callable<String> {
 
 	public abstract Container prepareContainer() throws Exception;
 
-	public MachineTalkCommand() {
-		initSocket();
+	public MachineTalkCommand() {		
 	}
 
 	@Override
 	public String call() {
 		try {
+			initSocket();
 			Container cont = prepareContainer();
 			if (cont != null) {
 				byte[] buff = cont.toByteArray();
 				String hexOutput = javax.xml.bind.DatatypeConverter.printHexBinary(buff);
 				System.out.println("Message: " + hexOutput);
 				socket.send(buff, ZMQ.DONTWAIT);
-				parseAndOutput();
+				parseAndOutput(2);
 			}
 		} catch (Exception ex) {
 			ex.printStackTrace();
+		} finally {
+			close();
 		}
 		return "ok";
 	}
@@ -65,44 +67,36 @@ public abstract class MachineTalkCommand implements Callable<String> {
 				try {
 					Future<String> future = MachineTalkCommand.this.executor.submit(MachineTalkCommand.this);
 					try {
-						future.get(20, TimeUnit.SECONDS);
+						System.out.println(Thread.currentThread().getName() + ": Lock");
+						lock.lock();
+						System.out.println(Thread.currentThread().getName() + ": Locked");
+						future.get(12, TimeUnit.SECONDS);
 					} catch (Exception e) {
 						e.printStackTrace();
-					} finally {
-						close();
 					}
 				} catch (Exception e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
+				finally
+				{
+					System.out.println(Thread.currentThread().getName() + ": UNLock");
+					lock.unlock();
+					System.out.println(Thread.currentThread().getName() + ": UNLocked");					
+				}
 
 				return null;
 			}
-			
+
 			@Override
 			protected void process(List<Void> chunks) {
 				// TODO Auto-generated method stub
 				super.process(chunks);
 			}
-			
-			
+
 		};
 		sw.execute();
 	}
-
-	// private void initSocket() {
-	// this.commandUri = Settings.getInstance().getSetting(
-	// "machinekit_commandService_url");
-	// Random rand = new Random(23424234);
-	//
-	// ctx = ContextFactory.createContext(1);
-	// //ctx = ZMQ.context(1);
-	// // Set random identity to make tracing easier
-	// String identity = String
-	// .format("%04X-%04X", rand.nextInt(), rand.nextInt());
-	// commandSocket = ctx.buildSocket(SocketType.DEALER)
-	// .withIdentity(identity.getBytes()).connect(this.commandUri);
-	// }
 
 	public synchronized void initSocket() {
 		if (ctx != null && socket != null) {
@@ -124,7 +118,12 @@ public abstract class MachineTalkCommand implements Callable<String> {
 	}
 
 	protected synchronized void parseAndOutput() throws InvalidProtocolBufferException {
+		parseAndOutput(1);
+	}
+	
+	protected synchronized void parseAndOutput(int neededReceivedMessageCount) throws InvalidProtocolBufferException {
 		System.out.println(Thread.currentThread().getName());
+		int receivedMessageCount=0;
 		while (true) {
 			// System.out.println("loop: " + i);
 			ZMsg receivedMessage = ZMsg.recvMsg(socket);
@@ -135,8 +134,11 @@ public abstract class MachineTalkCommand implements Callable<String> {
 				if (contReturned.equals(pb.Types.ContainerType.MT_PING)) {
 					MachinekitSettings.instance.pingCommand();
 				}
+				contReturned.getReplyTicket();
 				Settings.instance.log(contReturned.toString());
-				break;
+				receivedMessageCount++;
+				if(receivedMessageCount==neededReceivedMessageCount)
+					break;
 			}
 		}
 	}

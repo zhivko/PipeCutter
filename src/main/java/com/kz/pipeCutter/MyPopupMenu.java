@@ -4,17 +4,15 @@ import java.awt.MenuItem;
 import java.awt.PopupMenu;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.io.File;
-import java.io.IOException;
+import java.util.concurrent.TimeUnit;
 
-import javax.jmdns.JmDNS;
-import javax.jmdns.ServiceEvent;
-import javax.jmdns.ServiceInfo;
-import javax.jmdns.ServiceListener;
+import javax.swing.SwingUtilities;
 
 import org.jzy3d.maths.BoundingBox3d;
 import org.jzy3d.plot3d.rendering.view.modes.ViewBoundMode;
 
+import com.kz.pipeCutter.BBB.BBBStatus;
+import com.kz.pipeCutter.BBB.commands.ExecuteMdi;
 import com.kz.pipeCutter.ui.Settings;
 
 public class MyPopupMenu extends PopupMenu {
@@ -24,7 +22,7 @@ public class MyPopupMenu extends PopupMenu {
 		menuItem.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
-				
+
 				CutThread th = new CutThread(true);
 				th.execute();
 			}
@@ -56,9 +54,8 @@ public class MyPopupMenu extends PopupMenu {
 		menuItem9.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
-				SurfaceDemo.instance.canvas.getView().setBoundManual(
-						new BoundingBox3d(SurfaceDemo.instance.plasma
-								.getPosition(), SurfaceDemo.zoomBounds));
+				SurfaceDemo.instance.canvas.getView()
+						.setBoundManual(new BoundingBox3d(SurfaceDemo.instance.plasma.getPosition(), SurfaceDemo.zoomBounds));
 				SurfaceDemo.ZOOM_POINT = true;
 			}
 		});
@@ -69,8 +66,7 @@ public class MyPopupMenu extends PopupMenu {
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
 
-				SurfaceDemo.instance.canvas.getView().setBoundMode(
-						ViewBoundMode.AUTO_FIT);
+				SurfaceDemo.instance.canvas.getView().setBoundMode(ViewBoundMode.AUTO_FIT);
 				SurfaceDemo.ZOOM_POINT = false;
 			}
 		});
@@ -82,11 +78,9 @@ public class MyPopupMenu extends PopupMenu {
 		menuItem6.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
-				if (SurfaceDemo.instance.lastClickedPoint.getClass().getName()
-						.equals("com.kz.pipeCutter.MyPickablePoint")) {
-					
-					CutThread th = new CutThread(false,
-							SurfaceDemo.instance.lastClickedPoint);
+				if (SurfaceDemo.instance.lastClickedPoint.getClass().getName().equals("com.kz.pipeCutter.MyPickablePoint")) {
+
+					CutThread th = new CutThread(false, SurfaceDemo.instance.lastClickedPoint);
 					th.execute();
 				}
 			}
@@ -120,11 +114,9 @@ public class MyPopupMenu extends PopupMenu {
 		menuItem5.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
-				if (SurfaceDemo.instance.lastClickedPoint.getClass().getName()
-						.equals("com.kz.pipeCutter.MyPickablePoint")) {
-					CutThread ct = new CutThread(false,
-							SurfaceDemo.instance.lastClickedPoint);
-					
+				if (SurfaceDemo.instance.lastClickedPoint.getClass().getName().equals("com.kz.pipeCutter.MyPickablePoint")) {
+					CutThread ct = new CutThread(false, SurfaceDemo.instance.lastClickedPoint);
+
 					ct.execute();
 				}
 
@@ -142,17 +134,44 @@ public class MyPopupMenu extends PopupMenu {
 		});
 		this.addSeparator();
 		this.add(menuItem4);
-		
+
 		MenuItem menuItem11 = new MenuItem("Find BBB");
-		menuItem4.addActionListener(new ActionListener() {
+		menuItem11.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
 				SurfaceDemo.instance.discoverer.discover();
 			}
 		});
 		this.addSeparator();
-		this.add(menuItem11);		
-		
-		
+		this.add(menuItem11);
+
+		this.addSeparator();
+
+		// Gcodes for BBB
+		MenuItem menuItem12 = new MenuItem("Set point as origin - G92");
+		menuItem12.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+				SwingUtilities.invokeLater(new Runnable() {
+					@Override
+					public void run() {
+						String mdiCommand = String.format("G92 X%.3f Y%.3f Z%.3f", SurfaceDemo.instance.lastClickedPoint.xyz.x,
+								SurfaceDemo.instance.lastClickedPoint.xyz.y, SurfaceDemo.instance.lastClickedPoint.xyz.z);
+						Settings.instance.log(mdiCommand);
+						new ExecuteMdi(mdiCommand).start();
+						try {
+							TimeUnit.SECONDS.sleep(5);
+							BBBStatus.getInstance().reSubscribeMotion();
+						} catch (InterruptedException e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						}
+						
+					}
+				});
+			}
+		});
+		this.add(menuItem12);
+
 	}
 }

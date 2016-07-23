@@ -5,8 +5,8 @@ import com.google.protobuf.InvalidProtocolBufferException;
 import pb.Message.Container;
 import pb.Types.ContainerType;
 
-public class HomeAllAxis extends MachineTalkCommand {
-	public HomeAllAxis() {
+public class UnHomeAllAxis extends MachineTalkCommand {
+	public UnHomeAllAxis() {
 	}
 
 	@Override
@@ -17,13 +17,13 @@ public class HomeAllAxis extends MachineTalkCommand {
 			pb.Message.Container.Builder builder = Container.newBuilder();
 			pb.Status.EmcCommandParameters emcCommandParameter = pb.Status.EmcCommandParameters.newBuilder().setIndex(i)
 					.build();
-			builder.setType(ContainerType.MT_EMC_AXIS_HOME);
+			builder.setType(ContainerType.MT_EMC_AXIS_UNHOME);
 			builder.setEmcCommandParams(emcCommandParameter);
-			builder.setTicket(getNextTicket());
+			builder.setTicket(ticket++);
 			Container container = builder.build();
 			socket.send(container.toByteArray());
 			try {
-				parseAndOutput(2);
+				parseAndOutput();
 			} catch (InvalidProtocolBufferException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();

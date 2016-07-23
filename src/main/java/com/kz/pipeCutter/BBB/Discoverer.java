@@ -1,6 +1,7 @@
 package com.kz.pipeCutter.BBB;
 
 import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
 import java.net.Inet4Address;
 import java.net.InetAddress;
 import java.net.NetworkInterface;
@@ -18,6 +19,7 @@ import javax.jmdns.ServiceEvent;
 import javax.jmdns.ServiceInfo;
 import javax.jmdns.ServiceListener;
 import javax.jmdns.impl.JmDNSImpl;
+import javax.swing.SwingUtilities;
 import javax.swing.SwingWorker;
 
 import com.kz.pipeCutter.ui.Settings;
@@ -46,6 +48,7 @@ public class Discoverer {
 			handler.setLevel(Level.FINER);
 		}
 
+		Thread.currentThread().setName("BBBDiscoverer");
 		Settings.instance.log("Initializing discoverer...");
 
 		Enumeration<NetworkInterface> ifc;
@@ -66,17 +69,18 @@ public class Discoverer {
 					Pattern p = Pattern.compile("(.*)service(.*)");
 					Matcher m = p.matcher(arg0.getInfo().getName());
 					if (m.find() && MachinekitSettings.instance != null) {
-							MachinekitSettings.instance.machinekitServices.removeService(arg0.getInfo());
+						MachinekitSettings.instance.machinekitServices.removeService(arg0.getInfo());
 					}
 				}
 
 				@Override
 				public void serviceAdded(ServiceEvent arg0) {
-					System.out.println("+ " + arg0.getInfo().getName() + " (" + arg0.getInfo().getServer()+ " :" + arg0.getInfo().getPort() + ")");
+					System.out.println("+ " + arg0.getInfo().getName() + " (" + arg0.getInfo().getServer() + " :"
+							+ arg0.getInfo().getPort() + ")");
 					services.add(arg0.getInfo());
 					arg0.getInfo().getPort();
 					arg0.getInfo().getProtocol();
-					
+
 					Pattern p = Pattern.compile("(.*)service(.*)");
 					Matcher m = p.matcher(arg0.getInfo().getName());
 					if (m.find() && MachinekitSettings.instance != null) {
@@ -84,19 +88,52 @@ public class Discoverer {
 					}
 				}
 			};
+			boolean added =false;
+			while (ifc.hasMoreElements() && !added) {
+				final NetworkInterface anInterface = ifc.nextElement();
 
-			while (ifc.hasMoreElements()) {
-				NetworkInterface anInterface = ifc.nextElement();
 				try {
+					Thread t = new Thread(new Runnable() {
+
+						@Override
+						public void run() {
+							try {
+								SwingUtilities.invokeLater(new Runnable() {
+
+									@Override
+									public void run() {
+										Settings.instance.log("Trying " + anInterface.getDisplayName());
+									}
+								});
+							} catch (Exception e) {
+								e.printStackTrace();
+							}
+
+						}
+					});
+					t.start();
+
 					if (anInterface.isUp()) {
 						Enumeration<InetAddress> addr = anInterface.getInetAddresses();
 						while (addr.hasMoreElements()) {
 							InetAddress address = addr.nextElement();
 							// work only on inetv4 adresses
 							if (address instanceof Inet4Address && !address.equals(InetAddress.getLoopbackAddress())) {
-								Settings.instance.log("Adding bonjour listener on local IP: " + address.toString());
-								JmDNS jmdns = JmDNSImpl.create(address, bonjourServiceType);
-								jMdnsS.add(jmdns);
+
+								int k = address.toString().lastIndexOf(".");
+								String bbbIp = Settings.getInstance().getSetting("machinekit_ip");
+								int j = bbbIp.lastIndexOf(".");
+
+								String substring1 = bbbIp.substring(0, j);
+								String substring2 = address.toString().substring(1, k);
+
+								if (substring1.equals(substring2)) {
+									Settings.instance.log("Adding bonjour listener on local IP: " + address.toString());
+									JmDNS jmdns = JmDNSImpl.create(address, bonjourServiceType);
+									jMdnsS.add(jmdns);
+									added = true;
+									break;
+								}
 							}
 						}
 					}

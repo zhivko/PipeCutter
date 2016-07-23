@@ -10,8 +10,8 @@ public abstract class SSH_Command {
 	protected static ChannelExec channelExec = null;
 	protected static Session session;
 
-	public abstract void runSshCmd() throws Exception;	
-	
+	public abstract void runSshCmd() throws Exception;
+
 	public void start() {
 		// TODO Auto-generated method stub
 		Thread t = new Thread(new Runnable() {
@@ -28,33 +28,28 @@ public abstract class SSH_Command {
 		t.run();
 	}
 
+	public static void SSH_Login() throws Exception {
+		if (jsch == null || session == null || !session.isConnected()) {
+			jsch = new JSch();
+			String host = Settings.getInstance().getSetting("machinekit_host");
+			
+			String ip = Settings.getInstance().getSetting("machinekit_ip");
+			String user = Settings.getInstance().getSetting("machinekit_user");
+			String pass = Settings.getInstance().getSetting("machinekit_password");
+			Settings.instance.log("MK instance at IP: " + ip);
+			// Settings.instance.log("MK instance at host: " + host);
+			session = jsch.getSession(user, ip, 22);
+			session.setPassword(pass);
 
+			session.setConfig("StrictHostKeyChecking", "no");
+			session.setConfig("PreferredAuthentications", "publickey,keyboard-interactive,password");
+      
+			session.setServerAliveInterval(2000);
+			session.setServerAliveCountMax(Integer.MAX_VALUE);
 
-	public static void SSH_Login() {
-		try {
-			if (jsch == null || session == null || !session.isConnected()) {
-				jsch = new JSch();
-				String host = Settings.getInstance().getSetting("machinekit_host");
-				String ip = Settings.getInstance().getSetting("machinekit_ip");
-				String user = Settings.getInstance().getSetting("machinekit_user");
-				String pass = Settings.getInstance().getSetting("machinekit_password");
-				Settings.instance.log("MK instance at: " + ip);
-				session = jsch.getSession(user, ip, 22);	
-				session.setPassword(pass);
-
-				session.setConfig("StrictHostKeyChecking", "no");
-
-				session.setServerAliveInterval(2000);
-				session.setServerAliveCountMax(Integer.MAX_VALUE);
-
-				session.setOutputStream(System.out);
-				session.connect(5000); // making a connection with timeout.
-			}
-		} catch (Exception e) {
-			System.out.println(e);
+			session.setOutputStream(System.out);
+			session.connect(5000); // making a connection with timeout.
 		}
 	}
-
-
 
 }

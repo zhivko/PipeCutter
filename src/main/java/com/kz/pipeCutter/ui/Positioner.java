@@ -279,7 +279,14 @@ public class Positioner extends JPanel {
 		});
 		add(stopBtn);
 		
-		initPositioners();
+		Thread initThread = new Thread(new Runnable() {
+			@Override
+			public void run() {
+				// TODO Auto-generated method stub
+				initPositioners();
+			}
+		});
+		initThread.start();
 	}
 
 	public void makeWebsocketConnection() {

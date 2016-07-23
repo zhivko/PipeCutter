@@ -15,6 +15,7 @@ import org.zeromq.ZMQ;
 import org.zeromq.ZMQ.Socket;
 import org.zeromq.ZMsg;
 
+import com.kz.pipeCutter.ui.IHasPinDef;
 import com.kz.pipeCutter.ui.PinDef;
 import com.kz.pipeCutter.ui.SavableControl;
 import com.kz.pipeCutter.ui.Settings;
@@ -39,9 +40,9 @@ public class BBBHalRComp implements Runnable {
 	HashMap<String, PinDef> pinsByName = new HashMap<>();
 
 	HashMap<String, String> halPins = new HashMap<>();
-	
-	public boolean isBinded=false;
-	public boolean isTryingToBind=false;
+
+	public boolean isBinded = false;
+	public boolean isTryingToBind = false;
 	private long lastPingMs;
 	private Thread pingThread;
 
@@ -71,10 +72,10 @@ public class BBBHalRComp implements Runnable {
 		this.builder = Container.newBuilder();
 		builder.setType(ContainerType.MT_HALRCOMP_BIND);
 
-		List<SavableControl> savableControls = Settings.instance.getAllControls();
-		for (SavableControl savableControl : savableControls) {
-			if (savableControl.pinDef != null) {
-				String pinName = savableControl.pinDef.getPinName();
+		List<IHasPinDef> savableControls = Settings.instance.getAllPinControls();
+		for (IHasPinDef savableControl : savableControls) {
+			if (savableControl.getPin() != null) {
+				String pinName = savableControl.getPin().getPinName();
 				String compName = pinName.split("\\.")[0];
 
 				pb.Object.Component.Builder comp = null;
@@ -89,11 +90,11 @@ public class BBBHalRComp implements Runnable {
 					pin = pins.get(pinName);
 				} else {
 					pin = pb.Object.Pin.newBuilder().setName(pinName);
-					pin.setDir(savableControl.pinDef.getPinDir());
-					pin.setType(savableControl.pinDef.getPinType());
-					pin.setName(savableControl.pinDef.getPinName());
+					pin.setDir(savableControl.getPin().getPinDir());
+					pin.setType(savableControl.getPin().getPinType());
+					pin.setName(savableControl.getPin().getPinName());
 					pins.put(pin.getName(), pin);
-					pinsByName.put(pin.getName(), savableControl.pinDef);
+					pinsByName.put(pin.getName(), savableControl.getPin());
 				}
 				comp.addPin(pin);
 			}
@@ -212,7 +213,7 @@ public class BBBHalRComp implements Runnable {
 					e.printStackTrace();
 				}
 			}
-		}		
+		}
 
 		this.halRCompUri = Settings.getInstance().getSetting("machinekit_halRCompService_url");
 		ctx = new ZContext(2);
@@ -223,8 +224,8 @@ public class BBBHalRComp implements Runnable {
 		String identity = String.format("%04X-%04X", rand.nextInt(), rand.nextInt());
 
 		socket.setIdentity(identity.getBytes(ZMQ.CHARSET));
-		//socket.setReceiveTimeOut(1000);
-		//socket.setRcvHWM(10000);
+		// socket.setReceiveTimeOut(1000);
+		// socket.setRcvHWM(10000);
 		socket.connect(this.halRCompUri);
 
 		readThread = new Thread(this);
@@ -271,7 +272,7 @@ public class BBBHalRComp implements Runnable {
 	}
 
 	public void startBind() {
-		this.isTryingToBind=true;
+		this.isTryingToBind = true;
 		Container container = this.builder.build();
 		byte[] buff = container.toByteArray();
 		String hexOutput = javax.xml.bind.DatatypeConverter.printHexBinary(buff);
@@ -280,23 +281,53 @@ public class BBBHalRComp implements Runnable {
 	}
 
 	public void subcribe() {
-		List<SavableControl> savableControls = Settings.instance.getAllControls();
-		for (SavableControl savableControl : savableControls) {
-			if (savableControl.pinDef != null) {
-				String compName = savableControl.pinDef.getPinName().split("\\.")[0];
+		List<IHasPinDef> savableControls = Settings.instance.getAllPinControls();
+		for (IHasPinDef savableControl : savableControls) {
+			if (savableControl.getPin() != null) {
+				String compName = savableControl.getPin().getPinName().split("\\.")[0];
 				String subscription = Character.toString((char) 1) + compName;
 				socket.send(subscription.getBytes());
 			}
 		}
 	}
 
-
-	public boolean isAlive()
-	{
-		if(this.lastPingMs!=0)
-			return (System.currentTimeMillis()-this.lastPingMs > 1000);
+	public boolean isAlive() {
+		if (this.lastPingMs != 0)
+			return (System.currentTimeMillis() - this.lastPingMs > 1000);
 		else
 			return false;
 	}
-	
+
+	private void prepareUpdateContainer() {
+		this.builder = Container.newBuilder();
+		builder.setType(ContainerType.MT_HALRCOMP_SET);
+
+		List<IHasPinDef> savableControls = Settings.instance.getAllPinControls();
+		for (IHasPinDef savableControl : savableControls) {
+			if (savableControl.getPin() != null) {
+				String pinName = savableControl.getPin().getPinName();
+				String compName = pinName.split("\\.")[0];
+
+				pb.Object.Component.Builder comp = null;
+				if (components.containsKey(compName)) {
+					comp = components.get(compName);
+				} else {
+					comp = pb.Object.Component.newBuilder().setName(compName);
+					components.put(compName, comp);
+				}
+				pb.Object.Pin.Builder pin = null;
+				if (pins.containsKey(pinName)) {
+					pin = pins.get(pinName);
+				} else {
+					pin = pb.Object.Pin.newBuilder().setName(pinName);
+					pin.setDir(savableControl.getPin().getPinDir());
+					pin.setType(savableControl.getPin().getPinType());
+					pin.setName(savableControl.getPin().getPinName());
+					pins.put(pin.getName(), pin);
+					pinsByName.put(pin.getName(), savableControl.getPin());
+				}
+				comp.addPin(pin);
+			}
+		}
+	}
 }

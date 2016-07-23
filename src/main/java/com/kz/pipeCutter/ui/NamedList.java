@@ -142,7 +142,6 @@ public class NamedList extends JPanel implements IParameter, IHasLabel {
 	}
 
 	public void addService(final ServiceInfo serviceInfo) {
-
 		getCommandServiceUrl(serviceInfo);
 		getErrorServiceUrl(serviceInfo);
 		getStatusServiceUrl(serviceInfo);

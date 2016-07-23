@@ -93,6 +93,9 @@ sudo sysctl -w net.ipv4.ip_forward=1
 sudo /etc/init.d/procps restart
 ```
 
+**Internet sharing on windows**
+Follow: http://lanceme.blogspot.hr/2013/06/windows-7-internet-sharing-for.html
+
 ##Back-up BBB
 http://elinux.org/BeagleBone_Black_Extracting_eMMC_contents
 ##BBB becomes unresponsive

@@ -19,16 +19,13 @@ import javax.swing.event.DocumentListener;
 import java.awt.FlowLayout;
 
 @SuppressWarnings("serial")
-public abstract class SavableControl extends JPanel implements IParameter, ISaveableAndLoadable {
+public abstract class SavableControl extends JPanel implements IParameter, ISaveableAndLoadable, IHasPinDef {
 
 	private String parId;
 	public String iniFullFileName;
 	private String labelTxt;
-	public PinDef pinDef;
 
-	public void setPin(PinDef pinDef) {
-		this.pinDef = pinDef;
-	}
+	PinDef pinDef=null;
 
 	public JLabel jLabel;
 	boolean needsSave = true;
@@ -128,5 +125,13 @@ public abstract class SavableControl extends JPanel implements IParameter, ISave
 	public abstract String getParValue();
 
 	public abstract void valueChangedFromUI();
+
+	public void setPin(PinDef pinDef) {
+		this.pinDef = pinDef;
+	}
+	
+	public PinDef getPin() {
+		return this.pinDef;
+	}
 	
 }

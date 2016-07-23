@@ -69,7 +69,7 @@ public class SurfaceDemo extends AbstractAnalysis {
 	MyTelnetClient smoothie;
 	// private Cylinder cylinder = null;
 	Sphere plasma = null;
-	MyPickablePoint lastClickedPoint;
+	public MyPickablePoint lastClickedPoint;
 	String angleTxt = "0";
 	public static SurfaceDemo instance;
 	public MyComposite myComposite;
@@ -223,7 +223,7 @@ public class SurfaceDemo extends AbstractAnalysis {
 			@Override
 			public void componentResized(ComponentEvent evt) {
 				Component c = (Component) evt.getSource();
-				System.out.println(c.getName() + " resized: " + c.getSize().toString());
+				//System.out.println(c.getName() + " resized: " + c.getSize().toString());
 				if (c.getName().equals("frame0")) {
 					try {
 						FileInputStream in = new FileInputStream(Settings.iniFullFileName);
@@ -343,10 +343,11 @@ public class SurfaceDemo extends AbstractAnalysis {
 		try {
 
 			System.out.println("Creating chart! Thread: " + Thread.currentThread().getName());
-			smoothie = new MyTelnetClient(SmoothieUploader.smoothieIP, SmoothieUploader.smoothieRemotePort);
+			//smoothie = new MyTelnetClient(SmoothieUploader.smoothieIP, SmoothieUploader.smoothieRemotePort);
 			// Create a chart
 			chart = AWTChartComponentFactory.chart(Quality.Advanced, getCanvasType());
 			canvas = (CanvasAWT) chart.getCanvas();
+			System.out.println("Creating chart! Thread: " + Thread.currentThread().getName() + "... DONE.");
 
 			// chart = newt SwingChartComponentFactory.chart(Quality.Advanced);
 			// chart.getView().setMaximized(true);
@@ -810,9 +811,10 @@ public class SurfaceDemo extends AbstractAnalysis {
 	}
 
 	public void move(MyPickablePoint tempPoint, boolean cut, float offset, boolean writeToGCode) {
-		// if (cylinder == null) {
+		if (plasma == null) {
 		// cylinder = new Cylinder(tempPoint);
-
+			getPlasma();
+		}
 		// }
 		// cylinder.move(tempPoint);
 		if (cylinderPoint == null)
@@ -825,8 +827,8 @@ public class SurfaceDemo extends AbstractAnalysis {
 			plasma.setColor(Color.BLUE);
 			plasma.setWireframeColor(Color.BLUE);
 		}
-
 		cylinderPoint.setCoord(tempPoint.xyz);
+		
 		Coord3d offsetedPoint = cylinderPoint.xyz.add(new Coord3d(0, 0, offset));
 		plasma.setPosition(offsetedPoint);
 

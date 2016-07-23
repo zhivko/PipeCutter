@@ -18,6 +18,7 @@ import org.zeromq.ZMsg;
 import com.jcraft.jsch.ChannelExec;
 import com.kz.pipeCutter.MyPickablePoint;
 import com.kz.pipeCutter.SurfaceDemo;
+import com.kz.pipeCutter.BBB.commands.MachineTalkCommand;
 import com.kz.pipeCutter.ui.Settings;
 import com.kz.pipeCutter.ui.tab.GcodeViewer;
 import com.kz.pipeCutter.ui.tab.MachinekitSettings;
@@ -25,6 +26,7 @@ import com.kz.pipeCutter.ui.tab.MachinekitSettings;
 import pb.Message;
 import pb.Message.Container;
 import pb.Status.EmcStatusMotionAxis;
+import pb.Status.EmcTaskExecStateType;
 import pb.Types.ContainerType;
 
 public class BBBStatus implements Runnable {
@@ -81,40 +83,33 @@ public class BBBStatus implements Runnable {
 								&& !messageType.equals("interp")) {
 
 							contReturned = Message.Container.parseFrom(returnedBytes);
-							if (contReturned.getType().equals(ContainerType.MT_EMCSTAT_FULL_UPDATE)
-									|| contReturned.getType().equals(ContainerType.MT_EMCSTAT_INCREMENTAL_UPDATE)) {
+							if ((contReturned.getType().equals(ContainerType.MT_EMCSTAT_FULL_UPDATE)
+									|| contReturned.getType().equals(ContainerType.MT_EMCSTAT_INCREMENTAL_UPDATE))) {
 
-								Iterator<EmcStatusMotionAxis> itAxis = contReturned.getEmcStatusMotion().getAxisList().iterator();
-								while (itAxis.hasNext()) {
-									EmcStatusMotionAxis axis = itAxis.next();
-									int index = axis.getIndex();
-									switch (index) {
-									case 0:
+								if (contReturned.getEmcStatusMotion().hasActualPosition()) {
+									if (contReturned.getEmcStatusMotion().getActualPosition().hasX()) {
 										x = contReturned.getEmcStatusMotion().getActualPosition().getX();
 										Settings.instance.setSetting("position_x", x);
-										break;
-									case 1:
+									}
+									if (contReturned.getEmcStatusMotion().getActualPosition().hasY()) {
 										y = contReturned.getEmcStatusMotion().getActualPosition().getY();
 										Settings.instance.setSetting("position_y", y);
-										break;
-									case 2:
+									}
+									if (contReturned.getEmcStatusMotion().getActualPosition().hasZ()) {
 										z = contReturned.getEmcStatusMotion().getActualPosition().getZ();
 										Settings.instance.setSetting("position_z", z);
-										break;
-									case 3:
+									}
+									if (contReturned.getEmcStatusMotion().getActualPosition().hasA()) {
 										a = contReturned.getEmcStatusMotion().getActualPosition().getA();
 										Settings.instance.setSetting("position_a", a);
-										break;
-									case 4:
+									}
+									if (contReturned.getEmcStatusMotion().getActualPosition().hasB()) {
 										b = contReturned.getEmcStatusMotion().getActualPosition().getB();
 										Settings.instance.setSetting("position_b", b);
-										break;
-									case 5:
+									}
+									if (contReturned.getEmcStatusMotion().getActualPosition().hasC()) {
 										c = contReturned.getEmcStatusMotion().getActualPosition().getC();
 										Settings.instance.setSetting("position_c", c);
-										break;
-									default:
-										break;
 									}
 								}
 
@@ -147,14 +142,7 @@ public class BBBStatus implements Runnable {
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
-			// try {
-			// TimeUnit.MILLISECONDS.sleep(200);
-			// } catch (InterruptedException e) {
-			// // TODO Auto-generated catch block
-			// e.printStackTrace();
-			// }
 		}
-
 	}
 
 	public void initSocket() {
@@ -173,14 +161,14 @@ public class BBBStatus implements Runnable {
 			pingThread.interrupt();
 			while (pingThread.isAlive()) {
 				try {
-					TimeUnit.MILLISECONDS.sleep(500);
+					TimeUnit.MILLISECONDS.sleep(2000);
 				} catch (InterruptedException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
 			}
 		}
-		
+
 		if (ctx != null && socket != null) {
 			socket.close();
 			ctx.close();
@@ -198,11 +186,11 @@ public class BBBStatus implements Runnable {
 		socket.setIdentity(identity.getBytes(ZMQ.CHARSET));
 		socket.subscribe("motion".getBytes(ZMQ.CHARSET));
 		socket.subscribe("task".getBytes(ZMQ.CHARSET));
-		// socket.subscribe("io".getBytes(ZMQ.CHARSET));
+		socket.subscribe("io".getBytes(ZMQ.CHARSET));
 		socket.subscribe("interp".getBytes(ZMQ.CHARSET));
-		//socket.setHWM(10000);
-		//socket.setReceiveTimeOut(200);
-		//socket.setSendTimeOut(200);
+		// socket.setHWM(10000);
+		// socket.setReceiveTimeOut(200);
+		// socket.setSendTimeOut(200);
 		socket.connect(this.uri);
 
 		readThread = new Thread(this);
@@ -210,12 +198,16 @@ public class BBBStatus implements Runnable {
 		readThread.start();
 	}
 
-	
-	public boolean isAlive()
-	{
-		if(this.lastPingMs!=0)
-			return (System.currentTimeMillis()-this.lastPingMs > 1000);
+	public boolean isAlive() {
+		if (this.lastPingMs != 0)
+			return (System.currentTimeMillis() - this.lastPingMs > 1000);
 		else
 			return false;
 	}
+
+	public void reSubscribeMotion() {
+		socket.unsubscribe("motion".getBytes(ZMQ.CHARSET));
+		socket.subscribe("motion".getBytes(ZMQ.CHARSET));
+	}
+
 }

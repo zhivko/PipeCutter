@@ -39,6 +39,7 @@ import com.kz.pipeCutter.BBB.commands.PlayGCodeFromLine;
 import com.kz.pipeCutter.BBB.commands.ResumeGCode;
 import com.kz.pipeCutter.BBB.commands.StepGCode;
 import com.kz.pipeCutter.ui.LineNumberView;
+import com.kz.pipeCutter.ui.MyButton;
 import com.kz.pipeCutter.ui.MyVerticalFlowLayout;
 import com.kz.pipeCutter.ui.PinDef;
 import com.kz.pipeCutter.ui.SavableText;
@@ -63,7 +64,8 @@ public class GcodeViewer extends JPanel {
 	private String fileName;
 
 	Thread refreshThread;
-	private SavableText spindleOn;
+	// private SavableText spindleOn;
+	private MyButton spindleOn;
 
 	public GcodeViewer() {
 		super();
@@ -87,10 +89,9 @@ public class GcodeViewer extends JPanel {
 
 		this.add(buttonPanel);
 
-		JButton buttonOpen = new JButton("Open GCode");
-		buttonOpen.addActionListener(new ActionListener() {
+		MyButton buttonOpen = new MyButton("Open GCode") {
 			@Override
-			public void actionPerformed(ActionEvent e) {
+			public void doIt() {
 				// TODO Auto-generated method stub
 				try {
 					new AbortGCode().start();
@@ -102,12 +103,11 @@ public class GcodeViewer extends JPanel {
 				} catch (Exception e1) {
 					e1.printStackTrace();
 				}
-
 			}
-		});
+		};
 		buttonPanel.add(buttonOpen);
 
-		JButton buttonPrevious = new JButton("Previous");
+		JButton buttonPrevious = new MyButton("Previous");
 		buttonPrevious.addActionListener(new ActionListener() {
 
 			@Override
@@ -175,19 +175,20 @@ public class GcodeViewer extends JPanel {
 		currentLine.setParValue("1");
 		currentLine.setPin(new PinDef("mymotion.program-line", HalPinDirection.HAL_IN, ValueType.HAL_S32));
 		buttonPanel.add(currentLine);
-		
-		
-		spindleOn = new SavableText();
-		spindleOn.setLabelTxt("Spindle:");
-		spindleOn.preventResize = true;
-		spindleOn.jValue.setColumns(3);
-		spindleOn.setNeedsSave(false);
+
+		spindleOn = new MyButton("Spindle") {
+			@Override
+			public void doIt() {
+				// TODO Auto-generated method stub
+				super.doIt();
+				
+			}			
+		};
 		spindleOn.setParValue("0");
 		spindleOn.setPin(new PinDef("mymotion.spindle-on", HalPinDirection.HAL_IN, ValueType.HAL_BIT));
 		buttonPanel.add(spindleOn);
-		
 
-		JButton buttonNext = new JButton("Next");
+		MyButton buttonNext = new MyButton("Next");
 		buttonNext.addActionListener(new ActionListener() {
 
 			@Override
@@ -199,10 +200,9 @@ public class GcodeViewer extends JPanel {
 
 		buttonPanel.add(buttonNext);
 
-		JButton runLine = new JButton("runLine");
-		runLine.addActionListener(new ActionListener() {
+		MyButton runLine = new MyButton("runLine") {
 			@Override
-			public void actionPerformed(ActionEvent e) {
+			public void doIt() {
 				final int lineNumber = Integer.valueOf(currentLine.getParValue());
 				new Thread(new Runnable() {
 					public void run() {
@@ -211,13 +211,12 @@ public class GcodeViewer extends JPanel {
 				}).run();
 
 			}
-		});
+		};
 		buttonPanel.add(runLine);
 
-		JButton resume = new JButton("resume");
-		resume.addActionListener(new ActionListener() {
+		MyButton resume = new MyButton("resume") {
 			@Override
-			public void actionPerformed(ActionEvent e) {
+			public void doIt() {
 				new Thread(new Runnable() {
 					public void run() {
 						new ResumeGCode().start();
@@ -225,13 +224,12 @@ public class GcodeViewer extends JPanel {
 				}).run();
 
 			}
-		});
+		};
 		buttonPanel.add(resume);
 
-		JButton pause = new JButton("pause");
-		pause.addActionListener(new ActionListener() {
+		MyButton pause = new MyButton("pause") {
 			@Override
-			public void actionPerformed(ActionEvent e) {
+			public void doIt() {
 				new Thread(new Runnable() {
 					public void run() {
 						new PauseGCode().start();
@@ -239,13 +237,12 @@ public class GcodeViewer extends JPanel {
 				}).run();
 
 			}
-		});
+		};
 		buttonPanel.add(pause);
 
-		JButton stepGCode = new JButton("Step gcode");
-		stepGCode.addActionListener(new ActionListener() {
+		MyButton stepGCode = new MyButton("Step gcode") {
 			@Override
-			public void actionPerformed(ActionEvent e) {
+			public void doIt() {
 				new Thread(new Runnable() {
 					public void run() {
 						new StepGCode().start();
@@ -253,7 +250,7 @@ public class GcodeViewer extends JPanel {
 				}).run();
 
 			}
-		});
+		};
 		buttonPanel.add(stepGCode);
 
 		this.addComponentListener(new ComponentListener() {
@@ -376,6 +373,7 @@ public class GcodeViewer extends JPanel {
 			});
 		}
 	}
+
 	public void setPlasmaOn(boolean on) {
 		if (this.plasmaOn != on) {
 			this.plasmaOn = on;
@@ -387,5 +385,5 @@ public class GcodeViewer extends JPanel {
 				}
 			});
 		}
-	}	
+	}
 }

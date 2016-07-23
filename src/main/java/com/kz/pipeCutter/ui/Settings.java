@@ -16,6 +16,8 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
 import java.text.SimpleDateFormat;
@@ -26,6 +28,8 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
 import java.util.Properties;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import javax.swing.JFrame;
 import javax.swing.JPanel;
@@ -57,7 +61,7 @@ public class Settings extends JFrame {
 	public static BBBStatus status;
 	public static BBBHalCommand halCmd;
 	public static BBBHalRComp halRComp;
-	
+
 	public JSplitPane splitPane;
 	CommandPanel commandPanel;
 
@@ -69,7 +73,7 @@ public class Settings extends JFrame {
 	public static void main(String[] args) {
 
 		StdOutErrLog.tieSystemOutAndErrToLog();
-		
+
 		System.setProperty("java.net.preferIPv4Stack", "true");
 		Settings frame = Settings.getInstance();
 		frame.addComponentListener(new ComponentAdapter() {
@@ -87,33 +91,32 @@ public class Settings extends JFrame {
 	}
 
 	public void initErrorService() {
-		if(error==null)
+		if (error == null)
 			error = new BBBError();
 		else
 			error.initSocket();
 	}
 
 	public void initStatusService() {
-		if(status==null)
+		if (status == null)
 			status = new BBBStatus();
 		else
 			status.initSocket();
 	}
-	
+
 	public void initHalCmdService() {
-		if(halCmd == null)
+		if (halCmd == null)
 			halCmd = new BBBHalCommand();
 		else
 			halCmd.initSocket();
 	}
 
 	public void initHalRcompService() {
-		if(halRComp==null)
+		if (halRComp == null)
 			halRComp = new BBBHalRComp();
 		else
 			halRComp.initSocket();
-	}	
-	
+	}
 
 	/**
 	 * Create the frame.
@@ -145,29 +148,29 @@ public class Settings extends JFrame {
 		contentPane.add(splitPane, BorderLayout.NORTH);
 		splitPane.setDividerLocation(490);
 		splitPane.addComponentListener(new ComponentListener() {
-			
+
 			@Override
 			public void componentShown(ComponentEvent e) {
 				// TODO Auto-generated method stub
-				
+
 			}
-			
+
 			@Override
 			public void componentResized(ComponentEvent e) {
 				// TODO Auto-generated method stub
-				
+
 			}
-			
+
 			@Override
 			public void componentMoved(ComponentEvent e) {
 				// TODO Auto-generated method stub
-				
+
 			}
-			
+
 			@Override
 			public void componentHidden(ComponentEvent e) {
 				// TODO Auto-generated method stub
-				
+
 			}
 		});
 
@@ -183,7 +186,7 @@ public class Settings extends JFrame {
 		this.addComponentListener(new ComponentAdapter() {
 			public void componentResized(ComponentEvent evt) {
 				Component c = (Component) evt.getSource();
-				System.out.println(c.getName() + " resized: " + c.getSize().toString());
+				//System.out.println(c.getName() + " resized: " + c.getSize().toString());
 				if (c.getName().equals("frame0") && repositioned) {
 					try {
 						FileInputStream in = new FileInputStream(Settings.iniFullFileName);
@@ -191,10 +194,8 @@ public class Settings extends JFrame {
 						props.load(in);
 						in.close();
 
-						FileOutputStream out = new FileOutputStream(
-								Settings.iniFullFileName);
-						props.setProperty("frame0", c.getSize().getWidth() + "x"
-								+ c.getSize().getHeight());
+						FileOutputStream out = new FileOutputStream(Settings.iniFullFileName);
+						props.setProperty("frame0", c.getSize().getWidth() + "x" + c.getSize().getHeight());
 						props.store(out, null);
 						out.close();
 
@@ -213,7 +214,7 @@ public class Settings extends JFrame {
 				if (repositioned) {
 					Component c = (Component) evt.getSource();
 					Point currentLocationOnScreen = c.getLocationOnScreen();
-					//System.out.println("frame moved.");
+					// System.out.println("frame moved.");
 					FileInputStream in;
 					try {
 						in = new FileInputStream(Settings.iniFullFileName);
@@ -222,10 +223,9 @@ public class Settings extends JFrame {
 						props.load(in);
 						in.close();
 
-						FileOutputStream out = new FileOutputStream(
-								Settings.iniFullFileName);
-						props.setProperty("frame0_location", String.format("%.0fx%.0f",
-								currentLocationOnScreen.getX(), currentLocationOnScreen.getY()));
+						FileOutputStream out = new FileOutputStream(Settings.iniFullFileName);
+						props.setProperty("frame0_location",
+								String.format("%.0fx%.0f", currentLocationOnScreen.getX(), currentLocationOnScreen.getY()));
 						props.store(out, null);
 						out.close();
 					} catch (Exception e) {
@@ -252,16 +252,14 @@ public class Settings extends JFrame {
 						try {
 							String[] splittedSize = size.split("x");
 							System.out.println(size);
-							Settings.this.setMinimumSize(new Dimension(Double.valueOf(
-									splittedSize[0]).intValue(), Double.valueOf(splittedSize[1])
-									.intValue()));
+							Settings.this.setMinimumSize(new Dimension(Double.valueOf(splittedSize[0]).intValue(),
+									Double.valueOf(splittedSize[1]).intValue()));
 
 							// MachinekitSettings.instance.machinekitServices.setPreferredSize(new
 							// Dimension(200,200));
 							Settings.instance.pack();
 							Settings.instance.repaint();
-							SavableText c = (SavableText) Settings.instance
-									.getParameter("machinekit_commandService_url");
+							SavableText c = (SavableText) Settings.instance.getParameter("machinekit_commandService_url");
 							System.out.println(c.jValue.getSize());
 
 						} catch (Exception ex) {
@@ -276,8 +274,7 @@ public class Settings extends JFrame {
 						try {
 							String[] splittedSize = location_str.split("x");
 							System.out.println(location_str);
-							Settings.this.setLocation(new Point(Integer
-									.valueOf(splittedSize[0]), Integer.valueOf(splittedSize[1])));
+							Settings.this.setLocation(new Point(Integer.valueOf(splittedSize[0]), Integer.valueOf(splittedSize[1])));
 						} catch (Exception ex) {
 							ex.printStackTrace();
 						}
@@ -292,6 +289,8 @@ public class Settings extends JFrame {
 							initStatusService();
 							initHalCmdService();
 							initHalRcompService();
+
+							Settings.instance.pingBBB();
 						}
 					});
 
@@ -302,10 +301,24 @@ public class Settings extends JFrame {
 					repositioned = true;
 				}
 			}
+
 		});
 
 		this.setVisible(true);
 		this.pack();
+
+	}
+
+	protected void pingBBB() {
+		InetAddress address;
+		try {
+			String machinekitHost = Settings.getInstance().getSetting("machinekit_host");
+			address = InetAddress.getByName(machinekitHost);
+			Settings.getInstance().setSetting("machinekit_ip", address.getHostAddress());
+		} catch (UnknownHostException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 
 	}
 
@@ -351,8 +364,7 @@ public class Settings extends JFrame {
 
 	public void setSetting(String parameterId, String value) {
 		try {
-			List<SavableControl> savableControls = harvestMatches(
-					Settings.instance.getContentPane(), SavableControl.class);
+			List<SavableControl> savableControls = harvestMatches(Settings.instance.getContentPane(), SavableControl.class);
 			for (SavableControl savableControl : savableControls) {
 				if (savableControl.getParId().equals(parameterId)) {
 					savableControl.setParValue(value);
@@ -378,11 +390,10 @@ public class Settings extends JFrame {
 
 	public IParameter getParameter(String parameterId) {
 		IParameter ret = null;
-		List<SavableControl> savableControls = harvestMatches(
-				this.getContentPane(), SavableControl.class);
+		List<SavableControl> savableControls = harvestMatches(this.getContentPane(), SavableControl.class);
 		for (SavableControl savableControl : savableControls) {
 			System.out.println("control  id:" + savableControl.getParId());
-			if (savableControl.getParId()!=null && savableControl.getParId().equals(parameterId)) {
+			if (savableControl.getParId() != null && savableControl.getParId().equals(parameterId)) {
 				ret = savableControl;
 				break;
 			}
@@ -401,8 +412,7 @@ public class Settings extends JFrame {
 		return null;
 	}
 
-	public static <T extends Component> List<T> harvestMatches(Container root,
-			Class<T> clazz) {
+	public static <T extends Component> List<T> harvestMatches(Container root, Class<T> clazz) {
 		List<Container> containers = new LinkedList<>();
 		List<T> harvested = new ArrayList<>();
 
@@ -420,6 +430,25 @@ public class Settings extends JFrame {
 		return Collections.unmodifiableList(harvested);
 	}
 
+	public static List harvestSupportsInterface(Container root, Class clazz) {
+		List<Container> containers = new LinkedList<>();
+		List harvested = new ArrayList<>();
+
+		containers.add(root);
+		while (!containers.isEmpty()) {
+			Container container = containers.remove(0);
+			for (Component component : container.getComponents()) {
+				if (clazz.isInstance(component)) {
+					harvested.add(component);
+				} else if (component instanceof Container) {
+					containers.add((Container) component);
+				}
+			}
+		}
+		return Collections.unmodifiableList(harvested);
+	}
+	
+	
 	public static Settings getInstance() {
 		if (instance == null)
 			instance = new Settings();
@@ -428,16 +457,28 @@ public class Settings extends JFrame {
 
 	public void log(String txt) {
 		System.out.println(txt);
-		txt = txt.replaceAll("reply_ticket: (.*)\n", "");
+		String txtOut = "";
+		String patternString = "type:\\s(.+)\\sreply_ticket:\\s(.+)\\s";
+		Pattern pattern = Pattern.compile(patternString);
+		Matcher matcher = pattern.matcher(txt);
+		if (matcher.find())
+			txtOut = matcher.group(1) + "("  + matcher.group(2) + ")";
+		else
+			txtOut = txt;
+
 		SimpleDateFormat sdf = new SimpleDateFormat("HH:mm:ss");
-		String logTxt = sdf.format(new Date()) + " " + txt;
+		String logTxt = sdf.format(new Date()) + " " + txtOut;
 		commandPanel.log.append(logTxt + "\n");
 		commandPanel.log.setCaretPosition(commandPanel.log.getText().length());
 	}
-	
+
 	public List<SavableControl> getAllControls() {
-		List<SavableControl> savableControls = harvestMatches(
-				Settings.instance.getContentPane(), SavableControl.class);
+		List<SavableControl> savableControls = harvestMatches(Settings.instance.getContentPane(), SavableControl.class);
 		return savableControls;
 	}
+	
+	public List<IHasPinDef> getAllPinControls() {
+		List<IHasPinDef> savableControls = harvestSupportsInterface(Settings.instance.getContentPane(), IHasPinDef.class);
+		return savableControls;
+	}	
 }

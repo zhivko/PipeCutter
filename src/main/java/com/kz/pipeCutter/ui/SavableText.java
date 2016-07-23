@@ -77,4 +77,10 @@ public class SavableText extends SavableControl {
 		}
 	}
 
+	@Override
+	public PinDef getPin() {
+		// TODO Auto-generated method stub
+		return pinDef;
+	}
+
 }

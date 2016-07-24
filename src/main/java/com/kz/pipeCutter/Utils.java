@@ -275,7 +275,8 @@ public class Utils {
 		ArrayList<Coord3d> alCrossPoints2 = Utils.CalculateLineLineIntersection(a2, b2, c2, d2);
 
 		// calculate edge surfaces
-		List<MySurface> surfacesSortedByCenterY = new ArrayList<MySurface>(SurfaceDemo.instance.utils.surfaces.values());
+		List<MySurface> surfacesSortedByCenterY = new ArrayList<MySurface>(
+				SurfaceDemo.instance.utils.surfaces.values());
 		Collections.sort(surfacesSortedByCenterY, new MySurfaceYComparator());
 		MySurface rightMostSurf = surfacesSortedByCenterY.get(0);
 		MySurface leftMostSurf = surfacesSortedByCenterY.get(surfacesSortedByCenterY.size() - 1);
@@ -486,7 +487,8 @@ public class Utils {
 		continuousEdges = new ConcurrentHashMap<Integer, MyContinuousEdge>();
 		for (MyPickablePoint point : points.values()) {
 			if (point.continuousEdgeNo == -1) {
-				ArrayList<MyPickablePoint> pointsOfEdgeAl = findAllConnectedPoints(point, new ArrayList<MyPickablePoint>());
+				ArrayList<MyPickablePoint> pointsOfEdgeAl = findAllConnectedPoints(point,
+						new ArrayList<MyPickablePoint>());
 				MyContinuousEdge edge = new MyContinuousEdge(edgeNo, -1);
 				for (MyPickablePoint edgePoint : pointsOfEdgeAl) {
 					edge.addPoint(edgePoint.id);
@@ -576,7 +578,7 @@ public class Utils {
 					prevPrevIndex = prevIndex - 1;
 				MyPickablePoint prevPrevPoint = continuousEdge.getPointByIndex(prevPrevIndex);
 				System.out.println("prevprevpoint=" + prevPrevPoint.id);
-				Plane plane = getPlaneForPoint(prevPoint);
+				Plane plane = getPlaneForMiddlePoint(prevPoint);
 
 				Vector3D vecPrevPrevPoint = new Vector3D(prevPrevPoint.xyz.x, prevPrevPoint.xyz.y, prevPrevPoint.xyz.z);
 				Vector3D vecA = vecPoint.subtract(vecPrevPoint);
@@ -602,6 +604,7 @@ public class Utils {
 
 	public Plane getPlaneForPoint(MyPickablePoint point)
 			throws org.apache.commons.math3.exception.MathArithmeticException {
+		Plane plane = null;
 		MyEdge continuousEdge = continuousEdges.get(point.continuousEdgeNo);
 
 		int index = continuousEdge.points.indexOf(point.id);
@@ -626,7 +629,47 @@ public class Utils {
 		Vector3D vecPrevPoint = new Vector3D(prevPoint.xyz.x, prevPoint.xyz.y, prevPoint.xyz.z);
 		Vector3D vecNextPoint = new Vector3D(nextPoint.xyz.x, nextPoint.xyz.y, nextPoint.xyz.z);
 		Vector3D vecPoint = new Vector3D(point.xyz.x, point.xyz.y, point.xyz.z);
-		Plane plane = new Plane(vecPoint, vecPrevPoint, vecNextPoint, 0.0001);
+		plane = new Plane(vecPoint, vecPrevPoint, vecNextPoint, 0.0001);
 		return plane;
 	}
+
+	public Plane getPlaneForMiddlePoint(MyPickablePoint point)
+			throws org.apache.commons.math3.exception.MathArithmeticException {
+		Plane plane = null;
+		MyEdge continuousEdge = continuousEdges.get(point.continuousEdgeNo);
+
+		while (plane == null) {
+			int index = continuousEdge.points.indexOf(point.id);
+			int prevIndex = -1;
+			int nextIndex = -1;
+
+			if (index == 0)
+				prevIndex = continuousEdge.points.size() - 1;
+			else
+				prevIndex = index - 1;
+
+			if (index == continuousEdge.points.size() - 1)
+				nextIndex = 0;
+			else
+				nextIndex = index + 1;
+
+			MyPickablePoint prevPoint = continuousEdge.getPointByIndex(prevIndex);
+			MyPickablePoint nextPoint = continuousEdge.getPointByIndex(nextIndex);
+			try {
+				System.out.println(prevPoint.id + " " + point.id + " " + nextPoint.id);
+
+				Vector3D centerVec = new Vector3D(continuousEdge.center.x, continuousEdge.center.y,
+						continuousEdge.center.z);
+				Vector3D vecPrevPoint = new Vector3D(prevPoint.xyz.x, prevPoint.xyz.y, prevPoint.xyz.z);
+				Vector3D vecNextPoint = new Vector3D(nextPoint.xyz.x, nextPoint.xyz.y, nextPoint.xyz.z);
+				Vector3D vecPoint = new Vector3D(point.xyz.x, point.xyz.y, point.xyz.z);
+				plane = new Plane(vecPoint, vecPrevPoint, vecNextPoint, 0.0001);
+			} catch (Exception ex) {
+				System.out.println(ex.getMessage());
+				point = prevPoint;
+			}
+		}
+		return plane;
+	}
+
 }

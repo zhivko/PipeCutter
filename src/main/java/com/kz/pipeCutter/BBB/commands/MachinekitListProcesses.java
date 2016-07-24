@@ -9,7 +9,7 @@ public class MachinekitListProcesses extends SSH_Command {
 
 	@Override
 	public void runSshCmd() throws Exception {
-		String command = "ps -aux | grep CRAMPS.ini";
+		String command = "ps -aux | grep 'CRAMPS.ini\\|rtapi\\|msgd\\|haltalk\\|halcmd\\|hal_temp_bbb'";
 		channelExec = (ChannelExec) session.openChannel("exec");
 		channelExec.setCommand(command);
 		MyOutputStreamReader myOut = new MyOutputStreamReader();

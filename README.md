@@ -36,10 +36,15 @@ java -jar ./target/SurfaceDemo-standalone-jar-with-dependencies.jar
 # Linux notes
 ##Network setup, name resolution, internet sharing
 ###Nameserver on BBB
-On beaglebone  issue add nameservers with following:
+On beaglebone add nameservers with following:
 ```
 echo nameserver 8.8.8.8 | sudo tee /etc/resolv.conf  #prints to screen as well
 ```
+If you using USB connected BBB you would probably need to define gateway like this:
+```
+sudo route add default gw 192.168.7.1
+```
+
 ###Internet sharing
 On host pc:
 This should show you interface that has ip 192.168.7.1. For me it is ***enx544a16c5d02c***
@@ -79,7 +84,7 @@ wlp2s0    Link encap:Ethernet  HWaddr 78:0c:b8:b3:33:c3
           collisions:0 txqueuelen:1000 
           RX bytes:1071362743 (1.0 GB)  TX bytes:532466200 (532.4 MB)
 ```      
-With interface that has ip of 192.168.7.2:
+With interface that has ip of 192.168.7.1:
 ```
 sudo iptables --append FORWARD --in-interface enx544a16c5d02c -j ACCEPT
 ```

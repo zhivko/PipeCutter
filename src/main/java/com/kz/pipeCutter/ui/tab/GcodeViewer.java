@@ -33,6 +33,7 @@ import javax.swing.text.DefaultHighlighter.DefaultHighlightPainter;
 
 import com.kz.pipeCutter.BBB.commands.AbortGCode;
 import com.kz.pipeCutter.BBB.commands.CloseGCode;
+import com.kz.pipeCutter.BBB.commands.ExecuteMdi;
 import com.kz.pipeCutter.BBB.commands.OpenGCode;
 import com.kz.pipeCutter.BBB.commands.PauseGCode;
 import com.kz.pipeCutter.BBB.commands.PlayGCodeFromLine;
@@ -181,7 +182,18 @@ public class GcodeViewer extends JPanel {
 			public void doIt() {
 				// TODO Auto-generated method stub
 				super.doIt();
-				
+					if(!GcodeViewer.this.plasmaOn)
+					{
+						new ExecuteMdi("M3 S300").start();
+						//GcodeViewer.this.plasmaOn = true;
+						//this.setParValue("true");
+					}
+					else
+					{
+						new ExecuteMdi("M5").start();
+						//GcodeViewer.this.plasmaOn = false;
+						//this.setParValue("false");
+					}
 			}			
 		};
 		spindleOn.setParValue("0");

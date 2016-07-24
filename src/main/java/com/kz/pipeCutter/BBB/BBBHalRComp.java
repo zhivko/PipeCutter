@@ -231,6 +231,8 @@ public class BBBHalRComp implements Runnable {
 		readThread = new Thread(this);
 		readThread.setName("BBBHalRComp");
 		readThread.start();
+		
+		isBinded = false;
 	}
 
 	public Socket getSocket() {

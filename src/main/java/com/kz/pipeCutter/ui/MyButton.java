@@ -7,12 +7,13 @@ import java.awt.event.ActionListener;
 import javax.swing.JButton;
 import javax.swing.SwingUtilities;
 
-public class MyButton extends JButton implements IHasPinDef{
+public class MyButton extends JButton implements IParameter, IHasPinDef{
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = -2616660361104648156L;
 	private String value;
+	private String parId;
 	private Color oldColor;
 	public PinDef pinDef;
 
@@ -57,6 +58,8 @@ public class MyButton extends JButton implements IHasPinDef{
 		t.start();
 	}
 
+	
+	
 	public void setParValue(String value) {
 		this.value = value;
 		if (Boolean.valueOf(value) != false) {
@@ -72,6 +75,24 @@ public class MyButton extends JButton implements IHasPinDef{
 	
 	public PinDef getPin() {
 		return this.pinDef;
+	}
+
+	@Override
+	public String getParId() {
+		// TODO Auto-generated method stub
+		return this.parId;
+	}
+
+	@Override
+	public void setParId(String parId) {
+		// TODO Auto-generated method stub
+		this.parId = parId;
+	}
+
+	@Override
+	public String getParValue() {
+		// TODO Auto-generated method stub
+		return value;
 	}
 	
 	

@@ -249,10 +249,10 @@ public class NamedList extends JPanel implements IParameter, IHasLabel {
 			String ip = Settings.getInstance().getSetting("machinekit_ip");
 			String host = Settings.getInstance().getSetting("machinekit_host");
 			String hallRCompUri = "tcp://" + getServer(serviceInfo.getServer()) + ":" + ret.getPort();
-			if (!hallRCompUri.equals(Settings.getInstance().getSetting("machinekit_halRCompService_url"))) {
+			//if (!hallRCompUri.equals(Settings.getInstance().getSetting("machinekit_halRCompService_url"))) {
 				Settings.getInstance().setSetting("machinekit_halRCompService_url", hallRCompUri);
 				Settings.getInstance().initHalRcompService();
-			}
+			//}
 		}
 	}
 	

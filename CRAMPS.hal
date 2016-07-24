@@ -469,13 +469,14 @@ net servo.4 bb_gpio.p8.out-22
 
 
 newcomp mymotion timer=100
-newpin mymotion  mymotion.program-line    s32 in
-newpin mymotion  mymotion.spindle-on      bit in
+newpin mymotion  mymotion.program-line       s32 in
+newpin mymotion  mymotion.spindle-on         bit in
 ready  mymotion
 
-net spindle-enable  	motion.spindle-on => bb_gpio.p8.out-11
-net spindle-enable  	motion.spindle-on => mymotion.spindle-on
-
-net net_program-line    mymotion.program-line <=  motion.program-line
+#######################################################################################################################
+#net	netname		         	signal_src	                	target					target	              ... yadda
+#######################################################################################################################
+net     net-spindle-on    	motion.spindle-on		=>   	bb_gpio.p8.out-11		mymotion.spindle-on
+net		net-program-line	motion.program-line     =>		mymotion.program-line 	
 
 

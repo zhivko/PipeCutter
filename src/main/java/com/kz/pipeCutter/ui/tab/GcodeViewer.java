@@ -185,14 +185,10 @@ public class GcodeViewer extends JPanel {
 					if(!GcodeViewer.this.plasmaOn)
 					{
 						new ExecuteMdi("M3 S300").start();
-						//GcodeViewer.this.plasmaOn = true;
-						//this.setParValue("true");
 					}
 					else
 					{
 						new ExecuteMdi("M5").start();
-						//GcodeViewer.this.plasmaOn = false;
-						//this.setParValue("false");
 					}
 			}			
 		};

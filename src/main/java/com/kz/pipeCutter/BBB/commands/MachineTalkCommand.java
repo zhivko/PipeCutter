@@ -26,13 +26,13 @@ import pb.Message;
 import pb.Message.Container;
 
 public abstract class MachineTalkCommand implements Callable<String> {
-	private static Lock lock = new ReentrantLock();
+	public static Lock lock = new ReentrantLock();
 	public Socket socket = null;
 	ZContext ctx = null;
 	public static int ticket = 0;
 	private String uri;
 	public static MachineTalkCommand instance;
-	ExecutorService executor = Executors.newSingleThreadExecutor();
+	private static ExecutorService executor = Executors.newSingleThreadExecutor();
 
 	public abstract Container prepareContainer() throws Exception;
 
@@ -42,6 +42,10 @@ public abstract class MachineTalkCommand implements Callable<String> {
 	@Override
 	public String call() {
 		try {
+			System.out.println(Thread.currentThread().getName() + ": Lock");
+			lock.lock();
+			System.out.println(Thread.currentThread().getName() + ": Locked");
+
 			initSocket();
 			Container cont = prepareContainer();
 			if (cont != null) {
@@ -55,21 +59,21 @@ public abstract class MachineTalkCommand implements Callable<String> {
 			ex.printStackTrace();
 		} finally {
 			close();
+			System.out.println(Thread.currentThread().getName() + ": UNLock");
+			lock.unlock();
+			System.out.println(Thread.currentThread().getName() + ": UNLocked");					
 		}
 		return "ok";
 	}
 
 	// TODO Auto-generated method stub
-	public void start() {
+	public synchronized void start() {
 		SwingWorker<Void, Void> sw = new SwingWorker<Void, Void>() {
 			@Override
 			protected Void doInBackground() throws Exception {
 				try {
-					Future<String> future = MachineTalkCommand.this.executor.submit(MachineTalkCommand.this);
+					Future<String> future = MachineTalkCommand.executor.submit(MachineTalkCommand.this);
 					try {
-						System.out.println(Thread.currentThread().getName() + ": Lock");
-						lock.lock();
-						System.out.println(Thread.currentThread().getName() + ": Locked");
 						future.get(12, TimeUnit.SECONDS);
 					} catch (Exception e) {
 						e.printStackTrace();
@@ -80,9 +84,6 @@ public abstract class MachineTalkCommand implements Callable<String> {
 				}
 				finally
 				{
-					System.out.println(Thread.currentThread().getName() + ": UNLock");
-					lock.unlock();
-					System.out.println(Thread.currentThread().getName() + ": UNLocked");					
 				}
 
 				return null;

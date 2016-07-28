@@ -130,6 +130,7 @@ sudo systemctl restart avahi-daemon
 ```
 
 ##Adding swap file on BBB
+You will need this if you plan to build Machinekit on BBB
 ```
 sudo mkdir -p /var/cache/swap/
 sudo dd if=/dev/zero of=/var/cache/swap/swapfile bs=1M count=256

@@ -680,7 +680,7 @@ public class SurfaceDemo extends AbstractAnalysis {
 
 	private Sphere getPlasma() {
 		if (plasma == null) {
-			plasma = new Sphere(new Coord3d(0, 0, 0), 0.4f, 4, Color.BLUE);
+			plasma = new Sphere(new Coord3d(0, 0, 0), 5.0f, 4, Color.BLUE);
 			plasma.setWireframeColor(Color.BLUE);
 			plasma.setPosition(plasma.getPosition());
 		}

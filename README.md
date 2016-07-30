@@ -197,7 +197,8 @@ https://github.com/mhaberler/asciidoc-sandbox/wiki/Remote-HAL-Components
 **halcmd**
 To show one pin value:
 ```
-halcmd && show pin motion.spindle-*
+halcmd show pin motion.spindle-*
+halcmd show pin stepgen.*
 ```
 To log pin value to file:
 ```

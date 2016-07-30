@@ -20,7 +20,7 @@ public class CutThread extends SwingWorker<String, Object> {
 
 	static File gcodeFile;
 	public static int delay = 100;
-	public static float cutterYRange = 7;
+	public static float cutterYRange = 50;
 	private static long longDelay = 1000;
 	private MyPickablePoint point;
 	double sumAngle = 0;

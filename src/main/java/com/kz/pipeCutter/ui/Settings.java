@@ -38,7 +38,8 @@ import javax.swing.JTabbedPane;
 import javax.swing.SwingUtilities;
 import javax.swing.border.EmptyBorder;
 
-import com.kz.pipeCutter.StdOutErrLog;
+import org.apache.log4j.Logger;
+
 import com.kz.pipeCutter.BBB.BBBError;
 import com.kz.pipeCutter.BBB.BBBHalCommand;
 import com.kz.pipeCutter.BBB.BBBHalRComp;
@@ -72,7 +73,7 @@ public class Settings extends JFrame {
 	 */
 	public static void main(String[] args) {
 
-		StdOutErrLog.tieSystemOutAndErrToLog();
+		//StdOutErrLog.tieSystemOutAndErrToLog();
 
 		System.setProperty("java.net.preferIPv4Stack", "true");
 		Settings frame = Settings.getInstance();
@@ -456,7 +457,7 @@ public class Settings extends JFrame {
 	}
 
 	public void log(String txt) {
-		System.out.println(txt);
+		Logger.getLogger(this.getClass().getName()).info(txt);
 		String txtOut = "";
 		String patternString = "type:\\s(.+)\\sreply_ticket:\\s(.+)\\s";
 		Pattern pattern = Pattern.compile(patternString);

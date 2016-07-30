@@ -1,7 +1,6 @@
 package com.kz.pipeCutter.BBB;
 
 import java.io.IOException;
-import java.lang.reflect.InvocationTargetException;
 import java.net.Inet4Address;
 import java.net.InetAddress;
 import java.net.NetworkInterface;
@@ -10,7 +9,6 @@ import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.logging.ConsoleHandler;
 import java.util.logging.Level;
-import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -21,6 +19,8 @@ import javax.jmdns.ServiceListener;
 import javax.jmdns.impl.JmDNSImpl;
 import javax.swing.SwingUtilities;
 import javax.swing.SwingWorker;
+
+import org.apache.log4j.Logger;
 
 import com.kz.pipeCutter.ui.Settings;
 import com.kz.pipeCutter.ui.tab.MachinekitSettings;
@@ -39,32 +39,26 @@ public class Discoverer {
 
 	public Discoverer() {
 		instance = this;
-		boolean log = true;
-		if (log) {
-			Logger logger = Logger.getLogger(JmDNS.class.getName());
-			ConsoleHandler handler = new ConsoleHandler();
-			logger.addHandler(handler);
-			logger.setLevel(Level.FINER);
-			handler.setLevel(Level.FINER);
-		}
 
 		Thread.currentThread().setName("BBBDiscoverer");
 		Settings.instance.log("Initializing discoverer...");
 
 		Enumeration<NetworkInterface> ifc;
 		try {
+			Logger.getLogger(this.getClass().getName()).info("Getting network iterfaces...");
 			ifc = NetworkInterface.getNetworkInterfaces();
+			Logger.getLogger(this.getClass().getName()).info("Getting network iterfaces...done.");
 			bonjourServiceListener = new ServiceListener() {
 
 				@Override
 				public void serviceResolved(ServiceEvent arg0) {
 					// TODO Auto-generated method stub
-					System.out.println("resolved: " + arg0.toString());
+					Logger.getLogger(this.getClass().getName()).info("resolved: " + arg0.toString());
 				}
 
 				@Override
 				public void serviceRemoved(ServiceEvent arg0) {
-					System.out.println("- " + arg0.getInfo().getName());
+					Logger.getLogger(this.getClass().getName()).info("- " + arg0.getInfo().getName());
 					services.remove(arg0.getInfo());
 					Pattern p = Pattern.compile("(.*)service(.*)");
 					Matcher m = p.matcher(arg0.getInfo().getName());
@@ -75,8 +69,8 @@ public class Discoverer {
 
 				@Override
 				public void serviceAdded(ServiceEvent arg0) {
-					System.out.println("+ " + arg0.getInfo().getName() + " (" + arg0.getInfo().getServer() + " :"
-							+ arg0.getInfo().getPort() + ")");
+					Logger.getLogger(this.getClass().getName()).info("+ " + arg0.getInfo().getName() + " ("
+							+ arg0.getInfo().getServer() + " :" + arg0.getInfo().getPort() + ")");
 					services.add(arg0.getInfo());
 					arg0.getInfo().getPort();
 					arg0.getInfo().getProtocol();
@@ -88,31 +82,15 @@ public class Discoverer {
 					}
 				}
 			};
-			boolean added =false;
+			boolean added = false;
 			while (ifc.hasMoreElements() && !added) {
+				Logger.getLogger(this.getClass().getName()).info("Get next element.");
 				final NetworkInterface anInterface = ifc.nextElement();
 
 				try {
-					Thread t = new Thread(new Runnable() {
+					Settings.instance.log("Trying " + anInterface.getDisplayName());
 
-						@Override
-						public void run() {
-							try {
-								SwingUtilities.invokeLater(new Runnable() {
-
-									@Override
-									public void run() {
-										Settings.instance.log("Trying " + anInterface.getDisplayName());
-									}
-								});
-							} catch (Exception e) {
-								e.printStackTrace();
-							}
-
-						}
-					});
-					t.start();
-
+					Logger.getLogger(this.getClass()).info("Is " + anInterface.getName() + " interface UP?");
 					if (anInterface.isUp()) {
 						Enumeration<InetAddress> addr = anInterface.getInetAddresses();
 						while (addr.hasMoreElements()) {
@@ -143,7 +121,9 @@ public class Discoverer {
 				}
 			}
 
-		} catch (SocketException e1) {
+		} catch (
+
+		SocketException e1) {
 			// TODO Auto-generated catch block
 			e1.printStackTrace();
 		}

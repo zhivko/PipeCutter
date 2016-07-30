@@ -26,7 +26,6 @@ public class SerialWriter extends Thread {
 
 	public void send(String command) {
 		try {
-
 			this.out.write((command + "\n").getBytes());
 			this.out.flush();
 		} catch (IOException e) {

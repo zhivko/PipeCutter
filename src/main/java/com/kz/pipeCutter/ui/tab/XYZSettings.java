@@ -60,8 +60,8 @@ public class XYZSettings extends JPanel {
 		panelXAxis.add(jog1);
 		jog1.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				Double velocity = Double.valueOf(Settings.instance.getSetting("x_vel"));
-				Double distance = Double.valueOf(Settings.instance.getSetting("x_step"));
+				Double velocity = Double.valueOf(Settings.getInstance().getSetting("x_vel"));
+				Double distance = Double.valueOf(Settings.getInstance().getSetting("x_step"));
 				new Jog(0, velocity/60, distance).start();
 			}
 		});
@@ -103,8 +103,8 @@ public class XYZSettings extends JPanel {
 		panelYAxis.add(jog2);
 		jog2.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				Double velocity = Double.valueOf(Settings.instance.getSetting("y_vel"));
-				Double distance = Double.valueOf(Settings.instance.getSetting("y_step"));
+				Double velocity = Double.valueOf(Settings.getInstance().getSetting("y_vel"));
+				Double distance = Double.valueOf(Settings.getInstance().getSetting("y_step"));
 				new Jog(1, velocity/60, distance).start();
 			}
 		});
@@ -145,8 +145,8 @@ public class XYZSettings extends JPanel {
 		panelZAxis.add(jog3);
 		jog3.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				Double velocity = Double.valueOf(Settings.instance.getSetting("z_vel"));
-				Double distance = Double.valueOf(Settings.instance.getSetting("z_step"));
+				Double velocity = Double.valueOf(Settings.getInstance().getSetting("z_vel"));
+				Double distance = Double.valueOf(Settings.getInstance().getSetting("z_step"));
 				new Jog(2, velocity/60, distance).start();
 			}
 		});			

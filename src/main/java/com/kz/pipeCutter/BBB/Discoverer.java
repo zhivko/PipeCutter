@@ -41,7 +41,7 @@ public class Discoverer {
 		instance = this;
 
 		Thread.currentThread().setName("BBBDiscoverer");
-		Settings.instance.log("Initializing discoverer...");
+		Settings.getInstance().log("Initializing discoverer...");
 
 		Enumeration<NetworkInterface> ifc;
 		try {
@@ -88,7 +88,7 @@ public class Discoverer {
 				final NetworkInterface anInterface = ifc.nextElement();
 
 				try {
-					Settings.instance.log("Trying " + anInterface.getDisplayName());
+					Settings.getInstance().log("Trying " + anInterface.getDisplayName());
 
 					Logger.getLogger(this.getClass()).info("Is " + anInterface.getName() + " interface UP?");
 					if (anInterface.isUp()) {
@@ -106,7 +106,7 @@ public class Discoverer {
 								String substring2 = address.toString().substring(1, k);
 
 								if (substring1.equals(substring2)) {
-									Settings.instance.log("Adding bonjour listener on local IP: " + address.toString());
+									Settings.getInstance().log("Adding bonjour listener on local IP: " + address.toString());
 									JmDNS jmdns = JmDNSImpl.create(address, bonjourServiceType);
 									jMdnsS.add(jmdns);
 									added = true;

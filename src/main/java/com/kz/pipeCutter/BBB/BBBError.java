@@ -66,6 +66,7 @@ public class BBBError implements Runnable {
 						ZFrame frame = receivedMessage.poll();
 						byte[] returnedBytes = frame.getData();
 						String messageType = new String(returnedBytes);
+						//System.out.println(messageType);
 						if (!messageType.equals("error") && !messageType.equals("text") && !messageType.equals("display")
 								&& !messageType.equals("status")) {
 							// System.out.println(messageType);
@@ -75,10 +76,10 @@ public class BBBError implements Runnable {
 								this.lastPingMs = System.currentTimeMillis();
 								MachinekitSettings.instance.pingError();
 							} else {
-								Settings.instance.log(contReturned.getType() + " " + contReturned.getTopic());
+								Settings.getInstance().log(contReturned.getType() + " " + contReturned.getTopic());
 								List<String> notes = contReturned.getNoteList();
 								for (String note : notes) {
-									Settings.instance.log("\t" + note);
+									Settings.getInstance().log("\t" + note);
 								}
 							}
 
@@ -90,7 +91,7 @@ public class BBBError implements Runnable {
 			} catch (Exception e) {
 				if (!e.getMessage().equals("Error:")) {
 					e.printStackTrace();
-					Settings.instance.log("Error: " + e.getMessage());
+					Settings.getInstance().log("Error: " + e.getMessage());
 				}
 
 			}
@@ -103,7 +104,7 @@ public class BBBError implements Runnable {
 	}
 
 	public static void main(String[] args) {
-		Settings sett = new Settings();
+		Settings sett = Settings.getInstance();
 		sett.setVisible(true);
 		BBBError error = new BBBError();
 	}
@@ -158,5 +159,4 @@ public class BBBError implements Runnable {
 		else
 			return false;
 	}
-
 }

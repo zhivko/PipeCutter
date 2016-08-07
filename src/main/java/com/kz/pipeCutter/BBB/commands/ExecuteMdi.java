@@ -18,13 +18,14 @@ public class ExecuteMdi extends MachineTalkCommand {
 		Container container = null;
 		try {
 			pb.Message.Container.Builder builder = Container.newBuilder();
+			Settings.getInstance().log(mdiCommand);
 			ByteString comm = ByteString.copyFrom(mdiCommand.getBytes("US-ASCII"));
 			pb.Status.EmcCommandParameters emcCommandParameter = pb.Status.EmcCommandParameters.newBuilder()
 					.setCommandBytes(comm).build();
 			builder.setType(ContainerType.MT_EMC_TASK_PLAN_EXECUTE);
 			builder.setEmcCommandParams(emcCommandParameter);
 			builder.setInterpName("execute");
-			builder.setTicket(ticket++);
+			builder.setTicket(getNextTicket());
 			container = builder.build();
 		} catch (Exception e) {
 			e.printStackTrace();

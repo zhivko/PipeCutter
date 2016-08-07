@@ -4,6 +4,7 @@ import java.awt.MenuItem;
 import java.awt.PopupMenu;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.Locale;
 import java.util.concurrent.TimeUnit;
 
 import javax.swing.SwingUtilities;
@@ -54,12 +55,29 @@ public class MyPopupMenu extends PopupMenu {
 		menuItem9.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
-				SurfaceDemo.instance.canvas.getView()
-						.setBoundManual(new BoundingBox3d(SurfaceDemo.instance.plasma.getPosition(), SurfaceDemo.zoomBounds));
+				String mdiCommand = String.format("G92 X%.3f Y%.3f Z%.3f", SurfaceDemo.instance.lastClickedPoint.xyz.x,
+						SurfaceDemo.instance.lastClickedPoint.xyz.y, SurfaceDemo.instance.lastClickedPoint.xyz.z);
+
+				SurfaceDemo.instance.canvas.getView().setBoundManual(new BoundingBox3d(
+						SurfaceDemo.instance.lastClickedPoint.getCoord(), SurfaceDemo.getInstance().getZoomBounds()));
 				SurfaceDemo.ZOOM_POINT = true;
 			}
 		});
 		this.add(menuItem9);
+
+		MenuItem menuItem13 = new MenuItem("Zoom plasma");
+		menuItem13.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+				String mdiCommand = String.format("G92 X%.3f Y%.3f Z%.3f", SurfaceDemo.instance.lastClickedPoint.xyz.x,
+						SurfaceDemo.instance.lastClickedPoint.xyz.y, SurfaceDemo.instance.lastClickedPoint.xyz.z);
+
+				SurfaceDemo.instance.canvas.getView().setBoundManual(new BoundingBox3d(
+						SurfaceDemo.instance.plasma.getPosition(), SurfaceDemo.getInstance().getZoomBounds()));
+				SurfaceDemo.ZOOM_POINT = true;
+			}
+		});
+		this.add(menuItem13);
 
 		MenuItem menuItem10 = new MenuItem("Cancel zoom");
 		menuItem10.addActionListener(new ActionListener() {
@@ -78,7 +96,8 @@ public class MyPopupMenu extends PopupMenu {
 		menuItem6.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
-				if (SurfaceDemo.instance.lastClickedPoint.getClass().getName().equals("com.kz.pipeCutter.MyPickablePoint")) {
+				if (SurfaceDemo.instance.lastClickedPoint.getClass().getName()
+						.equals("com.kz.pipeCutter.MyPickablePoint")) {
 
 					CutThread th = new CutThread(false, SurfaceDemo.instance.lastClickedPoint);
 					th.execute();
@@ -114,7 +133,8 @@ public class MyPopupMenu extends PopupMenu {
 		menuItem5.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
-				if (SurfaceDemo.instance.lastClickedPoint.getClass().getName().equals("com.kz.pipeCutter.MyPickablePoint")) {
+				if (SurfaceDemo.instance.lastClickedPoint.getClass().getName()
+						.equals("com.kz.pipeCutter.MyPickablePoint")) {
 					CutThread ct = new CutThread(false, SurfaceDemo.instance.lastClickedPoint);
 
 					ct.execute();
@@ -155,23 +175,62 @@ public class MyPopupMenu extends PopupMenu {
 				SwingUtilities.invokeLater(new Runnable() {
 					@Override
 					public void run() {
-						String mdiCommand = String.format("G92 X%.3f Y%.3f Z%.3f", SurfaceDemo.instance.lastClickedPoint.xyz.x,
-								SurfaceDemo.instance.lastClickedPoint.xyz.y, SurfaceDemo.instance.lastClickedPoint.xyz.z);
-						Settings.instance.log(mdiCommand);
+						String mdiCommand = String.format(Locale.US, "G92 X%.3f Y%.3f Z%.3f",
+								-1.0 * SurfaceDemo.instance.lastClickedPoint.xyz.x,
+								-1.0 * SurfaceDemo.instance.lastClickedPoint.xyz.y,
+								-1.0 * SurfaceDemo.instance.lastClickedPoint.xyz.z);
+						Settings.getInstance().log(mdiCommand);
 						new ExecuteMdi(mdiCommand).start();
-						try {
-							TimeUnit.SECONDS.sleep(5);
-							BBBStatus.getInstance().reSubscribeMotion();
-						} catch (InterruptedException e) {
-							// TODO Auto-generated catch block
-							e.printStackTrace();
-						}
-						
+
+						new java.util.Timer().schedule(new java.util.TimerTask() {
+							@Override
+							public void run() {
+								String mdiCommand = "G92.1";
+								Settings.getInstance().log(mdiCommand);
+								new ExecuteMdi(mdiCommand).start();
+							}
+						}, 2500);
+
+						new java.util.Timer().schedule(new java.util.TimerTask() {
+							@Override
+							public void run() {
+								BBBStatus.getInstance().reSubscribeMotion();
+							}
+						}, 5000);
+
 					}
 				});
 			}
 		});
 		this.add(menuItem12);
+
+		// Gcodes for BBB
+		MenuItem menuItem14 = new MenuItem("Set point as origin - G53");
+		menuItem14.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+				SwingUtilities.invokeLater(new Runnable() {
+					@Override
+					public void run() {
+						String mdiCommand = String.format(Locale.US, "G53 G00 X%.3f Y%.3f Z%.3f F200",
+								SurfaceDemo.instance.lastClickedPoint.xyz.x,
+								SurfaceDemo.instance.lastClickedPoint.xyz.y,
+								SurfaceDemo.instance.lastClickedPoint.xyz.z);
+						Settings.getInstance().log(mdiCommand);
+						new ExecuteMdi(mdiCommand).start();
+
+						new java.util.Timer().schedule(new java.util.TimerTask() {
+							@Override
+							public void run() {
+								BBBStatus.getInstance().reSubscribeMotion();
+							}
+						}, 5000);
+
+					}
+				});
+			}
+		});
+		this.add(menuItem14);
 
 	}
 }

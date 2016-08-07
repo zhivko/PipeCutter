@@ -49,7 +49,7 @@ public class MachinekitStop extends SSH_Command {
 				if (!pid.equals("") && StringUtils.isNumeric(pid))
 				{
 					killCommands += "kill -9 " + pid + "\n";
-					Settings.instance.log(killCommands);
+					Settings.getInstance().log(killCommands);
 				}
 			}
 		}

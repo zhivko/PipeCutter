@@ -39,7 +39,6 @@ public class BBBStatus implements Runnable {
 	private Thread readThread;
 	double x = 0, y = 0, z = 0, a = 0, b = 0, c = 0;
 	private long lastPingMs;
-	Thread pingThread;
 
 	public BBBStatus() {
 		initSocket();
@@ -53,7 +52,7 @@ public class BBBStatus implements Runnable {
 	}
 
 	public static void main(String[] args) {
-		Settings sett = new Settings();
+		Settings sett = Settings.getInstance();
 		sett.setVisible(true);
 		BBBStatus status = new BBBStatus();
 	}
@@ -64,7 +63,7 @@ public class BBBStatus implements Runnable {
 
 	@Override
 	public void run() {
-		if (!Settings.instance.isVisible())
+		if (!Settings.getInstance().isVisible())
 			return;
 
 		Container contReturned;
@@ -89,32 +88,32 @@ public class BBBStatus implements Runnable {
 								if (contReturned.getEmcStatusMotion().hasActualPosition()) {
 									if (contReturned.getEmcStatusMotion().getActualPosition().hasX()) {
 										x = contReturned.getEmcStatusMotion().getActualPosition().getX();
-										Settings.instance.setSetting("position_x", x);
+										Settings.getInstance().setSetting("position_x", x);
 									}
 									if (contReturned.getEmcStatusMotion().getActualPosition().hasY()) {
 										y = contReturned.getEmcStatusMotion().getActualPosition().getY();
-										Settings.instance.setSetting("position_y", y);
+										Settings.getInstance().setSetting("position_y", y);
 									}
 									if (contReturned.getEmcStatusMotion().getActualPosition().hasZ()) {
 										z = contReturned.getEmcStatusMotion().getActualPosition().getZ();
-										Settings.instance.setSetting("position_z", z);
+										Settings.getInstance().setSetting("position_z", z);
 									}
 									if (contReturned.getEmcStatusMotion().getActualPosition().hasA()) {
 										a = contReturned.getEmcStatusMotion().getActualPosition().getA();
-										Settings.instance.setSetting("position_a", a);
+										Settings.getInstance().setSetting("position_a", a);
 									}
 									if (contReturned.getEmcStatusMotion().getActualPosition().hasB()) {
 										b = contReturned.getEmcStatusMotion().getActualPosition().getB();
-										Settings.instance.setSetting("position_b", b);
+										Settings.getInstance().setSetting("position_b", b);
 									}
 									if (contReturned.getEmcStatusMotion().getActualPosition().hasC()) {
 										c = contReturned.getEmcStatusMotion().getActualPosition().getC();
-										Settings.instance.setSetting("position_c", c);
+										Settings.getInstance().setSetting("position_c", c);
 									}
 								}
 
-								if (SurfaceDemo.instance != null) {
-									if (SurfaceDemo.instance.getChart() != null) {
+								if (SurfaceDemo.getInstance() != null) {
+									if (SurfaceDemo.getInstance().getChart() != null) {
 										// System.out.println(String.format("%1$,.2f, %2$,.2f,
 										// %3$,.2f",x,y,z));
 										SwingUtilities.invokeLater(new Runnable() {
@@ -122,8 +121,8 @@ public class BBBStatus implements Runnable {
 											public void run() {
 												Coord3d coord = new Coord3d(x, y, z);
 												MyPickablePoint mp = new MyPickablePoint(-2, coord, Color.MAGENTA, 1, -1);
-												SurfaceDemo.instance.move(mp, GcodeViewer.instance.plasmaOn, 0, false);
-												SurfaceDemo.instance.utils.rotatePoints(a, false, false);
+												SurfaceDemo.getInstance().move(mp, GcodeViewer.instance.plasmaOn, 0, false);
+												SurfaceDemo.getInstance().utils.rotatePoints(a, false, false);
 											}
 										});
 									}
@@ -151,17 +150,6 @@ public class BBBStatus implements Runnable {
 			while (readThread.isAlive()) {
 				try {
 					TimeUnit.MILLISECONDS.sleep(500);
-				} catch (InterruptedException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-			}
-		}
-		if (pingThread != null && pingThread.isAlive()) {
-			pingThread.interrupt();
-			while (pingThread.isAlive()) {
-				try {
-					TimeUnit.MILLISECONDS.sleep(2000);
 				} catch (InterruptedException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
@@ -209,5 +197,5 @@ public class BBBStatus implements Runnable {
 		socket.unsubscribe("motion".getBytes(ZMQ.CHARSET));
 		socket.subscribe("motion".getBytes(ZMQ.CHARSET));
 	}
-
+	
 }

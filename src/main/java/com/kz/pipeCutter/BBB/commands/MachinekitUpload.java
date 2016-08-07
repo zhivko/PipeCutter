@@ -22,7 +22,7 @@ public class MachinekitUpload extends SSH_Command {
 		if (!SSH_CheckIfMachinekitRunning()) {
 			String fileName ="prog.gcode";
 			
-			String localPath = Settings.instance.getSetting("gcode_folder");
+			String localPath = Settings.getInstance().getSetting("gcode_folder");
 			String remotePath = "/home/machinekit/machinekit/nc_files";
 			SimpleDateFormat sdf = new SimpleDateFormat("dd.MM.YYYY HH:mm.ss");
 
@@ -41,16 +41,16 @@ public class MachinekitUpload extends SSH_Command {
 			String from = localPath + File.separatorChar + fileName;
 			String to = remotePath + "/" + fileName;
 			FileInputStream fis = new FileInputStream(new File(from));
-			Settings.instance.log("Ftp put file to: " + to + "...");
+			Settings.getInstance().log("Ftp put file to: " + to + "...");
 			channelSFtp.put(fis, "prog.gcode");
-			Settings.instance.log("Ftp put file to: " + to + "...DONE.");
+			Settings.getInstance().log("Ftp put file to: " + to + "...DONE.");
 			
 			channelSFtp.setMtime(to, (int)((new Date().getTime())/1000));
 
 			SftpATTRS attr = channelSFtp.stat(to);
 			Date modifyDate = new Date(Long.valueOf(attr.getMTime() * 1000));
 			sdf.format(modifyDate);
-			Settings.instance.log(String.format(
+			Settings.getInstance().log(String.format(
 
 			"File uploaded to %s modify date: %s", to, attr.getMtimeString()));
 
@@ -114,7 +114,7 @@ public class MachinekitUpload extends SSH_Command {
 
 			for (String line : myOut.getLines()) {
 				if (line.matches("(.*)CRAMPS.ini")) {
-					Settings.instance.log("MachineKit already started..");
+					Settings.getInstance().log("MachineKit already started..");
 					channelExec.disconnect();
 					return true;
 				}

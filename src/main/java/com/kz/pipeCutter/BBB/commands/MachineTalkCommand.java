@@ -12,6 +12,7 @@ import java.util.concurrent.locks.ReentrantLock;
 
 import javax.swing.SwingWorker;
 
+import org.apache.log4j.Logger;
 import org.zeromq.ZContext;
 import org.zeromq.ZFrame;
 import org.zeromq.ZMQ;
@@ -36,7 +37,7 @@ public abstract class MachineTalkCommand implements Callable<String> {
 
 	public abstract Container prepareContainer() throws Exception;
 
-	public MachineTalkCommand() {		
+	protected MachineTalkCommand() {		
 	}
 
 	@Override
@@ -76,6 +77,7 @@ public abstract class MachineTalkCommand implements Callable<String> {
 					try {
 						future.get(12, TimeUnit.SECONDS);
 					} catch (Exception e) {
+						Settings.getInstance().log(e.toString());
 						e.printStackTrace();
 					}
 				} catch (Exception e) {
@@ -136,7 +138,7 @@ public abstract class MachineTalkCommand implements Callable<String> {
 					MachinekitSettings.instance.pingCommand();
 				}
 				contReturned.getReplyTicket();
-				Settings.instance.log(contReturned.toString());
+				Settings.getInstance().log(contReturned.toString());
 				receivedMessageCount++;
 				if(receivedMessageCount==neededReceivedMessageCount)
 					break;

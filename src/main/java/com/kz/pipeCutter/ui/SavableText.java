@@ -13,7 +13,7 @@ import javax.swing.event.DocumentListener;
 @SuppressWarnings("serial")
 public class SavableText extends SavableControl {
 	public JTextField jValue;
-	public boolean preventResize = true;
+	public boolean preventResize = false;
 
 	public SavableText() {
 		super();
@@ -72,6 +72,10 @@ public class SavableText extends SavableControl {
 			Font font = new Font("Tahoma", Font.PLAIN, 12);
 			int textwidth = (int) (font.getStringBounds(val, frc).getWidth());
 			int textheight = (int) (font.getStringBounds(val, frc).getHeight());
+			
+			if(textwidth<20)
+				textwidth = 20;
+			
 			this.jValue
 					.setPreferredSize(new Dimension(textwidth + 15, textheight + 3));
 		}

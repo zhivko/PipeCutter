@@ -60,9 +60,9 @@ public class RotatorSettings extends JPanel {
 		panelRotator1.add(jog1);
 		jog1.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				Double velocity = Double.valueOf(Settings.instance
+				Double velocity = Double.valueOf(Settings.getInstance()
 						.getSetting("rotator1_vel"));
-				Double distance = Double.valueOf(Settings.instance
+				Double distance = Double.valueOf(Settings.getInstance()
 						.getSetting("rotator1_step"));
 			  //new Jog(3, velocity/60, distance).start();
 				RotatorSettings.this.jog(3, velocity, distance);
@@ -108,9 +108,9 @@ public class RotatorSettings extends JPanel {
 		panelRotator2.add(jog2);
 		jog2.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				Double velocity = Double.valueOf(Settings.instance
+				Double velocity = Double.valueOf(Settings.getInstance()
 						.getSetting("rotator2_vel"));
-				Double distance = Double.valueOf(Settings.instance
+				Double distance = Double.valueOf(Settings.getInstance()
 						.getSetting("rotator2_step"));
 				RotatorSettings.this.jog(4, velocity, distance);
 			}
@@ -155,9 +155,9 @@ public class RotatorSettings extends JPanel {
 		panelRotator3.add(jog3);
 		jog3.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				Long velocity = Long.valueOf(Settings.instance
+				Long velocity = Long.valueOf(Settings.getInstance()
 						.getSetting("rotator3_vel"));
-				Double distance = Double.valueOf(Settings.instance
+				Double distance = Double.valueOf(Settings.getInstance()
 						.getSetting("rotator3_step"));
 				RotatorSettings.this.jog(5, velocity, distance);
 			}
@@ -180,20 +180,20 @@ public class RotatorSettings extends JPanel {
 		String settingRot2 = "rotator2_linkedJog_enable";
 		String settingRot3 = "rotator3_linkedJog_enable";
 
-		if (Settings.instance.getParameter(settingRot1).getParValue().equals("1")
-				|| Settings.instance.getParameter(settingRot2).getParValue().equals("1")
-				|| Settings.instance.getParameter(settingRot3).getParValue().equals("1")) {
+		if (Settings.getInstance().getParameter(settingRot1).getParValue().equals("1")
+				|| Settings.getInstance().getParameter(settingRot2).getParValue().equals("1")
+				|| Settings.getInstance().getParameter(settingRot3).getParValue().equals("1")) {
 			
 			String mdiCommand = "G91";
 			new ExecuteMdi(mdiCommand).start();
 			
-			mdiCommand = "G01 ";
-			if(Settings.instance.getParameter(settingRot1).getParValue().equals("1"))
-				mdiCommand += "A" + distance;
-			if(Settings.instance.getParameter(settingRot2).getParValue().equals("1"))
-				mdiCommand += "B" + distance;
-			if(Settings.instance.getParameter(settingRot3).getParValue().equals("1"))
-				mdiCommand += "C" + distance;
+			mdiCommand = "G01";
+			if(Settings.getInstance().getParameter(settingRot1).getParValue().equals("1"))
+				mdiCommand += " A" + distance;
+			if(Settings.getInstance().getParameter(settingRot2).getParValue().equals("1"))
+				mdiCommand += " B" + distance;
+			if(Settings.getInstance().getParameter(settingRot3).getParValue().equals("1"))
+				mdiCommand += " C" + distance;
 			
 			mdiCommand += " F" + String.valueOf(speed);
 			new ExecuteMdi(mdiCommand).start();;

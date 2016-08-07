@@ -27,6 +27,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Locale;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
 
@@ -35,6 +36,7 @@ import javax.swing.JPopupMenu;
 import javax.swing.SwingUtilities;
 import javax.swing.SwingWorker;
 
+import org.apache.log4j.Logger;
 import org.jzy3d.analysis.AbstractAnalysis;
 import org.jzy3d.analysis.AnalysisLauncher;
 import org.jzy3d.chart.Chart;
@@ -71,12 +73,12 @@ public class SurfaceDemo extends AbstractAnalysis {
 	Sphere plasma = null;
 	public MyPickablePoint lastClickedPoint;
 	String angleTxt = "0";
-	public static SurfaceDemo instance;
+	protected static SurfaceDemo instance;
 	public MyComposite myComposite;
 	public static boolean NUMBER_EDGES = false;
 	public static boolean NUMBER_POINTS = false;
 	public static boolean ZOOM_POINT = false;
-	protected static float zoomBounds = 5;
+
 	CanvasAWT canvas = null;
 	private PickingSupport pickingSupport = null;
 
@@ -85,11 +87,10 @@ public class SurfaceDemo extends AbstractAnalysis {
 	public Point cylinderPoint;
 	public Settings settingsFrame;
 
-	public float plasmaKerfOffset = 0.5f;
 	private boolean alreadyCutting;
 	public boolean spindleOn;
 
-	public SurfaceDemo() {
+	protected SurfaceDemo() {
 		instance = this;
 		System.setProperty("java.net.preferIPv4Stack", "true");
 		// discoverer = new Discoverer();
@@ -101,13 +102,16 @@ public class SurfaceDemo extends AbstractAnalysis {
 		}
 
 		try {
+			Logger.getLogger(this.getClass()).info("AnalysisLauncher open instance...");
 			AnalysisLauncher.open(instance);
+			Logger.getLogger(this.getClass()).info("AnalysisLauncher open instance...DONE.");
 		} catch (Exception e2) {
 			// TODO Auto-generated catch block
 			e2.printStackTrace();
 		}
-		System.out.println("Is daemon: " + Thread.currentThread().isDaemon());
-		System.out.println("Is eventdispatched thread? " + javax.swing.SwingUtilities.isEventDispatchThread());
+		Logger.getLogger(this.getClass()).info("Is daemon: " + Thread.currentThread().isDaemon());
+		Logger.getLogger(this.getClass())
+				.info("Is eventdispatched thread? " + javax.swing.SwingUtilities.isEventDispatchThread());
 
 		instance.canvas = (CanvasAWT) instance.getChart().getCanvas();
 		instance.canvas.getAnimator().start();
@@ -199,8 +203,8 @@ public class SurfaceDemo extends AbstractAnalysis {
 				String size = props.get("surfaceDemo").toString();
 				try {
 					String[] splittedSize = size.split("x");
-					instance.canvas.setPreferredSize(
-							new Dimension(Double.valueOf(splittedSize[0]).intValue(), Double.valueOf(splittedSize[1]).intValue()));
+					instance.canvas.setPreferredSize(new Dimension(Double.valueOf(splittedSize[0]).intValue(),
+							Double.valueOf(splittedSize[1]).intValue()));
 					instance.canvas.validate();
 					instance.canvas.repaint();
 				} catch (Exception ex) {
@@ -217,13 +221,15 @@ public class SurfaceDemo extends AbstractAnalysis {
 			@Override
 			public void componentShown(ComponentEvent e) {
 				// TODO Auto-generated method stub
-
+				float radiusOfPlasma = Double.valueOf(SurfaceDemo.instance.canvas.getView().getBounds().getRadius()).floatValue() / 20.0f;
+				plasma.setVolume(radiusOfPlasma);
 			}
 
 			@Override
 			public void componentResized(ComponentEvent evt) {
 				Component c = (Component) evt.getSource();
-				//System.out.println(c.getName() + " resized: " + c.getSize().toString());
+				// System.out.println(c.getName() + " resized: " +
+				// c.getSize().toString());
 				if (c.getName().equals("frame0")) {
 					try {
 						FileInputStream in = new FileInputStream(Settings.iniFullFileName);
@@ -341,13 +347,14 @@ public class SurfaceDemo extends AbstractAnalysis {
 	@Override
 	public void init() {
 		try {
-
-			System.out.println("Creating chart! Thread: " + Thread.currentThread().getName());
-			//smoothie = new MyTelnetClient(SmoothieUploader.smoothieIP, SmoothieUploader.smoothieRemotePort);
+			Logger.getLogger(this.getClass()).info("Creating chart! Thread: " + Thread.currentThread().getName());
+			// smoothie = new MyTelnetClient(SmoothieUploader.smoothieIP,
+			// SmoothieUploader.smoothieRemotePort);
 			// Create a chart
 			chart = AWTChartComponentFactory.chart(Quality.Advanced, getCanvasType());
 			canvas = (CanvasAWT) chart.getCanvas();
-			System.out.println("Creating chart! Thread: " + Thread.currentThread().getName() + "... DONE.");
+			Logger.getLogger(this.getClass())
+					.info("Creating chart! Thread: " + Thread.currentThread().getName() + "... DONE.");
 
 			// chart = newt SwingChartComponentFactory.chart(Quality.Advanced);
 			// chart.getView().setMaximized(true);
@@ -363,7 +370,7 @@ public class SurfaceDemo extends AbstractAnalysis {
 			else
 				filePath = "./";
 
-			String fileName = Settings.instance.getSetting("gcode_input_file");
+			String fileName = Settings.getInstance().getSetting("gcode_input_file");
 			Path path;
 			if (fileName != null) {
 				File f = new File(fileName);
@@ -408,8 +415,10 @@ public class SurfaceDemo extends AbstractAnalysis {
 							// try to find edge with this two points
 							boolean found = false;
 							for (MyEdge e : utils.edges.values()) {
-								if ((e.getPointByIndex(0).distance(mp1) == 0 && (e.getPointByIndex(1).distance(mp2) == 0)
-										|| (e.getPointByIndex(1).distance(mp1) == 0 && (e.getPointByIndex(0).distance(mp2) == 0)))) {
+								if ((e.getPointByIndex(0).distance(mp1) == 0
+										&& (e.getPointByIndex(1).distance(mp2) == 0)
+										|| (e.getPointByIndex(1).distance(mp1) == 0
+												&& (e.getPointByIndex(0).distance(mp2) == 0)))) {
 									found = true;
 									break;
 								}
@@ -437,6 +446,8 @@ public class SurfaceDemo extends AbstractAnalysis {
 			splitLongEdges(pointId, edgeNo);
 			utils.establishNeighbourPoints();
 			utils.calculateContinuousEdges();
+
+			utils.calculateMaxAndMins();
 
 			System.out.println("Points: " + utils.points.size());
 			System.out.println("Edges: " + utils.edges.size());
@@ -644,7 +655,8 @@ public class SurfaceDemo extends AbstractAnalysis {
 				ls.add(utils.points.get(point.id));
 				if (SurfaceDemo.NUMBER_POINTS) {
 					if (!alreadyAddedPointsText.contains(pointNo)) {
-						DrawableTextBitmap t4 = new DrawableTextBitmap(String.valueOf(point.id), point.xyz, Color.BLACK);
+						DrawableTextBitmap t4 = new DrawableTextBitmap(String.valueOf(point.id), point.xyz,
+								Color.BLACK);
 						t4.setHalign(Halign.CENTER); // TODO: invert
 						t4.setValign(Valign.CENTER); // TODO: invert
 						// left/right
@@ -679,12 +691,12 @@ public class SurfaceDemo extends AbstractAnalysis {
 	}
 
 	private Sphere getPlasma() {
-		if (plasma == null) {
+		if (instance!=null && plasma == null) {
 			plasma = new Sphere(new Coord3d(0, 0, 0), 5.0f, 4, Color.BLUE);
 			plasma.setWireframeColor(Color.BLUE);
 			plasma.setPosition(plasma.getPosition());
+			instance.myComposite.add(plasma);
 		}
-		instance.myComposite.add(plasma);
 		return plasma;
 	}
 
@@ -715,7 +727,7 @@ public class SurfaceDemo extends AbstractAnalysis {
 						if (picked.get(0).getClass().getName().equals("com.kz.pipeCutter.MyPickablePoint")) {
 							MyPickablePoint mp = ((MyPickablePoint) picked.get(0));
 							lastClickedPoint = mp;
-							float offset = Float.valueOf(Settings.instance.getSetting("plasma_pierce_offset_mm"));
+							float offset = Float.valueOf(Settings.getInstance().getSetting("plasma_pierce_offset_mm"));
 							move(mp, false, offset, false);
 
 							Point p = SurfaceDemo.instance.utils.calculateOffsetPoint(mp);
@@ -812,7 +824,7 @@ public class SurfaceDemo extends AbstractAnalysis {
 
 	public void move(MyPickablePoint tempPoint, boolean cut, float offset, boolean writeToGCode) {
 		if (plasma == null) {
-		// cylinder = new Cylinder(tempPoint);
+			// cylinder = new Cylinder(tempPoint);
 			getPlasma();
 		}
 		// }
@@ -828,10 +840,9 @@ public class SurfaceDemo extends AbstractAnalysis {
 			plasma.setWireframeColor(Color.BLUE);
 		}
 		cylinderPoint.setCoord(tempPoint.xyz);
-		
+
 		Coord3d offsetedPoint = cylinderPoint.xyz.add(new Coord3d(0, 0, offset));
 		plasma.setPosition(offsetedPoint);
-
 
 		if (writeToGCode)
 			try {
@@ -841,14 +852,14 @@ public class SurfaceDemo extends AbstractAnalysis {
 				if (cut) {
 					out.println(String.format(java.util.Locale.US, "G01 %s F%s (pointId: %d)", gcode,
 							Settings.getInstance().getSetting("gcode_feedrate_g1"), tempPoint.id));
-					alreadyCutting=true;
+					alreadyCutting = true;
 				} else {
 					if (alreadyCutting) {
 						out.println("M5");
 					}
 					out.println(String.format(java.util.Locale.US, "G01 %s F%s (pointId: %d)", gcode,
 							Settings.getInstance().getSetting("gcode_feedrate_g0"), tempPoint.id));
-					alreadyCutting=false;
+					alreadyCutting = false;
 				}
 				out.close();
 			} catch (IOException e) {
@@ -857,7 +868,9 @@ public class SurfaceDemo extends AbstractAnalysis {
 
 		if (ZOOM_POINT) {
 			float edge = canvas.getView().getBounds().getXmax() - canvas.getView().getBounds().getXmin();
-			canvas.getView().setBoundManual(new BoundingBox3d(plasma.getPosition(), edge));
+			// canvas.getView().setBoundManual(new
+			// BoundingBox3d(plasma.getPosition(), edge));
+			canvas.getView().setBoundManual(new BoundingBox3d(lastClickedPoint.getCoord(), edge));
 		}
 
 		instance.getChart().render();
@@ -888,11 +901,11 @@ public class SurfaceDemo extends AbstractAnalysis {
 			out.println("G01 " + gcode + " F" + Settings.getInstance().getSetting("gcode_feedrate_g0"));
 			if (!alreadyCutting) {
 				out.println("M3 S400");
-				alreadyCutting=true;
-			}	
+				alreadyCutting = true;
+			}
 			plasma.setColor(Color.RED);
 			plasma.setWireframeColor(Color.RED);
-			out.println(String.format("G04 P%f", (pierceTimeMs / 1000.0)));
+			out.println(String.format(Locale.US, "G04 P%.3f", (pierceTimeMs / 1000.0)));
 			try {
 				TimeUnit.MILLISECONDS.sleep(pierceTimeMs);
 			} catch (Exception ex) {
@@ -917,4 +930,15 @@ public class SurfaceDemo extends AbstractAnalysis {
 		}
 	}
 
+	public float getKerfOffset() {
+		float ret = 0.0f;
+		ret = Float.valueOf(Settings.getInstance().getSetting("plasma_kerf_offset_mm")).floatValue();
+		return ret;
+	}
+	
+	public float getZoomBounds() {
+		float ret = 0.0f;
+		ret = Float.valueOf(Settings.getInstance().getSetting("zoom_bounds")).floatValue();
+		return ret;
+	}	
 }

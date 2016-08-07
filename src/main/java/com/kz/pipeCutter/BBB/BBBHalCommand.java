@@ -37,6 +37,7 @@ public class BBBHalCommand implements Runnable {
 	private Thread readThread;
 	private Thread pingThread;
 	private long lastPingMs = 0;
+	private boolean shouldPing = true;
 
 	static String identity;
 	static {
@@ -128,13 +129,17 @@ public class BBBHalCommand implements Runnable {
 									if (contReturned.getComp(i).getPin(j).getName().equals("motion.spindle-on"))
 										System.out.println("");
 									if (contReturned.getComp(i).getPin(j).getType() == ValueType.HAL_FLOAT) {
-										value = Double.valueOf(contReturned.getComp(i).getPin(j).getHalfloat()).toString();
+										value = Double.valueOf(contReturned.getComp(i).getPin(j).getHalfloat())
+												.toString();
 									} else if (contReturned.getComp(i).getPin(j).getType() == ValueType.HAL_S32) {
-										value = Integer.valueOf(contReturned.getComp(i).getPin(j).getHals32()).toString();
+										value = Integer.valueOf(contReturned.getComp(i).getPin(j).getHals32())
+												.toString();
 									} else if (contReturned.getComp(i).getPin(j).getType() == ValueType.HAL_U32) {
-										value = Integer.valueOf(contReturned.getComp(i).getPin(j).getHalu32()).toString();
+										value = Integer.valueOf(contReturned.getComp(i).getPin(j).getHalu32())
+												.toString();
 									} else if (contReturned.getComp(i).getPin(j).getType() == ValueType.HAL_BIT) {
-										value = Boolean.valueOf(contReturned.getComp(i).getPin(j).getHalbit()).toString();
+										value = Boolean.valueOf(contReturned.getComp(i).getPin(j).getHalbit())
+												.toString();
 									}
 									halPin.put(contReturned.getComp(i).getPin(j).getName(), value);
 								}
@@ -144,15 +149,15 @@ public class BBBHalCommand implements Runnable {
 							MachinekitSettings.instance.pingHalCommand();
 							if (BBBStatus.getInstance().isAlive() && !BBBHalRComp.getInstance().isBinded
 									&& !BBBHalRComp.getInstance().isTryingToBind) {
-								//if (BBBHalRComp.getInstance().isAlive())
-									BBBHalRComp.getInstance().startBind();
+								// if (BBBHalRComp.getInstance().isAlive())
+								BBBHalRComp.getInstance().startBind();
 							}
 						} else if (contReturned.getType().equals(ContainerType.MT_HALRCOMP_BIND_CONFIRM)) {
 							BBBHalRComp.getInstance().isBinded = true;
 							BBBHalRComp.getInstance().isTryingToBind = false;
 							BBBHalRComp.getInstance().subcribe();
 						} else {
-							System.out.println(contReturned.getType());
+							Settings.getInstance().log("Unknown message: " + contReturned.getType());
 						}
 					}
 					// if (halPin.get("motion.program-line") != null &&
@@ -233,17 +238,20 @@ public class BBBHalCommand implements Runnable {
 			@Override
 			public void run() {
 				while (!pingThread.isInterrupted()) {
-					pb.Message.Container.Builder builder = Container.newBuilder();
-					builder.setType(ContainerType.MT_PING);
-					Container container = builder.build();
-					byte[] buff = container.toByteArray();
-					socket.send(buff);
+					if (BBBHalCommand.this.shouldPing) {
+						pb.Message.Container.Builder builder = Container.newBuilder();
+						builder.setType(ContainerType.MT_PING);
+						Container container = builder.build();
+						byte[] buff = container.toByteArray();
+						socket.send(buff);
+					}
 					try {
 						Thread.sleep(2000);
 					} catch (InterruptedException e) {
 						// TODO Auto-generated catch block
 						e.printStackTrace();
 					}
+
 				}
 			}
 		});
@@ -259,5 +267,13 @@ public class BBBHalCommand implements Runnable {
 			return (System.currentTimeMillis() - this.lastPingMs > 1000);
 		else
 			return false;
+	}
+
+	public void stopPing() {
+		shouldPing = false;
+	}
+
+	public void startPing() {
+		shouldPing = true;
 	}
 }

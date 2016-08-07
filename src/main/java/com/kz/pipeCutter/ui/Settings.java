@@ -73,7 +73,7 @@ public class Settings extends JFrame {
 	 */
 	public static void main(String[] args) {
 
-		//StdOutErrLog.tieSystemOutAndErrToLog();
+		// StdOutErrLog.tieSystemOutAndErrToLog();
 
 		System.setProperty("java.net.preferIPv4Stack", "true");
 		Settings frame = Settings.getInstance();
@@ -122,7 +122,7 @@ public class Settings extends JFrame {
 	/**
 	 * Create the frame.
 	 */
-	public Settings() {
+	protected Settings() {
 		// this.setAlwaysOnTop(true);
 		this.setTitle("PipeCutter settings");
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -182,12 +182,11 @@ public class Settings extends JFrame {
 		gcodeViewer.setLayout(new FlowLayout(FlowLayout.CENTER, 5, 5));
 		splitPane.setBottomComponent(commandPanel);
 
-		Settings.instance = this;
-
 		this.addComponentListener(new ComponentAdapter() {
 			public void componentResized(ComponentEvent evt) {
 				Component c = (Component) evt.getSource();
-				//System.out.println(c.getName() + " resized: " + c.getSize().toString());
+				// System.out.println(c.getName() + " resized: " +
+				// c.getSize().toString());
 				if (c.getName().equals("frame0") && repositioned) {
 					try {
 						FileInputStream in = new FileInputStream(Settings.iniFullFileName);
@@ -215,23 +214,24 @@ public class Settings extends JFrame {
 				if (repositioned) {
 					Component c = (Component) evt.getSource();
 					Point currentLocationOnScreen = c.getLocationOnScreen();
-					// System.out.println("frame moved.");
-					FileInputStream in;
-					try {
-						in = new FileInputStream(Settings.iniFullFileName);
+					if (currentLocationOnScreen.getX() > 0 && currentLocationOnScreen.getY() > 0) {
+						FileInputStream in;
+						try {
+							in = new FileInputStream(Settings.iniFullFileName);
 
-						SortedProperties props = new SortedProperties();
-						props.load(in);
-						in.close();
+							SortedProperties props = new SortedProperties();
+							props.load(in);
+							in.close();
 
-						FileOutputStream out = new FileOutputStream(Settings.iniFullFileName);
-						props.setProperty("frame0_location",
-								String.format("%.0fx%.0f", currentLocationOnScreen.getX(), currentLocationOnScreen.getY()));
-						props.store(out, null);
-						out.close();
-					} catch (Exception e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
+							FileOutputStream out = new FileOutputStream(Settings.iniFullFileName);
+							props.setProperty("frame0_location", String.format("%.0fx%.0f",
+									currentLocationOnScreen.getX(), currentLocationOnScreen.getY()));
+							props.store(out, null);
+							out.close();
+						} catch (Exception e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						}
 					}
 				}
 			}
@@ -260,7 +260,8 @@ public class Settings extends JFrame {
 							// Dimension(200,200));
 							Settings.instance.pack();
 							Settings.instance.repaint();
-							SavableText c = (SavableText) Settings.instance.getParameter("machinekit_commandService_url");
+							SavableText c = (SavableText) Settings.instance
+									.getParameter("machinekit_commandService_url");
 							System.out.println(c.jValue.getSize());
 
 						} catch (Exception ex) {
@@ -275,7 +276,8 @@ public class Settings extends JFrame {
 						try {
 							String[] splittedSize = location_str.split("x");
 							System.out.println(location_str);
-							Settings.this.setLocation(new Point(Integer.valueOf(splittedSize[0]), Integer.valueOf(splittedSize[1])));
+							Settings.this.setLocation(
+									new Point(Integer.valueOf(splittedSize[0]), Integer.valueOf(splittedSize[1])));
 						} catch (Exception ex) {
 							ex.printStackTrace();
 						}
@@ -307,7 +309,7 @@ public class Settings extends JFrame {
 
 		this.setVisible(true);
 		this.pack();
-
+		Settings.instance = this;
 	}
 
 	protected void pingBBB() {
@@ -360,12 +362,15 @@ public class Settings extends JFrame {
 			ex.printStackTrace();
 		}
 		// TODO Auto-generated method stub
+		if (ret == null)
+			ret = "";
 		return ret;
 	}
 
 	public void setSetting(String parameterId, String value) {
 		try {
-			List<SavableControl> savableControls = harvestMatches(Settings.instance.getContentPane(), SavableControl.class);
+			List<SavableControl> savableControls = harvestMatches(Settings.instance.getContentPane(),
+					SavableControl.class);
 			for (SavableControl savableControl : savableControls) {
 				if (savableControl.getParId().equals(parameterId)) {
 					savableControl.setParValue(value);
@@ -448,8 +453,7 @@ public class Settings extends JFrame {
 		}
 		return Collections.unmodifiableList(harvested);
 	}
-	
-	
+
 	public static Settings getInstance() {
 		if (instance == null)
 			instance = new Settings();
@@ -463,7 +467,7 @@ public class Settings extends JFrame {
 		Pattern pattern = Pattern.compile(patternString);
 		Matcher matcher = pattern.matcher(txt);
 		if (matcher.find())
-			txtOut = matcher.group(1) + "("  + matcher.group(2) + ")";
+			txtOut = matcher.group(1) + "(" + matcher.group(2) + ")";
 		else
 			txtOut = txt;
 
@@ -477,9 +481,10 @@ public class Settings extends JFrame {
 		List<SavableControl> savableControls = harvestMatches(Settings.instance.getContentPane(), SavableControl.class);
 		return savableControls;
 	}
-	
+
 	public List<IHasPinDef> getAllPinControls() {
-		List<IHasPinDef> savableControls = harvestSupportsInterface(Settings.instance.getContentPane(), IHasPinDef.class);
+		List<IHasPinDef> savableControls = harvestSupportsInterface(Settings.instance.getContentPane(),
+				IHasPinDef.class);
 		return savableControls;
-	}	
+	}
 }

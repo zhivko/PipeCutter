@@ -44,7 +44,6 @@ public class BBBHalRComp implements Runnable {
 	public boolean isBinded = false;
 	public boolean isTryingToBind = false;
 	private long lastPingMs;
-	private Thread pingThread;
 
 	public BBBHalRComp() {
 		prepareBindContainer();
@@ -72,7 +71,7 @@ public class BBBHalRComp implements Runnable {
 		this.builder = Container.newBuilder();
 		builder.setType(ContainerType.MT_HALRCOMP_BIND);
 
-		List<IHasPinDef> savableControls = Settings.instance.getAllPinControls();
+		List<IHasPinDef> savableControls = Settings.getInstance().getAllPinControls();
 		for (IHasPinDef savableControl : savableControls) {
 			if (savableControl.getPin() != null) {
 				String pinName = savableControl.getPin().getPinName();
@@ -203,17 +202,6 @@ public class BBBHalRComp implements Runnable {
 				}
 			}
 		}
-		if (pingThread != null && pingThread.isAlive()) {
-			pingThread.interrupt();
-			while (pingThread.isAlive()) {
-				try {
-					TimeUnit.MILLISECONDS.sleep(500);
-				} catch (InterruptedException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-			}
-		}
 
 		this.halRCompUri = Settings.getInstance().getSetting("machinekit_halRCompService_url");
 		ctx = new ZContext(2);
@@ -283,7 +271,7 @@ public class BBBHalRComp implements Runnable {
 	}
 
 	public void subcribe() {
-		List<IHasPinDef> savableControls = Settings.instance.getAllPinControls();
+		List<IHasPinDef> savableControls = Settings.getInstance().getAllPinControls();
 		for (IHasPinDef savableControl : savableControls) {
 			if (savableControl.getPin() != null) {
 				String compName = savableControl.getPin().getPinName().split("\\.")[0];
@@ -304,7 +292,7 @@ public class BBBHalRComp implements Runnable {
 		this.builder = Container.newBuilder();
 		builder.setType(ContainerType.MT_HALRCOMP_SET);
 
-		List<IHasPinDef> savableControls = Settings.instance.getAllPinControls();
+		List<IHasPinDef> savableControls = Settings.getInstance().getAllPinControls();
 		for (IHasPinDef savableControl : savableControls) {
 			if (savableControl.getPin() != null) {
 				String pinName = savableControl.getPin().getPinName();
@@ -332,4 +320,6 @@ public class BBBHalRComp implements Runnable {
 			}
 		}
 	}
+	
+
 }

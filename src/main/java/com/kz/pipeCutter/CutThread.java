@@ -66,7 +66,7 @@ public class CutThread extends SwingWorker<String, Object> {
 	}
 
 	private void calculateTopZ() {
-		ArrayList<MyPickablePoint> sortedList = new ArrayList(SurfaceDemo.instance.utils.points.values());
+		ArrayList<MyPickablePoint> sortedList = new ArrayList(SurfaceDemo.getInstance().utils.points.values());
 		Collections.sort(sortedList, new MyPickablePointZYXComparator());
 		topZ = sortedList.get(0).getZ();
 	}
@@ -79,30 +79,30 @@ public class CutThread extends SwingWorker<String, Object> {
 	public CutThread() {
 		String folder = Settings.getInstance().getSetting("gcode_folder");
 		File f = new File(folder + File.separatorChar + "prog.gcode");
-		Settings.instance.log(String.format("Delete file %s %b", f.getAbsolutePath(), f.delete()));
+		Settings.getInstance().log(String.format("Delete file %s %b", f.getAbsolutePath(), f.delete()));
 
-		pierceOffsetMm = Float.valueOf(Settings.instance.getSetting("plasma_pierce_offset_mm"));
-		double pierceTimeMsFloat = (Float.valueOf(Settings.instance.getSetting("plasma_pierce_time_s")) * 1000.0f);
+		pierceOffsetMm = Float.valueOf(Settings.getInstance().getSetting("plasma_pierce_offset_mm"));
+		double pierceTimeMsFloat = (Float.valueOf(Settings.getInstance().getSetting("plasma_pierce_time_s")) * 1000.0f);
 		pierceTimeMs = Long.valueOf((long) pierceTimeMsFloat);
-		cutOffsetMm = Float.valueOf(Settings.instance.getSetting("plasma_cut_offset_mm"));
-		String gcodeFolder = Settings.instance.getSetting("gcode_folder");
+		cutOffsetMm = Float.valueOf(Settings.getInstance().getSetting("plasma_cut_offset_mm"));
+		String gcodeFolder = Settings.getInstance().getSetting("gcode_folder");
 		gcodeFile = new File(gcodeFolder + File.separatorChar + "prog.gcode");
 	}
 
 	public void cut() throws InterruptedException {
 		int prevInventorEdge = 0;
-		ArrayList<MyPickablePoint> sortedList = new ArrayList(SurfaceDemo.instance.utils.points.values());
+		ArrayList<MyPickablePoint> sortedList = new ArrayList(SurfaceDemo.getInstance().utils.points.values());
 		Collections.sort(sortedList, new MyPickablePointYComparator());
 
-		// SurfaceDemo.instance.utils.establishNeighbourPoints();
+		// SurfaceDemo.getInstance().utils.establishNeighbourPoints();
 		MyPickablePoint lastOuterPoint = sortedList.get(sortedList.size() - 1);
 		MyPickablePoint firstOuterPoint = sortedList.get(0);
-		firstPoints = SurfaceDemo.instance.utils.findAllConnectedPoints(firstOuterPoint, new ArrayList<MyPickablePoint>());
+		firstPoints = SurfaceDemo.getInstance().utils.findAllConnectedPoints(firstOuterPoint, new ArrayList<MyPickablePoint>());
 
 		double mminY = sortedList.get(0).xyz.y;
 		double mmaxY = sortedList.get(sortedList.size() - 1).xyz.y;
 
-		SurfaceDemo.instance.angleTxt = "0.0";
+		SurfaceDemo.getInstance().angleTxt = "0.0";
 		try {
 			PrintWriter out = new PrintWriter(new BufferedWriter(new FileWriter(this.gcodeFile.getAbsolutePath(), true)));
 			out.println("G00 A0 B0");
@@ -123,17 +123,17 @@ public class CutThread extends SwingWorker<String, Object> {
 
 			System.out.println(minY + " - " + maxY);
 			// sumAngle = 0;
-			// SurfaceDemo.instance.utils.rotatePoints(sumAngle,true);
-			// SurfaceDemo.instance.angleTxt = "0.0";
+			// SurfaceDemo.getInstance().utils.rotatePoints(sumAngle,true);
+			// SurfaceDemo.getInstance().angleTxt = "0.0";
 			cutSegment(minY, maxY, true, rotationDirection);
-			double angle = Double.valueOf(SurfaceDemo.instance.angleTxt).doubleValue();
+			double angle = Double.valueOf(SurfaceDemo.getInstance().angleTxt).doubleValue();
 			if (angle > 0)
 				rotationDirection = -1;
 			else
 				rotationDirection = 1;
 			currentY = currentY - cutterYRange;
 		}
-		sumAngle = Float.valueOf(SurfaceDemo.instance.angleTxt); // sumAngle
+		sumAngle = Float.valueOf(SurfaceDemo.getInstance().angleTxt); // sumAngle
 		if (sumAngle >= 360.0)
 			rotationDirection = -1;
 		cutSegment(minY, maxY, false, rotationDirection);
@@ -155,7 +155,7 @@ public class CutThread extends SwingWorker<String, Object> {
 			System.out.println("TopZ=" + topZ);
 
 			ArrayList<MyPickablePoint> pointsToCut = new ArrayList<MyPickablePoint>();
-			for (MyPickablePoint p : SurfaceDemo.instance.utils.points.values()) {
+			for (MyPickablePoint p : SurfaceDemo.getInstance().utils.points.values()) {
 				if (p.xyz.y > minY && p.xyz.y <= maxY && Math.abs(p.getZ() - topZ) < 0.1) {
 					{
 						if (withoutLastPoints) {
@@ -186,15 +186,15 @@ public class CutThread extends SwingWorker<String, Object> {
 						// FileWriter(CutThread.gcodeFile.getAbsolutePath(), true)));
 						// out.println(String.format(java.util.Locale.US, "G01 A%.3f B%.3f
 						// F%s",
-						// Float.valueOf(SurfaceDemo.instance.angleTxt),
-						// Float.valueOf(SurfaceDemo.instance.angleTxt),
+						// Float.valueOf(SurfaceDemo.getInstance().angleTxt),
+						// Float.valueOf(SurfaceDemo.getInstance().angleTxt),
 						// Settings.getInstance().getSetting("gcode_feedrate_g0")));
 						// out.close();
 						// } catch (Exception e) {
 						// e.printStackTrace();
 						// }
 
-						SurfaceDemo.instance.moveAbove(myPoint, pierceOffsetMm, pierceTimeMs);
+						SurfaceDemo.getInstance().moveAbove(myPoint, pierceOffsetMm, pierceTimeMs);
 						double angle = folowThePath(myPoint, this.alAlreadyAddedPoints, (rotationDirection == -1 ? true : false));
 						hasBeenCutting = true;
 					}
@@ -202,16 +202,16 @@ public class CutThread extends SwingWorker<String, Object> {
 			}
 			if (hasBeenCutting) {
 				double diagonal = (topZ * 2 * 1.41 / 2);
-				MyPickablePoint newPoint = new MyPickablePoint(-100000, new Coord3d(SurfaceDemo.instance.cylinderPoint.xyz.x,
-						SurfaceDemo.instance.cylinderPoint.xyz.y, diagonal + 5), Color.BLACK, 0.4f, -200000);
-				SurfaceDemo.instance.move(newPoint, false, cutOffsetMm);
+				MyPickablePoint newPoint = new MyPickablePoint(-100000, new Coord3d(SurfaceDemo.getInstance().cylinderPoint.xyz.x,
+						SurfaceDemo.getInstance().cylinderPoint.xyz.y, diagonal + 5), Color.BLACK, 0.4f, -200000);
+				SurfaceDemo.getInstance().move(newPoint, false, cutOffsetMm);
 			}
 
-			sumAngle = Float.valueOf(SurfaceDemo.instance.angleTxt); // sumAngle
+			sumAngle = Float.valueOf(SurfaceDemo.getInstance().angleTxt); // sumAngle
 			if (sumAngle >= 360.0)
 				rotationDirection = -1;
 			double angle = rotationDirection * 90.0d;
-			SurfaceDemo.instance.utils.rotatePoints(angle, true);
+			SurfaceDemo.getInstance().utils.rotatePoints(angle, true);
 
 		}
 	}
@@ -223,13 +223,13 @@ public class CutThread extends SwingWorker<String, Object> {
 		prevPoint = tempPoint;
 		boolean shouldBreak = false;
 		while (!shouldBreak) {
-			SurfaceDemo.instance.move(tempPoint, true, cutOffsetMm);
+			SurfaceDemo.getInstance().move(tempPoint, true, cutOffsetMm);
 
 			if (tempPoint != null) {
 				tempPoint.setColor(Color.GREEN);
 				alAlreadyAddedPoints.add(tempPoint);
 			}
-			tempPoint = SurfaceDemo.instance.utils.findConnectedPoint(tempPoint, alAlreadyAddedPoints, true);
+			tempPoint = SurfaceDemo.getInstance().utils.findConnectedPoint(tempPoint, alAlreadyAddedPoints, true);
 			if (tempPoint == null) {
 				shouldBreak = true;
 				tempPoint = myPoint;
@@ -240,9 +240,9 @@ public class CutThread extends SwingWorker<String, Object> {
 			// angleDelta);
 			prevPoint = tempPoint;
 		}
-		SurfaceDemo.instance.move(tempPoint, true, cutOffsetMm);
+		SurfaceDemo.getInstance().move(tempPoint, true, cutOffsetMm);
 		prevPoint = tempPoint;
-		tempPoint = SurfaceDemo.instance.utils.findConnectedPoint(tempPoint, alAlreadyAddedPoints, true);
+		tempPoint = SurfaceDemo.getInstance().utils.findConnectedPoint(tempPoint, alAlreadyAddedPoints, true);
 		if (tempPoint != null) {
 			double angle = rotation(prevPoint, tempPoint);
 			return angle;
@@ -275,7 +275,7 @@ public class CutThread extends SwingWorker<String, Object> {
 			}
 
 			if (angleDeltaDeg != 0) {
-				SurfaceDemo.instance.utils.rotatePoints(angleDeltaDeg, false);
+				SurfaceDemo.getInstance().utils.rotatePoints(angleDeltaDeg, false);
 				sumAngle = sumAngle + angleDeltaDeg;
 				// System.out.print("\tSumAngle=" + sumAngle + " (delta=" +
 				// angleDeltaDeg + ")");

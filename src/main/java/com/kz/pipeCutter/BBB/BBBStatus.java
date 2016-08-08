@@ -30,14 +30,19 @@ import pb.Status.EmcTaskExecStateType;
 import pb.Types.ContainerType;
 
 public class BBBStatus implements Runnable {
-	private static BBBStatus instance;
+	public static BBBStatus instance;
 	private org.zeromq.ZMQ.Socket socket = null;
 	ByteArrayInputStream is;
 	public ChannelExec channelExec = null;
 	ZContext ctx;
 	private String uri;
 	private Thread readThread;
-	double x = 0, y = 0, z = 0, a = 0, b = 0, c = 0;
+	public double x = 0;
+	public double y = 0;
+	public double z = 0;
+	public double a = 0;
+	public double b = 0;
+	public double c = 0;
 	private long lastPingMs;
 
 	public BBBStatus() {
@@ -78,8 +83,7 @@ public class BBBStatus implements Runnable {
 						byte[] returnedBytes = frame.getData();
 						String messageType = new String(returnedBytes);
 						// System.out.println("type: " + messageType);
-						if (!messageType.equals("motion") && !messageType.equals("task") && !messageType.equals("io")
-								&& !messageType.equals("interp")) {
+						if (!messageType.equals("motion") && !messageType.equals("task") && !messageType.equals("io") && !messageType.equals("interp")) {
 
 							contReturned = Message.Container.parseFrom(returnedBytes);
 							if ((contReturned.getType().equals(ContainerType.MT_EMCSTAT_FULL_UPDATE)
@@ -116,15 +120,7 @@ public class BBBStatus implements Runnable {
 									if (SurfaceDemo.getInstance().getChart() != null) {
 										// System.out.println(String.format("%1$,.2f, %2$,.2f,
 										// %3$,.2f",x,y,z));
-										SwingUtilities.invokeLater(new Runnable() {
-											@Override
-											public void run() {
-												Coord3d coord = new Coord3d(x, y, z);
-												MyPickablePoint mp = new MyPickablePoint(-2, coord, Color.MAGENTA, 1, -1);
-												SurfaceDemo.getInstance().move(mp, GcodeViewer.instance.plasmaOn, 0, false);
-												SurfaceDemo.getInstance().utils.rotatePoints(a, false, false);
-											}
-										});
+										SurfaceDemo.getInstance().redrawPosition();
 									}
 								}
 							} else if (contReturned.getType().equals(ContainerType.MT_PING)) {
@@ -141,6 +137,12 @@ public class BBBStatus implements Runnable {
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
+			// try {
+			// TimeUnit.MILLISECONDS.sleep(200);
+			// } catch (InterruptedException e) {
+			// // TODO Auto-generated catch block
+			// e.printStackTrace();
+			// }
 		}
 	}
 
@@ -197,5 +199,5 @@ public class BBBStatus implements Runnable {
 		socket.unsubscribe("motion".getBytes(ZMQ.CHARSET));
 		socket.subscribe("motion".getBytes(ZMQ.CHARSET));
 	}
-	
+
 }

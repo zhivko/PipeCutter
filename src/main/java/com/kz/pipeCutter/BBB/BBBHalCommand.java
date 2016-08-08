@@ -184,6 +184,12 @@ public class BBBHalCommand implements Runnable {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
+			try {
+				TimeUnit.MILLISECONDS.sleep(200);
+			} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 
 		}
 	}

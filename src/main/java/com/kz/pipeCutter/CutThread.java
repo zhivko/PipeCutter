@@ -193,6 +193,10 @@ public class CutThread extends SwingWorker<String, Object> {
 						// } catch (Exception e) {
 						// e.printStackTrace();
 						// }
+						double diagonal = (SurfaceDemo.getInstance().utils.maxEdge * 2 * 1.41 / 2);
+						MyPickablePoint newPoint = new MyPickablePoint(-100000, new Coord3d(myPoint.xyz.x,
+								myPoint.xyz.y, diagonal/2 + 20), Color.BLACK, 0.4f, -200000);
+						SurfaceDemo.getInstance().move(newPoint, false, cutOffsetMm, true);
 
 						SurfaceDemo.getInstance().moveAbove(myPoint, pierceOffsetMm, pierceTimeMs);
 						double angle = folowThePath(myPoint, this.alAlreadyAddedPoints, (rotationDirection == -1 ? true : false));
@@ -201,10 +205,10 @@ public class CutThread extends SwingWorker<String, Object> {
 				}
 			}
 			if (hasBeenCutting) {
-				double diagonal = (topZ * 2 * 1.41 / 2);
+				double diagonal = (SurfaceDemo.getInstance().utils.maxEdge * 2 * 1.41 / 2);
 				MyPickablePoint newPoint = new MyPickablePoint(-100000, new Coord3d(SurfaceDemo.getInstance().cylinderPoint.xyz.x,
-						SurfaceDemo.getInstance().cylinderPoint.xyz.y, diagonal + 5), Color.BLACK, 0.4f, -200000);
-				SurfaceDemo.getInstance().move(newPoint, false, cutOffsetMm);
+						SurfaceDemo.getInstance().cylinderPoint.xyz.y, diagonal/2 + 20), Color.BLACK, 0.4f, -200000);
+				SurfaceDemo.getInstance().move(newPoint, false, cutOffsetMm, true);
 			}
 
 			sumAngle = Float.valueOf(SurfaceDemo.getInstance().angleTxt); // sumAngle

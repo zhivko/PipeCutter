@@ -56,6 +56,7 @@ public class SavableText extends SavableControl {
 	@Override
 	public void setParValue(String val) {
 		this.jValue.setText(val);
+		//resizeBox();
 	}
 
 	@Override
@@ -66,19 +67,25 @@ public class SavableText extends SavableControl {
 	@Override
 	public void valueChangedFromUI() {
 		if (!preventResize) {
-			String val = jValue.getText();
-			AffineTransform affinetransform = new AffineTransform();
-			FontRenderContext frc = new FontRenderContext(affinetransform, true, true);
-			Font font = new Font("Tahoma", Font.PLAIN, 12);
-			int textwidth = (int) (font.getStringBounds(val, frc).getWidth());
-			int textheight = (int) (font.getStringBounds(val, frc).getHeight());
-			
-			if(textwidth<20)
-				textwidth = 20;
-			
-			this.jValue
-					.setPreferredSize(new Dimension(textwidth + 15, textheight + 3));
+			resizeBox();
+			this.getParent().revalidate();
 		}
+	}
+
+	private void resizeBox() {
+		String val = jValue.getText();
+		AffineTransform affinetransform = new AffineTransform();
+		FontRenderContext frc = new FontRenderContext(affinetransform, true, true);
+		Font font = new Font("Tahoma", Font.PLAIN, 12);
+		this.setFont(font);
+		int textwidth = (int) (font.getStringBounds(val, frc).getWidth() * 1.2);
+		int textheight = (int) (font.getStringBounds(val, frc).getHeight());
+		
+		if(textwidth<30)
+			textwidth = 30;
+		
+		this.jValue
+				.setPreferredSize(new Dimension(textwidth, textheight + 3));
 	}
 
 	@Override

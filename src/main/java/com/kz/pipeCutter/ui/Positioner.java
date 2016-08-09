@@ -5,11 +5,9 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
-import java.io.File;
 import java.io.IOException;
-import java.net.MalformedURLException;
 import java.net.URI;
-import java.util.List;
+import java.net.URL;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -112,8 +110,7 @@ public class Positioner extends JPanel {
 
 		btnUp = new JButton();
 		try {
-			
-			ShrinkIcon si = new ShrinkIcon(this.getClass().getResource("./icons/ArrowUp.png").toURI().toURL());
+			ShrinkIcon si = new ShrinkIcon(this.getClass().getResource("/com/kz/pipeCutter/ui/icons/ArrowUp.png"));
 			btnUp.setIcon(si);
 		} catch (Exception e1) {
 			// TODO Auto-generated catch block
@@ -130,8 +127,7 @@ public class Positioner extends JPanel {
 
 		btnLeft = new JButton();
 		try {
-			ShrinkIcon si = new ShrinkIcon(
-					this.getClass().getResource("./icons/ArrowLeft.png").toURI().toURL());
+			ShrinkIcon si = new ShrinkIcon(this.getClass().getResource("/com/kz/pipeCutter/ui/icons/ArrowLeft.png"));
 			btnLeft.setIcon(si);
 		} catch (Exception e1) {
 			// TODO Auto-generated catch block
@@ -148,8 +144,7 @@ public class Positioner extends JPanel {
 
 		btnDown = new JButton();
 		try {
-			ShrinkIcon si = new ShrinkIcon(
-					this.getClass().getResource("./icons/ArrowDown.png").toURI().toURL());
+			ShrinkIcon si = new ShrinkIcon(this.getClass().getResource("/com/kz/pipeCutter/ui/icons/ArrowDown.png"));
 			btnDown.setIcon(si);
 		} catch (Exception e1) {
 			// TODO Auto-generated catch block
@@ -165,7 +160,7 @@ public class Positioner extends JPanel {
 
 		btnRight = new JButton();
 		try {
-			ShrinkIcon si = new ShrinkIcon(this.getClass().getResource("./icons/ArrowRight.png").toURI().toURL());
+			ShrinkIcon si = new ShrinkIcon(this.getClass().getResource("/com/kz/pipeCutter/ui/icons/ArrowRight.png"));
 			btnRight.setIcon(si);
 		} catch (Exception e1) {
 			// TODO Auto-generated catch block
@@ -290,7 +285,7 @@ public class Positioner extends JPanel {
 	}
 
 	public void makeWebsocketConnection() {
-		URI uri=null;
+		URI uri = null;
 		try {
 			if (wsSession != null && wsSession.isOpen())
 				wsSession.close();
@@ -335,8 +330,7 @@ public class Positioner extends JPanel {
 		scheduler.scheduleAtFixedRate(connectPositioner, 1000, 2000, TimeUnit.MILLISECONDS);
 	}
 
-	public void initToolTips()
-	{
+	public void initToolTips() {
 		btnUp.setToolTipText("E " + String.valueOf(this.e));
 		btnDown.setToolTipText("Z " + String.valueOf(this.z));
 

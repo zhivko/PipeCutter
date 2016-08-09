@@ -256,6 +256,14 @@
 
 
 	<build>
+		<resources>
+			<resource>
+				<directory>src/main/java/com/kz/pipeCutter/ui/icons/*.*</directory>
+				<includes>
+					<include>*.png</include>
+				</includes>
+			</resource>
+		</resources>
 		<plugins>
 			<!-- download source code in Eclipse, best practice -->
 			<plugin>

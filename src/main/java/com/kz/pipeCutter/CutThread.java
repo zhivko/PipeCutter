@@ -194,9 +194,9 @@ public class CutThread extends SwingWorker<String, Object> {
 						// e.printStackTrace();
 						// }
 						double diagonal = (SurfaceDemo.getInstance().utils.maxEdge * 2 * 1.41 / 2);
-						MyPickablePoint newPoint = new MyPickablePoint(-100000, new Coord3d(myPoint.xyz.x,
+						MyPickablePoint safeRetractPoint = new MyPickablePoint(-100000, new Coord3d(myPoint.xyz.x,
 								myPoint.xyz.y, diagonal/2 + 20), Color.BLACK, 0.4f, -200000);
-						SurfaceDemo.getInstance().move(newPoint, false, cutOffsetMm, true);
+						SurfaceDemo.getInstance().move(safeRetractPoint, false, cutOffsetMm, true);
 
 						SurfaceDemo.getInstance().moveAbove(myPoint, pierceOffsetMm, pierceTimeMs);
 						double angle = folowThePath(myPoint, this.alAlreadyAddedPoints, (rotationDirection == -1 ? true : false));

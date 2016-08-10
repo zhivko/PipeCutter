@@ -16,6 +16,7 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
+import java.lang.reflect.InvocationTargetException;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.text.DecimalFormat;
@@ -39,10 +40,12 @@ import javax.swing.SwingUtilities;
 import javax.swing.border.EmptyBorder;
 
 import org.apache.log4j.Logger;
+import org.jzy3d.chart.factories.ChartComponentFactory;
 
 import com.kz.pipeCutter.BBB.BBBError;
 import com.kz.pipeCutter.BBB.BBBHalCommand;
 import com.kz.pipeCutter.BBB.BBBHalRComp;
+import com.kz.pipeCutter.BBB.BBBMachineTalkCommand;
 import com.kz.pipeCutter.BBB.BBBStatus;
 import com.kz.pipeCutter.BBB.Discoverer;
 import com.kz.pipeCutter.ui.tab.GcodeViewer;
@@ -76,19 +79,26 @@ public class Settings extends JFrame {
 		// StdOutErrLog.tieSystemOutAndErrToLog();
 
 		System.setProperty("java.net.preferIPv4Stack", "true");
-		Settings frame = Settings.getInstance();
-		frame.addComponentListener(new ComponentAdapter() {
 
-			public void componentHidden(ComponentEvent e) {
-				/* code run when component hidden */
-			}
-
-			public void componentShown(ComponentEvent e) {
-				// discoverer = Discoverer.getInstance();
-				// Settings.instance.initServices();
+		SwingUtilities.invokeLater(new Runnable() {
+			@Override
+			public void run() {
+				Settings frame = Settings.getInstance();
 			}
 		});
 
+	}
+
+	public void initCommandService() {
+		if(BBBMachineTalkCommand.ctx!=null)
+			BBBMachineTalkCommand.ctx.close();
+
+		if(BBBMachineTalkCommand.socket!=null)
+			BBBMachineTalkCommand.socket.close();
+		
+		BBBMachineTalkCommand.ctx = null;
+		BBBMachineTalkCommand.socket = null;
+		BBBMachineTalkCommand.initSocket();
 	}
 
 	public void initErrorService() {
@@ -224,8 +234,7 @@ public class Settings extends JFrame {
 							in.close();
 
 							FileOutputStream out = new FileOutputStream(Settings.iniFullFileName);
-							props.setProperty("frame0_location", String.format("%.0fx%.0f",
-									currentLocationOnScreen.getX(), currentLocationOnScreen.getY()));
+							props.setProperty("frame0_location", String.format("%.0fx%.0f", currentLocationOnScreen.getX(), currentLocationOnScreen.getY()));
 							props.store(out, null);
 							out.close();
 						} catch (Exception e) {
@@ -249,19 +258,21 @@ public class Settings extends JFrame {
 					in.close();
 
 					if (props.get("frame0") != null) {
+						String folder = Settings.getInstance().getSetting("screenshot_folder");
+						if (folder != null) {
+							ChartComponentFactory.SCREENSHOT_FOLDER = folder;
+						}
 						String size = props.get("frame0").toString();
 						try {
 							String[] splittedSize = size.split("x");
 							System.out.println(size);
-							Settings.this.setMinimumSize(new Dimension(Double.valueOf(splittedSize[0]).intValue(),
-									Double.valueOf(splittedSize[1]).intValue()));
+							Settings.this.setMinimumSize(new Dimension(Double.valueOf(splittedSize[0]).intValue(), Double.valueOf(splittedSize[1]).intValue()));
 
 							// MachinekitSettings.instance.machinekitServices.setPreferredSize(new
 							// Dimension(200,200));
 							Settings.instance.pack();
 							Settings.instance.repaint();
-							SavableText c = (SavableText) Settings.instance
-									.getParameter("machinekit_commandService_url");
+							SavableText c = (SavableText) Settings.instance.getParameter("machinekit_commandService_url");
 							System.out.println(c.jValue.getSize());
 
 						} catch (Exception ex) {
@@ -276,8 +287,7 @@ public class Settings extends JFrame {
 						try {
 							String[] splittedSize = location_str.split("x");
 							System.out.println(location_str);
-							Settings.this.setLocation(
-									new Point(Integer.valueOf(splittedSize[0]), Integer.valueOf(splittedSize[1])));
+							Settings.this.setLocation(new Point(Integer.valueOf(splittedSize[0]), Integer.valueOf(splittedSize[1])));
 						} catch (Exception ex) {
 							ex.printStackTrace();
 						}
@@ -369,8 +379,7 @@ public class Settings extends JFrame {
 
 	public void setSetting(String parameterId, String value) {
 		try {
-			List<SavableControl> savableControls = harvestMatches(Settings.instance.getContentPane(),
-					SavableControl.class);
+			List<SavableControl> savableControls = harvestMatches(Settings.instance.getContentPane(), SavableControl.class);
 			for (SavableControl savableControl : savableControls) {
 				if (savableControl.getParId().equals(parameterId)) {
 					savableControl.setParValue(value);
@@ -483,8 +492,7 @@ public class Settings extends JFrame {
 	}
 
 	public List<IHasPinDef> getAllPinControls() {
-		List<IHasPinDef> savableControls = harvestSupportsInterface(Settings.instance.getContentPane(),
-				IHasPinDef.class);
+		List<IHasPinDef> savableControls = harvestSupportsInterface(Settings.instance.getContentPane(), IHasPinDef.class);
 		return savableControls;
 	}
 }

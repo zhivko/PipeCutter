@@ -1,9 +1,11 @@
 package com.kz.pipeCutter.BBB.commands;
 
+import com.kz.pipeCutter.BBB.BBBMachineTalkCommand;
+
 import pb.Message.Container;
 import pb.Types.ContainerType;
 
-public class PlayGCode extends MachineTalkCommand {
+public class PlayGCode extends BBBMachineTalkCommand {
 
 	public Container prepareContainer() throws Exception {
 		System.out.println(new Object() {

@@ -1,9 +1,11 @@
 package com.kz.pipeCutter.BBB.commands;
 
+import com.kz.pipeCutter.BBB.BBBMachineTalkCommand;
+
 import pb.Message.Container;
 import pb.Types.ContainerType;
 
-public class UnHomeAxis extends MachineTalkCommand {
+public class UnHomeAxis extends BBBMachineTalkCommand {
 	int axisNo;
 	
 	public UnHomeAxis(int i) {

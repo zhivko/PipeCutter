@@ -1,10 +1,12 @@
 package com.kz.pipeCutter.BBB.commands;
 
+import com.kz.pipeCutter.BBB.BBBMachineTalkCommand;
+
 import pb.Message.Container;
 import pb.Status.EmcTaskModeType;
 import pb.Types.ContainerType;
 
-public class ToAutoMode extends MachineTalkCommand {
+public class ToAutoMode extends BBBMachineTalkCommand {
 
 	@Override
 	public Container prepareContainer() {

@@ -1,12 +1,13 @@
 package com.kz.pipeCutter.BBB.commands;
 
+import com.kz.pipeCutter.BBB.BBBMachineTalkCommand;
 import com.kz.pipeCutter.ui.Settings;
 
 import pb.Message.Container;
 import pb.Status.EmcTaskModeType;
 import pb.Types.ContainerType;
 
-public class Jog extends MachineTalkCommand {
+public class Jog extends BBBMachineTalkCommand {
 
 	int axisNo;
 	double velocity;

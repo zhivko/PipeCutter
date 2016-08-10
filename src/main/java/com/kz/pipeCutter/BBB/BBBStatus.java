@@ -18,7 +18,6 @@ import org.zeromq.ZMsg;
 import com.jcraft.jsch.ChannelExec;
 import com.kz.pipeCutter.MyPickablePoint;
 import com.kz.pipeCutter.SurfaceDemo;
-import com.kz.pipeCutter.BBB.commands.MachineTalkCommand;
 import com.kz.pipeCutter.ui.Settings;
 import com.kz.pipeCutter.ui.tab.GcodeViewer;
 import com.kz.pipeCutter.ui.tab.MachinekitSettings;

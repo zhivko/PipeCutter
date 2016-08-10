@@ -1,10 +1,13 @@
 package com.kz.pipeCutter.BBB.commands;
 
 import pb.Message.Container;
+
+import com.kz.pipeCutter.BBB.BBBMachineTalkCommand;
+
 import pb.Status;
 import pb.Types.ContainerType;
 
-public class EstopReset extends MachineTalkCommand {
+public class EstopReset extends BBBMachineTalkCommand {
 
 	@Override
 	public Container prepareContainer() {

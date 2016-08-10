@@ -1,10 +1,13 @@
 package com.kz.pipeCutter.BBB.commands;
 
 import pb.Message.Container;
+
+import com.kz.pipeCutter.BBB.BBBMachineTalkCommand;
+
 import pb.Status;
 import pb.Types.ContainerType;
 
-public class PowerOff extends MachineTalkCommand {
+public class PowerOff extends BBBMachineTalkCommand {
 
 	@Override
 	public Container prepareContainer() {

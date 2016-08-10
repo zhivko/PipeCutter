@@ -1,11 +1,12 @@
 package com.kz.pipeCutter.BBB.commands;
 
 import com.google.protobuf.InvalidProtocolBufferException;
+import com.kz.pipeCutter.BBB.BBBMachineTalkCommand;
 
 import pb.Message.Container;
 import pb.Types.ContainerType;
 
-public class UnHomeAllAxis extends MachineTalkCommand {
+public class UnHomeAllAxis extends BBBMachineTalkCommand {
 	public UnHomeAllAxis() {
 	}
 

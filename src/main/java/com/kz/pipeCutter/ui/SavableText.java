@@ -7,6 +7,7 @@ import java.awt.geom.AffineTransform;
 
 import javax.swing.JTextField;
 import javax.swing.SwingConstants;
+import javax.swing.SwingUtilities;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 
@@ -55,8 +56,16 @@ public class SavableText extends SavableControl {
 
 	@Override
 	public void setParValue(String val) {
-		this.jValue.setText(val);
-		//resizeBox();
+		SavableText.this.jValue.setText(val);
+//		final String myValue = val;
+//		SwingUtilities.invokeLater(new Runnable() {
+//			
+//			@Override
+//			public void run() {
+//				SavableText.this.jValue.setText(myValue);
+//				//resizeBox();
+//			}
+//		});
 	}
 
 	@Override

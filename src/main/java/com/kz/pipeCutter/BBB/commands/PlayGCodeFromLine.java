@@ -1,9 +1,11 @@
 package com.kz.pipeCutter.BBB.commands;
 
+import com.kz.pipeCutter.BBB.BBBMachineTalkCommand;
+
 import pb.Message.Container;
 import pb.Types.ContainerType;
 
-public class PlayGCodeFromLine extends MachineTalkCommand {
+public class PlayGCodeFromLine extends BBBMachineTalkCommand {
 
 	int lineNo;
 

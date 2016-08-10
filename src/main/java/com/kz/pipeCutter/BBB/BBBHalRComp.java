@@ -238,35 +238,6 @@ public class BBBHalRComp implements Runnable {
 		readThread.interrupt();
 	}
 
-	public static void main1(String[] args) {
-		String halCmdUri = "";
-		Discoverer disc = new Discoverer();
-		disc.discover();
-		ArrayList<ServiceInfo> al = disc.getDiscoveredServices();
-		while (halCmdUri.equals("")) {
-			for (ServiceInfo si : al) {
-				if (si.getName().matches("HAL Rcomp.*")) {
-					halCmdUri = "tcp://" + si.getServer() + ":" + si.getPort();
-					break;
-				}
-			}
-			if (!halCmdUri.equals(""))
-				break;
-			try {
-				System.out.println("Still looking for halrcomp service.");
-				Thread.currentThread().sleep(1000);
-			} catch (InterruptedException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-		}
-
-		// String halCmdUri = "tcp://beaglebone.local.:49155/";
-		BBBHalRComp halRComp = new BBBHalRComp(halCmdUri);
-		halRComp.halRCompUri = halCmdUri;
-		halRComp.initSocket();
-
-	}
 
 	public void startBind() {
 		this.isTryingToBind = true;

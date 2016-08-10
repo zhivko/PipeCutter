@@ -8,6 +8,7 @@ import java.util.Locale;
 import java.util.concurrent.TimeUnit;
 
 import javax.swing.SwingUtilities;
+import javax.swing.SwingWorker;
 
 import org.jzy3d.maths.BoundingBox3d;
 import org.jzy3d.plot3d.rendering.view.modes.ViewBoundMode;
@@ -88,8 +89,7 @@ public class MyPopupMenu extends PopupMenu {
 		menuItem6.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
-				if (SurfaceDemo.instance.lastClickedPoint.getClass().getName()
-						.equals("com.kz.pipeCutter.MyPickablePoint")) {
+				if (SurfaceDemo.instance.lastClickedPoint.getClass().getName().equals("com.kz.pipeCutter.MyPickablePoint")) {
 
 					CutThread th = new CutThread(false, SurfaceDemo.instance.lastClickedPoint);
 					th.execute();
@@ -125,8 +125,7 @@ public class MyPopupMenu extends PopupMenu {
 		menuItem5.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
-				if (SurfaceDemo.instance.lastClickedPoint.getClass().getName()
-						.equals("com.kz.pipeCutter.MyPickablePoint")) {
+				if (SurfaceDemo.instance.lastClickedPoint.getClass().getName().equals("com.kz.pipeCutter.MyPickablePoint")) {
 					CutThread ct = new CutThread(false, SurfaceDemo.instance.lastClickedPoint);
 
 					ct.execute();
@@ -151,7 +150,13 @@ public class MyPopupMenu extends PopupMenu {
 		menuItem11.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
-				SurfaceDemo.instance.discoverer.discover();
+				SwingUtilities.invokeLater(new Runnable() {
+
+					@Override
+					public void run() {
+						SurfaceDemo.instance.discoverer.discover();
+					}
+				});
 			}
 		});
 		this.addSeparator();
@@ -167,10 +172,8 @@ public class MyPopupMenu extends PopupMenu {
 				SwingUtilities.invokeLater(new Runnable() {
 					@Override
 					public void run() {
-						String mdiCommand = String.format(Locale.US, "G92 X%.3f Y%.3f Z%.3f",
-								-1.0 * SurfaceDemo.instance.lastClickedPoint.xyz.x,
-								-1.0 * SurfaceDemo.instance.lastClickedPoint.xyz.y,
-								-1.0 * SurfaceDemo.instance.lastClickedPoint.xyz.z);
+						String mdiCommand = String.format(Locale.US, "G92 X%.3f Y%.3f Z%.3f", -1.0 * SurfaceDemo.instance.lastClickedPoint.xyz.x,
+								-1.0 * SurfaceDemo.instance.lastClickedPoint.xyz.y, -1.0 * SurfaceDemo.instance.lastClickedPoint.xyz.z);
 						Settings.getInstance().log(mdiCommand);
 						new ExecuteMdi(mdiCommand).start();
 
@@ -204,10 +207,8 @@ public class MyPopupMenu extends PopupMenu {
 				SwingUtilities.invokeLater(new Runnable() {
 					@Override
 					public void run() {
-						String mdiCommand = String.format(Locale.US, "G53 G00 X%.3f Y%.3f Z%.3f F200",
-								SurfaceDemo.instance.lastClickedPoint.xyz.x,
-								SurfaceDemo.instance.lastClickedPoint.xyz.y,
-								SurfaceDemo.instance.lastClickedPoint.xyz.z);
+						String mdiCommand = String.format(Locale.US, "G53 G00 X%.3f Y%.3f Z%.3f F200", SurfaceDemo.instance.lastClickedPoint.xyz.x,
+								SurfaceDemo.instance.lastClickedPoint.xyz.y, SurfaceDemo.instance.lastClickedPoint.xyz.z);
 						Settings.getInstance().log(mdiCommand);
 						new ExecuteMdi(mdiCommand).start();
 
@@ -232,10 +233,8 @@ public class MyPopupMenu extends PopupMenu {
 				SwingUtilities.invokeLater(new Runnable() {
 					@Override
 					public void run() {
-						String mdiCommand = String.format(Locale.US, "G00 X%.3f Y%.3f Z%.3f F200",
-								SurfaceDemo.instance.lastClickedPoint.xyz.x,
-								SurfaceDemo.instance.lastClickedPoint.xyz.y,
-								SurfaceDemo.instance.lastClickedPoint.xyz.z);
+						String mdiCommand = String.format(Locale.US, "G00 X%.3f Y%.3f Z%.3f F200", SurfaceDemo.instance.lastClickedPoint.xyz.x,
+								SurfaceDemo.instance.lastClickedPoint.xyz.y, SurfaceDemo.instance.lastClickedPoint.xyz.z);
 						Settings.getInstance().log(mdiCommand);
 						new ExecuteMdi(mdiCommand).start();
 
@@ -250,7 +249,7 @@ public class MyPopupMenu extends PopupMenu {
 				});
 			}
 		});
-		this.add(menuItem15);		
-		
+		this.add(menuItem15);
+
 	}
 }

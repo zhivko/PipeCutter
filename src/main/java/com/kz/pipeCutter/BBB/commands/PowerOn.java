@@ -1,10 +1,13 @@
 package com.kz.pipeCutter.BBB.commands;
 
 import pb.Message.Container;
+
+import com.kz.pipeCutter.BBB.BBBMachineTalkCommand;
+
 import pb.Status;
 import pb.Types.ContainerType;
 
-public class PowerOn extends MachineTalkCommand {
+public class PowerOn extends BBBMachineTalkCommand {
 
 	public Container prepareContainer() {
 		// TODO Auto-generated method stub

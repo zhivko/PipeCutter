@@ -4,11 +4,13 @@ import pb.Message.Container;
 
 import java.util.concurrent.TimeUnit;
 
+import com.kz.pipeCutter.BBB.BBBMachineTalkCommand;
+
 import pb.Status;
 import pb.Status.EmcTaskModeType;
 import pb.Types.ContainerType;
 
-public class OpenGCode extends MachineTalkCommand {
+public class OpenGCode extends BBBMachineTalkCommand {
 
 	public Container prepareContainer() throws Exception {
 		System.out.println(new Object() {

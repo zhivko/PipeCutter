@@ -1,11 +1,14 @@
 package com.kz.pipeCutter.BBB.commands;
 
 import pb.Message.Container;
+
+import com.kz.pipeCutter.BBB.BBBMachineTalkCommand;
+
 import pb.Status;
 import pb.Status.EmcTaskModeType;
 import pb.Types.ContainerType;
 
-public class ResumeGCode extends MachineTalkCommand {
+public class ResumeGCode extends BBBMachineTalkCommand {
 
 	public ResumeGCode() {
 	}

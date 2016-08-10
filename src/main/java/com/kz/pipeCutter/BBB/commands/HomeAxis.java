@@ -1,12 +1,13 @@
 package com.kz.pipeCutter.BBB.commands;
 
+import com.kz.pipeCutter.BBB.BBBMachineTalkCommand;
 import com.kz.pipeCutter.ui.Settings;
 
 import pb.Message.Container;
 import pb.Status.EmcTaskModeType;
 import pb.Types.ContainerType;
 
-public class HomeAxis extends MachineTalkCommand {
+public class HomeAxis extends BBBMachineTalkCommand {
 	int axisNo;
 	
 	public HomeAxis(int i) {

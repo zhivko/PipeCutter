@@ -1,12 +1,13 @@
 package com.kz.pipeCutter.BBB.commands;
 
 import com.google.protobuf.ByteString;
+import com.kz.pipeCutter.BBB.BBBMachineTalkCommand;
 import com.kz.pipeCutter.ui.Settings;
 
 import pb.Message.Container;
 import pb.Types.ContainerType;
 
-public class ExecuteMdi extends MachineTalkCommand {
+public class ExecuteMdi extends BBBMachineTalkCommand {
 
 	String mdiCommand;
 	public ExecuteMdi(String mdiCommand) {

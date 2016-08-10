@@ -7,7 +7,7 @@ import java.awt.event.ActionListener;
 import javax.swing.JButton;
 import javax.swing.SwingUtilities;
 
-public class MyButton extends JButton implements IParameter, IHasPinDef{
+public class MyButton extends JButton implements IParameter, IHasPinDef {
 	/**
 	 * 
 	 */
@@ -16,7 +16,6 @@ public class MyButton extends JButton implements IParameter, IHasPinDef{
 	private String parId;
 	private Color oldColor;
 	public PinDef pinDef;
-
 
 	public MyButton() {
 		super();
@@ -58,8 +57,6 @@ public class MyButton extends JButton implements IParameter, IHasPinDef{
 		t.start();
 	}
 
-	
-	
 	public void setParValue(String value) {
 		this.value = value;
 		if (Boolean.valueOf(value) != false) {
@@ -72,7 +69,7 @@ public class MyButton extends JButton implements IParameter, IHasPinDef{
 	public void setPin(PinDef pinDef) {
 		this.pinDef = pinDef;
 	}
-	
+
 	public PinDef getPin() {
 		return this.pinDef;
 	}
@@ -94,6 +91,5 @@ public class MyButton extends JButton implements IParameter, IHasPinDef{
 		// TODO Auto-generated method stub
 		return value;
 	}
-	
-	
+
 }

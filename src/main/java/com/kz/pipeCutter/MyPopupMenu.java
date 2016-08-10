@@ -165,7 +165,7 @@ public class MyPopupMenu extends PopupMenu {
 		this.addSeparator();
 
 		// Gcodes for BBB
-		MenuItem menuItem12 = new MenuItem("Set point as origin - G92");
+		MenuItem menuItem12 = new MenuItem("SET POINT AS ORIGIN - G92");
 		menuItem12.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
@@ -200,7 +200,7 @@ public class MyPopupMenu extends PopupMenu {
 		this.add(menuItem12);
 
 		// Gcodes for BBB
-		MenuItem menuItem14 = new MenuItem("Set point as origin - G53");
+		MenuItem menuItem14 = new MenuItem("MOVE IN ABSOLUTE COORDINATES - G53");
 		menuItem14.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent arg0) {

@@ -749,12 +749,21 @@ public class SurfaceDemo extends AbstractAnalysis {
 						if (picked.get(0).getClass().getName().equals("com.kz.pipeCutter.MyPickablePoint")) {
 							MyPickablePoint mp = ((MyPickablePoint) picked.get(0));
 							lastClickedPoint = mp;
-							float offset = Float.valueOf(Settings.getInstance().getSetting("plasma_pierce_offset_mm"));
-							move(mp, false, offset, false);
+							//float offset = Float.valueOf(Settings.getInstance().getSetting("plasma_pierce_offset_mm"));
+							//move(mp, false, offset, false);
 
 							Point p = SurfaceDemo.instance.utils.calculateOffsetPoint(mp);
 							p.setColor(Color.GREEN);
 							p.setWidth(6.0f);
+							
+							if (ZOOM_POINT) {
+								float edge = canvas.getView().getBounds().getXmax() - canvas.getView().getBounds().getXmin();
+								canvas.getView().setBoundManual(new BoundingBox3d(lastClickedPoint.xyz, edge));
+							}
+							if (ZOOM_PLASMA) {
+								float edge = canvas.getView().getBounds().getXmax() - canvas.getView().getBounds().getXmin();
+								canvas.getView().setBoundManual(new BoundingBox3d(plasma.getPosition(), edge));
+							}
 
 							myComposite.add(p);
 
@@ -775,8 +784,8 @@ public class SurfaceDemo extends AbstractAnalysis {
 		LineStrip yAxis = new LineStrip();
 		yAxis.setWireframeColor(Color.GREEN);
 		yAxis.add(new Point(new Coord3d(0, 0, 0)));
-		yAxis.add(new Point(new Coord3d(0, 1 * axisLength, 0)));
-		DrawableTextBitmap yAxisTxt = new DrawableTextBitmap("y", new Coord3d(0, 1 * axisLength, 0), Color.GREEN);
+		yAxis.add(new Point(new Coord3d(0, 1.4 * axisLength, 0)));
+		DrawableTextBitmap yAxisTxt = new DrawableTextBitmap("y", new Coord3d(0, 1.5 * axisLength, 0), Color.GREEN);
 		yAxisTxt.setHalign(Halign.CENTER); // TODO: invert
 		yAxisTxt.setValign(Valign.CENTER); // TODO: invert
 		myComposite.add(yAxisTxt);
@@ -784,7 +793,7 @@ public class SurfaceDemo extends AbstractAnalysis {
 		LineStrip xAxis = new LineStrip();
 		xAxis.setWireframeColor(Color.BLUE);
 		xAxis.add(new Point(new Coord3d(0, 0, 0)));
-		xAxis.add(new Point(new Coord3d(0.5 * axisLength, 0, 0)));
+		xAxis.add(new Point(new Coord3d(0.9 * axisLength, 0, 0)));
 		DrawableTextBitmap xAxisTxt = new DrawableTextBitmap("x", new Coord3d(1 * axisLength, 0, 0), Color.BLUE);
 		xAxisTxt.setHalign(Halign.CENTER); // TODO: invert
 		xAxisTxt.setValign(Valign.CENTER); // TODO: invert
@@ -793,7 +802,7 @@ public class SurfaceDemo extends AbstractAnalysis {
 		LineStrip zAxis = new LineStrip();
 		zAxis.setWireframeColor(Color.RED);
 		zAxis.add(new Point(new Coord3d(0, 0, 0)));
-		zAxis.add(new Point(new Coord3d(0, 0, 0.5 * axisLength)));
+		zAxis.add(new Point(new Coord3d(0, 0, 0.9 * axisLength)));
 		myComposite.add(xAxis);
 		myComposite.add(zAxis);
 		myComposite.add(yAxis);
@@ -941,8 +950,13 @@ public class SurfaceDemo extends AbstractAnalysis {
 
 		if (ZOOM_POINT) {
 			float edge = canvas.getView().getBounds().getXmax() - canvas.getView().getBounds().getXmin();
+			canvas.getView().setBoundManual(new BoundingBox3d(lastClickedPoint.xyz, edge));
+		}
+		if (ZOOM_PLASMA) {
+			float edge = canvas.getView().getBounds().getXmax() - canvas.getView().getBounds().getXmin();
 			canvas.getView().setBoundManual(new BoundingBox3d(plasma.getPosition(), edge));
 		}
+		
 
 		// instance.getChart().render();
 		try {

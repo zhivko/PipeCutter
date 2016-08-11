@@ -57,6 +57,7 @@ public class SavableText extends SavableControl {
 	@Override
 	public void setParValue(String val) {
 		SavableText.this.jValue.setText(val);
+		resizeBox();
 //		final String myValue = val;
 //		SwingUtilities.invokeLater(new Runnable() {
 //			

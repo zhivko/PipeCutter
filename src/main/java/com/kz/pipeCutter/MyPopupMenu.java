@@ -226,7 +226,7 @@ public class MyPopupMenu extends PopupMenu {
 		this.add(menuItem14);
 
 		// Gcodes for BBB
-		MenuItem menuItem15 = new MenuItem("Set point as origin - G00");
+		MenuItem menuItem15 = new MenuItem("Move to point - G00");
 		menuItem15.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent arg0) {

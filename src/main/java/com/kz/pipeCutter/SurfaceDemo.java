@@ -902,8 +902,8 @@ public class SurfaceDemo extends AbstractAnalysis {
 		// canvas.getView().setBoundManual(new
 		// BoundingBox3d(lastClickedPoint.getCoord(), edge));
 		// }
-
-		instance.getChart().render();
+		if (instance.getChart().getView().getCanvas() != null)
+			instance.getChart().render();
 		// try {
 		// TimeUnit.MILLISECONDS.sleep(Cylinder.sleep);
 		// } catch (InterruptedException e) {
@@ -970,11 +970,7 @@ public class SurfaceDemo extends AbstractAnalysis {
 	}
 
 	public void redrawPosition() {
-		if (BBBStatus.instance != null) {
-			// Thread t = new Thread(new Runnable() {
-			//
-			// @Override
-			// public void run() {
+		if (BBBStatus.instance != null && instance.getChart().getView().getCanvas() != null) {
 			Coord3d coord = new Coord3d(BBBStatus.instance.x, BBBStatus.instance.y, BBBStatus.instance.z);
 			MyPickablePoint mp = new MyPickablePoint(-2, coord, Color.MAGENTA, 1, -1);
 			SurfaceDemo.getInstance().move(mp, GcodeViewer.instance.plasmaOn, 0, false);
@@ -988,11 +984,6 @@ public class SurfaceDemo extends AbstractAnalysis {
 				SurfaceDemo.instance.canvas.getView().setBoundManual(new BoundingBox3d(SurfaceDemo.instance.lastClickedPoint.getCoord(), currentViewRadius));
 			} else
 				SurfaceDemo.instance.canvas.getView().setBoundMode(ViewBoundMode.AUTO_FIT);
-			// }
-			// });
-			// t.setPriority(Thread.MAX_PRIORITY);
-			// t.run();
-
 		}
 	}
 

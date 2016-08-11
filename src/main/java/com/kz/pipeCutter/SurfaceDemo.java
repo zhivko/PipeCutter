@@ -124,7 +124,8 @@ public class SurfaceDemo extends AbstractAnalysis {
 
 							instance.canvas = (CanvasAWT) instance.getChart().getCanvas();
 							instance.canvas.getAnimator().start();
-							// instance.canvas.getAnimator().setUpdateFPSFrames(20, System.out);
+							// instance.canvas.getAnimator().setUpdateFPSFrames(20,
+							// System.out);
 							instance.canvas.setSize(600, 600);
 
 							final MyPopupMenu menu = new MyPopupMenu();
@@ -749,13 +750,14 @@ public class SurfaceDemo extends AbstractAnalysis {
 						if (picked.get(0).getClass().getName().equals("com.kz.pipeCutter.MyPickablePoint")) {
 							MyPickablePoint mp = ((MyPickablePoint) picked.get(0));
 							lastClickedPoint = mp;
-							//float offset = Float.valueOf(Settings.getInstance().getSetting("plasma_pierce_offset_mm"));
-							//move(mp, false, offset, false);
+							// float offset =
+							// Float.valueOf(Settings.getInstance().getSetting("plasma_pierce_offset_mm"));
+							// move(mp, false, offset, false);
 
 							Point p = SurfaceDemo.instance.utils.calculateOffsetPoint(mp);
 							p.setColor(Color.GREEN);
 							p.setWidth(6.0f);
-							
+
 							if (ZOOM_POINT) {
 								float edge = canvas.getView().getBounds().getXmax() - canvas.getView().getBounds().getXmin();
 								canvas.getView().setBoundManual(new BoundingBox3d(lastClickedPoint.xyz, edge));
@@ -876,26 +878,21 @@ public class SurfaceDemo extends AbstractAnalysis {
 		Coord3d offsetedPoint = cylinderPoint.xyz.add(new Coord3d(0, 0, offset));
 		plasma.setPosition(offsetedPoint);
 
-		if (writeToGCode)
-			try {
-				String gcode = SurfaceDemo.instance.utils.coordinateToGcode(offsetedPoint);
-				PrintWriter out = new PrintWriter(new BufferedWriter(new FileWriter(CutThread.gcodeFile.getAbsolutePath(), true)));
-				if (cut) {
-					out.println(String.format(java.util.Locale.US, "G01 %s F%s (pointId: %d)", gcode, Settings.getInstance().getSetting("gcode_feedrate_g1"),
-							tempPoint.id));
-					alreadyCutting = true;
-				} else {
-					if (alreadyCutting) {
-						out.println("M5");
-					}
-					out.println(String.format(java.util.Locale.US, "G01 %s F%s (pointId: %d)", gcode, Settings.getInstance().getSetting("gcode_feedrate_g0"),
-							tempPoint.id));
-					alreadyCutting = false;
+		if (writeToGCode) {
+			String gcode = SurfaceDemo.instance.utils.coordinateToGcode(offsetedPoint);
+			if (cut) {
+				writeToGcodeFile(String.format(java.util.Locale.US, "G01 %s F%s (pointId: %d)", gcode, Settings.getInstance().getSetting("gcode_feedrate_g1"),
+						tempPoint.id));
+				alreadyCutting = true;
+			} else {
+				if (alreadyCutting) {
+					writeToGcodeFile("M5");
 				}
-				out.close();
-			} catch (IOException e) {
-				e.printStackTrace();
+				writeToGcodeFile(String.format(java.util.Locale.US, "G01 %s F%s (pointId: %d)", gcode, Settings.getInstance().getSetting("gcode_feedrate_g0"),
+						tempPoint.id));
+				alreadyCutting = false;
 			}
+		}
 
 		// if (ZOOM_POINT) {
 		// float edge = canvas.getView().getBounds().getXmax() -
@@ -920,32 +917,26 @@ public class SurfaceDemo extends AbstractAnalysis {
 		Coord3d abovePoint = tempPoint.xyz.add(0f, 0f, offset);
 		plasma.setPosition(abovePoint);
 
+		String gcode = SurfaceDemo.instance.utils.coordinateToGcode(abovePoint, offset);
+		plasma.setColor(Color.BLUE);
+		plasma.setWireframeColor(Color.BLUE);
 		try {
-			PrintWriter out = new PrintWriter(new BufferedWriter(new FileWriter(CutThread.gcodeFile.getAbsolutePath(), true)));
-			String gcode = SurfaceDemo.instance.utils.coordinateToGcode(abovePoint, offset);
-			plasma.setColor(Color.BLUE);
-			plasma.setWireframeColor(Color.BLUE);
-			try {
-				Thread.sleep(Long.valueOf(1000));
-			} catch (Exception ex) {
-				ex.printStackTrace();
-			}
-			out.println("G01 " + gcode + " F" + Settings.getInstance().getSetting("gcode_feedrate_g0"));
-			if (!alreadyCutting) {
-				out.println("M3 S400");
-				alreadyCutting = true;
-			}
-			plasma.setColor(Color.RED);
-			plasma.setWireframeColor(Color.RED);
-			out.println(String.format(Locale.US, "G04 P%.3f", (pierceTimeMs / 1000.0)));
-			try {
-				TimeUnit.MILLISECONDS.sleep(pierceTimeMs);
-			} catch (Exception ex) {
-				ex.printStackTrace();
-			}
-			out.close();
-		} catch (Exception e) {
-			e.printStackTrace();
+			Thread.sleep(Long.valueOf(1000));
+		} catch (Exception ex) {
+			ex.printStackTrace();
+		}
+		writeToGcodeFile("G01 " + gcode + " F" + Settings.getInstance().getSetting("gcode_feedrate_g0"));
+		if (!alreadyCutting) {
+			writeToGcodeFile("M3 S400");
+			alreadyCutting = true;
+		}
+		plasma.setColor(Color.RED);
+		plasma.setWireframeColor(Color.RED);
+		writeToGcodeFile(String.format(Locale.US, "G04 P%.3f", (pierceTimeMs / 1000.0)));
+		try {
+			TimeUnit.MILLISECONDS.sleep(pierceTimeMs);
+		} catch (Exception ex) {
+			ex.printStackTrace();
 		}
 
 		if (ZOOM_POINT) {
@@ -956,7 +947,6 @@ public class SurfaceDemo extends AbstractAnalysis {
 			float edge = canvas.getView().getBounds().getXmax() - canvas.getView().getBounds().getXmin();
 			canvas.getView().setBoundManual(new BoundingBox3d(plasma.getPosition(), edge));
 		}
-		
 
 		// instance.getChart().render();
 		try {
@@ -1005,4 +995,19 @@ public class SurfaceDemo extends AbstractAnalysis {
 
 		}
 	}
+
+	public void writeToGcodeFile(String txt) {
+		PrintWriter out = null;
+		try {
+			out = new PrintWriter(new BufferedWriter(new FileWriter(CutThread.gcodeFile.getAbsolutePath(), true)));
+			out.println(txt);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} finally {
+			if (out != null)
+				out.close();
+		}
+	}
+
 }

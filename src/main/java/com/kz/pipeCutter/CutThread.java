@@ -8,6 +8,7 @@ import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Locale;
 
 import javax.swing.SwingWorker;
 
@@ -105,7 +106,9 @@ public class CutThread extends SwingWorker<String, Object> {
 		SurfaceDemo.getInstance().angleTxt = "0.0";
 		try {
 			PrintWriter out = new PrintWriter(new BufferedWriter(new FileWriter(this.gcodeFile.getAbsolutePath(), true)));
-			out.println("G00 A0 B0");
+			double diagonal = (SurfaceDemo.getInstance().utils.maxEdge * 2 * 1.41 / 2);
+			out.println(String.format(Locale.US, "G01 Z%.3f F%s", diagonal / 2.0f, Settings.getInstance().getSetting("gcode_feedrate_g1")));
+			out.println(String.format(Locale.US, "G01 A0 B0 F%s", Settings.getInstance().getSetting("gcode_feedrate_g1")));
 			out.flush();
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
@@ -193,9 +196,9 @@ public class CutThread extends SwingWorker<String, Object> {
 						// } catch (Exception e) {
 						// e.printStackTrace();
 						// }
-						double diagonal = (SurfaceDemo.getInstance().utils.maxEdge * 2 * 1.41 / 2);
-						MyPickablePoint safeRetractPoint = new MyPickablePoint(-100000, new Coord3d(myPoint.xyz.x,
-								myPoint.xyz.y, diagonal/2 + 20), Color.BLACK, 0.4f, -200000);
+						double diagonal = (SurfaceDemo.getInstance().utils.maxEdge * Math.sqrt(2.0f));
+						MyPickablePoint safeRetractPoint = new MyPickablePoint(-100000, new Coord3d(myPoint.xyz.x, myPoint.xyz.y, diagonal / 2 + 20), Color.BLACK,
+								0.4f, -200000);
 						SurfaceDemo.getInstance().move(safeRetractPoint, false, cutOffsetMm, true);
 
 						SurfaceDemo.getInstance().moveAbove(myPoint, pierceOffsetMm, pierceTimeMs);
@@ -205,9 +208,10 @@ public class CutThread extends SwingWorker<String, Object> {
 				}
 			}
 			if (hasBeenCutting) {
-				double diagonal = (SurfaceDemo.getInstance().utils.maxEdge * 2 * 1.41 / 2);
-				MyPickablePoint newPoint = new MyPickablePoint(-100000, new Coord3d(SurfaceDemo.getInstance().cylinderPoint.xyz.x,
-						SurfaceDemo.getInstance().cylinderPoint.xyz.y, diagonal/2 + 20), Color.BLACK, 0.4f, -200000);
+				double diagonal = (SurfaceDemo.getInstance().utils.maxEdge * Math.sqrt(2.0d));
+				MyPickablePoint newPoint = new MyPickablePoint(-100000,
+						new Coord3d(SurfaceDemo.getInstance().cylinderPoint.xyz.x, SurfaceDemo.getInstance().cylinderPoint.xyz.y, diagonal / 2.0f + 20), Color.BLACK,
+						0.4f, -200000);
 				SurfaceDemo.getInstance().move(newPoint, false, cutOffsetMm, true);
 			}
 
@@ -315,8 +319,7 @@ public class CutThread extends SwingWorker<String, Object> {
 		else
 			try {
 				this.folowThePath(this.startPoint, this.alAlreadyAddedPoints, true);
-				PrintWriter out = new PrintWriter(
-						new BufferedWriter(new FileWriter(CutThread.gcodeFile.getAbsolutePath(), true)));
+				PrintWriter out = new PrintWriter(new BufferedWriter(new FileWriter(CutThread.gcodeFile.getAbsolutePath(), true)));
 				out.println("M2");
 				out.flush();
 				out.close();

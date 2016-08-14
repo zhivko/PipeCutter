@@ -16,7 +16,7 @@ public class Jog extends BBBMachineTalkCommand {
 	public Jog(int axisNo, double velocity, double distance)
 	{
 		this.axisNo = axisNo;
-		this.velocity = velocity;
+		this.velocity = velocity/60.0;
 		this.distance = distance;
 	}
 	

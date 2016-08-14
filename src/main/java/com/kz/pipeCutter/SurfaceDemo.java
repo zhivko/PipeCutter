@@ -881,14 +881,14 @@ public class SurfaceDemo extends AbstractAnalysis {
 		if (writeToGCode) {
 			String gcode = SurfaceDemo.instance.utils.coordinateToGcode(offsetedPoint);
 			if (cut) {
-				writeToGcodeFile(String.format(java.util.Locale.US, "G01 %s F%s (pointId: %d)", gcode, Settings.getInstance().getSetting("gcode_feedrate_g1"),
+				writeToGcodeFile(String.format(java.util.Locale.US, "G01 %s (pointId: %d)", gcode,
 						tempPoint.id));
 				alreadyCutting = true;
 			} else {
 				if (alreadyCutting) {
 					writeToGcodeFile("M5");
 				}
-				writeToGcodeFile(String.format(java.util.Locale.US, "G01 %s F%s (pointId: %d)", gcode, Settings.getInstance().getSetting("gcode_feedrate_g0"),
+				writeToGcodeFile(String.format(java.util.Locale.US, "G01 %s (pointId: %d)", gcode,
 						tempPoint.id));
 				alreadyCutting = false;
 			}
@@ -925,7 +925,7 @@ public class SurfaceDemo extends AbstractAnalysis {
 		} catch (Exception ex) {
 			ex.printStackTrace();
 		}
-		writeToGcodeFile("G01 " + gcode + " F" + Settings.getInstance().getSetting("gcode_feedrate_g0"));
+		writeToGcodeFile("G01 " + gcode);
 		if (!alreadyCutting) {
 			writeToGcodeFile("M3 S400");
 			alreadyCutting = true;

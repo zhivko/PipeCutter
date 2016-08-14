@@ -16,7 +16,6 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
-import java.lang.reflect.InvocationTargetException;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.text.DecimalFormat;
@@ -90,12 +89,12 @@ public class Settings extends JFrame {
 	}
 
 	public void initCommandService() {
-		if(BBBMachineTalkCommand.ctx!=null)
+		if (BBBMachineTalkCommand.ctx != null)
 			BBBMachineTalkCommand.ctx.close();
 
-		if(BBBMachineTalkCommand.socket!=null)
+		if (BBBMachineTalkCommand.socket != null)
 			BBBMachineTalkCommand.socket.close();
-		
+
 		BBBMachineTalkCommand.ctx = null;
 		BBBMachineTalkCommand.socket = null;
 		BBBMachineTalkCommand.initSocket();
@@ -359,6 +358,16 @@ public class Settings extends JFrame {
 	}
 
 	public String getSetting(String parameterId) {
+		List<SavableControl> savableControls = harvestMatches(Settings.instance.getContentPane(), SavableControl.class);
+		for (SavableControl savableControl : savableControls) {
+			if (savableControl.getParId().equals(parameterId)) {
+				return savableControl.getParValue();
+			}
+		}
+		return null;
+	}
+
+	public String getSetting2(String parameterId) {
 		String ret = null;
 		try {
 			FileInputStream in = new FileInputStream(Settings.iniFullFileName);
@@ -382,8 +391,10 @@ public class Settings extends JFrame {
 			List<SavableControl> savableControls = harvestMatches(Settings.instance.getContentPane(), SavableControl.class);
 			for (SavableControl savableControl : savableControls) {
 				if (savableControl.getParId().equals(parameterId)) {
-					savableControl.setParValue(value);
-					savableControl.save();
+					final SavableControl mysavable = savableControl;
+					final String myval = value;
+					mysavable.setParValue(myval);
+					mysavable.save();
 					break;
 				}
 			}

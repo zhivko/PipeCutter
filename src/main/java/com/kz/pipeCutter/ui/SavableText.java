@@ -96,6 +96,7 @@ public class SavableText extends SavableControl {
 		
 		this.jValue
 				.setPreferredSize(new Dimension(textwidth, textheight + 3));
+		
 	}
 
 	@Override

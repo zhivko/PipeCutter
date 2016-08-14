@@ -47,6 +47,7 @@ public class Utils {
 	public float minZ = 0;
 
 	public float maxEdge = 0;
+	private Coord3d previousPoint;
 
 	static double Math_E = 0.0001;
 	static double rotationAngleMin = 0.01;
@@ -366,20 +367,7 @@ public class Utils {
 	}
 
 	public String coordinateToGcode(Coord3d point) {
-		float offset = Float.valueOf(Settings.getInstance().getSetting("plasma_pierce_offset_mm"));
-		boolean moveRelatively = false;
-		Float x, y, z;
-		if (moveRelatively) {
-			x = Cylinder.offsetX - point.x;
-			y = point.y + Cylinder.offsetY;
-			z = point.z + Cylinder.offsetZ + offset;
-		} else {
-			x = point.x;
-			y = point.y;
-			z = point.z;
-		}
-		float angle = Float.valueOf(SurfaceDemo.instance.angleTxt);
-		return String.format(java.util.Locale.US, "X%.3f Y%.3f Z%.3f A%.3f B%.3f", x, y, z, angle, angle);
+		return coordinateToGcode(point, 0);
 	}
 
 	public String coordinateToGcode(Coord3d coord, float offset) {
@@ -395,7 +383,28 @@ public class Utils {
 			z = coord.z;
 		}
 		float angle = Float.valueOf(SurfaceDemo.instance.angleTxt);
-		return String.format(java.util.Locale.US, "X%.3f Y%.3f Z%.3f A%.3f B%.3f", x, y, z, angle, angle);
+
+		boolean gcode_g93 = Settings.instance.getSetting("gcode_g93").equals("1");
+
+		if (gcode_g93) {
+			if (this.previousPoint == null) {
+				float x1 = Float.valueOf(Settings.getInstance().getSetting("position_x")).floatValue();
+				float y1 = Float.valueOf(Settings.getInstance().getSetting("position_y")).floatValue();
+				float z1 = Float.valueOf(Settings.getInstance().getSetting("position_z")).floatValue();
+				this.previousPoint = new Coord3d(x1,y1,z1);
+			}
+			// length calculation
+			double length = coord.distance(this.previousPoint);
+			double g93feed = 1;
+			if (length > Math_E) {
+				double time = length / CutThread.instance.g1Speed / 60;
+				g93feed = 1 / time;
+			}
+			return String.format(java.util.Locale.US, "X%.3f Y%.3f Z%.3f A%.3f B%.3f F%.3f", x, y, z, angle, angle, g93feed);
+		}
+		else
+			return String.format(java.util.Locale.US, "X%.3f Y%.3f Z%.3f A%.3f B%.3f F%.3f", x, y, z, angle, angle, CutThread.instance.g1Speed);
+
 	}
 
 	public Coord3d rotate(double x, double y, double z, double angle, double axisX, double axisY, double axisZ) {
@@ -757,7 +766,7 @@ public class Utils {
 		if (maxX - minX > maxEdge)
 			maxEdge = maxX - minX;
 		if (maxZ - minZ > maxEdge)
-			maxEdge = maxZ - minZ;		
-	
+			maxEdge = maxZ - minZ;
+
 	}
 }

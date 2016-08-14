@@ -8,6 +8,7 @@ import java.util.Random;
 import java.util.concurrent.TimeUnit;
 
 import javax.jmdns.ServiceInfo;
+import javax.swing.SwingUtilities;
 
 import org.zeromq.ZContext;
 import org.zeromq.ZFrame;
@@ -134,12 +135,20 @@ public class BBBHalRComp implements Runnable {
 											value = Boolean.valueOf(contReturned.getComp(i).getPin(j).getHalbit()).toString();
 										}
 										halPins.put(contReturned.getComp(i).getPin(j).getName(), value);
-										pinsByHandle.put(contReturned.getComp(i).getPin(j).getHandle(),
-												pinsByName.get(contReturned.getComp(i).getPin(j).getName()));
+										pinsByHandle.put(contReturned.getComp(i).getPin(j).getHandle(), pinsByName.get(contReturned.getComp(i).getPin(j).getName()));
 									}
 								}
 								GcodeViewer.instance.setLineNumber(Integer.valueOf(halPins.get("mymotion.program-line")).intValue());
 								GcodeViewer.instance.setPlasmaOn(Boolean.valueOf(halPins.get("mymotion.spindle-on")).booleanValue());
+
+								Settings.instance.setSetting("mymotion.vx", String.format("%.3f",Float.valueOf(halPins.get("mymotion.vx"))));
+								Settings.instance.setSetting("mymotion.dvx", String.format("%.3f",Float.valueOf(halPins.get("mymotion.dvx"))));
+								Settings.instance.setSetting("mymotion.vz", String.format("%.3f",Float.valueOf(halPins.get("mymotion.vz"))));
+								Settings.instance.setSetting("mymotion.dvz", String.format("%.3f",Float.valueOf(halPins.get("mymotion.dvz"))));
+								Settings.instance.setSetting("mymotion.current-radius", String.format("%.3f",Float.valueOf(halPins.get("mymotion.current-radius"))));
+								Settings.instance.setSetting("mymotion.vy", String.format("%.3f",Float.valueOf(halPins.get("mymotion.vy"))));
+								Settings.instance.setSetting("mymotion.v", String.format("%.3f",Float.valueOf(halPins.get("mymotion.v"))));
+
 							} else if (contReturned.getType().equals(ContainerType.MT_PING)) {
 								this.lastPingMs = System.currentTimeMillis();
 								MachinekitSettings.instance.pingHalRcomp();
@@ -159,8 +168,22 @@ public class BBBHalRComp implements Runnable {
 									}
 									halPins.put(pinDef.getPinName(), value);
 								}
-								GcodeViewer.instance.setLineNumber(Integer.valueOf(halPins.get("mymotion.program-line")).intValue());
-								GcodeViewer.instance.setPlasmaOn(Boolean.valueOf(halPins.get("mymotion.spindle-on")).booleanValue());
+								
+								SwingUtilities.invokeAndWait(new Runnable() {
+									@Override
+									public void run() {
+										GcodeViewer.instance.setLineNumber(Integer.valueOf(halPins.get("mymotion.program-line")).intValue());
+										GcodeViewer.instance.setPlasmaOn(Boolean.valueOf(halPins.get("mymotion.spindle-on")).booleanValue());
+										Settings.instance.setSetting("mymotion.vx", String.format("%.3f",Float.valueOf(halPins.get("mymotion.vx"))));
+										Settings.instance.setSetting("mymotion.dvx", String.format("%.3f",Float.valueOf(halPins.get("mymotion.dvx"))));
+										Settings.instance.setSetting("mymotion.vz", String.format("%.3f",Float.valueOf(halPins.get("mymotion.vz"))));
+										Settings.instance.setSetting("mymotion.dvz", String.format("%.3f",Float.valueOf(halPins.get("mymotion.dvz"))));
+										Settings.instance.setSetting("mymotion.current-radius", String.format("%.3f",Float.valueOf(halPins.get("mymotion.current-radius"))));
+										Settings.instance.setSetting("mymotion.vy", String.format("%.3f",Float.valueOf(halPins.get("mymotion.vy"))));
+										Settings.instance.setSetting("mymotion.v", String.format("%.3f",Float.valueOf(halPins.get("mymotion.v"))));
+									}
+								});
+
 							} else {
 								System.out.println(contReturned.getType().toString());
 							}
@@ -181,13 +204,6 @@ public class BBBHalRComp implements Runnable {
 				receivedMessage.destroy();
 				receivedMessage = null;
 			}
-			try {
-				TimeUnit.MILLISECONDS.sleep(200);
-			} catch (InterruptedException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-
 		}
 	}
 
@@ -226,7 +242,7 @@ public class BBBHalRComp implements Runnable {
 		readThread = new Thread(this);
 		readThread.setName("BBBHalRComp");
 		readThread.start();
-		
+
 		isBinded = false;
 	}
 
@@ -237,7 +253,6 @@ public class BBBHalRComp implements Runnable {
 	public void interrupt() {
 		readThread.interrupt();
 	}
-
 
 	public void startBind() {
 		this.isTryingToBind = true;
@@ -298,6 +313,5 @@ public class BBBHalRComp implements Runnable {
 			}
 		}
 	}
-	
 
 }

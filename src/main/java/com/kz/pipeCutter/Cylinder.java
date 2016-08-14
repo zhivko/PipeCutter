@@ -21,9 +21,9 @@ public class Cylinder extends AbstractComposite {
 	public static float trueHoleDiameter = 0.4f;
 	public static long sleep = 100;
 
-	public static float offsetX = 100;
-	public static float offsetY = 30;
-	public static float offsetZ = 30;
+	public static float offsetX = 0;
+	public static float offsetY = 0;
+	public static float offsetZ = 0;
 
 	double height = 0.7;
 
@@ -40,12 +40,7 @@ public class Cylinder extends AbstractComposite {
 		MyPickablePoint newPoint = new MyPickablePoint(-100000, position,Color.BLACK,0.4f,-200000);
 
 		String gcode = SurfaceDemo.instance.utils.coordinateToGcode(newPoint.getCoord());
-		try (PrintWriter out = new PrintWriter(new BufferedWriter(new FileWriter("prog.gcode", true)))) {
-			out.println(gcode);
-			out.close();
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
+		SurfaceDemo.instance.writeToGcodeFile(gcode);
 
 		for (int i = 0; i < slices; i++) {
 			float angleBorder1 = (float) i * 2 * (float) Math.PI / (float) slices;

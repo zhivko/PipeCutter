@@ -31,11 +31,16 @@ public class CutThread extends SwingWorker<String, Object> {
 	float cutOffsetMm = 0;
 	long pierceTimeMs = 0;
 
+	static CutThread instance;
+
 	ArrayList<MyPickablePoint> firstPoints;
 	ArrayList<MyPickablePoint> alAlreadyAddedPoints;
 
 	private boolean wholePipe = false;
 	private MyPickablePoint startPoint = null;
+
+	float g0Speed = 0;
+	float g1Speed = 0;
 
 	// http://www.pirate4x4.com/forum/11214232-post17.html
 	// For cutting 19.05mm with your Powermax1650 (this info is in your Powermax
@@ -78,6 +83,8 @@ public class CutThread extends SwingWorker<String, Object> {
 	}
 
 	public CutThread() {
+		instance = this;
+
 		String folder = Settings.getInstance().getSetting("gcode_folder");
 		File f = new File(folder + File.separatorChar + "prog.gcode");
 		Settings.getInstance().log(String.format("Delete file %s %b", f.getAbsolutePath(), f.delete()));
@@ -88,6 +95,9 @@ public class CutThread extends SwingWorker<String, Object> {
 		cutOffsetMm = Float.valueOf(Settings.getInstance().getSetting("plasma_cut_offset_mm"));
 		String gcodeFolder = Settings.getInstance().getSetting("gcode_folder");
 		gcodeFile = new File(gcodeFolder + File.separatorChar + "prog.gcode");
+
+		g1Speed = Float.valueOf(Settings.getInstance().getSetting("gcode_feedrate_g1"));
+		g0Speed = Float.valueOf(Settings.getInstance().getSetting("gcode_feedrate_g0"));
 	}
 
 	public void cut() throws InterruptedException {
@@ -106,9 +116,13 @@ public class CutThread extends SwingWorker<String, Object> {
 		SurfaceDemo.getInstance().angleTxt = "0.0";
 		try {
 			PrintWriter out = new PrintWriter(new BufferedWriter(new FileWriter(this.gcodeFile.getAbsolutePath(), true)));
-			double diagonal = (SurfaceDemo.getInstance().utils.maxEdge * 2 * 1.41 / 2);
-			out.println(String.format(Locale.US, "G01 Z%.3f F%s", diagonal / 2.0f, Settings.getInstance().getSetting("gcode_feedrate_g1")));
+			double diagonal = (SurfaceDemo.getInstance().utils.maxEdge * 1.41);
+			out.println("G94");
+			out.println(String.format(Locale.US, "G01 Z%.3f F%s", diagonal / 2.0f + 20.0f, Settings.getInstance().getSetting("gcode_feedrate_g1")));
 			out.println(String.format(Locale.US, "G01 A0 B0 F%s", Settings.getInstance().getSetting("gcode_feedrate_g1")));
+			boolean gcode_g93 = Settings.instance.getSetting("gcode_g93").equals("1");
+			if(gcode_g93)
+				out.println("G93");
 			out.flush();
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
@@ -210,8 +224,8 @@ public class CutThread extends SwingWorker<String, Object> {
 			if (hasBeenCutting) {
 				double diagonal = (SurfaceDemo.getInstance().utils.maxEdge * Math.sqrt(2.0d));
 				MyPickablePoint newPoint = new MyPickablePoint(-100000,
-						new Coord3d(SurfaceDemo.getInstance().cylinderPoint.xyz.x, SurfaceDemo.getInstance().cylinderPoint.xyz.y, diagonal / 2.0f + 20), Color.BLACK,
-						0.4f, -200000);
+						new Coord3d(SurfaceDemo.getInstance().cylinderPoint.xyz.x, SurfaceDemo.getInstance().cylinderPoint.xyz.y, diagonal / 2.0f + 20),
+						Color.BLACK, 0.4f, -200000);
 				SurfaceDemo.getInstance().move(newPoint, false, cutOffsetMm, true);
 			}
 

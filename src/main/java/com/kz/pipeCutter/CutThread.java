@@ -120,10 +120,12 @@ public class CutThread extends SwingWorker<String, Object> {
 			out.println("G94");
 			out.println(String.format(Locale.US, "G01 Z%.3f F%s", diagonal / 2.0f + 20.0f, Settings.getInstance().getSetting("gcode_feedrate_g1")));
 			out.println(String.format(Locale.US, "G01 A0 B0 F%s", Settings.getInstance().getSetting("gcode_feedrate_g1")));
-			boolean gcode_g93 = Settings.instance.getSetting("gcode_g93").equals("1");
-			if(gcode_g93)
+			
+			if(Settings.instance.getSetting("gcode_g93").equals("1"))
+			{
 				out.println("G93");
-			out.flush();
+				out.flush();
+			}
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

@@ -384,15 +384,14 @@ public class Utils {
 		}
 		float angle = Float.valueOf(SurfaceDemo.instance.angleTxt);
 
-		boolean gcode_g93 = Settings.instance.getSetting("gcode_g93").equals("1");
-
-		if (gcode_g93) {
+		if (Settings.instance.getSetting("gcode_g93").equals("1")) {
 			if (this.previousPoint == null) {
 				float x1 = Float.valueOf(Settings.getInstance().getSetting("position_x")).floatValue();
 				float y1 = Float.valueOf(Settings.getInstance().getSetting("position_y")).floatValue();
 				float z1 = Float.valueOf(Settings.getInstance().getSetting("position_z")).floatValue();
 				this.previousPoint = new Coord3d(x1,y1,z1);
 			}
+			
 			// length calculation
 			double length = coord.distance(this.previousPoint);
 			double g93feed = 1;
@@ -405,6 +404,7 @@ public class Utils {
 		else
 			return String.format(java.util.Locale.US, "X%.3f Y%.3f Z%.3f A%.3f B%.3f F%.3f", x, y, z, angle, angle, CutThread.instance.g1Speed);
 
+		
 	}
 
 	public Coord3d rotate(double x, double y, double z, double angle, double axisX, double axisY, double axisZ) {

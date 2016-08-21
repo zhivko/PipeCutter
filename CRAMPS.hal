@@ -1,4 +1,4 @@
-  # #######################################
+########################################
 #
 # HAL file for BeagleBone + BeBoPr cape with 4 steppers
 #
@@ -40,11 +40,12 @@ loadrt limit1 count=2
 # c = analog input channel and thermistor table
 loadusr -Wn Therm hal_temp_bbb -n Therm -c 04:epcos_B57560G1104,05:epcos_B57560G1104 -b CRAMPS
 
+
 # ################################################
 # THREADS
 # ################################################
 
-addf hpg.capture-position   		servo-thread
+addf hpg.capture-position   			servo-thread
 addf bb_gpio.read                       servo-thread
 addf motion-command-handler             servo-thread
 addf motion-controller                  servo-thread
@@ -52,7 +53,7 @@ addf pid.0.do-pid-calcs                 servo-thread
 addf pid.1.do-pid-calcs                 servo-thread
 addf limit1.0                           servo-thread
 addf limit1.1                           servo-thread
-addf hpg.update             		servo-thread
+addf hpg.update             			servo-thread
 addf bb_gpio.write                      servo-thread
 
 
@@ -469,8 +470,15 @@ net servo.4 bb_gpio.p8.out-22
 
 
 newcomp mymotion timer=100
-newpin mymotion  mymotion.program-line       s32 in
-newpin mymotion  mymotion.spindle-on         bit in
+newpin mymotion  mymotion.program-line       s32   in
+newpin mymotion  mymotion.spindle-on         bit   in
+newpin mymotion  mymotion.vx        		 float in
+newpin mymotion  mymotion.vy        		 float in
+newpin mymotion  mymotion.vz        		 float in
+newpin mymotion  mymotion.dvx        		 float in
+newpin mymotion  mymotion.dvz        		 float in
+newpin mymotion  mymotion.v        		 	 float in
+newpin mymotion  mymotion.current-radius	 float in
 ready  mymotion
 
 #######################################################################################################################
@@ -480,3 +488,121 @@ net     net-spindle-on    	motion.spindle-on		=>   	bb_gpio.p8.out-11		mymotion.
 net		net-program-line	motion.program-line     =>		mymotion.program-line 	
 
 
+#############################
+# velocity calculation
+#############################
+loadrt ddt count=4
+loadrt mult4 count=2
+loadrt mult2 count=1
+loadrt hypot count=2
+loadrt sincos count=1
+loadrt sum2 count=3
+loadrt atanxy count=1
+loadrt changeSign count=1
+loadrt abs count=1
+
+addf ddt.0 servo-thread
+addf ddt.1 servo-thread
+addf ddt.2 servo-thread
+addf ddt.3 servo-thread
+
+addf mult4.0 servo-thread
+addf mult4.1 servo-thread
+
+addf mult2.0 servo-thread
+
+addf hypot.0 servo-thread
+addf hypot.1 servo-thread
+
+addf sincos.0 servo-thread
+
+addf sum2.0 servo-thread
+addf sum2.1 servo-thread
+addf sum2.2 servo-thread
+
+addf atanxy.0 servo-thread
+
+addf changeSign.0 servo-thread
+
+addf abs.0 servo-thread
+
+#net	netname		         	signal_src	                	target					target	              ... yadda
+#or
+#net signal_src	target
+
+net emcmot.00.pos-cmd ddt.0.in
+net emcmot.01.pos-cmd ddt.1.in
+net emcmot.02.pos-cmd ddt.2.in
+net emcmot.03.pos-cmd ddt.3.in
+
+#calculate radius as function of x and z
+net emcmot.00.pos-cmd hypot.0.in0
+net emcmot.02.pos-cmd hypot.0.in1
+setp hypot.0.in2 0 
+net radius hypot.0.out mymotion.current-radius
+
+# negate x axis for theta calculation
+setp mult2.0.in0 1.0
+net emcmot.00.pos-cmd mult2.0.in1
+
+net emcmot.02.pos-cmd atanxy.0.in0
+net negx mult2.0.out atanxy.0.in1
+
+#depending on speed we need to add or remove 90 degrees
+setp changeSign.0.value 90.0
+net ang_speed_deg ddt.3.out changeSign.0.sign
+net ang_speed_deg abs.0.in
+
+# add 90 degree to angle
+net angle atanxy.0.out sum2.2.in0 
+net angleDelta changeSign.0.out sum2.2.in1 
+
+net theta sum2.2.out sincos.0.theta
+
+
+
+########################################
+# angular speed calculation
+# vx
+########################################
+net radius mult4.0.in0
+net ang_speed_deg_abs abs.0.out mult4.0.in1
+#net deg_to_rad   0.0174444444444444  mult4.0.in2
+setp mult4.0.in2 -0.0174444444444444
+net res_cos sincos.0.cos mult4.0.in3
+
+# mult4_0_out is dvx_R
+net dvx_R mult4.0.out mymotion.dvx  
+
+# lets add vx and dvx_R
+net dvx_R sum2.0.in0
+net dvx_1 ddt.0.out sum2.0.in1
+net vx sum2.0.out mymotion.vx  
+########################################
+
+# vy
+########################################
+net vy ddt.1.out mymotion.vy
+########################################
+
+# vz
+########################################
+net radius mult4.1.in0
+net ang_speed_deg_abs mult4.1.in1
+#net deg_to_rad   0.0174444444444444  mult4.1.in2
+setp mult4.1.in2 -0.0174444444444444
+net res_sin sincos.0.sin mult4.1.in3
+
+# mult4_1_out is dvz
+net dvz_R mult4.1.out mymotion.dvz  
+# lets add vz and dvz_R
+net dvz_R sum2.1.in0
+net dvz_1 ddt.2.out sum2.1.in1
+net vz sum2.1.out mymotion.vz  
+#######################################
+
+#calculate total velocity of tool over workpiece
+net vx hypot.1.in0
+net vy hypot.1.in1
+net vz hypot.1.in2
+net v hypot.1.out mymotion.v

@@ -24,6 +24,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
@@ -64,6 +65,8 @@ public class Settings extends JFrame {
 	public static BBBStatus status;
 	public static BBBHalCommand halCmd;
 	public static BBBHalRComp halRComp;
+
+	public static HashMap<String, SavableControl> controls = new HashMap<String, SavableControl>();
 
 	public JSplitPane splitPane;
 	CommandPanel commandPanel;
@@ -358,13 +361,18 @@ public class Settings extends JFrame {
 	}
 
 	public String getSetting(String parameterId) {
-		List<SavableControl> savableControls = harvestMatches(Settings.instance.getContentPane(), SavableControl.class);
-		for (SavableControl savableControl : savableControls) {
-			if (savableControl.getParId().equals(parameterId)) {
-				return savableControl.getParValue();
+		SavableControl svableControl = null;
+		if (controls.get(parameterId) == null) {
+			List<SavableControl> savableControls = harvestMatches(Settings.instance.getContentPane(), SavableControl.class);
+			for (SavableControl savableControl : savableControls) {
+				if (savableControl.getParId().equals(parameterId)) {
+					svableControl = savableControl;
+					controls.put(parameterId, svableControl);
+					break;
+				}
 			}
 		}
-		return null;
+		return controls.get(parameterId).getParValue();
 	}
 
 	public String getSetting2(String parameterId) {
@@ -388,16 +396,20 @@ public class Settings extends JFrame {
 
 	public void setSetting(String parameterId, String value) {
 		try {
-			List<SavableControl> savableControls = harvestMatches(Settings.instance.getContentPane(), SavableControl.class);
-			for (SavableControl savableControl : savableControls) {
-				if (savableControl.getParId().equals(parameterId)) {
-					final SavableControl mysavable = savableControl;
-					final String myval = value;
-					mysavable.setParValue(myval);
-					mysavable.save();
-					break;
+			SavableControl mysavable = null;
+			if (controls.get(parameterId) == null) {
+				List<SavableControl> savableControls = harvestMatches(Settings.instance.getContentPane(), SavableControl.class);
+				for (SavableControl savableControl : savableControls) {
+					if (savableControl.getParId().equals(parameterId)) {
+						mysavable = savableControl;
+						break;
+					}
 				}
+				controls.put(parameterId, mysavable);
 			}
+			mysavable = controls.get(parameterId);
+			mysavable.setParValue(value);
+			mysavable.save();
 		} catch (Exception ex) {
 			ex.printStackTrace();
 		}

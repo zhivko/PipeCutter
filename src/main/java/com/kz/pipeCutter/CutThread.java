@@ -41,6 +41,7 @@ public class CutThread extends SwingWorker<String, Object> {
 
 	float g0Speed = 0;
 	float g1Speed = 0;
+	public boolean g93mode;
 
 	// http://www.pirate4x4.com/forum/11214232-post17.html
 	// For cutting 19.05mm with your Powermax1650 (this info is in your Powermax
@@ -83,6 +84,11 @@ public class CutThread extends SwingWorker<String, Object> {
 	}
 
 	public CutThread() {
+		System.out.println("name: "+ Thread.currentThread().getName());
+		
+		Thread.currentThread().setName("CutThread");
+		System.out.println("New name: "+ Thread.currentThread().getName());
+		
 		instance = this;
 
 		String folder = Settings.getInstance().getSetting("gcode_folder");
@@ -123,9 +129,12 @@ public class CutThread extends SwingWorker<String, Object> {
 			
 			if(Settings.instance.getSetting("gcode_g93").equals("1"))
 			{
+				this.g93mode =true;
 				out.println("G93");
 				out.flush();
 			}
+			else
+				this.g93mode = false;
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

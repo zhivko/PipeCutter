@@ -102,8 +102,7 @@ public class SurfaceDemo extends AbstractAnalysis {
 
 			@Override
 			public void run() {
-				try {
-					SwingUtilities.invokeAndWait(new Runnable() {
+					SwingUtilities.invokeLater(new Runnable() {
 
 						@Override
 						public void run() {
@@ -280,13 +279,6 @@ public class SurfaceDemo extends AbstractAnalysis {
 						}
 
 					});
-				} catch (InvocationTargetException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				} catch (InterruptedException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
 			}
 		});
 		t.setName("SurfaceDemoConstructor");
@@ -881,15 +873,13 @@ public class SurfaceDemo extends AbstractAnalysis {
 		if (writeToGCode) {
 			String gcode = SurfaceDemo.instance.utils.coordinateToGcode(offsetedPoint);
 			if (cut) {
-				writeToGcodeFile(String.format(java.util.Locale.US, "G01 %s (pointId: %d)", gcode,
-						tempPoint.id));
+				writeToGcodeFile(String.format(java.util.Locale.US, "G01 %s (pointId: %d)", gcode, tempPoint.id));
 				alreadyCutting = true;
 			} else {
 				if (alreadyCutting) {
 					writeToGcodeFile("M5");
 				}
-				writeToGcodeFile(String.format(java.util.Locale.US, "G01 %s (pointId: %d)", gcode,
-						tempPoint.id));
+				writeToGcodeFile(String.format(java.util.Locale.US, "G01 %s (pointId: %d)", gcode, tempPoint.id));
 				alreadyCutting = false;
 			}
 		}
@@ -902,8 +892,10 @@ public class SurfaceDemo extends AbstractAnalysis {
 		// canvas.getView().setBoundManual(new
 		// BoundingBox3d(lastClickedPoint.getCoord(), edge));
 		// }
+
 		if (instance.getChart().getView().getCanvas() != null)
 			instance.getChart().render();
+
 		// try {
 		// TimeUnit.MILLISECONDS.sleep(Cylinder.sleep);
 		// } catch (InterruptedException e) {

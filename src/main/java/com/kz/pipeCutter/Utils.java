@@ -384,7 +384,7 @@ public class Utils {
 		}
 		float angle = Float.valueOf(SurfaceDemo.instance.angleTxt);
 
-		if (Settings.instance.getSetting("gcode_g93").equals("1")) {
+		if (CutThread.instance.g93mode) {
 			if (this.previousPoint == null) {
 				float x1 = Float.valueOf(Settings.getInstance().getSetting("position_x")).floatValue();
 				float y1 = Float.valueOf(Settings.getInstance().getSetting("position_y")).floatValue();
@@ -393,12 +393,17 @@ public class Utils {
 			}
 			
 			// length calculation
+			// v = s/t
+			// t = s / v
+			// 1 / t = v / s
 			double length = coord.distance(this.previousPoint);
 			double g93feed = 1;
 			if (length > Math_E) {
-				double time = length / CutThread.instance.g1Speed / 60;
-				g93feed = 1 / time;
+				g93feed = (CutThread.instance.g1Speed) / length;
+//				if(g93feed<5)
+//					System.out.println("OOPs");
 			}
+			this.previousPoint = coord;
 			return String.format(java.util.Locale.US, "X%.3f Y%.3f Z%.3f A%.3f B%.3f F%.3f", x, y, z, angle, angle, g93feed);
 		}
 		else

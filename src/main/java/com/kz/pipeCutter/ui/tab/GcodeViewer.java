@@ -341,7 +341,7 @@ public class GcodeViewer extends JPanel {
 			fileName = "prog.gcode";
 
 			File f = new File(folder + File.separatorChar + "prog.gcode");
-			if (f.exists()) {
+			if (f.exists() && this.isVisible()) {
 				reader = new FileReader(new File(folder + File.separatorChar + fileName));
 				this.textArea.read(reader, "The force is strong with this one");
 				reader.close();

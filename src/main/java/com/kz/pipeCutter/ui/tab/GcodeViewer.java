@@ -52,7 +52,7 @@ import pb.Types.ValueType;
 public class GcodeViewer extends JPanel {
 
 	WatchKey key;
-	WatchService watcher;
+	public WatchService watcher;
 
 	final JTextPane textArea;
 	String folder;
@@ -64,10 +64,10 @@ public class GcodeViewer extends JPanel {
 	public boolean plasmaOn;
 	private String fileName;
 
-	Thread refreshThread;
+	public Thread refreshThread;
 	// private SavableText spindleOn;
 	private MyButton spindleOn;
-
+	
 	public GcodeViewer() {
 		super();
 
@@ -262,7 +262,7 @@ public class GcodeViewer extends JPanel {
 			public void componentShown(ComponentEvent e) {
 				// TODO Auto-generated method stub
 				refresh();
-				if (refreshThread == null) {
+				if (refreshThread == null || !refreshThread.isAlive()) {
 					refreshThread = new Thread(new Runnable() {
 
 						@Override
@@ -270,7 +270,7 @@ public class GcodeViewer extends JPanel {
 							File f = new File(folder);
 							if (f.exists()) {
 								try {
-									WatchService watcher = FileSystems.getDefault().newWatchService();
+									watcher = FileSystems.getDefault().newWatchService();
 									Path dir = Paths.get(f.getAbsolutePath());
 
 									dir.register(watcher, StandardWatchEventKinds.ENTRY_MODIFY);
@@ -300,6 +300,14 @@ public class GcodeViewer extends JPanel {
 									}
 								} catch (IOException ex) {
 									System.err.println(ex);
+								}
+								finally {
+									try {
+										watcher.close();
+									} catch (IOException e) {
+										// TODO Auto-generated catch block
+										e.printStackTrace();
+									}
 								}
 							}
 						}

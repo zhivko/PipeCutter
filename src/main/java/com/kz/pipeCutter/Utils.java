@@ -89,7 +89,8 @@ public class Utils {
 		points = new ConcurrentHashMap<Integer, MyPickablePoint>();
 	}
 
-	public ArrayList<Integer> calculateCutPoints(MyPickablePoint clickedPoint, ArrayList<MyPickablePoint> alAlreadyAddedPoints, boolean verticals) {
+	public ArrayList<Integer> calculateCutPoints(MyPickablePoint clickedPoint,
+			ArrayList<MyPickablePoint> alAlreadyAddedPoints, boolean verticals) {
 		// TODO Auto-generated method stub
 		MyEdge edge = new MyEdge(-1, -1);
 
@@ -117,7 +118,8 @@ public class Utils {
 		}
 	}
 
-	public MyPickablePoint findConnectedPoint(MyPickablePoint point, ArrayList<MyPickablePoint> alreadyAdded, boolean order) {
+	public MyPickablePoint findConnectedPoint(MyPickablePoint point, ArrayList<MyPickablePoint> alreadyAdded,
+			boolean order) {
 		MyPickablePoint ret = null;
 		for (MyEdge edge : edges.values()) {
 			int startInd, endInd;
@@ -145,7 +147,8 @@ public class Utils {
 		return ret;
 	}
 
-	public ArrayList<MyPickablePoint> findConnectedPoints(MyPickablePoint point, ArrayList<MyPickablePoint> alreadyAdded) {
+	public ArrayList<MyPickablePoint> findConnectedPoints(MyPickablePoint point,
+			ArrayList<MyPickablePoint> alreadyAdded) {
 		ArrayList<MyPickablePoint> ret = new ArrayList<MyPickablePoint>();
 		for (MyEdge edge : edges.values()) {
 			if (edge.getPointByIndex(0).distance(point) < Math_E) {
@@ -168,7 +171,8 @@ public class Utils {
 		edges.put(edge.edgeNo, edge);
 	}
 
-	public static ArrayList<Coord3d> CalculateLineLineIntersection(Coord3d line1Point1, Coord3d line1Point2, Coord3d line2Point1, Coord3d line2Point2) {
+	public static ArrayList<Coord3d> CalculateLineLineIntersection(Coord3d line1Point1, Coord3d line1Point2,
+			Coord3d line2Point1, Coord3d line2Point2) {
 		// Algorithm is ported from the C algorithm of
 		// Paul Bourke at
 		// http://local.wasp.uwa.edu.au/~pbourke/geometry/lineline3d/
@@ -278,7 +282,8 @@ public class Utils {
 		ArrayList<Coord3d> alCrossPoints2 = Utils.CalculateLineLineIntersection(a2, b2, c2, d2);
 
 		// calculate edge surfaces
-		List<MySurface> surfacesSortedByCenterY = new ArrayList<MySurface>(SurfaceDemo.instance.utils.surfaces.values());
+		List<MySurface> surfacesSortedByCenterY = new ArrayList<MySurface>(
+				SurfaceDemo.instance.utils.surfaces.values());
 		Collections.sort(surfacesSortedByCenterY, new MySurfaceYComparator());
 		MySurface rightMostSurf = surfacesSortedByCenterY.get(0);
 		MySurface leftMostSurf = surfacesSortedByCenterY.get(surfacesSortedByCenterY.size() - 1);
@@ -286,7 +291,8 @@ public class Utils {
 		ArrayList<MyPickablePoint> outerPoints = new ArrayList<MyPickablePoint>();
 		float sumAngle = 0;
 		for (int i = 0; i < 4; i++) {
-			List<MyPickablePoint> pointsSortedByZ = new ArrayList<MyPickablePoint>(SurfaceDemo.instance.utils.points.values());
+			List<MyPickablePoint> pointsSortedByZ = new ArrayList<MyPickablePoint>(
+					SurfaceDemo.instance.utils.points.values());
 			Collections.sort(pointsSortedByZ, new MyPickablePointZComparator());
 			float topZ = pointsSortedByZ.get(pointsSortedByZ.size() - 1).xyz.z;
 			if (topZ < 0)
@@ -367,11 +373,12 @@ public class Utils {
 
 	}
 
-	public String coordinateToGcode(Coord3d point) {
-		return coordinateToGcode(point, 0);
+	public String coordinateToGcode(MyPickablePoint p) {
+		return coordinateToGcode(p, 0);
 	}
 
-	public String coordinateToGcode(Coord3d coord, float offset) {
+	public String coordinateToGcode(MyPickablePoint p, float offset) {
+		Coord3d coord = p.getCoord();
 		boolean moveRelatively = false;
 		Float x, y, z;
 		String ret;
@@ -404,11 +411,12 @@ public class Utils {
 
 		if (CutThread.instance.filletSpeed < Math_E) {
 			/*
-			 * // lets calculate fillet speed sinc eit is not defined // x_width needs
-			 * to be traversed in what time? double time = (this.maxX * 2) /
-			 * CutThread.instance.g1Speed; // in minutes // in this time rotation of
-			 * 90 degrees should be done double w = (Math.PI / 2) / time; double
-			 * radius = (this.maxX) * 1.41; double v = w * radius * 180 / Math.PI;
+			 * // lets calculate fillet speed sinc eit is not defined // x_width
+			 * needs to be traversed in what time? double time = (this.maxX * 2)
+			 * / CutThread.instance.g1Speed; // in minutes // in this time
+			 * rotation of 90 degrees should be done double w = (Math.PI / 2) /
+			 * time; double radius = (this.maxX) * 1.41; double v = w * radius *
+			 * 180 / Math.PI;
 			 */
 			// fillet length
 			float radius_of_edge = 10;
@@ -419,12 +427,16 @@ public class Utils {
 			CutThread.instance.filletSpeed = Double.valueOf(v).floatValue();
 		}
 
+		if (p.getId() == 340) {
+			System.out.println("");
+		}
 		float calcSpeed = 0.0f;
-//just test
-		if (Math.abs(angle % 90) < 0.002 || Math.abs(this.previousAngle % 90) < 0.002) { // angle
-																																												// ==
-																																												// this.previousAngle
-																																												// ||
+		// just test
+		double delta = 3.2 * 10E-5;
+		if (Math.abs(angle % 90.0) < delta || Math.abs(90 - (angle % 90.0)) < delta) { // ||
+													// Math.abs(Math.round(this.previousAngle)
+													// % 90) == 0 ) { //
+													// angle
 			calcSpeed = CutThread.instance.g1Speed;
 		} else {
 			calcSpeed = CutThread.instance.filletSpeed;
@@ -474,8 +486,8 @@ public class Utils {
 				double[] myPointDouble = { point.getX(), point.getY(), point.getZ() };
 				Vector3D myPoint = new Vector3D(myPointDouble);
 				Vector3D result = rotZ.applyTo(myPoint);
-				points.get(point.id).xyz.set(Double.valueOf(result.getX()).floatValue(), Double.valueOf(result.getY()).floatValue(),
-						Double.valueOf(result.getZ()).floatValue());
+				points.get(point.id).xyz.set(Double.valueOf(result.getX()).floatValue(),
+						Double.valueOf(result.getY()).floatValue(), Double.valueOf(result.getZ()).floatValue());
 			}
 			for (MyEdge edge : continuousEdges.values()) {
 				edge.calculateCenter();
@@ -496,8 +508,8 @@ public class Utils {
 					double[] myPointDouble = { point.getX(), point.getY(), point.getZ() };
 					Vector3D myPoint = new Vector3D(myPointDouble);
 					Vector3D result = rotZ.applyTo(myPoint);
-					points.get(point.id).xyz.set(Double.valueOf(result.getX()).floatValue(), Double.valueOf(result.getY()).floatValue(),
-							Double.valueOf(result.getZ()).floatValue());
+					points.get(point.id).xyz.set(Double.valueOf(result.getX()).floatValue(),
+							Double.valueOf(result.getY()).floatValue(), Double.valueOf(result.getZ()).floatValue());
 				}
 				for (MyEdge edge : continuousEdges.values()) {
 					edge.calculateCenter();
@@ -537,7 +549,8 @@ public class Utils {
 		continuousEdges = new ConcurrentHashMap<Integer, MyContinuousEdge>();
 		for (MyPickablePoint point : points.values()) {
 			if (point.continuousEdgeNo == -1) {
-				ArrayList<MyPickablePoint> pointsOfEdgeAl = findAllConnectedPoints(point, new ArrayList<MyPickablePoint>());
+				ArrayList<MyPickablePoint> pointsOfEdgeAl = findAllConnectedPoints(point,
+						new ArrayList<MyPickablePoint>());
 				MyContinuousEdge edge = new MyContinuousEdge(edgeNo, -1);
 				for (MyPickablePoint edgePoint : pointsOfEdgeAl) {
 					edge.addPoint(edgePoint.id);
@@ -583,7 +596,8 @@ public class Utils {
 			MyPickablePoint nextPoint = continuousEdge.getPointByIndex(nextIndex);
 			System.out.println(prevPoint.id + " " + point.id + " " + nextPoint.id);
 
-			Vector3D centerVec = new Vector3D(continuousEdge.center.x, continuousEdge.center.y, continuousEdge.center.z);
+			Vector3D centerVec = new Vector3D(continuousEdge.center.x, continuousEdge.center.y,
+					continuousEdge.center.z);
 			Vector3D vecPrevPoint = new Vector3D(prevPoint.xyz.x, prevPoint.xyz.y, prevPoint.xyz.z);
 			Vector3D vecNextPoint = new Vector3D(nextPoint.xyz.x, nextPoint.xyz.y, nextPoint.xyz.z);
 			Vector3D vecPoint = new Vector3D(point.xyz.x, point.xyz.y, point.xyz.z);
@@ -713,7 +727,8 @@ public class Utils {
 		return ret;
 	}
 
-	public Plane getPlaneForPoint(MyPickablePoint point) throws org.apache.commons.math3.exception.MathArithmeticException {
+	public Plane getPlaneForPoint(MyPickablePoint point)
+			throws org.apache.commons.math3.exception.MathArithmeticException {
 		Plane plane = null;
 		MyEdge continuousEdge = continuousEdges.get(point.continuousEdgeNo);
 
@@ -743,7 +758,8 @@ public class Utils {
 		return plane;
 	}
 
-	public Plane getPlaneForMiddlePoint(MyPickablePoint point) throws org.apache.commons.math3.exception.MathArithmeticException {
+	public Plane getPlaneForMiddlePoint(MyPickablePoint point)
+			throws org.apache.commons.math3.exception.MathArithmeticException {
 		Plane plane = null;
 		MyEdge continuousEdge = continuousEdges.get(point.continuousEdgeNo);
 
@@ -767,7 +783,8 @@ public class Utils {
 			try {
 				System.out.println(prevPoint.id + " " + point.id + " " + nextPoint.id);
 
-				Vector3D centerVec = new Vector3D(continuousEdge.center.x, continuousEdge.center.y, continuousEdge.center.z);
+				Vector3D centerVec = new Vector3D(continuousEdge.center.x, continuousEdge.center.y,
+						continuousEdge.center.z);
 				Vector3D vecPrevPoint = new Vector3D(prevPoint.xyz.x, prevPoint.xyz.y, prevPoint.xyz.z);
 				Vector3D vecNextPoint = new Vector3D(nextPoint.xyz.x, nextPoint.xyz.y, nextPoint.xyz.z);
 				Vector3D vecPoint = new Vector3D(point.xyz.x, point.xyz.y, point.xyz.z);

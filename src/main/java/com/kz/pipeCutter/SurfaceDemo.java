@@ -871,11 +871,7 @@ public class SurfaceDemo extends AbstractAnalysis {
 		plasma.setPosition(offsetedPoint);
 
 		if (writeToGCode) {
-
-			if (tempPoint.getId() == 250) {
-				System.out.println("");
-			}
-			String gcode = SurfaceDemo.instance.utils.coordinateToGcode(offsetedPoint);
+			String gcode = SurfaceDemo.instance.utils.coordinateToGcode(tempPoint, offset);
 
 			if (cut) {
 				writeToGcodeFile(String.format(java.util.Locale.US, "G01 %s (pointId: %d, angle: %.3f)", gcode, tempPoint.id,
@@ -915,7 +911,7 @@ public class SurfaceDemo extends AbstractAnalysis {
 		Coord3d abovePoint = tempPoint.xyz.add(0f, 0f, offset);
 		plasma.setPosition(abovePoint);
 
-		String gcode = SurfaceDemo.instance.utils.coordinateToGcode(abovePoint, offset);
+		String gcode = SurfaceDemo.instance.utils.coordinateToGcode(tempPoint, offset);
 		plasma.setColor(Color.BLUE);
 		plasma.setWireframeColor(Color.BLUE);
 		try {

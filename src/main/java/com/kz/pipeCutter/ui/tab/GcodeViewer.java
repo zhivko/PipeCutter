@@ -141,8 +141,7 @@ public class GcodeViewer extends JPanel {
 						int lineNumber = Integer.valueOf(currentLine.getParValue());
 
 						if (lineNumber > 0) {
-							int startIndex = textArea.getDocument().getDefaultRootElement().getElement(lineNumber - 1)
-									.getStartOffset();
+							int startIndex = textArea.getDocument().getDefaultRootElement().getElement(lineNumber - 1).getStartOffset();
 							int endIndex = textArea.getDocument().getDefaultRootElement().getElement(lineNumber).getStartOffset();
 
 							DefaultHighlightPainter painterWhite = new DefaultHighlighter.DefaultHighlightPainter(Color.WHITE);
@@ -153,8 +152,7 @@ public class GcodeViewer extends JPanel {
 							textArea.getHighlighter().addHighlight(0, startIndex, painterWhite);
 							textArea.getHighlighter().addHighlight(startIndex, endIndex, painterGray);
 
-							textArea.getHighlighter().addHighlight(endIndex + 1, textArea.getDocument().getLength() - 1,
-									painterWhite);
+							textArea.getHighlighter().addHighlight(endIndex + 1, textArea.getDocument().getLength() - 1, painterWhite);
 
 							Rectangle rect = textArea.modelToView(startIndex);
 							textArea.scrollRectToVisible(rect);
@@ -182,15 +180,12 @@ public class GcodeViewer extends JPanel {
 			public void doIt() {
 				// TODO Auto-generated method stub
 				super.doIt();
-					if(!GcodeViewer.this.plasmaOn)
-					{
-						new ExecuteMdi("M3 S300").start();
-					}
-					else
-					{
-						new ExecuteMdi("M5").start();
-					}
-			}			
+				if (!GcodeViewer.this.plasmaOn) {
+					new ExecuteMdi("M3 S300").start();
+				} else {
+					new ExecuteMdi("M5").start();
+				}
+			}
 		};
 		spindleOn.setParValue("0");
 		spindleOn.setPin(new PinDef("mymotion.spindle-on", HalPinDirection.HAL_IN, ValueType.HAL_BIT));
@@ -352,7 +347,8 @@ public class GcodeViewer extends JPanel {
 						Rectangle rect;
 						try {
 							rect = GcodeViewer.this.textArea.modelToView(GcodeViewer.this.textArea.getDocument().getLength());
-							GcodeViewer.this.textArea.scrollRectToVisible(rect);
+							if (rect != null)
+								GcodeViewer.this.textArea.scrollRectToVisible(rect);
 						} catch (BadLocationException e) {
 							// TODO Auto-generated catch block
 							e.printStackTrace();

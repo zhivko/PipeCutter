@@ -42,6 +42,7 @@ public class CutThread extends SwingWorker<String, Object> {
 	float g0Speed = 0;
 	float g1Speed = 0;
 	public boolean g93mode;
+	public float filletSpeed = 0.0f;
 
 	// http://www.pirate4x4.com/forum/11214232-post17.html
 	// For cutting 19.05mm with your Powermax1650 (this info is in your Powermax
@@ -84,11 +85,11 @@ public class CutThread extends SwingWorker<String, Object> {
 	}
 
 	public CutThread() {
-		System.out.println("name: "+ Thread.currentThread().getName());
-		
+		System.out.println("name: " + Thread.currentThread().getName());
+
 		Thread.currentThread().setName("CutThread");
-		System.out.println("New name: "+ Thread.currentThread().getName());
-		
+		System.out.println("New name: " + Thread.currentThread().getName());
+
 		instance = this;
 
 		String folder = Settings.getInstance().getSetting("gcode_folder");
@@ -124,17 +125,15 @@ public class CutThread extends SwingWorker<String, Object> {
 			PrintWriter out = new PrintWriter(new BufferedWriter(new FileWriter(this.gcodeFile.getAbsolutePath(), true)));
 			double diagonal = (SurfaceDemo.getInstance().utils.maxEdge * 1.41);
 			out.println("G94");
-			out.println(String.format(Locale.US, "G01 Z%.3f F%s", diagonal / 2.0f + 20.0f, Settings.getInstance().getSetting("gcode_feedrate_g1")));
-			out.println(String.format(Locale.US, "G01 A0 B0 F%s", Settings.getInstance().getSetting("gcode_feedrate_g1")));
-			
-			if(Settings.instance.getSetting("gcode_g93").equals("1"))
-			{
-				this.g93mode =true;
+			out.println(String.format(Locale.US, "G00 Z%.3f F%s", diagonal / 2.0f + 20.0f, Settings.getInstance().getSetting("gcode_feedrate_g1")));
+			out.println(String.format(Locale.US, "G00 X%.3f Y%.3f Z%.3f A0 B0 F%s", 0.0f, SurfaceDemo.getInstance().utils.maxY,
+					SurfaceDemo.getInstance().utils.maxZ, Settings.getInstance().getSetting("gcode_feedrate_g1")));
+			if (Settings.instance.getSetting("gcode_g93").equals("1")) {
+				this.g93mode = true;
 				out.println("G93");
-				out.flush();
-			}
-			else
+			} else
 				this.g93mode = false;
+			out.flush();
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

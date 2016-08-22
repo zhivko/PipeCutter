@@ -102,183 +102,183 @@ public class SurfaceDemo extends AbstractAnalysis {
 
 			@Override
 			public void run() {
-					SwingUtilities.invokeLater(new Runnable() {
+				SwingUtilities.invokeLater(new Runnable() {
 
-						@Override
-						public void run() {
+					@Override
+					public void run() {
 
-							instance = SurfaceDemo.this;
-							System.setProperty("java.net.preferIPv4Stack", "true");
-							// discoverer = new Discoverer();
-							try {
-								Logger.getLogger(this.getClass()).info("AnalysisLauncher open instance...");
-								AnalysisLauncher.open(instance);
-								Logger.getLogger(this.getClass()).info("AnalysisLauncher open instance...DONE.");
-							} catch (Exception e2) {
-								// TODO Auto-generated catch block
-								e2.printStackTrace();
+						instance = SurfaceDemo.this;
+						System.setProperty("java.net.preferIPv4Stack", "true");
+						// discoverer = new Discoverer();
+						try {
+							Logger.getLogger(this.getClass()).info("AnalysisLauncher open instance...");
+							AnalysisLauncher.open(instance);
+							Logger.getLogger(this.getClass()).info("AnalysisLauncher open instance...DONE.");
+						} catch (Exception e2) {
+							// TODO Auto-generated catch block
+							e2.printStackTrace();
+						}
+						Logger.getLogger(this.getClass()).info("Is daemon: " + Thread.currentThread().isDaemon());
+						Logger.getLogger(this.getClass()).info("Is eventdispatched thread? " + javax.swing.SwingUtilities.isEventDispatchThread());
+
+						instance.canvas = (CanvasAWT) instance.getChart().getCanvas();
+						instance.canvas.getAnimator().start();
+						// instance.canvas.getAnimator().setUpdateFPSFrames(20,
+						// System.out);
+						instance.canvas.setSize(600, 600);
+
+						final MyPopupMenu menu = new MyPopupMenu();
+						instance.canvas.add(menu);
+						instance.canvas.addMouseListener(new MouseListener() {
+
+							@Override
+							public void mouseReleased(MouseEvent arg0) {
+								// TODO Auto-generated method stub
+
 							}
-							Logger.getLogger(this.getClass()).info("Is daemon: " + Thread.currentThread().isDaemon());
-							Logger.getLogger(this.getClass()).info("Is eventdispatched thread? " + javax.swing.SwingUtilities.isEventDispatchThread());
 
-							instance.canvas = (CanvasAWT) instance.getChart().getCanvas();
-							instance.canvas.getAnimator().start();
-							// instance.canvas.getAnimator().setUpdateFPSFrames(20,
-							// System.out);
-							instance.canvas.setSize(600, 600);
+							@Override
+							public void mousePressed(final MouseEvent arg0) {
+								// TODO Auto-generated method stub
+								if (arg0.getButton() == MouseEvent.BUTTON3) {
 
-							final MyPopupMenu menu = new MyPopupMenu();
-							instance.canvas.add(menu);
-							instance.canvas.addMouseListener(new MouseListener() {
-
-								@Override
-								public void mouseReleased(MouseEvent arg0) {
-									// TODO Auto-generated method stub
-
-								}
-
-								@Override
-								public void mousePressed(final MouseEvent arg0) {
-									// TODO Auto-generated method stub
-									if (arg0.getButton() == MouseEvent.BUTTON3) {
-
-										SwingWorker menuShower = new SwingWorker<String, Object>() {
-											@Override
-											protected String doInBackground() throws Exception {
-												// TODO Auto-generated method stub
-												menu.show(instance.canvas, arg0.getX(), arg0.getY());
-												return "Menu closed.";
-											}
-										};
-										menuShower.execute();
-
-									}
-								}
-
-								@Override
-								public void mouseExited(MouseEvent arg0) {
-									// TODO Auto-generated method stub
+									SwingWorker menuShower = new SwingWorker<String, Object>() {
+										@Override
+										protected String doInBackground() throws Exception {
+											// TODO Auto-generated method stub
+											menu.show(instance.canvas, arg0.getX(), arg0.getY());
+											return "Menu closed.";
+										}
+									};
+									menuShower.execute();
 
 								}
+							}
 
-								@Override
-								public void mouseEntered(MouseEvent arg0) {
-									// TODO Auto-generated method stub
+							@Override
+							public void mouseExited(MouseEvent arg0) {
+								// TODO Auto-generated method stub
 
+							}
+
+							@Override
+							public void mouseEntered(MouseEvent arg0) {
+								// TODO Auto-generated method stub
+
+							}
+
+							@Override
+							public void mouseClicked(MouseEvent arg0) {
+								// TODO Auto-generated method stub
+
+							}
+						});
+						// remove horizontal edges that connect to separated surfaces
+						// edges with two point index 0 and 1
+
+						// // instance.centerObject();
+						// menu.addSeparator();
+						// MenuItem menuItem11 = new MenuItem("Start animator");
+						// menuItem11.addActionListener(new ActionListener() {
+						// @Override
+						// public void actionPerformed(ActionEvent arg0) {
+						// SurfaceDemo.instance.canvas.getAnimator().start();
+						// // SurfaceDemo.instance.resumeAnimator();
+						// //
+						// SurfaceDemo.instance.canvas.getAnimator().setUpdateFPSFrames(20,
+						// // System.out);
+						// }
+						// });
+						// menu.add(menuItem11);
+
+						instance.getChart().getView().setViewPositionMode(ViewPositionMode.FREE);
+						// instance.getChart().getView().setMaximized(true);
+						// Iterator<AbstractCameraController> itController =
+						// instance.getChart().getControllers().iterator();
+						// while (itController.hasNext()) {
+						// AbstractCameraController controller = itController.next();
+						// if (controller instanceof ICameraKeyController) {
+						// controller.dispose();
+						// itController.remove();
+						// }
+						// }
+
+						try {
+							FileInputStream in = new FileInputStream(Settings.iniFullFileName);
+							SortedProperties props = new SortedProperties();
+							props.load(in);
+							in.close();
+
+							if (props.get("surfaceDemo") != null) {
+								String size = props.get("surfaceDemo").toString();
+								try {
+									String[] splittedSize = size.split("x");
+									instance.canvas
+											.setPreferredSize(new Dimension(Double.valueOf(splittedSize[0]).intValue(), Double.valueOf(splittedSize[1]).intValue()));
+									instance.canvas.validate();
+									instance.canvas.repaint();
+								} catch (Exception ex) {
+									ex.printStackTrace();
 								}
+							}
+						} catch (IOException e1) {
+							// TODO Auto-generated catch block
+							e1.printStackTrace();
+						}
 
-								@Override
-								public void mouseClicked(MouseEvent arg0) {
-									// TODO Auto-generated method stub
+						instance.canvas.addComponentListener(new ComponentListener() {
 
-								}
-							});
-							// remove horizontal edges that connect to separated surfaces
-							// edges with two point index 0 and 1
+							@Override
+							public void componentShown(ComponentEvent e) {
+								// TODO Auto-generated method stub
+								float radiusOfPlasma = Double.valueOf(SurfaceDemo.instance.canvas.getView().getBounds().getRadius()).floatValue() / 20.0f;
+								plasma.setVolume(radiusOfPlasma);
+							}
 
-							// // instance.centerObject();
-							// menu.addSeparator();
-							// MenuItem menuItem11 = new MenuItem("Start animator");
-							// menuItem11.addActionListener(new ActionListener() {
-							// @Override
-							// public void actionPerformed(ActionEvent arg0) {
-							// SurfaceDemo.instance.canvas.getAnimator().start();
-							// // SurfaceDemo.instance.resumeAnimator();
-							// //
-							// SurfaceDemo.instance.canvas.getAnimator().setUpdateFPSFrames(20,
-							// // System.out);
-							// }
-							// });
-							// menu.add(menuItem11);
+							@Override
+							public void componentResized(ComponentEvent evt) {
 
-							instance.getChart().getView().setViewPositionMode(ViewPositionMode.FREE);
-							// instance.getChart().getView().setMaximized(true);
-							// Iterator<AbstractCameraController> itController =
-							// instance.getChart().getControllers().iterator();
-							// while (itController.hasNext()) {
-							// AbstractCameraController controller = itController.next();
-							// if (controller instanceof ICameraKeyController) {
-							// controller.dispose();
-							// itController.remove();
-							// }
-							// }
-
-							try {
-								FileInputStream in = new FileInputStream(Settings.iniFullFileName);
-								SortedProperties props = new SortedProperties();
-								props.load(in);
-								in.close();
-
-								if (props.get("surfaceDemo") != null) {
-									String size = props.get("surfaceDemo").toString();
+								Component c = (Component) evt.getSource();
+								// System.out.println(c.getName() + " resized: " +
+								// c.getSize().toString());
+								if (c.getName().equals("frame0")) {
 									try {
-										String[] splittedSize = size.split("x");
-										instance.canvas
-												.setPreferredSize(new Dimension(Double.valueOf(splittedSize[0]).intValue(), Double.valueOf(splittedSize[1]).intValue()));
-										instance.canvas.validate();
-										instance.canvas.repaint();
+										FileInputStream in = new FileInputStream(Settings.iniFullFileName);
+										SortedProperties props = new SortedProperties();
+										props.load(in);
+										in.close();
+
+										FileOutputStream out = new FileOutputStream(Settings.iniFullFileName);
+										props.setProperty("surfaceDemo", c.getSize().getWidth() + "x" + c.getSize().getHeight());
+										props.store(out, null);
+										out.close();
+
 									} catch (Exception ex) {
 										ex.printStackTrace();
 									}
+									// splitPane.setDividerLocation(1 -
+									// (commandPanel.getHeight() /
+									// Settings.instance.getHeight()));
 								}
-							} catch (IOException e1) {
-								// TODO Auto-generated catch block
-								e1.printStackTrace();
 							}
 
-							instance.canvas.addComponentListener(new ComponentListener() {
+							@Override
+							public void componentMoved(ComponentEvent e) {
+								// TODO Auto-generated method stub
 
-								@Override
-								public void componentShown(ComponentEvent e) {
-									// TODO Auto-generated method stub
-									float radiusOfPlasma = Double.valueOf(SurfaceDemo.instance.canvas.getView().getBounds().getRadius()).floatValue() / 20.0f;
-									plasma.setVolume(radiusOfPlasma);
-								}
+							}
 
-								@Override
-								public void componentResized(ComponentEvent evt) {
+							@Override
+							public void componentHidden(ComponentEvent e) {
+								// TODO Auto-generated method stub
 
-									Component c = (Component) evt.getSource();
-									// System.out.println(c.getName() + " resized: " +
-									// c.getSize().toString());
-									if (c.getName().equals("frame0")) {
-										try {
-											FileInputStream in = new FileInputStream(Settings.iniFullFileName);
-											SortedProperties props = new SortedProperties();
-											props.load(in);
-											in.close();
+							}
+						});
+						// TODO Auto-generated method stub
 
-											FileOutputStream out = new FileOutputStream(Settings.iniFullFileName);
-											props.setProperty("surfaceDemo", c.getSize().getWidth() + "x" + c.getSize().getHeight());
-											props.store(out, null);
-											out.close();
+					}
 
-										} catch (Exception ex) {
-											ex.printStackTrace();
-										}
-										// splitPane.setDividerLocation(1 -
-										// (commandPanel.getHeight() /
-										// Settings.instance.getHeight()));
-									}
-								}
-
-								@Override
-								public void componentMoved(ComponentEvent e) {
-									// TODO Auto-generated method stub
-
-								}
-
-								@Override
-								public void componentHidden(ComponentEvent e) {
-									// TODO Auto-generated method stub
-
-								}
-							});
-							// TODO Auto-generated method stub
-
-						}
-
-					});
+				});
 			}
 		});
 		t.setName("SurfaceDemoConstructor");
@@ -871,9 +871,15 @@ public class SurfaceDemo extends AbstractAnalysis {
 		plasma.setPosition(offsetedPoint);
 
 		if (writeToGCode) {
+
+			if (tempPoint.getId() == 250) {
+				System.out.println("");
+			}
 			String gcode = SurfaceDemo.instance.utils.coordinateToGcode(offsetedPoint);
+
 			if (cut) {
-				writeToGcodeFile(String.format(java.util.Locale.US, "G01 %s (pointId: %d)", gcode, tempPoint.id));
+				writeToGcodeFile(String.format(java.util.Locale.US, "G01 %s (pointId: %d, angle: %.3f)", gcode, tempPoint.id,
+						Float.valueOf(SurfaceDemo.instance.angleTxt)));
 				alreadyCutting = true;
 			} else {
 				if (alreadyCutting) {

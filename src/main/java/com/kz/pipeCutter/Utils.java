@@ -48,6 +48,7 @@ public class Utils {
 
 	public float maxEdge = 0;
 	private Coord3d previousPoint;
+	private double previousAngle;
 
 	static double Math_E = 0.0001;
 	static double rotationAngleMin = 0.01;
@@ -373,6 +374,7 @@ public class Utils {
 	public String coordinateToGcode(Coord3d coord, float offset) {
 		boolean moveRelatively = false;
 		Float x, y, z;
+		String ret;
 		if (moveRelatively) {
 			x = Cylinder.offsetX - coord.x;
 			y = coord.y + Cylinder.offsetY;
@@ -384,32 +386,67 @@ public class Utils {
 		}
 		float angle = Float.valueOf(SurfaceDemo.instance.angleTxt);
 
-		if (CutThread.instance.g93mode) {
-			if (this.previousPoint == null) {
-				float x1 = Float.valueOf(Settings.getInstance().getSetting("position_x")).floatValue();
-				float y1 = Float.valueOf(Settings.getInstance().getSetting("position_y")).floatValue();
-				float z1 = Float.valueOf(Settings.getInstance().getSetting("position_z")).floatValue();
-				this.previousPoint = new Coord3d(x1,y1,z1);
+		if (this.previousPoint == null) {
+			// if we have BBB connected lets use that coordinate
+			float x1, y1, z1;
+			try {
+				x1 = Float.valueOf(Settings.getInstance().getSetting("position_x")).floatValue();
+				y1 = Float.valueOf(Settings.getInstance().getSetting("position_y")).floatValue();
+				z1 = Float.valueOf(Settings.getInstance().getSetting("position_z")).floatValue();
+			} catch (Exception ex1) {
+				x1 = 0.0f;
+				y1 = 0.0f;
+				z1 = 0.0f;
 			}
-			
+			this.previousPoint = new Coord3d(x1, y1, z1);
+			this.previousAngle = 0.0;
+		}
+
+		if (CutThread.instance.filletSpeed < Math_E) {
+			/*
+			 * // lets calculate fillet speed sinc eit is not defined // x_width needs
+			 * to be traversed in what time? double time = (this.maxX * 2) /
+			 * CutThread.instance.g1Speed; // in minutes // in this time rotation of
+			 * 90 degrees should be done double w = (Math.PI / 2) / time; double
+			 * radius = (this.maxX) * 1.41; double v = w * radius * 180 / Math.PI;
+			 */
+			// fillet length
+			float radius_of_edge = 10;
+			float arc_length = (float) (radius_of_edge * Math.PI / 2);
+			float v = (CutThread.instance.g1Speed) * (this.maxX * 2 + 2 * radius_of_edge) / arc_length;
+			// double w = 90.0f / time;
+
+			CutThread.instance.filletSpeed = Double.valueOf(v).floatValue();
+		}
+
+		float calcSpeed = 0.0f;
+
+		if (Math.abs(angle % 90) < 0.002 || Math.abs(this.previousAngle % 90) < 0.002) { // angle
+																																												// ==
+																																												// this.previousAngle
+																																												// ||
+			calcSpeed = CutThread.instance.g1Speed;
+		} else {
+			calcSpeed = CutThread.instance.filletSpeed;
+		}
+
+		double feed = 1;
+		if (CutThread.instance.g93mode) {
 			// length calculation
 			// v = s/t
 			// t = s / v
 			// 1 / t = v / s
 			double length = coord.distance(this.previousPoint);
-			double g93feed = 1;
-			if (length > Math_E) {
-				g93feed = (CutThread.instance.g1Speed) / length;
-//				if(g93feed<5)
-//					System.out.println("OOPs");
-			}
-			this.previousPoint = coord;
-			return String.format(java.util.Locale.US, "X%.3f Y%.3f Z%.3f A%.3f B%.3f F%.3f", x, y, z, angle, angle, g93feed);
+			feed = calcSpeed / length;
+		} else {
+			feed = calcSpeed;
 		}
-		else
-			return String.format(java.util.Locale.US, "X%.3f Y%.3f Z%.3f A%.3f B%.3f F%.3f", x, y, z, angle, angle, CutThread.instance.g1Speed);
 
-		
+		ret = String.format(java.util.Locale.US, "X%.3f Y%.3f Z%.3f A%.3f B%.3f F%.3f", x, y, z, angle, angle, feed);
+		this.previousPoint = coord;
+		this.previousAngle = angle;
+
+		return ret;
 	}
 
 	public Coord3d rotate(double x, double y, double z, double angle, double axisX, double axisY, double axisZ) {

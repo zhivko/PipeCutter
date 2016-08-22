@@ -420,7 +420,7 @@ public class Utils {
 		}
 
 		float calcSpeed = 0.0f;
-
+//just test
 		if (Math.abs(angle % 90) < 0.002 || Math.abs(this.previousAngle % 90) < 0.002) { // angle
 																																												// ==
 																																												// this.previousAngle

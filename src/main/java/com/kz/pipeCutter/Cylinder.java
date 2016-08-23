@@ -39,7 +39,7 @@ public class Cylinder extends AbstractComposite {
 
 		MyPickablePoint newPoint = new MyPickablePoint(-100000, position,Color.BLACK,0.4f,-200000);
 
-		String gcode = SurfaceDemo.instance.utils.coordinateToGcode(newPoint.getCoord());
+		String gcode = SurfaceDemo.instance.utils.coordinateToGcode(newPoint);
 		SurfaceDemo.instance.writeToGcodeFile(gcode);
 
 		for (int i = 0; i < slices; i++) {

@@ -1,0 +1,14 @@
+component mult3;
+pin out float out0;
+pin in float in0;
+pin in float in1;
+pin in float in2;
+
+function _;
+license "GPL"; // indicates GPL v2 or later
+;;
+#include <rtapi_math.h>
+FUNCTION(_) 
+{
+	out0 = in0 * in1 * in2; 
+}

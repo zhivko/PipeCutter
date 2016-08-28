@@ -227,7 +227,7 @@ public class BBBHalCommand implements Runnable {
 		// Set random identity to make tracing easier
 		socket = ctx.createSocket(ZMQ.DEALER);
 		socket.setIdentity(identity.getBytes(ZMQ.CHARSET));
-		socket.setReceiveTimeOut(1000);
+		socket.setReceiveTimeOut(5);
 		socket.setSendTimeOut(1000);
 		socket.connect(this.socketUri);
 

@@ -9,7 +9,9 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
+import java.util.concurrent.ExecutionException;
 
+import javax.swing.JOptionPane;
 import javax.swing.SwingWorker;
 
 import org.jzy3d.colors.Color;
@@ -112,36 +114,34 @@ public class CutThread extends SwingWorker<String, Object> {
 	}
 
 	public void cut() throws InterruptedException {
-		int prevInventorEdge = 0;
+		SurfaceDemo.instance.gCodeLineNo = 0;
+		g93mode = false;
 		ArrayList<MyPickablePoint> sortedList = new ArrayList(SurfaceDemo.getInstance().utils.points.values());
 		Collections.sort(sortedList, new MyPickablePointYComparator());
 
 		// SurfaceDemo.getInstance().utils.establishNeighbourPoints();
-		MyPickablePoint lastOuterPoint = sortedList.get(sortedList.size() - 1);
 		MyPickablePoint firstOuterPoint = sortedList.get(0);
-		firstPoints = SurfaceDemo.getInstance().utils.findAllConnectedPoints(firstOuterPoint,
-				new ArrayList<MyPickablePoint>());
+		firstPoints = SurfaceDemo.getInstance().utils.findAllConnectedPoints(firstOuterPoint, new ArrayList<MyPickablePoint>());
 
 		double mminY = sortedList.get(0).xyz.y;
 		double mmaxY = sortedList.get(sortedList.size() - 1).xyz.y;
 
 		SurfaceDemo.getInstance().angleTxt = "0.0";
 		try {
-			PrintWriter out = new PrintWriter(
-					new BufferedWriter(new FileWriter(this.gcodeFile.getAbsolutePath(), true)));
+			PrintWriter out = new PrintWriter(new BufferedWriter(new FileWriter(this.gcodeFile.getAbsolutePath(), true)));
 			double diagonal = (SurfaceDemo.getInstance().utils.maxEdge * 1.41);
 			out.println("G94");
-			out.println(String.format(Locale.US, "G00 Z%.3f F%s", diagonal / 2.0f + 20.0f,
-					Settings.getInstance().getSetting("gcode_feedrate_g1")));
-			out.println(String.format(Locale.US, "G00 X%.3f Y%.3f Z%.3f A0 B0 F%s", 0.0f,
-					SurfaceDemo.getInstance().utils.maxY, SurfaceDemo.getInstance().utils.maxZ,
-					Settings.getInstance().getSetting("gcode_feedrate_g1")));
-			if (Settings.instance.getSetting("gcode_g93").equals("1")) {
-				this.g93mode = true;
-				out.println("G93");
-			} else
-				this.g93mode = false;
+			//out.println(String.format(Locale.US, "G00 Z%.3f F%s", diagonal / 2.0f + 20.0f, Settings.getInstance().getSetting("gcode_feedrate_g0")));
+						
+			out.println(String.format(Locale.US, "G00 X%.3f Y%.3f Z%.3f A0 B0 F%s", 0.0f, SurfaceDemo.getInstance().utils.maxY,
+					diagonal / 2.0f + 20.0f, Settings.getInstance().getSetting("gcode_feedrate_g1")));
+			
+			// lets turn on path blending
+			out.println("G64 P2");
+			
+			
 			out.flush();
+			out.close();
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -173,8 +173,7 @@ public class CutThread extends SwingWorker<String, Object> {
 			rotationDirection = -1;
 		cutSegment(minY, maxY, false, rotationDirection);
 		try {
-			PrintWriter out = new PrintWriter(
-					new BufferedWriter(new FileWriter(this.gcodeFile.getAbsolutePath(), true)));
+			PrintWriter out = new PrintWriter(new BufferedWriter(new FileWriter(this.gcodeFile.getAbsolutePath(), true)));
 			out.println("M2");
 			out.flush();
 		} catch (IOException e) {
@@ -232,14 +231,12 @@ public class CutThread extends SwingWorker<String, Object> {
 						// e.printStackTrace();
 						// }
 						double diagonal = (SurfaceDemo.getInstance().utils.maxEdge * Math.sqrt(2.0f));
-						MyPickablePoint safeRetractPoint = new MyPickablePoint(-100000,
-								new Coord3d(myPoint.xyz.x, myPoint.xyz.y, diagonal / 2 + 20), Color.BLACK, 0.4f,
-								-200000);
+						MyPickablePoint safeRetractPoint = new MyPickablePoint(-100000, new Coord3d(myPoint.xyz.x, myPoint.xyz.y, diagonal / 2 + 20), Color.BLACK,
+								0.4f, -200000);
 						SurfaceDemo.getInstance().move(safeRetractPoint, false, cutOffsetMm, true);
 
 						SurfaceDemo.getInstance().moveAbove(myPoint, pierceOffsetMm, pierceTimeMs);
-						double angle = followThePath(myPoint, this.alAlreadyAddedPoints,
-								(rotationDirection == -1 ? true : false));
+						double angle = followThePath(myPoint, this.alAlreadyAddedPoints, (rotationDirection == -1 ? true : false));
 						hasBeenCutting = true;
 					}
 				}
@@ -247,8 +244,7 @@ public class CutThread extends SwingWorker<String, Object> {
 			if (hasBeenCutting) {
 				double diagonal = (SurfaceDemo.getInstance().utils.maxEdge * Math.sqrt(2.0d));
 				MyPickablePoint newPoint = new MyPickablePoint(-100000,
-						new Coord3d(SurfaceDemo.getInstance().cylinderPoint.xyz.x,
-								SurfaceDemo.getInstance().cylinderPoint.xyz.y, diagonal / 2.0f + 20),
+						new Coord3d(SurfaceDemo.getInstance().cylinderPoint.xyz.x, SurfaceDemo.getInstance().cylinderPoint.xyz.y, diagonal / 2.0f + 20),
 						Color.BLACK, 0.4f, -200000);
 				SurfaceDemo.getInstance().move(newPoint, false, cutOffsetMm, true);
 			}
@@ -262,8 +258,7 @@ public class CutThread extends SwingWorker<String, Object> {
 		}
 	}
 
-	public double followThePath(MyPickablePoint myPoint, ArrayList<MyPickablePoint> alAlreadyAddedPoints,
-			Boolean order) {
+	public double followThePath(MyPickablePoint myPoint, ArrayList<MyPickablePoint> alAlreadyAddedPoints, Boolean order) {
 
 		MyPickablePoint tempPoint = myPoint;
 		MyPickablePoint prevPoint = myPoint;
@@ -358,8 +353,7 @@ public class CutThread extends SwingWorker<String, Object> {
 		else
 			try {
 				this.followThePath(this.startPoint, this.alAlreadyAddedPoints, true);
-				PrintWriter out = new PrintWriter(
-						new BufferedWriter(new FileWriter(CutThread.gcodeFile.getAbsolutePath(), true)));
+				PrintWriter out = new PrintWriter(new BufferedWriter(new FileWriter(CutThread.gcodeFile.getAbsolutePath(), true)));
 				out.println("M2");
 				out.flush();
 				out.close();
@@ -370,12 +364,15 @@ public class CutThread extends SwingWorker<String, Object> {
 		return "Done";
 	}
 
-	@Override
-	protected void done() {
-		try {
-			System.out.println("Done.");
-		} catch (Exception ignore) {
-		}
-	}
+  protected void done() {
+    try {
+        System.out.println("Done");
+        get();
+    } catch (ExecutionException e) {
+        e.getCause().printStackTrace();
+    } catch (InterruptedException e) {
+        // Process e here
+    }
+}
 
 }

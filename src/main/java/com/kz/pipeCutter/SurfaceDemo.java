@@ -18,7 +18,6 @@ import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.lang.reflect.InvocationTargetException;
 import java.nio.charset.Charset;
 import java.nio.file.FileSystems;
 import java.nio.file.Files;
@@ -42,11 +41,9 @@ import org.jzy3d.analysis.AbstractAnalysis;
 import org.jzy3d.analysis.AnalysisLauncher;
 import org.jzy3d.chart.Chart;
 import org.jzy3d.chart.controllers.camera.AbstractCameraController;
-import org.jzy3d.chart.controllers.keyboard.screenshot.IScreenshotKeyController;
-import org.jzy3d.chart.controllers.keyboard.screenshot.IScreenshotKeyController.IScreenshotEventListener;
+import org.jzy3d.chart.controllers.keyboard.camera.ICameraKeyController;
 import org.jzy3d.chart.controllers.mouse.picking.AWTMousePickingController;
 import org.jzy3d.chart.factories.AWTChartComponentFactory;
-import org.jzy3d.chart.factories.ChartComponentFactory;
 import org.jzy3d.colors.Color;
 import org.jzy3d.maths.BoundingBox3d;
 import org.jzy3d.maths.Coord3d;
@@ -96,6 +93,7 @@ public class SurfaceDemo extends AbstractAnalysis {
 
 	private boolean alreadyCutting;
 	public boolean spindleOn;
+	public int gCodeLineNo;
 
 	protected SurfaceDemo() {
 		Thread t = new Thread(new Runnable() {
@@ -126,6 +124,59 @@ public class SurfaceDemo extends AbstractAnalysis {
 						// instance.canvas.getAnimator().setUpdateFPSFrames(20,
 						// System.out);
 						instance.canvas.setSize(600, 600);
+
+						// Iterator<AbstractCameraController> itController =
+						// instance.getChart().getControllers().iterator();
+						// while (itController.hasNext()) {
+						// AbstractCameraController controller = itController.next();
+						// if (controller instanceof ICameraKeyController) {
+						// controller.dispose();
+						// itController.remove();
+						// }
+						// System.out.println(controller.getClass().toString());
+						// }
+						// ICameraKeyController keyControll =
+						// instance.chart.addKeyController();
+						instance.canvas.addKeyListener(new KeyListener() {
+
+							@Override
+							public void keyTyped(KeyEvent e) {
+								// TODO Auto-generated method stub
+							}
+
+							@Override
+							public void keyReleased(KeyEvent e) {
+								// TODO Auto-generated method stub
+
+							}
+
+							@Override
+							public void keyPressed(KeyEvent e) {
+								if (e.getKeyCode() == KeyEvent.VK_RIGHT) {
+									MyEdge e1 = utils.continuousEdges.get(lastClickedPoint.continuousEdgeNo);
+									int index = e1.points.indexOf(lastClickedPoint.id);
+									int newInd;
+									if (index + 1 == e1.points.size() - 1)
+										newInd = 0;
+									else
+										newInd = index + 1;
+									MyPickablePoint p1 = utils.points.get(e1.points.get(newInd));
+									selectedPointChanged(p1);
+									e.consume();
+								} else if (e.getKeyCode() == KeyEvent.VK_LEFT) {
+									MyEdge e1 = utils.continuousEdges.get(lastClickedPoint.continuousEdgeNo);
+									int index = e1.points.indexOf(lastClickedPoint.id);
+									int newInd;
+									if (index - 1 == -1)
+										newInd = e1.points.size() - 1;
+									else
+										newInd = index - 1;
+									MyPickablePoint p1 = utils.points.get(e1.points.get(newInd));
+									selectedPointChanged(p1);
+									e.consume();
+								}
+							}
+						});
 
 						final MyPopupMenu menu = new MyPopupMenu();
 						instance.canvas.add(menu);
@@ -193,15 +244,6 @@ public class SurfaceDemo extends AbstractAnalysis {
 
 						instance.getChart().getView().setViewPositionMode(ViewPositionMode.FREE);
 						// instance.getChart().getView().setMaximized(true);
-						// Iterator<AbstractCameraController> itController =
-						// instance.getChart().getControllers().iterator();
-						// while (itController.hasNext()) {
-						// AbstractCameraController controller = itController.next();
-						// if (controller instanceof ICameraKeyController) {
-						// controller.dispose();
-						// itController.remove();
-						// }
-						// }
 
 						try {
 							FileInputStream in = new FileInputStream(Settings.iniFullFileName);
@@ -462,6 +504,7 @@ public class SurfaceDemo extends AbstractAnalysis {
 			splitLongEdges(pointId, edgeNo);
 			utils.establishNeighbourPoints();
 			utils.calculateContinuousEdges();
+			utils.markRadiusPoints();
 
 			utils.calculateMaxAndMins();
 
@@ -657,7 +700,13 @@ public class SurfaceDemo extends AbstractAnalysis {
 			ls.setWireframeColor(Color.GRAY);
 			edge.setLineStrip(ls);
 			if (NUMBER_EDGES) {
-				PickableDrawableTextBitmap t5 = new PickableDrawableTextBitmap(String.valueOf(edge.edgeNo), edge.center, Color.BLUE);
+				Coord3d cent = this.utils.edges.get(edge.getPointByIndex(0).continuousEdgeNo).center;
+				Coord3d delta = cent.sub(edge.center);
+				String radius = "";
+				if (edge.edgeType == MyEdge.EdgeType.ONRADIUS)
+					radius = "R";
+				PickableDrawableTextBitmap t5 = new PickableDrawableTextBitmap(radius + String.valueOf(edge.edgeNo),
+						edge.center.add(new Coord3d(0.0f, 1.0f, 0.0f)), Color.BLUE);
 				t5.setHalign(Halign.CENTER); // TODO: invert
 				t5.setValign(Valign.CENTER); // TODO: invert
 				// t5.setValign(Valign.BOTTOM); // TODO: invert
@@ -707,8 +756,10 @@ public class SurfaceDemo extends AbstractAnalysis {
 
 	private Sphere getPlasma() {
 		if (instance != null && plasma == null) {
-			plasma = new Sphere(new Coord3d(0, 0, 0), 5.0f, 4, Color.BLUE);
-			plasma.setWireframeColor(Color.BLUE);
+			Color color = Color.BLUE; // mapper.getColor(new Coord3d(0,0,height));
+			color.a = 0.55f;
+			plasma = new Sphere(new Coord3d(0, 0, 0), 2.0f, 4, color);
+			plasma.setWireframeColor(color);
 			plasma.setPosition(plasma.getPosition());
 			instance.myComposite.add(plasma);
 		}
@@ -741,27 +792,7 @@ public class SurfaceDemo extends AbstractAnalysis {
 					{
 						if (picked.get(0).getClass().getName().equals("com.kz.pipeCutter.MyPickablePoint")) {
 							MyPickablePoint mp = ((MyPickablePoint) picked.get(0));
-							lastClickedPoint = mp;
-							// float offset =
-							// Float.valueOf(Settings.getInstance().getSetting("plasma_pierce_offset_mm"));
-							// move(mp, false, offset, false);
-
-							Point p = SurfaceDemo.instance.utils.calculateOffsetPoint(mp);
-							p.setColor(Color.GREEN);
-							p.setWidth(6.0f);
-
-							if (ZOOM_POINT) {
-								float edge = canvas.getView().getBounds().getXmax() - canvas.getView().getBounds().getXmin();
-								canvas.getView().setBoundManual(new BoundingBox3d(lastClickedPoint.xyz, edge));
-							}
-							if (ZOOM_PLASMA) {
-								float edge = canvas.getView().getBounds().getXmax() - canvas.getView().getBounds().getXmin();
-								canvas.getView().setBoundManual(new BoundingBox3d(plasma.getPosition(), edge));
-							}
-
-							myComposite.add(p);
-
-							System.out.println(mp.toString());
+							SurfaceDemo.this.selectedPointChanged(mp);
 						} else if (picked.get(0).getClass().getName().equals("org.jzy3d.plot3d.primitives.pickable.PickablePolygon")) {
 						} else {
 						}
@@ -771,6 +802,25 @@ public class SurfaceDemo extends AbstractAnalysis {
 
 			});
 		}
+	}
+
+	protected void selectedPointChanged(MyPickablePoint mp) {
+		lastClickedPoint = mp;
+		Point p = SurfaceDemo.instance.utils.calculateOffsetPoint(mp);
+		p.setColor(Color.GREEN);
+		p.setWidth(6.0f);
+
+		if (ZOOM_POINT) {
+			float edge = canvas.getView().getBounds().getXmax() - canvas.getView().getBounds().getXmin();
+			canvas.getView().setBoundManual(new BoundingBox3d(lastClickedPoint.xyz, edge));
+		}
+		if (ZOOM_PLASMA) {
+			float edge = canvas.getView().getBounds().getXmax() - canvas.getView().getBounds().getXmin();
+			canvas.getView().setBoundManual(new BoundingBox3d(plasma.getPosition(), edge));
+		}
+
+		myComposite.add(p);
+
 	}
 
 	public void addAxis() {
@@ -859,10 +909,14 @@ public class SurfaceDemo extends AbstractAnalysis {
 			cylinderPoint = new Point();
 
 		if (cut) {
-			plasma.setColor(Color.RED);
+			Color color = Color.RED;
+			color.a = 0.55f;
+			plasma.setColor(color);
 			plasma.setWireframeColor(Color.RED);
 		} else {
-			plasma.setColor(Color.BLUE);
+			Color color = Color.BLUE;
+			color.a = 0.55f;
+			plasma.setColor(color);
 			plasma.setWireframeColor(Color.BLUE);
 		}
 		cylinderPoint.setCoord(tempPoint.xyz);
@@ -874,8 +928,9 @@ public class SurfaceDemo extends AbstractAnalysis {
 			String gcode = SurfaceDemo.instance.utils.coordinateToGcode(tempPoint, offset);
 
 			if (cut) {
-				writeToGcodeFile(String.format(java.util.Locale.US, "G01 %s (pointId: %d, angle: %.3f)", gcode, tempPoint.id,
-						Float.valueOf(SurfaceDemo.instance.angleTxt)));
+				MyEdge edge = utils.getEdgeFromPoint(tempPoint, true);
+				writeToGcodeFile(String.format(java.util.Locale.US, "G01 %s (pointId: %d, edge: %s, angle: %.3f)", gcode, tempPoint.id,
+						edge.edgeType + " " + edge.edgeNo, Float.valueOf(SurfaceDemo.instance.angleTxt)));
 				alreadyCutting = true;
 			} else {
 				if (alreadyCutting) {
@@ -915,10 +970,11 @@ public class SurfaceDemo extends AbstractAnalysis {
 		plasma.setColor(Color.BLUE);
 		plasma.setWireframeColor(Color.BLUE);
 		try {
-			Thread.sleep(Long.valueOf(1000));
+			Thread.sleep(Long.valueOf(500));
 		} catch (Exception ex) {
 			ex.printStackTrace();
 		}
+
 		writeToGcodeFile("G01 " + gcode);
 		if (!alreadyCutting) {
 			writeToGcodeFile("M3 S400");
@@ -964,11 +1020,13 @@ public class SurfaceDemo extends AbstractAnalysis {
 	}
 
 	public void redrawPosition() {
-		if (BBBStatus.instance != null && instance.getChart().getView().getCanvas() != null) {
-			Coord3d coord = new Coord3d(BBBStatus.instance.x, BBBStatus.instance.y, BBBStatus.instance.z);
-			MyPickablePoint mp = new MyPickablePoint(-2, coord, Color.MAGENTA, 1, -1);
-			SurfaceDemo.getInstance().move(mp, GcodeViewer.instance.plasmaOn, 0, false);
-			SurfaceDemo.getInstance().utils.rotatePoints(BBBStatus.instance.a, false, false);
+		if (instance.getChart().getView().getCanvas() != null) {
+			if (BBBStatus.instance != null) {
+				Coord3d coord = new Coord3d(BBBStatus.instance.x, BBBStatus.instance.y, BBBStatus.instance.z);
+				MyPickablePoint mp = new MyPickablePoint(-2, coord, Color.MAGENTA, 1, -1);
+				SurfaceDemo.getInstance().move(mp, GcodeViewer.instance.plasmaOn, 0, false);
+				SurfaceDemo.getInstance().utils.rotatePoints(BBBStatus.instance.a, false, false);
+			}
 
 			float currentViewRadius = SurfaceDemo.instance.canvas.getView().getAxe().getBoxBounds().getXmax()
 					- SurfaceDemo.instance.canvas.getView().getAxe().getBoxBounds().getXmin();
@@ -985,7 +1043,16 @@ public class SurfaceDemo extends AbstractAnalysis {
 		PrintWriter out = null;
 		try {
 			out = new PrintWriter(new BufferedWriter(new FileWriter(CutThread.gcodeFile.getAbsolutePath(), true)));
+
+			if (this.gCodeLineNo == 2 && Settings.instance.getSetting("gcode_g93").equals("1")) {
+				CutThread.instance.g93mode = true;
+				out.println("G93");
+				this.gCodeLineNo++;
+			}
+
 			out.println(txt);
+			this.gCodeLineNo++;
+
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

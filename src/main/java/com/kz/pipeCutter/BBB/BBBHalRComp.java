@@ -235,7 +235,8 @@ public class BBBHalRComp implements Runnable {
 		String identity = String.format("%04X-%04X", rand.nextInt(), rand.nextInt());
 
 		socket.setIdentity(identity.getBytes(ZMQ.CHARSET));
-		// socket.setReceiveTimeOut(1000);
+		socket.setReceiveTimeOut(5);
+		socket.setSendTimeOut(1000);
 		// socket.setRcvHWM(10000);
 		socket.connect(this.halRCompUri);
 

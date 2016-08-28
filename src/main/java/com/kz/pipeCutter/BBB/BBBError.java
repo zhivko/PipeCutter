@@ -138,8 +138,8 @@ public class BBBError implements Runnable {
 		socket.subscribe("text".getBytes(ZMQ.CHARSET));
 		socket.subscribe("error".getBytes(ZMQ.CHARSET));
 		socket.subscribe("config".getBytes(ZMQ.CHARSET));
-		socket.setReceiveTimeOut(200);
-		socket.setSendTimeOut(200);
+		socket.setReceiveTimeOut(5);
+		socket.setSendTimeOut(1000);
 		socket.setIdentity(identity.getBytes(ZMQ.CHARSET));
 		socket.connect(uri);
 

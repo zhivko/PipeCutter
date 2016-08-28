@@ -178,8 +178,8 @@ public class BBBStatus implements Runnable {
 		socket.subscribe("io".getBytes(ZMQ.CHARSET));
 		socket.subscribe("interp".getBytes(ZMQ.CHARSET));
 		// socket.setHWM(10000);
-		// socket.setReceiveTimeOut(200);
-		// socket.setSendTimeOut(200);
+		socket.setReceiveTimeOut(5);
+		socket.setSendTimeOut(1000);
 		socket.connect(this.uri);
 
 		readThread = new Thread(this);

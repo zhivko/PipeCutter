@@ -1,12 +1,13 @@
 package com.kz.pipeCutter;
 
 import java.util.ArrayList;
-import java.util.Collections;
+import java.util.HashMap;
+import java.util.TreeMap;
 
-import org.jzy3d.maths.Coord2d;
 import org.jzy3d.maths.Coord3d;
-import org.jzy3d.maths.Utils;
 import org.jzy3d.plot3d.primitives.LineStrip;
+
+import com.kz.pipeCutter.MyContinuousEdge.EdgeType;
 
 public class MyEdge {
 
@@ -19,6 +20,15 @@ public class MyEdge {
 	Integer surfaceNo;
 	ArrayList<MyEdge> connectedEdges = null;
 	float length;
+	
+	EdgeType edgeType;
+	
+	public enum EdgeType {
+    ONRADIUS, NORMAL
+	}	
+	
+	// length distribution
+	public static HashMap<Float, Integer> hmLengthDistrib = new HashMap<Float, Integer>();  
 	
 
 	LineStrip lineStrip;
@@ -55,8 +65,14 @@ public class MyEdge {
 		points.add(pointNo);
 		calculateCenter();
 		if (points.size() >= 2)
+		{
 			calculateLength();
-		// }
+			if(!hmLengthDistrib.containsKey(this.length))
+					hmLengthDistrib.put(this.length, 0);
+
+			hmLengthDistrib.put(this.length, hmLengthDistrib.get(this.length)+1);
+		}
+		//System.out.println("Edge: " + this.edgeNo + " points:" + points.size());
 	}
 
 	private void calculateLength() {
@@ -129,6 +145,11 @@ public class MyEdge {
 	public MyPickablePoint getPointByIndex(int index) {
 		Integer pointNo = this.points.get(index);
 		return SurfaceDemo.instance.utils.points.get(pointNo);
+	}
+	
+	public String toString()
+	{
+		return String.valueOf(this.edgeNo);
 	}
 
 }

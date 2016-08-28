@@ -7,9 +7,9 @@ import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
-import java.util.Map.Entry;
+import java.util.SortedSet;
+import java.util.TreeSet;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
 
@@ -48,7 +48,8 @@ public class Utils {
 
 	public float maxEdge = 0;
 	private Coord3d previousPoint;
-	private double previousAngle;
+	private float previousAngle;
+	private MyEdge previousEdge;
 
 	static double Math_E = 0.0001;
 	static double rotationAngleMin = 0.01;
@@ -117,11 +118,12 @@ public class Utils {
 		}
 	}
 
-	public MyPickablePoint findConnectedPoint(MyPickablePoint point, ArrayList<MyPickablePoint> alreadyAdded, boolean order) {
+	public MyPickablePoint findConnectedPoint(MyPickablePoint point, ArrayList<MyPickablePoint> alreadyAdded, boolean direction) {
 		MyPickablePoint ret = null;
 		for (MyEdge edge : edges.values()) {
+			// System.out.println("EdgeNo: " + edge.edgeNo);
 			int startInd, endInd;
-			if (order) {
+			if (direction) {
 				startInd = 0;
 				endInd = 1;
 			} else {
@@ -140,7 +142,6 @@ public class Utils {
 					break;
 				}
 			}
-
 		}
 		return ret;
 	}
@@ -218,14 +219,6 @@ public class Utils {
 		alRet.add(resultSegmentPoint2);
 
 		return alRet;
-	}
-
-	static boolean isBetween(Coord3d a, Coord3d b, Coord3d c) {
-		if (a.distance(c) + c.distance(b) == a.distance(b))
-			return true;
-
-		return false;
-
 	}
 
 	static boolean isBetween2(Coord3d a, Coord3d b, Coord3d c) {
@@ -372,35 +365,21 @@ public class Utils {
 	}
 
 	public String coordinateToGcode(MyPickablePoint p, float zOffset) {
-		Coord3d coord = p.getCoord();
 
 		Float x, y, z;
 		String ret;
-		x = coord.x;
-		y = coord.y;
-		z = coord.z + zOffset;
+
+		Coord3d coord = p.getCoord();
+
+		x = p.getCoord().x;
+		y = p.getCoord().y;
+		z = p.getCoord().z + zOffset;
 
 		float angle = Float.valueOf(SurfaceDemo.instance.angleTxt);
 
-		if (this.previousPoint == null) {
-			// if we have BBB connected lets use that coordinate
-			float x1, y1, z1;
-			try {
-				x1 = Float.valueOf(Settings.getInstance().getSetting("position_x")).floatValue();
-				y1 = Float.valueOf(Settings.getInstance().getSetting("position_y")).floatValue();
-				z1 = Float.valueOf(Settings.getInstance().getSetting("position_z")).floatValue();
-			} catch (Exception ex1) {
-				x1 = 0.0f;
-				y1 = 0.0f;
-				z1 = 0.0f;
-			}
-			this.previousPoint = new Coord3d(x1, y1, z1);
-			this.previousAngle = 0.0;
-		}
-
 		if (CutThread.instance.filletSpeed < Math_E) {
 			/*
-			 * // lets calculate fillet speed sinc eit is not defined // x_width needs
+			 * // lets calculate fillet speed since it is not defined // x_width needs
 			 * to be traversed in what time? double time = (this.maxX * 2) /
 			 * CutThread.instance.g1Speed; // in minutes // in this time rotation of
 			 * 90 degrees should be done double w = (Math.PI / 2) / time; double
@@ -415,19 +394,25 @@ public class Utils {
 			CutThread.instance.filletSpeed = Double.valueOf(v).floatValue();
 		}
 
-		if (p.getId() == 340) {
-			System.out.println("");
-		}
-		float calcSpeed = 0.0f;
-		// just test
-		double delta = 3.2 * 10E-5;
-		if (Math.abs(angle % 90.0) < delta || Math.abs(90 - (angle % 90.0)) < delta) { // ||
-			// Math.abs(Math.round(this.previousAngle)
-			// % 90) == 0 ) { //
-			// angle
-			calcSpeed = CutThread.instance.g1Speed;
-		} else {
-			calcSpeed = CutThread.instance.filletSpeed;
+//		ArrayList<MyPickablePoint> al = new ArrayList<MyPickablePoint>();
+//		al.add(p);
+//		MyPickablePoint nextPoint = this.findConnectedPoint(p, al, true);
+//		al.add(nextPoint);
+//		MyPickablePoint prevPoint = this.findConnectedPoint(p, al, false);
+
+		float calcSpeed = CutThread.instance.g1Speed;
+
+		MyEdge edge = getEdgeFromPoint(p, true);
+		if (edge!=null && edge.edgeType == MyEdge.EdgeType.ONRADIUS) {
+			if(previousEdge==null)
+				calcSpeed = CutThread.instance.g1Speed;
+			else
+			{
+				if(previousEdge.edgeType == MyEdge.EdgeType.NORMAL && edge.edgeType == MyEdge.EdgeType.ONRADIUS)
+					calcSpeed = CutThread.instance.g1Speed;
+				else if(previousEdge.edgeType == MyEdge.EdgeType.ONRADIUS && edge.edgeType == MyEdge.EdgeType.ONRADIUS)
+					calcSpeed = CutThread.instance.filletSpeed;
+			}
 		}
 
 		double feed = 1;
@@ -437,14 +422,21 @@ public class Utils {
 			// t = s / v
 			// 1 / t = v / s
 			double length = coord.distance(this.previousPoint);
-			feed = calcSpeed / length;
+			if (length != 0) {
+				feed = calcSpeed / length;
+				//feed = 1000;
+			} else
+				feed = 60;
 		} else {
 			feed = calcSpeed;
 		}
 
 		ret = String.format(java.util.Locale.US, "X%.3f Y%.3f Z%.3f A%.3f B%.3f F%.3f", x, y, z, angle, angle, feed);
-		this.previousPoint = coord;
-		this.previousAngle = angle;
+		if (this.previousPoint == null || !this.previousPoint.equals(coord)) {
+			this.previousPoint = coord;
+			this.previousAngle = angle;
+		}
+		this.previousEdge = edge;
 
 		return ret;
 	}
@@ -595,27 +587,6 @@ public class Utils {
 
 				if (Math.abs(vectorCrossLengthY) < Math_E) {
 					Logger.getLogger(this.getClass()).info("Plane is perpendicular to Y.");
-					// plane is perpendicular to Y
-					// Vector3D vecA = vecPrevPoint.subtract(vecPoint);
-					// Vector3D vecB = vecNextPoint.subtract(vecPoint);
-					// Rotation rotationP = new Rotation(plane.getNormal(),
-					// Math.PI / 2);
-					// Rotation rotationN = new Rotation(plane.getNormal(),
-					// -Math.PI / 2);
-					// Vector3D rotatedA = rotationP.applyTo(vecA).normalize();
-					// Vector3D rotatedB = rotationN.applyTo(vecB).normalize();
-					// Vector3D vecAoffset =
-					// vecA.add(rotatedA.scalarMultiply(SurfaceDemo.getInstance().getKerfOffset()));
-					// Vector3D vecBoffset =
-					// vecB.add(rotatedB.scalarMultiply(SurfaceDemo.getInstance().getKerfOffset()));
-					// Line lineA = new Line(vecPrevPoint.add(vecAoffset),
-					// vecPoint.add(vecAoffset), 0.0001);
-					// Line lineB = new Line(vecNextPoint.add(vecBoffset),
-					// vecPoint.add(vecBoffset), 0.0001);
-					// Vector3D intersect = lineA.intersection(lineB);
-					// ret.xyz.x = (float) intersect.getX();
-					// ret.xyz.y = (float) intersect.getY();
-					// ret.xyz.z = (float) intersect.getZ();
 					float deltaY = point.getY() - continuousEdge.center.y;
 					ret.xyz.x = (float) point.getX();
 					ret.xyz.y = (float) point.getY() - Math.signum(deltaY) * SurfaceDemo.instance.getKerfOffset();
@@ -743,6 +714,14 @@ public class Utils {
 		return plane;
 	}
 
+	static boolean isBetween(Coord3d a, Coord3d b, Coord3d c) {
+		if (a.distance(c) + c.distance(b) == a.distance(b))
+			return true;
+	
+		return false;
+	
+	}
+
 	public Plane getPlaneForMiddlePoint(MyPickablePoint point) throws org.apache.commons.math3.exception.MathArithmeticException {
 		Plane plane = null;
 		MyEdge continuousEdge = continuousEdges.get(point.continuousEdgeNo);
@@ -811,4 +790,62 @@ public class Utils {
 			maxEdge = maxZ - minZ;
 
 	}
+
+	public void showLengthDistrib() {
+		for (Float length1 : MyEdge.hmLengthDistrib.keySet()) {
+			System.out.println(length1 + " count: " + MyEdge.hmLengthDistrib.get(length1));
+		}
+	}
+
+	public void markRadiusPoints() {
+		float radius = Float.valueOf(Settings.instance.getSetting("radius"));
+
+		float rx_min = -this.maxX + radius;
+		float rx_max = this.maxX - radius;
+		float rz_min = -this.maxZ + radius;
+		float rz_max = this.maxZ - radius;
+
+		for (MyEdge edg : this.edges.values()) {
+			if (edg.center.x < rx_min && edg.center.z > rz_max) {
+				edg.edgeType = MyEdge.EdgeType.ONRADIUS;
+			} else if (edg.center.x > rx_max && edg.center.z > rz_max) {
+				edg.edgeType = MyEdge.EdgeType.ONRADIUS;
+			} else if (edg.center.x < rx_min && edg.center.z < rz_min) {
+				edg.edgeType = MyEdge.EdgeType.ONRADIUS;
+			} else if (edg.center.x > rx_max && edg.center.z < rz_min) {
+				edg.edgeType = MyEdge.EdgeType.ONRADIUS;
+			}
+			else
+			{
+				edg.edgeType = MyEdge.EdgeType.NORMAL;
+			}
+		}
+
+	}
+
+	public MyEdge getEdgeFromPoint(MyPickablePoint point, boolean direction) {
+
+		MyEdge ret = null;
+		for (MyEdge edge : edges.values()) {
+			// System.out.println("EdgeNo: " + edge.edgeNo);
+			int startInd, endInd;
+			if (direction) {
+				startInd = 0;
+				endInd = 1;
+			} else {
+				startInd = 1;
+				endInd = 0;
+			}
+
+			if (edge.getPointByIndex(startInd).equals(point)) {
+				ret = edge;
+				break;
+			} else if (edge.getPointByIndex(endInd).equals(point)) {
+				ret = edge;
+				break;
+			}
+		}
+		return ret;
+	}
+
 }

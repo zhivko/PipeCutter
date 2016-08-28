@@ -63,6 +63,12 @@ public class OtherSettings extends JPanel {
 		screenshotFolder.setParId("screenshot_folder");
 		this.add(screenshotFolder);
 
+		SavableText radius = new SavableText();
+		radius.setLabelTxt("Pipe radius:");
+		radius.setParId("radius");
+		this.add(radius);
+		
+		
 		SavableText zoomBounds = new SavableText();
 		zoomBounds.setLabelTxt("Zoom bounds:");
 		zoomBounds.setParId("zoom_bounds");

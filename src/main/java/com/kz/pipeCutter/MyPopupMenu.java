@@ -24,7 +24,6 @@ public class MyPopupMenu extends PopupMenu {
 		menuItem.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
-
 				CutThread th = new CutThread(true);
 				th.execute();
 			}
@@ -36,7 +35,10 @@ public class MyPopupMenu extends PopupMenu {
 		menuItem7.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
-				SurfaceDemo.instance.NUMBER_EDGES = !SurfaceDemo.instance.NUMBER_EDGES;
+				SurfaceDemo.NUMBER_EDGES = !SurfaceDemo.NUMBER_EDGES;
+				SurfaceDemo.instance.canvas.getView().setBoundMode(ViewBoundMode.AUTO_FIT);
+				SurfaceDemo.ZOOM_PLASMA = false;
+				SurfaceDemo.ZOOM_POINT = false;
 				SurfaceDemo.instance.initDraw();
 			}
 		});
@@ -46,7 +48,10 @@ public class MyPopupMenu extends PopupMenu {
 		menuItem8.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
-				SurfaceDemo.instance.NUMBER_POINTS = !SurfaceDemo.instance.NUMBER_POINTS;
+				SurfaceDemo.NUMBER_POINTS = !SurfaceDemo.NUMBER_POINTS;
+				SurfaceDemo.instance.canvas.getView().setBoundMode(ViewBoundMode.AUTO_FIT);
+				SurfaceDemo.ZOOM_PLASMA = false;
+				SurfaceDemo.ZOOM_POINT = false;
 				SurfaceDemo.instance.initDraw();
 			}
 		});
@@ -56,6 +61,7 @@ public class MyPopupMenu extends PopupMenu {
 		menuItem9.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
+				SurfaceDemo.ZOOM_PLASMA = false;
 				SurfaceDemo.ZOOM_POINT = true;
 				SurfaceDemo.instance.redrawPosition();
 			}
@@ -66,6 +72,7 @@ public class MyPopupMenu extends PopupMenu {
 		menuItem13.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
+				SurfaceDemo.ZOOM_POINT = false;
 				SurfaceDemo.ZOOM_PLASMA = true;
 				SurfaceDemo.instance.redrawPosition();
 			}

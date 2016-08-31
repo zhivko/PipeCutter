@@ -365,6 +365,8 @@ public class Utils {
 	}
 
 	public String coordinateToGcode(MyPickablePoint p, float zOffset) {
+		// G93.1
+		// http://www.eng-tips.com/viewthread.cfm?qid=200454
 
 		Float x, y, z;
 		String ret;
@@ -377,41 +379,54 @@ public class Utils {
 
 		float angle = Float.valueOf(SurfaceDemo.instance.angleTxt);
 
-		if (CutThread.instance.filletSpeed < Math_E) {
-			/*
-			 * // lets calculate fillet speed since it is not defined // x_width needs
-			 * to be traversed in what time? double time = (this.maxX * 2) /
-			 * CutThread.instance.g1Speed; // in minutes // in this time rotation of
-			 * 90 degrees should be done double w = (Math.PI / 2) / time; double
-			 * radius = (this.maxX) * 1.41; double v = w * radius * 180 / Math.PI;
-			 */
-			// fillet length
-			float radius_of_edge = 10;
-			float arc_length = (float) (radius_of_edge * Math.PI / 2);
-			float v = (CutThread.instance.g1Speed) * (this.maxX * 2 + 2 * radius_of_edge) / arc_length;
-			// double w = 90.0f / time;
+		// if (CutThread.instance.filletSpeed == 0) {
 
-			CutThread.instance.filletSpeed = Double.valueOf(v).floatValue();
-		}
+		// }
 
-//		ArrayList<MyPickablePoint> al = new ArrayList<MyPickablePoint>();
-//		al.add(p);
-//		MyPickablePoint nextPoint = this.findConnectedPoint(p, al, true);
-//		al.add(nextPoint);
-//		MyPickablePoint prevPoint = this.findConnectedPoint(p, al, false);
+		// ArrayList<MyPickablePoint> al = new ArrayList<MyPickablePoint>();
+		// al.add(p);
+		// MyPickablePoint nextPoint = this.findConnectedPoint(p, al, true);
+		// al.add(nextPoint);
+		// MyPickablePoint prevPoint = this.findConnectedPoint(p, al, false);
 
 		float calcSpeed = CutThread.instance.g1Speed;
 
 		MyEdge edge = getEdgeFromPoint(p, true);
-		if (edge!=null && edge.edgeType == MyEdge.EdgeType.ONRADIUS) {
-			if(previousEdge==null)
-				calcSpeed = CutThread.instance.g1Speed;
-			else
-			{
-				if(previousEdge.edgeType == MyEdge.EdgeType.NORMAL && edge.edgeType == MyEdge.EdgeType.ONRADIUS)
+		if (edge != null && edge.edgeType == MyEdge.EdgeType.ONRADIUS) {
+			if (previousEdge != null) {
+				if (previousEdge.edgeType == MyEdge.EdgeType.NORMAL && edge.edgeType == MyEdge.EdgeType.ONRADIUS)
 					calcSpeed = CutThread.instance.g1Speed;
-				else if(previousEdge.edgeType == MyEdge.EdgeType.ONRADIUS && edge.edgeType == MyEdge.EdgeType.ONRADIUS)
+				else if (previousEdge.edgeType == MyEdge.EdgeType.ONRADIUS && edge.edgeType == MyEdge.EdgeType.ONRADIUS) {
+					/*
+					 * // lets calculate fillet speed since it is not defined // x_width
+					 * needs to be traversed in what time? double time = (this.maxX * 2) /
+					 * CutThread.instance.g1Speed; // in minutes // in this time rotation
+					 * of 90 degrees should be done double w = (Math.PI / 2) / time;
+					 * double radius = (this.maxX) * 1.41; double v = w * radius * 180 /
+					 * Math.PI;
+					 */
+					// fillet length
+					float s = ((this.maxX * 2.0f) + (this.maxZ * 2.0f)) / 2.0f;
+					float radius_of_edge = Float.valueOf(Settings.instance.getSetting("radius"));
+					float arc_length = (float) (radius_of_edge * Math.PI / 2);
+					// float v = (CutThread.instance.g1Speed) * (this.maxX * 2 + 2 *
+					// radius_of_edge) / arc_length;
+					float v = (CutThread.instance.g1Speed) * s / arc_length;
+					// double w = 90.0f / time;
+					float dv = v - CutThread.instance.g1Speed;
+					float t = s / CutThread.instance.g1Speed;
+
+					float a = 2 * dv / t;
+
+					double currAngle = Math.atan2(p.getCoord().z, p.getCoord().x) * 180.0 / Math.PI;
+					double maxAngle = Math.atan2(this.maxZ, (this.maxX - radius_of_edge)) * 180.0 / Math.PI;
+
+					System.out.println(String.format("%.3f / %.3f", currAngle, maxAngle));
+
+					CutThread.instance.filletSpeed = Double.valueOf(v).floatValue();
+
 					calcSpeed = CutThread.instance.filletSpeed;
+				}
 			}
 		}
 
@@ -424,7 +439,7 @@ public class Utils {
 			double length = coord.distance(this.previousPoint);
 			if (length != 0) {
 				feed = calcSpeed / length;
-				//feed = 1000;
+				// feed = 1000;
 			} else
 				feed = 60;
 		} else {
@@ -717,9 +732,9 @@ public class Utils {
 	static boolean isBetween(Coord3d a, Coord3d b, Coord3d c) {
 		if (a.distance(c) + c.distance(b) == a.distance(b))
 			return true;
-	
+
 		return false;
-	
+
 	}
 
 	public Plane getPlaneForMiddlePoint(MyPickablePoint point) throws org.apache.commons.math3.exception.MathArithmeticException {
@@ -814,9 +829,7 @@ public class Utils {
 				edg.edgeType = MyEdge.EdgeType.ONRADIUS;
 			} else if (edg.center.x > rx_max && edg.center.z < rz_min) {
 				edg.edgeType = MyEdge.EdgeType.ONRADIUS;
-			}
-			else
-			{
+			} else {
 				edg.edgeType = MyEdge.EdgeType.NORMAL;
 			}
 		}

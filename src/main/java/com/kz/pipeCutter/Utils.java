@@ -406,8 +406,8 @@ public class Utils {
 					 * Math.PI;
 					 */
 					// fillet length
-					float s = ((this.maxX * 2.0f) + (this.maxZ * 2.0f)) / 2.0f;
 					float radius_of_edge = Float.valueOf(Settings.instance.getSetting("radius"));
+					float s = ((this.maxX * 2.0f - 2 * radius_of_edge) + (this.maxZ * 2.0f - 2 * radius_of_edge)) / 2.0f;
 					float arc_length = (float) (radius_of_edge * Math.PI / 2);
 					// float v = (CutThread.instance.g1Speed) * (this.maxX * 2 + 2 *
 					// radius_of_edge) / arc_length;

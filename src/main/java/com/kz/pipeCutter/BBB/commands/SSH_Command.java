@@ -40,7 +40,7 @@ public abstract class SSH_Command {
 			// Settings.instance.log("MK instance at host: " + host);
 			session = jsch.getSession(user, ip, 22);
 			session.setPassword(pass);
-
+			
 			session.setConfig("StrictHostKeyChecking", "no");
 			session.setConfig("PreferredAuthentications", "publickey,keyboard-interactive,password");
       
@@ -48,7 +48,7 @@ public abstract class SSH_Command {
 			session.setServerAliveCountMax(Integer.MAX_VALUE);
 
 			session.setOutputStream(System.out);
-			session.connect(5000); // making a connection with timeout.
+			session.connect(15000); // making a connection with timeout.
 		}
 	}
 

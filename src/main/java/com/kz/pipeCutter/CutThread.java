@@ -133,8 +133,9 @@ public class CutThread extends SwingWorker<String, Object> {
 			out.println("G94");
 			//out.println(String.format(Locale.US, "G00 Z%.3f F%s", diagonal / 2.0f + 20.0f, Settings.getInstance().getSetting("gcode_feedrate_g0")));
 						
-			out.println(String.format(Locale.US, "G00 X%.3f Y%.3f Z%.3f A0 B0 F%s", 0.0f, SurfaceDemo.getInstance().utils.maxY,
-					diagonal / 2.0f + 20.0f, Settings.getInstance().getSetting("gcode_feedrate_g1")));
+			//out.println(String.format(Locale.US, "G00 X%.3f Y%.3f Z%.3f A0 B0 F%s", 0.0f, SurfaceDemo.getInstance().utils.maxY,
+			//		diagonal / 2.0f + 20.0f, Settings.getInstance().getSetting("gcode_feedrate_g1")));
+			SurfaceDemo.instance.move(firstOuterPoint, true, (float)((diagonal / 2.0f + 20.0f) - firstOuterPoint.getCoord().z));
 			
 			// lets turn on path blending
 			out.println("G64 P2");

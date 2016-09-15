@@ -46,7 +46,7 @@ public class CutThread extends SwingWorker<String, Object> {
 	float g1Speed = 0;
 	public boolean g93mode;
 	public float filletSpeed = 0.0f;
-
+	
 	// http://www.pirate4x4.com/forum/11214232-post17.html
 	// For cutting 19.05mm with your Powermax1650 (this info is in your Powermax
 	// 1650 operators manual) Use 100 Amp consumables, set Amps to 100, cut
@@ -129,20 +129,18 @@ public class CutThread extends SwingWorker<String, Object> {
 		SurfaceDemo.getInstance().angleTxt = "0.0";
 		try {
 			PrintWriter out = new PrintWriter(new BufferedWriter(new FileWriter(this.gcodeFile.getAbsolutePath(), true)));
-			double diagonal = (SurfaceDemo.getInstance().utils.maxEdge * 1.41);
 			out.println("G94");
 			//out.println(String.format(Locale.US, "G00 Z%.3f F%s", diagonal / 2.0f + 20.0f, Settings.getInstance().getSetting("gcode_feedrate_g0")));
 						
 			//out.println(String.format(Locale.US, "G00 X%.3f Y%.3f Z%.3f A0 B0 F%s", 0.0f, SurfaceDemo.getInstance().utils.maxY,
 			//		diagonal / 2.0f + 20.0f, Settings.getInstance().getSetting("gcode_feedrate_g1")));
-			SurfaceDemo.instance.move(firstOuterPoint, true, (float)((diagonal / 2.0f + 20.0f) - firstOuterPoint.getCoord().z));
-			
+						
 			// lets turn on path blending
 			out.println("G64 P2");
-			
-			
 			out.flush();
 			out.close();
+			
+			
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

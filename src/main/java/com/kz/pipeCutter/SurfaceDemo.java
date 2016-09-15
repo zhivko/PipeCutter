@@ -925,6 +925,7 @@ public class SurfaceDemo extends AbstractAnalysis {
 		plasma.setPosition(offsetedPoint);
 
 		if (writeToGCode) {
+
 			String gcode = SurfaceDemo.instance.utils.coordinateToGcode(tempPoint, offset);
 
 			if (cut) {

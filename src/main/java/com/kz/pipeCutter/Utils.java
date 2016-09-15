@@ -47,7 +47,7 @@ public class Utils {
 	public float minZ = 0;
 
 	public float maxEdge = 0;
-	private Coord3d previousPoint;
+	public Coord3d previousPoint;
 	private float previousAngle;
 	private MyEdge previousEdge;
 
@@ -389,14 +389,14 @@ public class Utils {
 		// al.add(nextPoint);
 		// MyPickablePoint prevPoint = this.findConnectedPoint(p, al, false);
 
-		float calcSpeed = CutThread.instance.g1Speed;
+		float 	calcSpeed = CutThread.instance.g1Speed;
 
 		MyEdge edge = getEdgeFromPoint(p, true);
 		if (edge != null && edge.edgeType == MyEdge.EdgeType.ONRADIUS) {
 			if (previousEdge != null) {
-				if (previousEdge.edgeType == MyEdge.EdgeType.NORMAL && edge.edgeType == MyEdge.EdgeType.ONRADIUS)
-					calcSpeed = CutThread.instance.g1Speed;
-				else if (previousEdge.edgeType == MyEdge.EdgeType.ONRADIUS && edge.edgeType == MyEdge.EdgeType.ONRADIUS) {
+				if (previousEdge.edgeType == MyEdge.EdgeType.NORMAL && edge.edgeType == MyEdge.EdgeType.ONRADIUS) {
+					// calcSpeed = CutThread.instance.g1Speed;
+				} else if (previousEdge.edgeType == MyEdge.EdgeType.ONRADIUS && edge.edgeType == MyEdge.EdgeType.ONRADIUS) {
 					/*
 					 * // lets calculate fillet speed since it is not defined // x_width
 					 * needs to be traversed in what time? double time = (this.maxX * 2) /

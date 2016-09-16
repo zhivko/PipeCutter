@@ -43,7 +43,7 @@ public class CutThread extends SwingWorker<String, Object> {
 	private MyPickablePoint startPoint = null;
 
 	public float filletSpeed = 0.0f;
-	
+
 	// http://www.pirate4x4.com/forum/11214232-post17.html
 	// For cutting 19.05mm with your Powermax1650 (this info is in your Powermax
 	// 1650 operators manual) Use 100 Amp consumables, set Amps to 100, cut
@@ -127,24 +127,27 @@ public class CutThread extends SwingWorker<String, Object> {
 		try {
 			PrintWriter out = new PrintWriter(new BufferedWriter(new FileWriter(this.gcodeFile.getAbsolutePath(), true)));
 			out.println("G94");
-			//out.println(String.format(Locale.US, "G00 Z%.3f F%s", diagonal / 2.0f + 20.0f, Settings.getInstance().getSetting("gcode_feedrate_g0")));
-						
-			//out.println(String.format(Locale.US, "G00 X%.3f Y%.3f Z%.3f A0 B0 F%s", 0.0f, SurfaceDemo.getInstance().utils.maxY,
-			//		diagonal / 2.0f + 20.0f, Settings.getInstance().getSetting("gcode_feedrate_g1")));
+			// out.println(String.format(Locale.US, "G00 Z%.3f F%s", diagonal / 2.0f +
+			// 20.0f, Settings.getInstance().getSetting("gcode_feedrate_g0")));
 
-//			double diagonal = (SurfaceDemo.getInstance().utils.maxEdge * Math.sqrt(2.0f));
-//			MyPickablePoint safeRetractPoint = new MyPickablePoint(-100000, new Coord3d(0, SurfaceDemo.getInstance().utils.maxY, diagonal / 2 + 20), Color.BLACK,
-//					0.4f, -200000);
-//			SurfaceDemo.instance.utils.previousPoint = safeRetractPoint.xyz;
-//			SurfaceDemo.getInstance().move(safeRetractPoint, false, cutOffsetMm, true);		
-			
-						
+			double diagonal = (SurfaceDemo.getInstance().utils.maxEdge * Math.sqrt(2.0f));
+			out.println(String.format(Locale.US, "G00 Z%.3f F%s", diagonal / 2.0f + 20.0f, Settings.getInstance().getSetting("gcode_feedrate_g0")));
+
+			// double diagonal = (SurfaceDemo.getInstance().utils.maxEdge *
+			// Math.sqrt(2.0f));
+			// MyPickablePoint safeRetractPoint = new MyPickablePoint(-100000, new
+			// Coord3d(0, SurfaceDemo.getInstance().utils.maxY, diagonal / 2 + 20),
+			// Color.BLACK,
+			// 0.4f, -200000);
+			// SurfaceDemo.instance.utils.previousPoint = safeRetractPoint.xyz;
+			// SurfaceDemo.getInstance().move(safeRetractPoint, false, cutOffsetMm,
+			// true);
+
 			// lets turn on path blending
 			out.println("G64 P2");
 			out.flush();
 			out.close();
-			
-			
+
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -236,9 +239,10 @@ public class CutThread extends SwingWorker<String, Object> {
 						double diagonal = (SurfaceDemo.getInstance().utils.maxEdge * Math.sqrt(2.0f));
 						MyPickablePoint safeRetractPoint = new MyPickablePoint(-100000, new Coord3d(myPoint.xyz.x, myPoint.xyz.y, diagonal / 2 + 20), Color.BLACK,
 								0.4f, -200000);
-						//SurfaceDemo.getInstance().move(safeRetractPoint, false, cutOffsetMm, true);
+						
+						SurfaceDemo.getInstance().move(safeRetractPoint, false, cutOffsetMm, true);
 
-						SurfaceDemo.getInstance().moveAbove(safeRetractPoint, 0, 0);
+						// SurfaceDemo.getInstance().moveAbove(safeRetractPoint, 0, 0);
 						SurfaceDemo.getInstance().moveAbove(myPoint, pierceOffsetMm, pierceTimeMs);
 						double angle = followThePath(myPoint, this.alAlreadyAddedPoints, (rotationDirection == -1 ? true : false));
 						hasBeenCutting = true;
@@ -368,15 +372,15 @@ public class CutThread extends SwingWorker<String, Object> {
 		return "Done";
 	}
 
-  protected void done() {
-    try {
-        System.out.println("Done");
-        get();
-    } catch (ExecutionException e) {
-        e.getCause().printStackTrace();
-    } catch (InterruptedException e) {
-        // Process e here
-    }
-}
+	protected void done() {
+		try {
+			System.out.println("Done");
+			get();
+		} catch (ExecutionException e) {
+			e.getCause().printStackTrace();
+		} catch (InterruptedException e) {
+			// Process e here
+		}
+	}
 
 }

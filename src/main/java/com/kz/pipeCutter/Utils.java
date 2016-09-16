@@ -361,10 +361,10 @@ public class Utils {
 	}
 
 	public String coordinateToGcode(MyPickablePoint p) {
-		return coordinateToGcode(p, 0);
+		return coordinateToGcode(p, 0, false);
 	}
 
-	public String coordinateToGcode(MyPickablePoint p, float zOffset) {
+	public String coordinateToGcode(MyPickablePoint p, float zOffset, boolean cut) {
 		// G93.1
 		// http://www.eng-tips.com/viewthread.cfm?qid=200454
 
@@ -389,7 +389,11 @@ public class Utils {
 		// al.add(nextPoint);
 		// MyPickablePoint prevPoint = this.findConnectedPoint(p, al, false);
 
-		float 	calcSpeed = CutThread.instance.g1Speed;
+		float calcSpeed = 0;
+		if (cut)
+			calcSpeed = SurfaceDemo.instance.g1Speed;
+		else
+			calcSpeed = SurfaceDemo.instance.g0Speed;
 
 		MyEdge edge = getEdgeFromPoint(p, true);
 		if (edge != null && edge.edgeType == MyEdge.EdgeType.ONRADIUS) {
@@ -411,10 +415,10 @@ public class Utils {
 					float arc_length = (float) (radius_of_edge * Math.PI / 2);
 					// float v = (CutThread.instance.g1Speed) * (this.maxX * 2 + 2 *
 					// radius_of_edge) / arc_length;
-					float v = (CutThread.instance.g1Speed) * s / arc_length;
+					float v = (SurfaceDemo.instance.g1Speed) * s / arc_length;
 					// double w = 90.0f / time;
-					float dv = v - CutThread.instance.g1Speed;
-					float t = s / CutThread.instance.g1Speed;
+					float dv = v - SurfaceDemo.instance.g1Speed;
+					float t = s / SurfaceDemo.instance.g1Speed;
 
 					float a = 2 * dv / t;
 
@@ -431,7 +435,7 @@ public class Utils {
 		}
 
 		double feed = 1;
-		if (CutThread.instance.g93mode) {
+		if (SurfaceDemo.instance.g93mode) {
 			// length calculation
 			// v = s/t
 			// t = s / v
@@ -441,14 +445,15 @@ public class Utils {
 				feed = calcSpeed / length;
 				// feed = 1000;
 			} else
-				feed = 60;
+				feed = 10000;
 		} else {
 			feed = calcSpeed;
 		}
-
+		Coord3d p1 = new Coord3d(x, y, z);
 		ret = String.format(java.util.Locale.US, "X%.3f Y%.3f Z%.3f A%.3f B%.3f F%.3f", x, y, z, angle, angle, feed);
-		if (this.previousPoint == null || !this.previousPoint.equals(coord)) {
-			this.previousPoint = coord;
+		if (this.previousPoint == null || !this.previousPoint.equals(p1)) {
+			//System.out.println("previous to: " + coord.toString());
+			this.previousPoint = p1;
 			this.previousAngle = angle;
 		}
 		this.previousEdge = edge;
@@ -859,6 +864,11 @@ public class Utils {
 			}
 		}
 		return ret;
+	}
+
+	public String coordinateToGcode(MyPickablePoint tempPoint, float offset) {
+		// TODO Auto-generated method stub
+		return coordinateToGcode(tempPoint, offset, false);
 	}
 
 }

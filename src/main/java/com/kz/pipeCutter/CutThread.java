@@ -42,9 +42,6 @@ public class CutThread extends SwingWorker<String, Object> {
 	private boolean wholePipe = false;
 	private MyPickablePoint startPoint = null;
 
-	float g0Speed = 0;
-	float g1Speed = 0;
-	public boolean g93mode;
 	public float filletSpeed = 0.0f;
 	
 	// http://www.pirate4x4.com/forum/11214232-post17.html
@@ -109,13 +106,13 @@ public class CutThread extends SwingWorker<String, Object> {
 		String gcodeFolder = Settings.getInstance().getSetting("gcode_folder");
 		gcodeFile = new File(gcodeFolder + File.separatorChar + "prog.gcode");
 
-		g1Speed = Float.valueOf(Settings.getInstance().getSetting("gcode_feedrate_g1"));
-		g0Speed = Float.valueOf(Settings.getInstance().getSetting("gcode_feedrate_g0"));
+		SurfaceDemo.instance.g1Speed = Float.valueOf(Settings.getInstance().getSetting("gcode_feedrate_g1"));
+		SurfaceDemo.instance.g0Speed = Float.valueOf(Settings.getInstance().getSetting("gcode_feedrate_g0"));
 	}
 
 	public void cut() throws InterruptedException {
 		SurfaceDemo.instance.gCodeLineNo = 0;
-		g93mode = false;
+		SurfaceDemo.instance.g93mode = false;
 		ArrayList<MyPickablePoint> sortedList = new ArrayList(SurfaceDemo.getInstance().utils.points.values());
 		Collections.sort(sortedList, new MyPickablePointYComparator());
 
@@ -134,6 +131,13 @@ public class CutThread extends SwingWorker<String, Object> {
 						
 			//out.println(String.format(Locale.US, "G00 X%.3f Y%.3f Z%.3f A0 B0 F%s", 0.0f, SurfaceDemo.getInstance().utils.maxY,
 			//		diagonal / 2.0f + 20.0f, Settings.getInstance().getSetting("gcode_feedrate_g1")));
+
+//			double diagonal = (SurfaceDemo.getInstance().utils.maxEdge * Math.sqrt(2.0f));
+//			MyPickablePoint safeRetractPoint = new MyPickablePoint(-100000, new Coord3d(0, SurfaceDemo.getInstance().utils.maxY, diagonal / 2 + 20), Color.BLACK,
+//					0.4f, -200000);
+//			SurfaceDemo.instance.utils.previousPoint = safeRetractPoint.xyz;
+//			SurfaceDemo.getInstance().move(safeRetractPoint, false, cutOffsetMm, true);		
+			
 						
 			// lets turn on path blending
 			out.println("G64 P2");
@@ -232,8 +236,9 @@ public class CutThread extends SwingWorker<String, Object> {
 						double diagonal = (SurfaceDemo.getInstance().utils.maxEdge * Math.sqrt(2.0f));
 						MyPickablePoint safeRetractPoint = new MyPickablePoint(-100000, new Coord3d(myPoint.xyz.x, myPoint.xyz.y, diagonal / 2 + 20), Color.BLACK,
 								0.4f, -200000);
-						SurfaceDemo.getInstance().move(safeRetractPoint, false, cutOffsetMm, true);
+						//SurfaceDemo.getInstance().move(safeRetractPoint, false, cutOffsetMm, true);
 
+						SurfaceDemo.getInstance().moveAbove(safeRetractPoint, 0, 0);
 						SurfaceDemo.getInstance().moveAbove(myPoint, pierceOffsetMm, pierceTimeMs);
 						double angle = followThePath(myPoint, this.alAlreadyAddedPoints, (rotationDirection == -1 ? true : false));
 						hasBeenCutting = true;

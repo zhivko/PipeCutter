@@ -67,6 +67,8 @@ public class BBBStatus implements Runnable {
 
 	@Override
 	public void run() {
+		//ON BBB updates depends on [DISPLAY]CYCLE_TIME in the Ini file of linuxcnc.
+		
 		if (!Settings.getInstance().isVisible())
 			return;
 
@@ -115,10 +117,19 @@ public class BBBStatus implements Runnable {
 									}
 								}
 
-								if (SurfaceDemo.getInstance() != null) {
+								if (SurfaceDemo.getInstance() != null && SurfaceDemo.instance!=null) {
 									if (SurfaceDemo.getInstance().getChart() != null) {
 										// System.out.println(String.format("%1$,.2f, %2$,.2f,
 										// %3$,.2f",x,y,z));
+										
+										if (BBBStatus.instance != null) {
+											Coord3d coord = new Coord3d(BBBStatus.instance.x, BBBStatus.instance.y, BBBStatus.instance.z);
+											SurfaceDemo.getInstance().utils.rotatePoints(BBBStatus.instance.a, false, false);
+										
+											SurfaceDemo.getInstance().getPlasma().setPosition(coord);
+											SurfaceDemo.getInstance().redrawPosition();
+										}
+										
 										SurfaceDemo.getInstance().redrawPosition();
 									}
 								}

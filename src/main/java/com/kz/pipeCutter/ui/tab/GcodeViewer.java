@@ -31,6 +31,7 @@ import javax.swing.text.BadLocationException;
 import javax.swing.text.DefaultHighlighter;
 import javax.swing.text.DefaultHighlighter.DefaultHighlightPainter;
 
+import com.kz.pipeCutter.SurfaceDemo;
 import com.kz.pipeCutter.BBB.commands.AbortGCode;
 import com.kz.pipeCutter.BBB.commands.CloseGCode;
 import com.kz.pipeCutter.BBB.commands.ExecuteMdi;
@@ -67,7 +68,7 @@ public class GcodeViewer extends JPanel {
 	public Thread refreshThread;
 	// private SavableText spindleOn;
 	private MyButton spindleOn;
-	
+
 	public GcodeViewer() {
 		super();
 
@@ -300,8 +301,7 @@ public class GcodeViewer extends JPanel {
 									}
 								} catch (IOException ex) {
 									System.err.println(ex);
-								}
-								finally {
+								} finally {
 									try {
 										watcher.close();
 									} catch (IOException e) {
@@ -388,6 +388,13 @@ public class GcodeViewer extends JPanel {
 
 	public void setPlasmaOn(boolean on) {
 		if (this.plasmaOn != on) {
+			if (on) {
+				SurfaceDemo.instance.getPlasma().setColor(org.jzy3d.colors.Color.RED);
+				SurfaceDemo.instance.getPlasma().setWireframeColor(org.jzy3d.colors.Color.RED);
+			} else {
+				SurfaceDemo.instance.getPlasma().setColor(org.jzy3d.colors.Color.BLUE);
+				SurfaceDemo.instance.getPlasma().setWireframeColor(org.jzy3d.colors.Color.BLUE);
+			}
 			this.plasmaOn = on;
 			SwingUtilities.invokeLater(new Runnable() {
 				@Override

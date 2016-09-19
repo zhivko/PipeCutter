@@ -67,6 +67,7 @@ import com.kz.pipeCutter.ui.SortedProperties;
 import com.kz.pipeCutter.ui.tab.GcodeViewer;
 
 public class SurfaceDemo extends AbstractAnalysis {
+	// plasma torch heigh control process: http://www.fabricatingandmetalworking.com/2010/12/torch-height-control-for-automated-plasma-cutting-applications-2/
 	public Utils utils;
 	Discoverer discoverer;
 	MyTelnetClient smoothie;

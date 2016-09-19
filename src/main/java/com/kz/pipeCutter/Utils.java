@@ -411,11 +411,15 @@ public class Utils {
 					 */
 					// fillet length
 					float radius_of_edge = Float.valueOf(Settings.instance.getSetting("radius"));
-					float s = ((this.maxX * 2.0f - 2 * radius_of_edge) + (this.maxZ * 2.0f - 2 * radius_of_edge)) / 2.0f;
+					float maxLength = (float) Math.sqrt(this.maxX * this.maxX + this.maxZ * this.maxZ);
+					// float s = ((this.maxX * 2.0f - 2 * radius_of_edge) + (this.maxZ *
+					// 2.0f - 2 * radius_of_edge)) / 2.0f;
+					//float s = maxLength * 2.0f - 2 * radius_of_edge;
+					float s = (float) (maxLength * Math.PI / 2);
 					float arc_length = (float) (radius_of_edge * Math.PI / 2);
 					// float v = (CutThread.instance.g1Speed) * (this.maxX * 2 + 2 *
 					// radius_of_edge) / arc_length;
-					float v = (SurfaceDemo.instance.g1Speed) * s / arc_length;
+					float v = (SurfaceDemo.instance.g1Speed) * s / arc_length * 1.5f;
 					// double w = 90.0f / time;
 					float dv = v - SurfaceDemo.instance.g1Speed;
 					float t = s / SurfaceDemo.instance.g1Speed;
@@ -452,7 +456,7 @@ public class Utils {
 		Coord3d p1 = new Coord3d(x, y, z);
 		ret = String.format(java.util.Locale.US, "X%.3f Y%.3f Z%.3f A%.3f B%.3f F%.3f", x, y, z, angle, angle, feed);
 		if (this.previousPoint == null || !this.previousPoint.equals(p1)) {
-			//System.out.println("previous to: " + coord.toString());
+			// System.out.println("previous to: " + coord.toString());
 			this.previousPoint = p1;
 			this.previousAngle = angle;
 		}

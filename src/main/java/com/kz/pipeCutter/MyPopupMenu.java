@@ -179,8 +179,8 @@ public class MyPopupMenu extends PopupMenu {
 				SwingUtilities.invokeLater(new Runnable() {
 					@Override
 					public void run() {
-						String mdiCommand = String.format(Locale.US, "G92 X%.3f Y%.3f Z%.3f", -1.0 * SurfaceDemo.instance.lastClickedPoint.xyz.x,
-								-1.0 * SurfaceDemo.instance.lastClickedPoint.xyz.y, -1.0 * SurfaceDemo.instance.lastClickedPoint.xyz.z);
+						String mdiCommand = String.format(Locale.US, "G92 X%.3f Y%.3f Z%.3f", SurfaceDemo.instance.lastClickedPoint.xyz.x,
+								SurfaceDemo.instance.lastClickedPoint.xyz.y, SurfaceDemo.instance.lastClickedPoint.xyz.z);
 						Settings.getInstance().log(mdiCommand);
 						new ExecuteMdi(mdiCommand).start();
 

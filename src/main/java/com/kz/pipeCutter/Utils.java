@@ -415,7 +415,7 @@ public class Utils {
 					// float s = ((this.maxX * 2.0f - 2 * radius_of_edge) + (this.maxZ *
 					// 2.0f - 2 * radius_of_edge)) / 2.0f;
 					//float s = maxLength * 2.0f - 2 * radius_of_edge;
-					float s = (float) (maxLength * Math.PI / 2);
+					float s = (float) (maxLength * Math.PI / 2)*1.0f;
 					float arc_length = (float) (radius_of_edge * Math.PI / 2);
 					// float v = (CutThread.instance.g1Speed) * (this.maxX * 2 + 2 *
 					// radius_of_edge) / arc_length;

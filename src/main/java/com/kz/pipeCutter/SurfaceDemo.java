@@ -2,6 +2,7 @@ package com.kz.pipeCutter;
 
 import java.awt.Component;
 import java.awt.Dimension;
+import java.awt.Frame;
 import java.awt.MouseInfo;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -14,6 +15,7 @@ import java.awt.event.MouseListener;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -41,7 +43,6 @@ import org.jzy3d.analysis.AbstractAnalysis;
 import org.jzy3d.analysis.AnalysisLauncher;
 import org.jzy3d.chart.Chart;
 import org.jzy3d.chart.controllers.camera.AbstractCameraController;
-import org.jzy3d.chart.controllers.keyboard.camera.ICameraKeyController;
 import org.jzy3d.chart.controllers.mouse.picking.AWTMousePickingController;
 import org.jzy3d.chart.factories.AWTChartComponentFactory;
 import org.jzy3d.colors.Color;
@@ -60,14 +61,13 @@ import org.jzy3d.plot3d.text.align.Halign;
 import org.jzy3d.plot3d.text.align.Valign;
 import org.jzy3d.plot3d.text.drawable.DrawableTextBitmap;
 
-import com.kz.pipeCutter.BBB.BBBStatus;
 import com.kz.pipeCutter.BBB.Discoverer;
 import com.kz.pipeCutter.ui.Settings;
 import com.kz.pipeCutter.ui.SortedProperties;
-import com.kz.pipeCutter.ui.tab.GcodeViewer;
 
 public class SurfaceDemo extends AbstractAnalysis {
-	// plasma torch heigh control process: http://www.fabricatingandmetalworking.com/2010/12/torch-height-control-for-automated-plasma-cutting-applications-2/
+	// plasma torch heigh control process:
+	// http://www.fabricatingandmetalworking.com/2010/12/torch-height-control-for-automated-plasma-cutting-applications-2/
 	public Utils utils;
 	Discoverer discoverer;
 	MyTelnetClient smoothie;
@@ -128,7 +128,7 @@ public class SurfaceDemo extends AbstractAnalysis {
 						instance.canvas.getAnimator().start();
 						// instance.canvas.getAnimator().setUpdateFPSFrames(20,
 						// System.out);
-						instance.canvas.setSize(600, 600);
+						// instance.canvas.setSize(600, 600);
 
 						// Iterator<AbstractCameraController> itController =
 						// instance.getChart().getControllers().iterator();
@@ -256,18 +256,19 @@ public class SurfaceDemo extends AbstractAnalysis {
 							props.load(in);
 							in.close();
 
-							if (props.get("surfaceDemo") != null) {
-								String size = props.get("surfaceDemo").toString();
+							if (props.get("surfaceDemo_position") != null) {
+								String size = props.get("surfaceDemo_position").toString();
 								try {
 									String[] splittedSize = size.split("x");
-									instance.canvas
-											.setPreferredSize(new Dimension(Double.valueOf(splittedSize[0]).intValue(), Double.valueOf(splittedSize[1]).intValue()));
-									instance.canvas.validate();
-									instance.canvas.repaint();
+									Integer x = Integer.valueOf(splittedSize[0]);
+									Integer y = Integer.valueOf(splittedSize[1]);
+									// Toolkit.getDefaultToolkit().
+									((Frame) (SurfaceDemo.instance.canvas.getParent())).setLocation(new java.awt.Point(x, y));
 								} catch (Exception ex) {
 									ex.printStackTrace();
 								}
 							}
+
 						} catch (IOException e1) {
 							// TODO Auto-generated catch block
 							e1.printStackTrace();
@@ -280,6 +281,36 @@ public class SurfaceDemo extends AbstractAnalysis {
 								// TODO Auto-generated method stub
 								float radiusOfPlasma = Double.valueOf(SurfaceDemo.instance.canvas.getView().getBounds().getRadius()).floatValue() / 20.0f;
 								plasma.setVolume(radiusOfPlasma);
+
+								Component c = (Component) e.getSource();
+								// System.out.println(c.getName() + " resized: " +
+								// c.getSize().toString());
+								if (c.getName().equals("frame1")) {
+									FileInputStream in;
+									try {
+										in = new FileInputStream(Settings.iniFullFileName);
+										SortedProperties props = new SortedProperties();
+										props.load(in);
+										in.close();
+
+										if (props.get("surfaceDemo_size") != null) {
+											String size = props.get("surfaceDemo_size").toString();
+											try {
+												String[] splittedSize = size.split("x");
+												instance.canvas.validate();
+												instance.canvas.repaint();
+												instance.canvas.getParent()
+														.setSize(new Dimension(Double.valueOf(splittedSize[0]).intValue(), Double.valueOf(splittedSize[1]).intValue()));
+											} catch (Exception ex) {
+												ex.printStackTrace();
+											}
+										}
+
+									} catch (Exception e1) {
+										// TODO Auto-generated catch block
+										e1.printStackTrace();
+									}
+								}
 							}
 
 							@Override
@@ -288,7 +319,7 @@ public class SurfaceDemo extends AbstractAnalysis {
 								Component c = (Component) evt.getSource();
 								// System.out.println(c.getName() + " resized: " +
 								// c.getSize().toString());
-								if (c.getName().equals("frame0")) {
+								if (c.getParent().getName().equals("frame1")) {
 									try {
 										FileInputStream in = new FileInputStream(Settings.iniFullFileName);
 										SortedProperties props = new SortedProperties();
@@ -296,7 +327,7 @@ public class SurfaceDemo extends AbstractAnalysis {
 										in.close();
 
 										FileOutputStream out = new FileOutputStream(Settings.iniFullFileName);
-										props.setProperty("surfaceDemo", c.getSize().getWidth() + "x" + c.getSize().getHeight());
+										props.setProperty("surfaceDemo_size", instance.canvas.getSize().getWidth() + "x" + instance.canvas.getSize().getHeight());
 										props.store(out, null);
 										out.close();
 
@@ -310,8 +341,30 @@ public class SurfaceDemo extends AbstractAnalysis {
 							}
 
 							@Override
-							public void componentMoved(ComponentEvent e) {
+							public void componentMoved(ComponentEvent evt) {
 								// TODO Auto-generated method stub
+								Component c = (Component) evt.getSource();
+								// System.out.println(c.getName() + " resized: " +
+								// c.getSize().toString());
+								if (c.getName().equals("frame1")) {
+									try {
+										FileInputStream in = new FileInputStream(Settings.iniFullFileName);
+										SortedProperties props = new SortedProperties();
+										props.load(in);
+										in.close();
+
+										FileOutputStream out = new FileOutputStream(Settings.iniFullFileName);
+										props.setProperty("surfaceDemo_position", (int) c.getLocationOnScreen().getX() + "x" + (int) c.getLocationOnScreen().getY());
+										props.store(out, null);
+										out.close();
+
+									} catch (Exception ex) {
+										ex.printStackTrace();
+									}
+									// splitPane.setDividerLocation(1 -
+									// (commandPanel.getHeight() /
+									// Settings.instance.getHeight()));
+								}
 
 							}
 
@@ -973,8 +1026,7 @@ public class SurfaceDemo extends AbstractAnalysis {
 	public void moveAbove(MyPickablePoint tempPoint, float offset, long pierceTimeMs) {
 		Coord3d abovePoint = tempPoint.xyz.add(0f, 0f, offset);
 		plasma.setPosition(abovePoint);
-		//SurfaceDemo.instance.redrawPosition();
-
+		// SurfaceDemo.instance.redrawPosition();
 
 		String gcode = SurfaceDemo.instance.utils.coordinateToGcode(tempPoint, offset);
 		plasma.setColor(Color.BLUE);
@@ -1043,8 +1095,8 @@ public class SurfaceDemo extends AbstractAnalysis {
 				SurfaceDemo.instance.canvas.getView().setBoundManual(new BoundingBox3d(SurfaceDemo.instance.lastClickedPoint.getCoord(), currentViewRadius));
 			} else
 				SurfaceDemo.instance.canvas.getView().setBoundMode(ViewBoundMode.AUTO_FIT);
-			
-			//instance.getChart().render();
+
+			// instance.getChart().render();
 		}
 	}
 
@@ -1059,9 +1111,9 @@ public class SurfaceDemo extends AbstractAnalysis {
 				this.gCodeLineNo++;
 			}
 
-			//System.out.println(txt);
-			//System.out.println(SurfaceDemo.instance.utils.previousPoint);
-			
+			// System.out.println(txt);
+			// System.out.println(SurfaceDemo.instance.utils.previousPoint);
+
 			out.println(txt);
 			out.flush();
 			this.gCodeLineNo++;

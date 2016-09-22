@@ -60,6 +60,7 @@ import org.jzy3d.plot3d.rendering.view.modes.ViewPositionMode;
 import org.jzy3d.plot3d.text.align.Halign;
 import org.jzy3d.plot3d.text.align.Valign;
 import org.jzy3d.plot3d.text.drawable.DrawableTextBitmap;
+import org.jzy3d.plot3d.transform.Rotate;
 
 import com.kz.pipeCutter.BBB.Discoverer;
 import com.kz.pipeCutter.ui.Settings;
@@ -758,18 +759,28 @@ public class SurfaceDemo extends AbstractAnalysis {
 			ls.setWireframeColor(Color.GRAY);
 			edge.setLineStrip(ls);
 			if (NUMBER_EDGES) {
-				Coord3d cent = this.utils.edges.get(edge.getPointByIndex(0).continuousEdgeNo).center;
-				Coord3d delta = cent.sub(edge.center);
+				Coord3d cent = this.utils.continuousEdges.get(edge.getPointByIndex(0).continuousEdgeNo).center;
+				Coord3d delta = edge.center.sub(cent);
 				String radius = "";
+				
+				// 2 mm toward center
+				Coord3d textPoint = edge.center.sub(delta.getNormalizedTo(0.2f));
 				if (edge.edgeType == MyEdge.EdgeType.ONRADIUS)
 					radius = "R";
-				PickableDrawableTextBitmap t5 = new PickableDrawableTextBitmap(radius + String.valueOf(edge.edgeNo),
-						edge.center.add(new Coord3d(0.0f, 1.0f, 0.0f)), Color.BLUE);
+				Rotation r = new Rotation(0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f, -1.0f * Float.valueOf(SurfaceDemo.instance.angleTxt) * Math.PI / 180);
+				Coordinates c = new Coordinates(textPoint.x, textPoint.y, textPoint.z);
+				r.transform(c);
+
+				PickableDrawableTextBitmap t5 = new PickableDrawableTextBitmap(radius + String.valueOf(edge.edgeNo), new Coord3d(c.x, c.y, c.z),
+						Color.BLUE);
 				t5.setHalign(Halign.CENTER); // TODO: invert
 				t5.setValign(Valign.CENTER); // TODO: invert
 				// t5.setValign(Valign.BOTTOM); // TODO: invert
 				// left/right
 				t5.setPickingId(edge.edgeNo);
+				
+				
+				
 				utils.edgeTexts.add(t5);
 			}
 			for (Integer pointNo : edge.points) {
@@ -988,8 +999,8 @@ public class SurfaceDemo extends AbstractAnalysis {
 			String gcode = SurfaceDemo.instance.utils.coordinateToGcode(tempPoint, offset, cut);
 			if (cut) {
 				MyEdge edge = utils.getEdgeFromPoint(tempPoint, true);
-				writeToGcodeFile(String.format(java.util.Locale.US, "G01 %s (pointId: %d, edge: %s, angle: %.3f)", gcode, tempPoint.id,
-						edge.edgeType + " " + edge.edgeNo, Float.valueOf(SurfaceDemo.instance.angleTxt)));
+				writeToGcodeFile(String.format(java.util.Locale.US, "G01 %s (pointId: %d, edge: %s, edg.length: %.2f angle: %.3f)", gcode, tempPoint.id,
+						edge.edgeType + " " + edge.edgeNo, edge.length, Float.valueOf(SurfaceDemo.instance.angleTxt)));
 				alreadyCutting = true;
 			} else {
 				if (alreadyCutting) {
@@ -1041,6 +1052,7 @@ public class SurfaceDemo extends AbstractAnalysis {
 
 			writeToGcodeFile("G01 " + gcode);
 			if (!alreadyCutting) {
+				SurfaceDemo.instance.utils.previousEdge = null;
 				writeToGcodeFile("M3 S400");
 				alreadyCutting = true;
 			}

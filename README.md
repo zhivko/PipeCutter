@@ -201,6 +201,28 @@ cmdline=coherent_pool=1M quiet cape_universal=enable
 ##Example v3.8.x
 #cape_disable=capemgr.disable_partno=
 #cape_enable=capemgr.enable_partno=
+
+##Example v4.1.x
+#cape_disable=bone_capemgr.disable_partno=
+#cape_enable=bone_capemgr.enable_partno=
+
+##Disable HDMI/eMMC (v3.8.x)
+#cape_disable=capemgr.disable_partno=BB-BONELT-HDMI,BB-BONELT-HDMIN,BB-BONE-EMMC-2G
+
+##Disable HDMI (v3.8.x)
+#cape_disable=capemgr.disable_partno=BB-BONELT-HDMI,BB-BONELT-HDMIN
+
+##Disable eMMC (v3.8.x)
+#cape_disable=capemgr.disable_partno=BB-BONE-EMMC-2G
+
+##Audio Cape (needs HDMI Audio disabled) (v3.8.x)
+#cape_disable=capemgr.disable_partno=BB-BONELT-HDMI
+#cape_enable=capemgr.enable_partno=BB-BONE-AUDI-02
+
+
+##enable Generic eMMC Flasher:
+##make sure, these tools are installed: dosfstools rsync
+cmdline=init=/opt/scripts/tools/eMMC/init-eMMC-flasher-v3.sh
 ```
 
 

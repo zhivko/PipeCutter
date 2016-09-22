@@ -151,17 +151,12 @@ sudo swapon /var/cache/swap/swapfile
 ```
 ##flashing eMMC from uSD card
 
-Login to machinekit BBB instance
-```
-cd /opt/scripts/tools/eMMC/
-```
-and run the file manually...  
-```
-sudo ./init-eMMC-flasher-v3.sh
-```
+1. change uEnv.txt as below (notice last line ```init-eMMC-flasher-v3.sh```).
+2. reboot. The blue on-board LEDs should light in sequence and then continue to flash for the next 5–25 minutes (depending on the distribution used and the speed of the SD card). The latest distribution flashes in a Cylon/Knightrider pattern.
+3. Wait until the LEDs stop blinking and all 4 LEDs are fully lit. This process can take 5-25 minutes depending on the image used. If the flashing procedure fails—for example, no LEDs flash, or it keeps running for more than 45 minutes — then disconnect the power and try reflashing.
+4. Remove the micro-SD card. This is important, as you could end up flashing the eMMC again by accident.
 
-You need to do that as part as booting proces:
-The line mentioned in the instructions is the last line of uEnv.txt. I just downloaded a fresh copy of bone-debian-8.2-tester-2gb-armhf-2015-11-12-2gb.img.xz and /boot/uEnv.txt looks like this after I uncommented the eMMC flasher command (last line):
+The line mentioned in the instructions is the last line of uEnv.txt. Fresh copy of bone-debian-8.2-tester-2gb-armhf-2015-11-12-2gb.img.xz and /boot/uEnv.txt looks like this after I uncommented the eMMC flasher command (last line):
 
 ```
 #Docs: http://elinux.org/Beagleboard:U-boot_partitioning_layout_2.0
@@ -224,8 +219,6 @@ cmdline=coherent_pool=1M quiet cape_universal=enable
 ##make sure, these tools are installed: dosfstools rsync
 cmdline=init=/opt/scripts/tools/eMMC/init-eMMC-flasher-v3.sh
 ```
-
-
 
 
 ##flashing BBB from RobertNelson Machinekit image

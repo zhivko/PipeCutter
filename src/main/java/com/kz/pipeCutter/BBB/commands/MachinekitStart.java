@@ -10,8 +10,9 @@ public class MachinekitStart extends SSH_Command {
 	@Override
 	public void runSshCmd() throws Exception {
 		if (!SSH_CheckIfMachinekitRunning()) {
-			this.SSH_Login();
-			String command = "/home/machinekit/git/machinekit/bin/machinekit /home/machinekit/machinekit/configs/ARM.BeagleBone.CRAMPS/CRAMPS.ini &\n";
+			//this.SSH_Login();
+
+			String command = "source /home/machinekit/git/machinekit/bin/machinekit; /home/machinekit/machinekit/configs/ARM.BeagleBone.CRAMPS/CRAMPS.ini;";
 			channelExec = (ChannelExec) session.openChannel("exec");
 			MyOutputStreamReader myOut = new MyOutputStreamReader();
 			channelExec.setOutputStream(myOut);
@@ -25,7 +26,7 @@ public class MachinekitStart extends SSH_Command {
 					System.out.println(e);
 				}
 			}
-			channelExec.disconnect();
+			channelExec.disconnect();			
 		}
 	}
 	

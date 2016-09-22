@@ -100,6 +100,12 @@ sudo /etc/init.d/procps restart
 
 **Internet sharing on windows**
 Follow: http://lanceme.blogspot.hr/2013/06/windows-7-internet-sharing-for.html
+```
+sudo su
+sudo ifconfig usb0 192.168.7.2 netmask 255.255.255.252
+sudo route add default gw 192.168.7.1
+sudo echo 'nameserver 8.8.8.8' >> /etc/resolv.conf
+```
 
 ##Back-up BBB
 http://elinux.org/BeagleBone_Black_Extracting_eMMC_contents
@@ -107,7 +113,7 @@ http://elinux.org/BeagleBone_Black_Extracting_eMMC_contents
 http://dave.cheney.net/2013/09/22/two-point-five-ways-to-access-the-serial-console-on-your-beaglebone-black
 ##AVAHI Daemon doesn't always bring up beaglebone.local
 ```
-sudo systemctl --system daemon-reload'
+sudo systemctl --system daemon-reload
 sudo systemctl start avahi-daemon.service
 sudo systemctl status avahi-daemon.service
 ```
@@ -128,6 +134,11 @@ reload avahi daemon with
 ```
 sudo systemctl restart avahi-daemon
 ```
+change to use only ipv4
+```
+sudo nano /etc/avahi/avahi-daemon.conf
+use-ipv6=no
+```
 
 ##Adding swap file on BBB
 You will need this if you plan to build Machinekit on BBB
@@ -139,6 +150,7 @@ sudo mkswap /var/cache/swap/swapfile
 sudo swapon /var/cache/swap/swapfile
 ```
 ##flashing eMMC from uSD card
+
 Login to machinekit BBB instance
 ```
 cd /opt/scripts/tools/eMMC/
@@ -147,6 +159,53 @@ and run the file manually...
 ```
 sudo ./init-eMMC-flasher-v3.sh
 ```
+
+You need to do that as part as booting proces:
+The line mentioned in the instructions is the last line of uEnv.txt. I just downloaded a fresh copy of bone-debian-8.2-tester-2gb-armhf-2015-11-12-2gb.img.xz and /boot/uEnv.txt looks like this after I uncommented the eMMC flasher command (last line):
+
+```
+#Docs: http://elinux.org/Beagleboard:U-boot_partitioning_layout_2.0
+
+uname_r=4.1.12-ti-r29
+#uuid=
+#dtb=
+
+##BeagleBone Black/Green dtb's for v4.1.x (BeagleBone White just works..)
+
+##BeagleBone Black: HDMI (Audio/Video) disabled:
+#dtb=am335x-boneblack-emmc-overlay.dtb
+
+##BeagleBone Black: eMMC disabled:
+#dtb=am335x-boneblack-hdmi-overlay.dtb
+
+##BeagleBone Black: HDMI Audio/eMMC disabled:
+#dtb=am335x-boneblack-nhdmi-overlay.dtb
+
+##BeagleBone Black: HDMI (Audio/Video)/eMMC disabled:
+#dtb=am335x-boneblack-overlay.dtb
+
+##BeagleBone Black: wl1835
+#dtb=am335x-boneblack-wl1835mod.dtb
+
+##BeagleBone Black: replicape
+#dtb=am335x-boneblack-replicape.dtb
+
+##BeagleBone Green: eMMC disabled
+#dtb=am335x-bonegreen-overlay.dtb
+
+cmdline=coherent_pool=1M quiet cape_universal=enable
+
+#In the event of edid real failures, uncomment this next line:
+#cmdline=coherent_pool=1M quiet cape_universal=enable video=HDMI-A-1:1024x768@60e
+
+##Example v3.8.x
+#cape_disable=capemgr.disable_partno=
+#cape_enable=capemgr.enable_partno=
+```
+
+
+
+
 ##flashing BBB from RobertNelson Machinekit image
 Get image from:  
 ```

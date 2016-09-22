@@ -45,7 +45,7 @@ If you using USB connected BBB you would probably need to define gateway like th
 sudo route add default gw 192.168.7.1
 ```
 
-###Internet sharing
+###Internet sharing for USB connected BeagleBone Black
 On host pc:
 This should show you interface that has ip 192.168.7.1. For me it is ***enx544a16c5d02c***
 ```
@@ -98,13 +98,13 @@ sudo sysctl -w net.ipv4.ip_forward=1
 sudo /etc/init.d/procps restart
 ```
 
-**Internet sharing on windows**
+**Internet sharing on windows for USB connected BeagleBone Black**
 Follow: http://lanceme.blogspot.hr/2013/06/windows-7-internet-sharing-for.html
 ```
 sudo su
-sudo ifconfig usb0 192.168.7.2 netmask 255.255.255.252
-sudo route add default gw 192.168.7.1
-sudo echo 'nameserver 8.8.8.8' >> /etc/resolv.conf
+ifconfig usb0 192.168.7.2 netmask 255.255.255.252
+route add default gw 192.168.7.1
+echo 'nameserver 8.8.8.8' >> /etc/resolv.conf
 ```
 
 ##Back-up BBB

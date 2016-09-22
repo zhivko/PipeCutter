@@ -106,10 +106,10 @@ public class SurfaceDemo extends AbstractAnalysis {
 
 			@Override
 			public void run() {
-				SwingUtilities.invokeLater(new Runnable() {
-
-					@Override
-					public void run() {
+//				SwingUtilities.invokeLater(new Runnable() {
+//
+//					@Override
+//					public void run() {
 
 						instance = SurfaceDemo.this;
 						System.setProperty("java.net.preferIPv4Stack", "true");
@@ -379,8 +379,8 @@ public class SurfaceDemo extends AbstractAnalysis {
 
 					}
 
-				});
-			}
+//				});
+//			}
 		});
 		t.setName("SurfaceDemoConstructor");
 		t.start();
@@ -999,7 +999,7 @@ public class SurfaceDemo extends AbstractAnalysis {
 			String gcode = SurfaceDemo.instance.utils.coordinateToGcode(tempPoint, offset, cut);
 			if (cut) {
 				MyEdge edge = utils.getEdgeFromPoint(tempPoint, true);
-				writeToGcodeFile(String.format(java.util.Locale.US, "G01 %s (pointId: %d, edge: %s, edg.length: %.2f angle: %.3f)", gcode, tempPoint.id,
+				writeToGcodeFile(String.format(java.util.Locale.US, "G01 %s (p:%d, e:%s, e.length: %.2f angle: %.3f)", gcode, tempPoint.id,
 						edge.edgeType + " " + edge.edgeNo, edge.length, Float.valueOf(SurfaceDemo.instance.angleTxt)));
 				alreadyCutting = true;
 			} else {
@@ -1039,7 +1039,7 @@ public class SurfaceDemo extends AbstractAnalysis {
 		plasma.setPosition(abovePoint);
 		// SurfaceDemo.instance.redrawPosition();
 
-		String gcode = SurfaceDemo.instance.utils.coordinateToGcode(tempPoint, offset);
+		String gcode = SurfaceDemo.instance.utils.coordinateToGcode(tempPoint, offset,false);
 		plasma.setColor(Color.BLUE);
 		plasma.setWireframeColor(Color.BLUE);
 

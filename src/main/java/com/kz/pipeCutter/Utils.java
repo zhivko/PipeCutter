@@ -380,21 +380,6 @@ public class Utils {
 
 		float angle = Float.valueOf(SurfaceDemo.instance.angleTxt);
 
-		// if (CutThread.instance.filletSpeed == 0) {
-
-		// }
-
-		// ArrayList<MyPickablePoint> al = new ArrayList<MyPickablePoint>();
-		// al.add(p);
-		// MyPickablePoint nextPoint = this.findConnectedPoint(p, al, true);
-		// al.add(nextPoint);
-		// MyPickablePoint prevPoint = this.findConnectedPoint(p, al, false);
-
-		if(p.getId() == 663)
-		{
-			System.out.println("663");
-		}
-		
 		float calcSpeed = 0;
 		if (cut)
 			calcSpeed = SurfaceDemo.instance.g1Speed;
@@ -888,7 +873,7 @@ public class Utils {
 		return ret;
 	}
 
-	public String coordinateToGcode(MyPickablePoint tempPoint, float offset) {
+	public String c(MyPickablePoint tempPoint, float offset) {
 		// TODO Auto-generated method stub
 		return coordinateToGcode(tempPoint, offset, false);
 	}

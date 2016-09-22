@@ -1,5 +1,7 @@
 package com.kz.pipeCutter.BBB.commands;
 
+import javax.swing.SwingWorker;
+
 import com.jcraft.jsch.ChannelExec;
 import com.jcraft.jsch.JSch;
 import com.jcraft.jsch.Session;
@@ -13,26 +15,32 @@ public abstract class SSH_Command {
 	public abstract void runSshCmd() throws Exception;
 
 	public void start() {
-		// TODO Auto-generated method stub
-		Thread t = new Thread(new Runnable() {
-			@Override
-			public void run() {
-				try {
-					SSH_Login();
-					runSshCmd();
-				} catch (Exception ex) {
-					ex.printStackTrace();
-				}
-			}
-		});
-		t.run();
+//		SwingWorker<Void, Void> sw = new SwingWorker<Void, Void>() {
+//			@Override
+//			protected Void doInBackground() throws Exception {
+				Thread t = new Thread(new Runnable() {
+					@Override
+					public void run() {
+						try {
+							SSH_Login();
+							runSshCmd();
+						} catch (Exception ex) {
+							ex.printStackTrace();
+						}
+					}
+				});
+				t.start();
+//				return null;
+//			};
+//		};
+//		sw.run();
 	}
 
 	public static void SSH_Login() throws Exception {
 		if (jsch == null || session == null || !session.isConnected()) {
 			jsch = new JSch();
 			String host = Settings.getInstance().getSetting("machinekit_host");
-			
+
 			String ip = Settings.getInstance().getSetting("machinekit_ip");
 			String user = Settings.getInstance().getSetting("machinekit_user");
 			String pass = Settings.getInstance().getSetting("machinekit_password");
@@ -40,15 +48,16 @@ public abstract class SSH_Command {
 			// Settings.instance.log("MK instance at host: " + host);
 			session = jsch.getSession(user, ip, 22);
 			session.setPassword(pass);
-			
+
 			session.setConfig("StrictHostKeyChecking", "no");
 			session.setConfig("PreferredAuthentications", "publickey,keyboard-interactive,password");
-      
+
 			session.setServerAliveInterval(2000);
 			session.setServerAliveCountMax(Integer.MAX_VALUE);
 
 			session.setOutputStream(System.out);
 			session.connect(15000); // making a connection with timeout.
+
 		}
 	}
 

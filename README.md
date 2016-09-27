@@ -270,9 +270,9 @@ sudo mkswap /var/cache/swap/swapfile
 sudo swapon /var/cache/swap/swapfile
 ```
 
-If you get this error while building:
+If you get this error while building:<br>
 Makefile warning: Warning: File `main.cpp' has modification time 2.1e+04 s in the future
-issue:
+issue:<br>
 ```
 find /your/dir -type f -exec touch {} +
 ```

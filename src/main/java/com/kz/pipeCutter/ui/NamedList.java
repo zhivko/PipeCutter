@@ -239,6 +239,7 @@ public class NamedList extends JPanel implements IParameter, IHasLabel {
 			final String previewStatusUrl = "tcp://" + getServer(serviceInfo.getServer()) + ":" + ret.getPort();
 			if (!previewStatusUrl.equals(Settings.getInstance().getSetting("machinekit_previewstatusService_url"))) {
 				Settings.getInstance().setSetting("machinekit_previewstatusService_url", previewStatusUrl);
+				Settings.getInstance().initPreviewStatusService();
 			}
 		}
 	}

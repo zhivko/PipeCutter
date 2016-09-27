@@ -35,6 +35,7 @@ public class ExecuteMdi extends BBBMachineTalkCommand {
 				builder.setTicket(getNextTicket());
 				container = builder.build();
 				
+				
 				byte[] buff = container.toByteArray();
 				String hexOutput = javax.xml.bind.DatatypeConverter.printHexBinary(buff);
 				System.out.println("Message: " + hexOutput);

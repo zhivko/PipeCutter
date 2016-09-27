@@ -264,11 +264,25 @@ http://www.machinekit.io/docs/developing/machinekit-developing/
 You will need to add swap if you plan to build Machinekit on BBB
 ```
 sudo mkdir -p /var/cache/swap/
-sudo dd if=/dev/zero of=/var/cache/swap/swapfile bs=1M count=256
+sudo swapoff /var/cache/swap/swapfile
+sudo dd if=/dev/zero of=/var/cache/swap/swapfile bs=3M count=256
 sudo chmod 0600 /var/cache/swap/swapfile
 sudo mkswap /var/cache/swap/swapfile
 sudo swapon /var/cache/swap/swapfile
 ```
+Short steps:
+```
+cd ~/git/machinekit
+debian/configure -prx
+sudo mk-build-deps -ir
+cd src
+./autogen.sh
+./configure --with-platform-beaglebone
+
+~/git/machinekit/scripts/check-system-configuration.sh
+make
+```
+
 
 If you get this error while building:
 ```
@@ -276,7 +290,7 @@ Makefile warning: Warning: File `main.cpp' has modification time 2.1e+04 s in th
 ```
 issue:
 ```
-find /your/dir -type f -exec touch {} +
+find ~/git/machinekit/src -type f -exec touch {} +
 ```
 
 

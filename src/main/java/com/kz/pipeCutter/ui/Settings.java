@@ -46,6 +46,7 @@ import com.kz.pipeCutter.BBB.BBBError;
 import com.kz.pipeCutter.BBB.BBBHalCommand;
 import com.kz.pipeCutter.BBB.BBBHalRComp;
 import com.kz.pipeCutter.BBB.BBBMachineTalkCommand;
+import com.kz.pipeCutter.BBB.BBBPreviewStatus;
 import com.kz.pipeCutter.BBB.BBBStatus;
 import com.kz.pipeCutter.BBB.Discoverer;
 import com.kz.pipeCutter.ui.tab.GcodeViewer;
@@ -65,7 +66,8 @@ public class Settings extends JFrame {
 	public static BBBStatus status;
 	public static BBBHalCommand halCmd;
 	public static BBBHalRComp halRComp;
-
+	public static BBBPreviewStatus previewStatus;
+	
 	public static HashMap<String, SavableControl> controls = new HashMap<String, SavableControl>();
 
 	public JSplitPane splitPane;
@@ -131,6 +133,13 @@ public class Settings extends JFrame {
 			halRComp.initSocket();
 	}
 
+	public void initPreviewStatusService() {
+		//if (previewStatus == null)
+			//previewStatus = new BBBPreviewStatus();
+		//else
+			//previewStatus.initSocket();
+	}	
+	
 	/**
 	 * Create the frame.
 	 */
@@ -304,7 +313,8 @@ public class Settings extends JFrame {
 							initStatusService();
 							initHalCmdService();
 							initHalRcompService();
-
+							//initPreviewStatusService();
+							
 							Settings.instance.pingBBB();
 						}
 					});

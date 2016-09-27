@@ -42,6 +42,35 @@ public class BBBStatus implements Runnable {
 	public double a = 0;
 	public double b = 0;
 	public double c = 0;
+
+	public double base_x = 0;
+	public double base_y = 0;
+	public double base_z = 0;
+	public double base_a = 0;
+	public double base_b = 0;
+	public double base_c = 0;
+
+	public double g92_x = 0;
+	public double g92_y = 0;
+	public double g92_z = 0;
+	public double g92_a = 0;
+	public double g92_b = 0;
+	public double g92_c = 0;
+
+	public double g5x_x = 0;
+	public double g5x_y = 0;
+	public double g5x_z = 0;
+	public double g5x_a = 0;
+	public double g5x_b = 0;
+	public double g5x_c = 0;
+
+	public double toolOff_x = 0;
+	public double toolOff_y = 0;
+	public double toolOff_z = 0;
+	public double toolOff_a = 0;
+	public double toolOff_b = 0;
+	public double toolOff_c = 0;
+
 	private long lastPingMs;
 
 	public BBBStatus() {
@@ -67,8 +96,9 @@ public class BBBStatus implements Runnable {
 
 	@Override
 	public void run() {
-		//ON BBB updates depends on [DISPLAY]CYCLE_TIME in the Ini file of linuxcnc.
-		
+		// ON BBB updates depends on [DISPLAY]CYCLE_TIME in the Ini file of
+		// linuxcnc.
+
 		if (!Settings.getInstance().isVisible())
 			return;
 
@@ -92,47 +122,61 @@ public class BBBStatus implements Runnable {
 
 								if (contReturned.getEmcStatusMotion().hasActualPosition()) {
 									if (contReturned.getEmcStatusMotion().getActualPosition().hasX()) {
-										x = contReturned.getEmcStatusMotion().getActualPosition().getX();
-										Settings.getInstance().setSetting("position_x", x);
+										base_x = contReturned.getEmcStatusMotion().getActualPosition().getX();
 									}
 									if (contReturned.getEmcStatusMotion().getActualPosition().hasY()) {
-										y = contReturned.getEmcStatusMotion().getActualPosition().getY();
-										Settings.getInstance().setSetting("position_y", y);
+										base_y = contReturned.getEmcStatusMotion().getActualPosition().getY();
 									}
 									if (contReturned.getEmcStatusMotion().getActualPosition().hasZ()) {
-										z = contReturned.getEmcStatusMotion().getActualPosition().getZ();
-										Settings.getInstance().setSetting("position_z", z);
+										base_z = contReturned.getEmcStatusMotion().getActualPosition().getZ();
 									}
 									if (contReturned.getEmcStatusMotion().getActualPosition().hasA()) {
-										a = contReturned.getEmcStatusMotion().getActualPosition().getA();
-										Settings.getInstance().setSetting("position_a", a);
+										base_a = contReturned.getEmcStatusMotion().getActualPosition().getA();
 									}
 									if (contReturned.getEmcStatusMotion().getActualPosition().hasB()) {
-										b = contReturned.getEmcStatusMotion().getActualPosition().getB();
-										Settings.getInstance().setSetting("position_b", b);
+										base_b = contReturned.getEmcStatusMotion().getActualPosition().getB();
 									}
 									if (contReturned.getEmcStatusMotion().getActualPosition().hasC()) {
-										c = contReturned.getEmcStatusMotion().getActualPosition().getC();
-										Settings.getInstance().setSetting("position_c", c);
+										base_c = contReturned.getEmcStatusMotion().getActualPosition().getC();
 									}
 								}
 
-								if (SurfaceDemo.getInstance() != null && SurfaceDemo.instance!=null) {
+								if (SurfaceDemo.getInstance() != null && SurfaceDemo.instance != null) {
 									if (SurfaceDemo.getInstance().getChart() != null) {
 										// System.out.println(String.format("%1$,.2f, %2$,.2f,
 										// %3$,.2f",x,y,z));
-										
+
 										if (BBBStatus.instance != null) {
 											Coord3d coord = new Coord3d(BBBStatus.instance.x, BBBStatus.instance.y, BBBStatus.instance.z);
 											SurfaceDemo.getInstance().utils.rotatePoints(BBBStatus.instance.a, false, false);
-										
+
 											SurfaceDemo.getInstance().getPlasma().setPosition(coord);
 											SurfaceDemo.getInstance().redrawPosition();
 										}
-										
+
 										SurfaceDemo.getInstance().redrawPosition();
 									}
 								}
+
+								getG92Offset(contReturned);
+								getG5XOffset(contReturned);
+								getToolOffset(contReturned);
+
+								// basePosition[axisName] -= g5xOffset[axisName] +
+								// g92Offset[axisName] + toolOffset[axisName];
+								x = base_x - (g5x_x + g92_x + toolOff_x);
+								y = base_y - (g5x_y + g92_y + toolOff_y);
+								z = base_z - (g5x_z + g92_z + toolOff_z);
+								a = base_a - (g5x_a + g92_a + toolOff_a);
+								b = base_b - (g5x_b + g92_b + toolOff_b);
+								c = base_c - (g5x_c + g92_c + toolOff_c);
+
+								Settings.getInstance().setSetting("position_x", x);
+								Settings.getInstance().setSetting("position_y", y);
+								Settings.getInstance().setSetting("position_z", z);
+								Settings.getInstance().setSetting("position_a", a);
+								Settings.getInstance().setSetting("position_b", b);
+								Settings.getInstance().setSetting("position_c", c);
 							} else if (contReturned.getType().equals(ContainerType.MT_PING)) {
 								this.lastPingMs = System.currentTimeMillis();
 								MachinekitSettings.instance.pingStatus();
@@ -153,6 +197,57 @@ public class BBBStatus implements Runnable {
 			// // TODO Auto-generated catch block
 			// e.printStackTrace();
 			// }
+		}
+	}
+
+	private void getToolOffset(Container contReturned) {
+		if (contReturned.getEmcStatusIo().hasToolOffset()) {
+			if (contReturned.getEmcStatusIo().getToolOffset().hasX())
+				this.toolOff_x = contReturned.getEmcStatusIo().getToolOffset().getX();
+			if (contReturned.getEmcStatusIo().getToolOffset().hasY())
+				this.toolOff_y = contReturned.getEmcStatusIo().getToolOffset().getY();
+			if (contReturned.getEmcStatusIo().getToolOffset().hasZ())
+				this.toolOff_z = contReturned.getEmcStatusIo().getToolOffset().getZ();
+			if (contReturned.getEmcStatusIo().getToolOffset().hasA())
+				this.toolOff_a = contReturned.getEmcStatusIo().getToolOffset().getA();
+			if (contReturned.getEmcStatusIo().getToolOffset().hasB())
+				this.toolOff_b = contReturned.getEmcStatusIo().getToolOffset().getB();
+			if (contReturned.getEmcStatusIo().getToolOffset().hasC())
+				this.toolOff_c = contReturned.getEmcStatusIo().getToolOffset().getC();
+		}
+	}
+
+	private void getG92Offset(Container contReturned) {
+		if (contReturned.getEmcStatusMotion().hasG92Offset()) {
+			if (contReturned.getEmcStatusMotion().getG92Offset().hasX())
+				this.g92_x = contReturned.getEmcStatusMotion().getG92Offset().getX();
+			if (contReturned.getEmcStatusMotion().getG92Offset().hasY())
+				this.g92_y = contReturned.getEmcStatusMotion().getG92Offset().getY();
+			if (contReturned.getEmcStatusMotion().getG92Offset().hasZ())
+				this.g92_z = contReturned.getEmcStatusMotion().getG92Offset().getZ();
+			if (contReturned.getEmcStatusMotion().getG92Offset().hasA())
+				this.g92_a = contReturned.getEmcStatusMotion().getG92Offset().getA();
+			if (contReturned.getEmcStatusMotion().getG92Offset().hasB())
+				this.g92_b = contReturned.getEmcStatusMotion().getG92Offset().getB();
+			if (contReturned.getEmcStatusMotion().getG92Offset().hasC())
+				this.g92_c = contReturned.getEmcStatusMotion().getG92Offset().getC();
+		}
+	}
+
+	private void getG5XOffset(Container contReturned) {
+		if (contReturned.getEmcStatusMotion().hasG5XOffset()) {
+			if (contReturned.getEmcStatusMotion().getG5XOffset().hasX())
+				this.g5x_x = contReturned.getEmcStatusMotion().getG5XOffset().getX();
+			if (contReturned.getEmcStatusMotion().getG5XOffset().hasY())
+				this.g5x_y = contReturned.getEmcStatusMotion().getG5XOffset().getY();
+			if (contReturned.getEmcStatusMotion().getG5XOffset().hasZ())
+				this.g5x_z = contReturned.getEmcStatusMotion().getG5XOffset().getZ();
+			if (contReturned.getEmcStatusMotion().getG5XOffset().hasA())
+				this.g5x_a = contReturned.getEmcStatusMotion().getG5XOffset().getA();
+			if (contReturned.getEmcStatusMotion().getG5XOffset().hasB())
+				this.g5x_b = contReturned.getEmcStatusMotion().getG5XOffset().getB();
+			if (contReturned.getEmcStatusMotion().getG5XOffset().hasC())
+				this.g5x_c = contReturned.getEmcStatusMotion().getG5XOffset().getC();
 		}
 	}
 

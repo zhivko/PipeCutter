@@ -79,7 +79,7 @@ public class MachinekitSettings extends JPanel {
 		add(statusUrl);
 
 		SavableText previewUrl = new SavableText();
-		previewUrl.setLabelTxt("Preview service url:");
+		previewUrl.setLabelTxt("Preview status service url:");
 		previewUrl.setParId("machinekit_previewstatusService_url");
 		add(previewUrl);
 

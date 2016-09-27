@@ -5,17 +5,21 @@ import java.awt.PopupMenu;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.Locale;
-import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 
 import javax.swing.SwingUtilities;
-import javax.swing.SwingWorker;
 
-import org.jzy3d.maths.BoundingBox3d;
 import org.jzy3d.plot3d.rendering.view.modes.ViewBoundMode;
+import org.zeromq.ZMQ;
 
+import com.google.protobuf.InvalidProtocolBufferException;
+import com.kz.pipeCutter.BBB.BBBMachineTalkCommand;
 import com.kz.pipeCutter.BBB.BBBStatus;
 import com.kz.pipeCutter.BBB.commands.ExecuteMdi;
 import com.kz.pipeCutter.ui.Settings;
+
+import pb.Message.Container;
+import pb.Types.ContainerType;
 
 public class MyPopupMenu extends PopupMenu {
 
@@ -214,12 +218,16 @@ public class MyPopupMenu extends PopupMenu {
 				SwingUtilities.invokeLater(new Runnable() {
 					@Override
 					public void run() {
-						float x = Float.valueOf(Settings.getInstance().getSetting("position_x"));
-						float y = Float.valueOf(Settings.getInstance().getSetting("position_y"));
-						float z = Float.valueOf(Settings.getInstance().getSetting("position_z"));
 
-						String mdiCommand = String.format(Locale.US, "G92 X%.3f Y%.3f Z%.3f\nG92.3", x - SurfaceDemo.instance.lastClickedPoint.xyz.x,
-								y - SurfaceDemo.instance.lastClickedPoint.xyz.y, z - SurfaceDemo.instance.lastClickedPoint.xyz.z);
+						// float x =
+						// Float.valueOf(Settings.getInstance().getSetting("position_x"));
+						// float y =
+						// Float.valueOf(Settings.getInstance().getSetting("position_y"));
+						// float z =
+						// Float.valueOf(Settings.getInstance().getSetting("position_z"));
+						//
+						String mdiCommand = String.format(Locale.US, "G92 X%.3f Y%.3f Z%.3f\nG92.3", SurfaceDemo.instance.lastClickedPoint.xyz.x,
+								SurfaceDemo.instance.lastClickedPoint.xyz.y, SurfaceDemo.instance.lastClickedPoint.xyz.z);
 						Settings.getInstance().log(mdiCommand);
 						new ExecuteMdi(mdiCommand).start();
 

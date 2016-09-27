@@ -7,6 +7,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
@@ -25,6 +26,7 @@ import com.kz.pipeCutter.ui.tab.MachinekitSettings;
 
 import pb.Message;
 import pb.Message.Container;
+import pb.Types.ContainerType;
 
 public abstract class BBBMachineTalkCommand implements Callable<String> {
 	public static Lock lock = new ReentrantLock();
@@ -112,16 +114,18 @@ public abstract class BBBMachineTalkCommand implements Callable<String> {
 			socket.setReceiveTimeOut(1000);
 			socket.setSendTimeOut(1000);
 			socket.connect(uri);
+			
 		}
 	}
 
-	protected synchronized void parseAndOutput() throws InvalidProtocolBufferException {
+	protected synchronized void parseAndOutput() throws InvalidProtocolBufferException,TimeoutException {
 		parseAndOutput(1);
 	}
 
-	protected synchronized void parseAndOutput(int neededReceivedMessageCount) throws InvalidProtocolBufferException {
+	public static synchronized void parseAndOutput(int neededReceivedMessageCount) throws InvalidProtocolBufferException, TimeoutException {
 		System.out.println(Thread.currentThread().getName());
 		int receivedMessageCount = 0;
+		long timeStart = System.currentTimeMillis();
 		while (true) {
 			// System.out.println("loop: " + i);
 			ZMsg receivedMessage = ZMsg.recvMsg(socket);
@@ -138,6 +142,8 @@ public abstract class BBBMachineTalkCommand implements Callable<String> {
 				if (receivedMessageCount == neededReceivedMessageCount)
 					break;
 			}
+			if (System.currentTimeMillis() > (timeStart + 10000))
+				throw new TimeoutException();
 		}
 	}
 

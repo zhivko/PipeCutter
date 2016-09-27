@@ -140,15 +140,6 @@ sudo nano /etc/avahi/avahi-daemon.conf
 use-ipv6=no
 ```
 
-##Adding swap file on BBB
-You will need this if you plan to build Machinekit on BBB
-```
-sudo mkdir -p /var/cache/swap/
-sudo dd if=/dev/zero of=/var/cache/swap/swapfile bs=1M count=256
-sudo chmod 0600 /var/cache/swap/swapfile
-sudo mkswap /var/cache/swap/swapfile
-sudo swapon /var/cache/swap/swapfile
-```
 ##flashing eMMC from uSD card
 
 1. change uEnv.txt as below (notice last line ```init-eMMC-flasher-v3.sh```).
@@ -265,6 +256,28 @@ latency-test
 ```
 
 ##Machinekit notes
+###Building machinekit from source
+check:
+```
+http://www.machinekit.io/docs/developing/machinekit-developing/
+```
+You will need to add swap if you plan to build Machinekit on BBB
+```
+sudo mkdir -p /var/cache/swap/
+sudo dd if=/dev/zero of=/var/cache/swap/swapfile bs=1M count=256
+sudo chmod 0600 /var/cache/swap/swapfile
+sudo mkswap /var/cache/swap/swapfile
+sudo swapon /var/cache/swap/swapfile
+```
+
+If you get this error while building:
+Makefile warning: Warning: File `main.cpp' has modification time 2.1e+04 s in the future
+issue:
+```
+find /your/dir -type f -exec touch {} +
+```
+
+
 ###Hal remote components
 https://github.com/mhaberler/asciidoc-sandbox/wiki/Remote-HAL-Components
 ###LinuxCnc related

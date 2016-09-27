@@ -172,76 +172,24 @@ public class MyPopupMenu extends PopupMenu {
 		this.addSeparator();
 
 		// Gcodes for BBB
-		MenuItem menuItem12 = new MenuItem("SET POINT AS ORIGIN - G92");
-		menuItem12.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent arg0) {
-				SwingUtilities.invokeLater(new Runnable() {
-					@Override
-					public void run() {
-						String mdiCommand = String.format(Locale.US, "G92 X%.3f Y%.3f Z%.3f", SurfaceDemo.instance.lastClickedPoint.xyz.x,
-								SurfaceDemo.instance.lastClickedPoint.xyz.y, SurfaceDemo.instance.lastClickedPoint.xyz.z);
-						Settings.getInstance().log(mdiCommand);
-						new ExecuteMdi(mdiCommand).start();
-
-						new java.util.Timer().schedule(new java.util.TimerTask() {
-							@Override
-							public void run() {
-								String mdiCommand = "G92.1";
-								Settings.getInstance().log(mdiCommand);
-								new ExecuteMdi(mdiCommand).start();
-							}
-						}, 2500);
-
-						new java.util.Timer().schedule(new java.util.TimerTask() {
-							@Override
-							public void run() {
-								BBBStatus.getInstance().reSubscribeMotion();
-							}
-						}, 5000);
-
-					}
-				});
-			}
-		});
-		this.add(menuItem12);
-
-		// Gcodes for BBB
-		MenuItem menuItem14 = new MenuItem("MOVE IN ABSOLUTE COORDINATES - G53");
-		menuItem14.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent arg0) {
-				SwingUtilities.invokeLater(new Runnable() {
-					@Override
-					public void run() {
-						String mdiCommand = String.format(Locale.US, "G53 G00 X%.3f Y%.3f Z%.3f F200", SurfaceDemo.instance.lastClickedPoint.xyz.x,
-								SurfaceDemo.instance.lastClickedPoint.xyz.y, SurfaceDemo.instance.lastClickedPoint.xyz.z);
-						Settings.getInstance().log(mdiCommand);
-						new ExecuteMdi(mdiCommand).start();
-
-						new java.util.Timer().schedule(new java.util.TimerTask() {
-							@Override
-							public void run() {
-								BBBStatus.getInstance().reSubscribeMotion();
-							}
-						}, 5000);
-
-					}
-				});
-			}
-		});
-		this.add(menuItem14);
-
-		// Gcodes for BBB
-		MenuItem menuItem15 = new MenuItem("Move to point - G00");
+		MenuItem menuItem15 = new MenuItem("RESET COORDINATES");
 		menuItem15.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
 				SwingUtilities.invokeLater(new Runnable() {
 					@Override
 					public void run() {
-						String mdiCommand = String.format(Locale.US, "G00 X%.3f Y%.3f Z%.3f F200", SurfaceDemo.instance.lastClickedPoint.xyz.x,
-								SurfaceDemo.instance.lastClickedPoint.xyz.y, SurfaceDemo.instance.lastClickedPoint.xyz.z);
+						// @formatter:off
+						/*
+						 * Move to the Machine origin with G53 G0 X0 Y0 Z0 Clear any G92
+						 * offset with G92.1 Use the G54 coordinate system with G54 Set the
+						 * G54 coordinate system to be the same as the machine coordinate
+						 * system with G10 L2 P1 X0 Y0 Z0 Turn off tool offsets with G49
+						 * Turn on the Relative Coordinate Display from the menu
+						 */
+						// @formatter:on
+
+						String mdiCommand = "G53 G0 X0 Y0 Z0\nG92.1\nG54\nG10 L2 P1 X0 Y0 Z0\nG49\nG90\nG21";
 						Settings.getInstance().log(mdiCommand);
 						new ExecuteMdi(mdiCommand).start();
 
@@ -257,6 +205,90 @@ public class MyPopupMenu extends PopupMenu {
 			}
 		});
 		this.add(menuItem15);
+
+		// Gcodes for BBB
+		MenuItem menuItem12 = new MenuItem("SET POINT LOCATION AS ORIGIN - G92");
+		menuItem12.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+				SwingUtilities.invokeLater(new Runnable() {
+					@Override
+					public void run() {
+						float x = Float.valueOf(Settings.getInstance().getSetting("position_x"));
+						float y = Float.valueOf(Settings.getInstance().getSetting("position_y"));
+						float z = Float.valueOf(Settings.getInstance().getSetting("position_z"));
+
+						String mdiCommand = String.format(Locale.US, "G92 X%.3f Y%.3f Z%.3f\nG92.3", x - SurfaceDemo.instance.lastClickedPoint.xyz.x,
+								y - SurfaceDemo.instance.lastClickedPoint.xyz.y, z - SurfaceDemo.instance.lastClickedPoint.xyz.z);
+						Settings.getInstance().log(mdiCommand);
+						new ExecuteMdi(mdiCommand).start();
+
+						// new java.util.Timer().schedule(new java.util.TimerTask() {
+						// @Override
+						// public void run() {
+						// String mdiCommand = "G92.1";
+						// Settings.getInstance().log(mdiCommand);
+						// new ExecuteMdi(mdiCommand).start();
+						// }
+						// }, 2500);
+
+						new java.util.Timer().schedule(new java.util.TimerTask() {
+							@Override
+							public void run() {
+								BBBStatus.getInstance().reSubscribeMotion();
+							}
+						}, 2000);
+
+					}
+				});
+			}
+		});
+		this.add(menuItem12);
+
+		// Gcodes for BBB
+		MenuItem menuItem14 = new MenuItem("Move to point - G00");
+		menuItem14.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+				SwingUtilities.invokeLater(new Runnable() {
+					@Override
+					public void run() {
+
+						float x = Float.valueOf(Settings.getInstance().getSetting("position_x"));
+						float y = Float.valueOf(Settings.getInstance().getSetting("position_y"));
+						float z = Float.valueOf(Settings.getInstance().getSetting("position_z"));
+
+						String mdiCommand = String.format(Locale.US, "G91"); // relative as
+																																	// opposed to
+																																	// absolute
+																																	// G90
+						Settings.getInstance().log(mdiCommand);
+						new ExecuteMdi(mdiCommand).start();
+						try {
+							Thread.sleep(500);
+						} catch (InterruptedException e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						}
+						String speed = Settings.getInstance().getSetting("gcode_feedrate_g0");
+
+						mdiCommand = String.format(Locale.US, "G00 X%.3f Y%.3f Z%.3f F%s", SurfaceDemo.instance.lastClickedPoint.xyz.x - x,
+								SurfaceDemo.instance.lastClickedPoint.xyz.y - y, SurfaceDemo.instance.lastClickedPoint.xyz.z - z, speed);
+						Settings.getInstance().log(mdiCommand);
+						new ExecuteMdi(mdiCommand).start();
+
+						new java.util.Timer().schedule(new java.util.TimerTask() {
+							@Override
+							public void run() {
+								BBBStatus.getInstance().reSubscribeMotion();
+							}
+						}, 1000);
+
+					}
+				});
+			}
+		});
+		this.add(menuItem14);
 
 	}
 }

@@ -106,10 +106,10 @@ public class SurfaceDemo extends AbstractAnalysis {
 
 			@Override
 			public void run() {
-//				SwingUtilities.invokeLater(new Runnable() {
-//
-//					@Override
-//					public void run() {
+				SwingUtilities.invokeLater(new Runnable() {
+
+					@Override
+					public void run() {
 
 						instance = SurfaceDemo.this;
 						System.setProperty("java.net.preferIPv4Stack", "true");
@@ -379,8 +379,8 @@ public class SurfaceDemo extends AbstractAnalysis {
 
 					}
 
-//				});
-//			}
+				});
+			}
 		});
 		t.setName("SurfaceDemoConstructor");
 		t.start();

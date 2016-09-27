@@ -28,7 +28,12 @@ public class MyButton extends JButton implements IParameter, IHasPinDef {
 		this.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				go();
+				SwingUtilities.invokeLater(new Runnable() {
+					@Override
+					public void run() {
+						go();
+					}
+				});
 			}
 		});
 	}

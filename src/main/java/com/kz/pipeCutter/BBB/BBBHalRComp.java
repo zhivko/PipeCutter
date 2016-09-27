@@ -138,17 +138,23 @@ public class BBBHalRComp implements Runnable {
 										pinsByHandle.put(contReturned.getComp(i).getPin(j).getHandle(), pinsByName.get(contReturned.getComp(i).getPin(j).getName()));
 									}
 								}
-								GcodeViewer.instance.setLineNumber(Integer.valueOf(halPins.get("mymotion.program-line")).intValue());
-								GcodeViewer.instance.setPlasmaOn(Boolean.valueOf(halPins.get("mymotion.spindle-on")).booleanValue());
 
-								Settings.instance.setSetting("mymotion.vx", String.format("%.3f",Float.valueOf(halPins.get("mymotion.vx"))));
-								Settings.instance.setSetting("mymotion.dvx", String.format("%.3f",Float.valueOf(halPins.get("mymotion.dvx"))));
-								Settings.instance.setSetting("mymotion.vz", String.format("%.3f",Float.valueOf(halPins.get("mymotion.vz"))));
-								Settings.instance.setSetting("mymotion.dvz", String.format("%.3f",Float.valueOf(halPins.get("mymotion.dvz"))));
-								Settings.instance.setSetting("mymotion.current-radius", String.format("%.3f",Float.valueOf(halPins.get("mymotion.current-radius"))));
-								Settings.instance.setSetting("mymotion.vy", String.format("%.3f",Float.valueOf(halPins.get("mymotion.vy"))));
-								Settings.instance.setSetting("mymotion.v", String.format("%.3f",Float.valueOf(halPins.get("mymotion.v"))));
+								SwingUtilities.invokeLater(new Runnable() {
+									@Override
+									public void run() {
+										GcodeViewer.instance.setLineNumber(Integer.valueOf(halPins.get("mymotion.program-line")).intValue());
+										GcodeViewer.instance.setPlasmaOn(Boolean.valueOf(halPins.get("mymotion.spindle-on")).booleanValue());
 
+										Settings.instance.setSetting("mymotion.vx", String.format("%.3f", Float.valueOf(halPins.get("mymotion.vx"))));
+										Settings.instance.setSetting("mymotion.dvx", String.format("%.3f", Float.valueOf(halPins.get("mymotion.dvx"))));
+										Settings.instance.setSetting("mymotion.vz", String.format("%.3f", Float.valueOf(halPins.get("mymotion.vz"))));
+										Settings.instance.setSetting("mymotion.dvz", String.format("%.3f", Float.valueOf(halPins.get("mymotion.dvz"))));
+										Settings.instance.setSetting("mymotion.current-radius",
+												String.format("%.3f", Float.valueOf(halPins.get("mymotion.current-radius"))));
+										Settings.instance.setSetting("mymotion.vy", String.format("%.3f", Float.valueOf(halPins.get("mymotion.vy"))));
+										Settings.instance.setSetting("mymotion.v", String.format("%.3f", Float.valueOf(halPins.get("mymotion.v"))));
+									}
+								});
 							} else if (contReturned.getType().equals(ContainerType.MT_PING)) {
 								this.lastPingMs = System.currentTimeMillis();
 								MachinekitSettings.instance.pingHalRcomp();
@@ -168,19 +174,20 @@ public class BBBHalRComp implements Runnable {
 									}
 									halPins.put(pinDef.getPinName(), value);
 								}
-								
-								SwingUtilities.invokeAndWait(new Runnable() {
+
+								SwingUtilities.invokeLater(new Runnable() {
 									@Override
 									public void run() {
 										GcodeViewer.instance.setLineNumber(Integer.valueOf(halPins.get("mymotion.program-line")).intValue());
 										GcodeViewer.instance.setPlasmaOn(Boolean.valueOf(halPins.get("mymotion.spindle-on")).booleanValue());
-										Settings.instance.setSetting("mymotion.vx", String.format("%.3f",Float.valueOf(halPins.get("mymotion.vx"))));
-										Settings.instance.setSetting("mymotion.dvx", String.format("%.3f",Float.valueOf(halPins.get("mymotion.dvx"))));
-										Settings.instance.setSetting("mymotion.vz", String.format("%.3f",Float.valueOf(halPins.get("mymotion.vz"))));
-										Settings.instance.setSetting("mymotion.dvz", String.format("%.3f",Float.valueOf(halPins.get("mymotion.dvz"))));
-										Settings.instance.setSetting("mymotion.current-radius", String.format("%.3f",Float.valueOf(halPins.get("mymotion.current-radius"))));
-										Settings.instance.setSetting("mymotion.vy", String.format("%.3f",Float.valueOf(halPins.get("mymotion.vy"))));
-										Settings.instance.setSetting("mymotion.v", String.format("%.3f",Float.valueOf(halPins.get("mymotion.v"))));
+										Settings.instance.setSetting("mymotion.vx", String.format("%.3f", Float.valueOf(halPins.get("mymotion.vx"))));
+										Settings.instance.setSetting("mymotion.dvx", String.format("%.3f", Float.valueOf(halPins.get("mymotion.dvx"))));
+										Settings.instance.setSetting("mymotion.vz", String.format("%.3f", Float.valueOf(halPins.get("mymotion.vz"))));
+										Settings.instance.setSetting("mymotion.dvz", String.format("%.3f", Float.valueOf(halPins.get("mymotion.dvz"))));
+										Settings.instance.setSetting("mymotion.current-radius",
+												String.format("%.3f", Float.valueOf(halPins.get("mymotion.current-radius"))));
+										Settings.instance.setSetting("mymotion.vy", String.format("%.3f", Float.valueOf(halPins.get("mymotion.vy"))));
+										Settings.instance.setSetting("mymotion.v", String.format("%.3f", Float.valueOf(halPins.get("mymotion.v"))));
 									}
 								});
 

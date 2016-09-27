@@ -74,7 +74,7 @@ public abstract class BBBMachineTalkCommand implements Callable<String> {
 				try {
 					Future<String> future = BBBMachineTalkCommand.executor.submit(BBBMachineTalkCommand.this);
 					try {
-						future.get(12, TimeUnit.SECONDS);
+						future.get(120, TimeUnit.SECONDS);
 					} catch (Exception e) {
 						Settings.getInstance().log(e.toString());
 						e.printStackTrace();

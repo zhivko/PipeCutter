@@ -54,8 +54,15 @@ public class Positioner extends JPanel {
 	JButton btnUp, btnDown, btnLeft, btnRight;
 
 	public Positioner(int id) {
-		wsContainer = ContainerProvider.getWebSocketContainer();
-		wsContainer.getDefaultAsyncSendTimeout();
+		Thread t = new Thread(new Runnable() {
+			@Override
+			public void run() {
+				wsContainer = ContainerProvider.getWebSocketContainer();
+				wsContainer.getDefaultAsyncSendTimeout();
+			}
+		});
+		t.start();
+
 		this.id = id;
 		this.setPreferredSize(new Dimension(184, 214));
 		setLayout(null);
@@ -75,8 +82,7 @@ public class Positioner extends JPanel {
 		linkedJogEnableCheckBox.setLabelTxt("Linked jog");
 		linkedJogEnableCheckBox.setParId("rotator" + id + "_linkedJog_enable");
 		add(linkedJogEnableCheckBox);
-		
-		
+
 		final JSlider sliderVer = new JSlider();
 		sliderVer.setBounds(0, 0, 31, 97);
 		sliderVer.setSnapToTicks(true);
@@ -266,14 +272,14 @@ public class Positioner extends JPanel {
 		JButton stopBtn = new JButton("Stop");
 		stopBtn.setBounds(0, 191, 78, 20);
 		stopBtn.addActionListener(new ActionListener() {
-			
+
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				socketSend("stop");
 			}
 		});
 		add(stopBtn);
-		
+
 		Thread initThread = new Thread(new Runnable() {
 			@Override
 			public void run() {

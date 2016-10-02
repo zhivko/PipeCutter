@@ -234,14 +234,14 @@ public class BBBHalRComp implements Runnable {
 		}
 
 		this.halRCompUri = Settings.getInstance().getSetting("machinekit_halRCompService_url");
-		ctx = new ZContext(2);
+		ctx = new ZContext();
 		// Set random identity to make tracing easier
 		socket = ctx.createSocket(ZMQ.XSUB);
 
 		Random rand = new Random(23424234);
 		String identity = String.format("%04X-%04X", rand.nextInt(), rand.nextInt());
 
-		socket.setIdentity(identity.getBytes(ZMQ.CHARSET));
+		socket.setIdentity(identity.getBytes());
 		socket.setReceiveTimeOut(5);
 		socket.setSendTimeOut(1000);
 		// socket.setRcvHWM(10000);
@@ -268,7 +268,7 @@ public class BBBHalRComp implements Runnable {
 		byte[] buff = container.toByteArray();
 		String hexOutput = javax.xml.bind.DatatypeConverter.printHexBinary(buff);
 		System.out.println("Message:  " + hexOutput);
-		BBBHalCommand.instance.socket.send(buff);
+		BBBHalCommand.instance.socket.send(buff,0);
 	}
 
 	public void subcribe() {
@@ -277,7 +277,7 @@ public class BBBHalRComp implements Runnable {
 			if (savableControl.getPin() != null) {
 				String compName = savableControl.getPin().getPinName().split("\\.")[0];
 				String subscription = Character.toString((char) 1) + compName;
-				socket.send(subscription.getBytes());
+				socket.send(subscription.getBytes() ,0);
 			}
 		}
 	}

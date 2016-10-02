@@ -22,7 +22,7 @@ public class HomeAllAxis extends BBBMachineTalkCommand {
 			builder.setEmcCommandParams(emcCommandParameter);
 			builder.setTicket(getNextTicket());
 			Container container = builder.build();
-			socket.send(container.toByteArray());
+			socket.send(container.toByteArray(),0);
 			try {
 				parseAndOutput(2);
 			} catch (InvalidProtocolBufferException e) {

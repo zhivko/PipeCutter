@@ -177,16 +177,16 @@ public class BBBPreviewStatus implements Runnable {
 
 		uri = Settings.getInstance().getSetting("machinekit_previewstatusService_url");
 
-		ctx = new ZContext(5);
+		ctx = new ZContext();
 		// Set random identity to make tracing easier
 		socket = ctx.createSocket(ZMQ.SUB);
 
 		Random rand = new Random(23424234);
 		String identity = String.format("%04X-%04X", rand.nextInt(), rand.nextInt());
 
-		socket.setIdentity(identity.getBytes(ZMQ.CHARSET));
-		socket.subscribe("preview".getBytes(ZMQ.CHARSET));
-		socket.subscribe("status".getBytes(ZMQ.CHARSET));
+		socket.setIdentity(identity.getBytes());
+		socket.subscribe("preview".getBytes());
+		socket.subscribe("status".getBytes());
 		// socket.setHWM(10000);
 		socket.setReceiveTimeOut(5);
 		socket.setSendTimeOut(1000);
@@ -207,8 +207,8 @@ public class BBBPreviewStatus implements Runnable {
 	}
 
 	public void reSubscribeMotion() {
-		socket.unsubscribe("motion".getBytes(ZMQ.CHARSET));
-		socket.subscribe("motion".getBytes(ZMQ.CHARSET));
+		socket.unsubscribe("motion".getBytes());
+		socket.subscribe("motion".getBytes());
 	}
 
 }

@@ -1,13 +1,9 @@
 package com.kz.pipeCutter.BBB;
 
 import java.io.ByteArrayInputStream;
-import java.util.Iterator;
 import java.util.Random;
 import java.util.concurrent.TimeUnit;
 
-import javax.swing.SwingUtilities;
-
-import org.jzy3d.colors.Color;
 import org.jzy3d.maths.Coord3d;
 import org.zeromq.ZContext;
 import org.zeromq.ZFrame;
@@ -16,16 +12,12 @@ import org.zeromq.ZMQ.Socket;
 import org.zeromq.ZMsg;
 
 import com.jcraft.jsch.ChannelExec;
-import com.kz.pipeCutter.MyPickablePoint;
 import com.kz.pipeCutter.SurfaceDemo;
 import com.kz.pipeCutter.ui.Settings;
-import com.kz.pipeCutter.ui.tab.GcodeViewer;
 import com.kz.pipeCutter.ui.tab.MachinekitSettings;
 
 import pb.Message;
 import pb.Message.Container;
-import pb.Status.EmcStatusMotionAxis;
-import pb.Status.EmcTaskExecStateType;
 import pb.Types.ContainerType;
 
 public class BBBStatus implements Runnable {
@@ -36,6 +28,7 @@ public class BBBStatus implements Runnable {
 	ZContext ctx;
 	private String uri;
 	private Thread readThread;
+
 	public double x = 0;
 	public double y = 0;
 	public double z = 0;
@@ -271,18 +264,18 @@ public class BBBStatus implements Runnable {
 
 		uri = Settings.getInstance().getSetting("machinekit_statusService_url");
 
-		ctx = new ZContext(5);
+		ctx = new ZContext();
 		// Set random identity to make tracing easier
 		socket = ctx.createSocket(ZMQ.SUB);
 
 		Random rand = new Random(23424234);
 		String identity = String.format("%04X-%04X", rand.nextInt(), rand.nextInt());
 
-		socket.setIdentity(identity.getBytes(ZMQ.CHARSET));
-		socket.subscribe("motion".getBytes(ZMQ.CHARSET));
-		socket.subscribe("task".getBytes(ZMQ.CHARSET));
-		socket.subscribe("io".getBytes(ZMQ.CHARSET));
-		socket.subscribe("interp".getBytes(ZMQ.CHARSET));
+		socket.setIdentity(identity.getBytes());
+		socket.subscribe("motion".getBytes());
+		socket.subscribe("task".getBytes());
+		socket.subscribe("io".getBytes());
+		socket.subscribe("interp".getBytes());
 		// socket.setHWM(10000);
 		socket.setReceiveTimeOut(5);
 		socket.setSendTimeOut(1000);
@@ -301,8 +294,48 @@ public class BBBStatus implements Runnable {
 	}
 
 	public void reSubscribeMotion() {
-		socket.unsubscribe("motion".getBytes(ZMQ.CHARSET));
-		socket.subscribe("motion".getBytes(ZMQ.CHARSET));
+		initOffsets();
+		
+		socket.unsubscribe("motion".getBytes());
+		socket.subscribe("motion".getBytes());
+	}
+	
+	public void initOffsets()
+	{
+		x = 0;
+		y = 0;
+		z = 0;
+		a = 0;
+		b = 0;
+		c = 0;
+
+		base_x = 0;
+		base_y = 0;
+		base_z = 0;
+		base_a = 0;
+		base_b = 0;
+		base_c = 0;
+
+		g92_x = 0;
+		g92_y = 0;
+		g92_z = 0;
+		g92_a = 0;
+		g92_b = 0;
+		g92_c = 0;
+
+		g5x_x = 0;
+		g5x_y = 0;
+		g5x_z = 0;
+		g5x_a = 0;
+		g5x_b = 0;
+		g5x_c = 0;
+
+		toolOff_x = 0;
+		toolOff_y = 0;
+		toolOff_z = 0;
+		toolOff_a = 0;
+		toolOff_b = 0;
+		toolOff_c = 0;
 	}
 
 }

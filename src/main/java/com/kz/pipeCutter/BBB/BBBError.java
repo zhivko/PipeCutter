@@ -1,6 +1,7 @@
 package com.kz.pipeCutter.BBB;
 
 import java.io.ByteArrayInputStream;
+import java.lang.management.ManagementFactory;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
@@ -14,6 +15,7 @@ import javax.jmdns.ServiceListener;
 import org.zeromq.ZContext;
 import org.zeromq.ZFrame;
 import org.zeromq.ZMQ;
+import org.zeromq.ZMQ.Socket;
 import org.zeromq.ZMsg;
 
 import com.jcraft.jsch.ChannelExec;
@@ -27,7 +29,7 @@ import pb.Types.ContainerType;
 public class BBBError implements Runnable {
 	ServiceListener bonjourServiceListener;
 	ArrayList<ServiceInfo> services;
-	org.zeromq.ZMQ.Socket socket = null;
+	Socket socket = null;
 	static BBBError instance = null;
 
 	ByteArrayInputStream is;
@@ -130,17 +132,18 @@ public class BBBError implements Runnable {
 		String identity = String.format("%04X-%04X", rand.nextInt(), rand.nextInt());
 
 		uri = Settings.getInstance().getSetting("machinekit_errorService_url");
-		ctx = new ZContext(2);
+		ctx = new ZContext();
 		// Set random identity to make tracing easier
+		System.out.println("PID: " + ManagementFactory.getRuntimeMXBean().getName());
 		socket = ctx.createSocket(ZMQ.SUB);
-		socket.subscribe("display".getBytes(ZMQ.CHARSET));
-		socket.subscribe("status".getBytes(ZMQ.CHARSET));
-		socket.subscribe("text".getBytes(ZMQ.CHARSET));
-		socket.subscribe("error".getBytes(ZMQ.CHARSET));
-		socket.subscribe("config".getBytes(ZMQ.CHARSET));
+		socket.subscribe("display".getBytes());
+		socket.subscribe("status".getBytes());
+		socket.subscribe("text".getBytes());
+		socket.subscribe("error".getBytes());
+		socket.subscribe("config".getBytes());
 		socket.setReceiveTimeOut(5);
 		socket.setSendTimeOut(1000);
-		socket.setIdentity(identity.getBytes(ZMQ.CHARSET));
+		socket.setIdentity(identity.getBytes());
 		socket.connect(uri);
 
 		readThread = new Thread(this);

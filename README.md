@@ -276,9 +276,9 @@ cd ~/git/machinekit
 debian/configure -prx
 sudo mk-build-deps -ir
 cd src
+make clean
 ./autogen.sh
 ./configure --with-platform-beaglebone
-
 ~/git/machinekit/scripts/check-system-configuration.sh
 make
 ```

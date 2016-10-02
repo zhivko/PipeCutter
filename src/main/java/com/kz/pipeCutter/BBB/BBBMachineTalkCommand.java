@@ -110,7 +110,7 @@ public abstract class BBBMachineTalkCommand implements Callable<String> {
 			ctx = new ZContext();
 			// Set random identity to make tracing easier
 			socket = ctx.createSocket(ZMQ.DEALER);
-			socket.setIdentity(identity.getBytes(ZMQ.CHARSET));
+			socket.setIdentity(identity.getBytes());
 			socket.setReceiveTimeOut(1000);
 			socket.setSendTimeOut(1000);
 			socket.connect(uri);

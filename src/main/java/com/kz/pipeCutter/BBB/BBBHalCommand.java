@@ -1,5 +1,7 @@
 package com.kz.pipeCutter.BBB;
 
+import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Random;
@@ -10,13 +12,10 @@ import javax.jmdns.ServiceInfo;
 import org.zeromq.ZContext;
 import org.zeromq.ZFrame;
 import org.zeromq.ZMQ;
-import org.zeromq.ZMsg;
 import org.zeromq.ZMQ.Socket;
+import org.zeromq.ZMsg;
 
-import com.google.protobuf.InvalidProtocolBufferException;
-import com.kz.pipeCutter.SurfaceDemo;
 import com.kz.pipeCutter.ui.Settings;
-import com.kz.pipeCutter.ui.tab.GcodeViewer;
 import com.kz.pipeCutter.ui.tab.MachinekitSettings;
 
 import pb.Message;
@@ -66,7 +65,7 @@ public class BBBHalCommand implements Runnable {
 		// String hexOutput = javax.xml.bind.DatatypeConverter
 		// .printHexBinary(buff);
 		// System.out.println("Message: " + hexOutput);
-		socket.send(buff);
+		socket.send(buff,0);
 	}
 
 	public BBBHalCommand(String uri) {
@@ -129,17 +128,13 @@ public class BBBHalCommand implements Runnable {
 									if (contReturned.getComp(i).getPin(j).getName().equals("motion.spindle-on"))
 										System.out.println("");
 									if (contReturned.getComp(i).getPin(j).getType() == ValueType.HAL_FLOAT) {
-										value = Double.valueOf(contReturned.getComp(i).getPin(j).getHalfloat())
-												.toString();
+										value = Double.valueOf(contReturned.getComp(i).getPin(j).getHalfloat()).toString();
 									} else if (contReturned.getComp(i).getPin(j).getType() == ValueType.HAL_S32) {
-										value = Integer.valueOf(contReturned.getComp(i).getPin(j).getHals32())
-												.toString();
+										value = Integer.valueOf(contReturned.getComp(i).getPin(j).getHals32()).toString();
 									} else if (contReturned.getComp(i).getPin(j).getType() == ValueType.HAL_U32) {
-										value = Integer.valueOf(contReturned.getComp(i).getPin(j).getHalu32())
-												.toString();
+										value = Integer.valueOf(contReturned.getComp(i).getPin(j).getHalu32()).toString();
 									} else if (contReturned.getComp(i).getPin(j).getType() == ValueType.HAL_BIT) {
-										value = Boolean.valueOf(contReturned.getComp(i).getPin(j).getHalbit())
-												.toString();
+										value = Boolean.valueOf(contReturned.getComp(i).getPin(j).getHalbit()).toString();
 									}
 									halPin.put(contReturned.getComp(i).getPin(j).getName(), value);
 								}
@@ -147,8 +142,7 @@ public class BBBHalCommand implements Runnable {
 						} else if (contReturned.getType().equals(ContainerType.MT_PING_ACKNOWLEDGE)) {
 							this.lastPingMs = System.currentTimeMillis();
 							MachinekitSettings.instance.pingHalCommand();
-							if (BBBStatus.getInstance().isAlive() && !BBBHalRComp.getInstance().isBinded
-									&& !BBBHalRComp.getInstance().isTryingToBind) {
+							if (BBBStatus.getInstance().isAlive() && !BBBHalRComp.getInstance().isBinded && !BBBHalRComp.getInstance().isTryingToBind) {
 								// if (BBBHalRComp.getInstance().isAlive())
 								BBBHalRComp.getInstance().startBind();
 							}
@@ -223,10 +217,10 @@ public class BBBHalCommand implements Runnable {
 			ctx.close();
 		}
 
-		ctx = new ZContext(5);
+		ctx = new ZContext();
 		// Set random identity to make tracing easier
 		socket = ctx.createSocket(ZMQ.DEALER);
-		socket.setIdentity(identity.getBytes(ZMQ.CHARSET));
+		socket.setIdentity(identity.getBytes());
 		socket.setReceiveTimeOut(5);
 		socket.setSendTimeOut(1000);
 		socket.connect(this.socketUri);
@@ -249,7 +243,11 @@ public class BBBHalCommand implements Runnable {
 						builder.setType(ContainerType.MT_PING);
 						Container container = builder.build();
 						byte[] buff = container.toByteArray();
-						socket.send(buff);
+
+						String hexOutput = javax.xml.bind.DatatypeConverter.printHexBinary(buff);
+						//System.out.println("PING Message: " + hexOutput);
+
+						socket.send(buff, 0);
 					}
 					try {
 						Thread.sleep(2000);

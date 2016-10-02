@@ -56,7 +56,7 @@ public abstract class SSH_Command {
 			session.setServerAliveCountMax(Integer.MAX_VALUE);
 
 			session.setOutputStream(System.out);
-			session.connect(15000); // making a connection with timeout.
+			session.connect(30000); // making a connection with timeout.
 
 		}
 	}

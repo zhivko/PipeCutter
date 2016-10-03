@@ -341,6 +341,6 @@ UNIPOLAR (0V to +10V)/ BIPOLAR MODE (-5V to +5V) switch: use unipolar (0V to +10
 ![PLASMA_CPC_Signals](https://raw.githubusercontent.com/zhivko/PipeCutter/master/screenshots/PlasmaCPC_Signals.png)
 <br>
 ##Linuxcnc thc − Torch Height Control component
-[Powermax 45 XP manual](http://linuxcnc.org/docs/html/man/man9/thc.9.html)
+[Linuxcnc THC comp](http://linuxcnc.org/docs/html/man/man9/thc.9.html)
 
 

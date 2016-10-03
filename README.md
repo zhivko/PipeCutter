@@ -330,7 +330,7 @@ Max voltage at thcad: 360.0/40.0=9.0V
 <br>
 [THCAD 10V manual](./screenshots/THCAD_10v.pdf)
 ##THCAD
-OUTPUT FREQUENCY switch: use F/32: 1000000Hz/32 = 31.250Hz
+OUTPUT FREQUENCY switch: use F/32: 1000000Hz/32 = 31250Hz
 <br>
 UNIPOLAR (0V to +10V)/ BIPOLAR MODE (-5V to +5V) switch: use unipolar (0V to +10V)
 <br>
@@ -340,5 +340,7 @@ UNIPOLAR (0V to +10V)/ BIPOLAR MODE (-5V to +5V) switch: use unipolar (0V to +10
 <br>
 ![PLASMA_CPC_Signals](https://raw.githubusercontent.com/zhivko/PipeCutter/master/screenshots/PlasmaCPC_Signals.png)
 <br>
+##Linuxcnc thc − Torch Height Control component
+[Powermax 45 XP manual](http://linuxcnc.org/docs/html/man/man9/thc.9.html)
 
 

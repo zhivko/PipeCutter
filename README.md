@@ -314,3 +314,17 @@ To log pin value to file:
 ) &
 disown
 ```
+#Plasma integration
+Plasma used: Powermax 45 XP
+Plasma max voltage: 360V
+Voltage divider in Powermax 45 XP: set to 1:40
+![HyperthermVoltageDivider](https://raw.githubusercontent.com/zhivko/PipeCutter/master/screenshots/HyperthermVoltageDivider.png)
+Max voltage at thcad: 360.0/40.0=9.0V
+##THCAD
+OUTPUT FREQUENCY switch: use F/32: 1000000Hz/32 = 31.250Hz
+UNIPOLAR (0V to +10V)/ BIPOLAR MODE (-5V to +5V) switch: use unipolar (0V to +10V)
+![THCAD_10V](https://raw.githubusercontent.com/zhivko/PipeCutter/master/screenshots/THCAD_10V.jpg)
+![PLASMA_CPC](https://raw.githubusercontent.com/zhivko/PipeCutter/master/screenshots/PlasmaCPC.png)
+![PLASMA_CPC_Signals](https://raw.githubusercontent.com/zhivko/PipeCutter/master/screenshots/PlasmaCPC_Signals.png)
+
+

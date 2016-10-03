@@ -241,6 +241,7 @@ tmpfs             806708       80    806628   1% /run/user/1000
 ```
 More detailed instructions in:
 http://elinux.org/Beagleboard:BeagleBoneBlack_Debian#microSD.2FStandalone:_.28machinekit.29_Based_on_Debian_Jessie_.28new.29
+<br>
 ***PostInstall procedure***  
 Configure locale
 ```
@@ -316,7 +317,8 @@ disown
 ```
 #Plasma integration
 Plasma used: Powermax 45 XP
-[Powermax 45 XP manual](https://raw.githubusercontent.com/zhivko/PipeCutter/master/screenshots/OM_809240r1_PMX45XP.pdf)
+<br>
+[Powermax 45 XP manual](./screenshots/OM_809240r1_PMX45XP.pdf)
 <br>
 Plasma max voltage: 360V
 <br>
@@ -326,7 +328,7 @@ Voltage divider in Powermax 45 XP: set to 1:40
 <br>
 Max voltage at thcad: 360.0/40.0=9.0V
 <br>
-[THCAD 10V manual](https://raw.githubusercontent.com/zhivko/PipeCutter/master/screenshots/THCAD_10v.pdf)
+[THCAD 10V manual](./screenshots/THCAD_10v.pdf)
 ##THCAD
 OUTPUT FREQUENCY switch: use F/32: 1000000Hz/32 = 31.250Hz
 <br>

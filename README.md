@@ -327,9 +327,9 @@ Voltage divider in Powermax 45 XP: set to 1:40
 ![HyperthermVoltageDivider](https://raw.githubusercontent.com/zhivko/PipeCutter/master/screenshots/HyperthermVoltageDivider.png)
 <br>
 Max voltage at thcad: 360.0/40.0=9.0V
-<br>
-[THCAD 10V manual](./screenshots/THCAD_10v.pdf)
 ##THCAD
+[THCAD 10V manual](./screenshots/THCAD_10v.pdf)
+<br>
 OUTPUT FREQUENCY switch: use F/32: 1000000Hz/32 = 31250Hz
 <br>
 UNIPOLAR (0V to +10V)/ BIPOLAR MODE (-5V to +5V) switch: use unipolar (0V to +10V)

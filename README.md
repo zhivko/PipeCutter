@@ -327,6 +327,9 @@ Voltage divider in Powermax 45 XP: set to 1:40
 ![HyperthermVoltageDivider](https://raw.githubusercontent.com/zhivko/PipeCutter/master/screenshots/HyperthermVoltageDivider.png)
 <br>
 Max voltage at thcad: 360.0/40.0=9.0V
+<br>
+The BBB & Hypertherm CPC connection
+![PLASMA_WIREUP](https://raw.githubusercontent.com/zhivko/PipeCutter/master/screenshots/PLASMA_WIREUP.jpg)
 ##THCAD
 [THCAD 10V manual](./screenshots/THCAD_10v.pdf)
 <br>

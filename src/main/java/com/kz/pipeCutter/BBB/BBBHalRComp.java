@@ -1,13 +1,12 @@
 package com.kz.pipeCutter.BBB;
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Random;
 import java.util.concurrent.TimeUnit;
 
-import javax.jmdns.ServiceInfo;
 import javax.swing.SwingUtilities;
 
 import org.zeromq.ZContext;
@@ -18,7 +17,6 @@ import org.zeromq.ZMsg;
 
 import com.kz.pipeCutter.ui.IHasPinDef;
 import com.kz.pipeCutter.ui.PinDef;
-import com.kz.pipeCutter.ui.SavableControl;
 import com.kz.pipeCutter.ui.Settings;
 import com.kz.pipeCutter.ui.tab.GcodeViewer;
 import com.kz.pipeCutter.ui.tab.MachinekitSettings;
@@ -30,7 +28,7 @@ import pb.Types.ValueType;
 
 public class BBBHalRComp implements Runnable {
 	private String halRCompUri;
-	private Socket socket = null;
+	public Socket socket = null;
 	private static BBBHalRComp instance;
 	private ZContext ctx;
 	private pb.Message.Container.Builder builder;
@@ -77,7 +75,7 @@ public class BBBHalRComp implements Runnable {
 			if (savableControl.getPin() != null) {
 				String pinName = savableControl.getPin().getPinName();
 				String compName = pinName.split("\\.")[0];
-
+				System.out.println(String.format("%s", pinName));
 				pb.Object.Component.Builder comp = null;
 				if (components.containsKey(compName)) {
 					comp = components.get(compName);
@@ -219,7 +217,7 @@ public class BBBHalRComp implements Runnable {
 	public void initSocket() {
 		if (ctx != null && socket != null) {
 			socket.close();
-			ctx.close();
+			// ctx.close();
 		}
 		if (readThread != null && readThread.isAlive()) {
 			readThread.interrupt();
@@ -263,21 +261,26 @@ public class BBBHalRComp implements Runnable {
 	}
 
 	public void startBind() {
+		Settings.instance.log("Start bind...");
 		this.isTryingToBind = true;
 		Container container = this.builder.build();
 		byte[] buff = container.toByteArray();
 		String hexOutput = javax.xml.bind.DatatypeConverter.printHexBinary(buff);
 		System.out.println("Message:  " + hexOutput);
-		BBBHalCommand.instance.socket.send(buff,0);
+		BBBHalCommand.instance.socket.send(buff, 0);
 	}
 
 	public void subcribe() {
+		ArrayList<String> compNamesSubscribed = new ArrayList<>();
 		List<IHasPinDef> savableControls = Settings.getInstance().getAllPinControls();
 		for (IHasPinDef savableControl : savableControls) {
 			if (savableControl.getPin() != null) {
 				String compName = savableControl.getPin().getPinName().split("\\.")[0];
-				String subscription = Character.toString((char) 1) + compName;
-				socket.send(subscription.getBytes() ,0);
+				if (!compNamesSubscribed.contains(compName)) {
+					String subscription = Character.toString((char) 1) + compName;
+					socket.send(subscription.getBytes(), 0);
+					compNamesSubscribed.add(compName);
+				}
 			}
 		}
 	}
@@ -322,4 +325,14 @@ public class BBBHalRComp implements Runnable {
 		}
 	}
 
+	public int getPinHandle(String pinName) {
+		Iterator<Integer> it = pinsByHandle.keySet().iterator();
+		while (it.hasNext()) {
+			Integer handle = it.next();
+			if (pinsByHandle.get(handle).getPinName().equals(pinName)) {
+				return handle.intValue();
+			}
+		}
+		return -1;
+	}
 }

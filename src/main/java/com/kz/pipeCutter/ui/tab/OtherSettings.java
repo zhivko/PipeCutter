@@ -96,6 +96,18 @@ public class OtherSettings extends JPanel {
 		g93mode.setLabelTxt("G93 mode");
 		g93mode.setParId("gcode_g93");
 		this.add(g93mode);
+
+		SavableCheckBox uiZoomPlasma = new SavableCheckBox();
+		uiZoomPlasma.setLabelTxt("Zoom plasma");
+		uiZoomPlasma.setParId("ui_zoom_plasma");
+		this.add(uiZoomPlasma);
+
+
+		SavableCheckBox uiZoomPoint = new SavableCheckBox();
+		uiZoomPoint.setLabelTxt("Zoom point");
+		uiZoomPoint.setParId("ui_zoom_point");
+		this.add(uiZoomPoint);
+				
 		
 		
 		

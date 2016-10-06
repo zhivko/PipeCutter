@@ -63,6 +63,7 @@ import org.jzy3d.plot3d.text.drawable.DrawableTextBitmap;
 import org.jzy3d.plot3d.transform.Rotate;
 
 import com.kz.pipeCutter.BBB.Discoverer;
+import com.kz.pipeCutter.ui.MyPopupMenu;
 import com.kz.pipeCutter.ui.Settings;
 import com.kz.pipeCutter.ui.SortedProperties;
 
@@ -70,8 +71,8 @@ public class SurfaceDemo extends AbstractAnalysis {
 	// plasma torch heigh control process:
 	// http://www.fabricatingandmetalworking.com/2010/12/torch-height-control-for-automated-plasma-cutting-applications-2/
 	public Utils utils;
-	Discoverer discoverer;
-	MyTelnetClient smoothie;
+	public Discoverer discoverer;
+	public MyTelnetClient smoothie;
 	// private Cylinder cylinder = null;
 	Sphere plasma = null;
 	public MyPickablePoint lastClickedPoint;
@@ -89,7 +90,7 @@ public class SurfaceDemo extends AbstractAnalysis {
 
 	float axisLength = 30;
 
-	CanvasAWT canvas = null;
+	public CanvasAWT canvas = null;
 	private PickingSupport pickingSupport = null;
 
 	private Coord3d rotationPoint;
@@ -377,6 +378,11 @@ public class SurfaceDemo extends AbstractAnalysis {
 						});
 						// TODO Auto-generated method stub
 
+						if(Settings.instance.getSetting("ui_zoom_plasma").equals("1"))
+							SurfaceDemo.ZOOM_PLASMA = true;
+						if(Settings.instance.getSetting("ui_zoom_point").equals("1"))
+							SurfaceDemo.ZOOM_POINT = true;
+						
 					}
 
 				});

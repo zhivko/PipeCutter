@@ -15,6 +15,7 @@ import org.zeromq.ZMQ;
 import org.zeromq.ZMQ.Socket;
 import org.zeromq.ZMsg;
 
+import com.kz.pipeCutter.BBB.commands.MachinekitRunPostgui;
 import com.kz.pipeCutter.ui.Settings;
 import com.kz.pipeCutter.ui.tab.MachinekitSettings;
 
@@ -65,7 +66,7 @@ public class BBBHalCommand implements Runnable {
 		// String hexOutput = javax.xml.bind.DatatypeConverter
 		// .printHexBinary(buff);
 		// System.out.println("Message: " + hexOutput);
-		socket.send(buff,0);
+		socket.send(buff, 0);
 	}
 
 	public BBBHalCommand(String uri) {
@@ -143,13 +144,17 @@ public class BBBHalCommand implements Runnable {
 							this.lastPingMs = System.currentTimeMillis();
 							MachinekitSettings.instance.pingHalCommand();
 							if (BBBStatus.getInstance().isAlive() && !BBBHalRComp.getInstance().isBinded && !BBBHalRComp.getInstance().isTryingToBind) {
-								// if (BBBHalRComp.getInstance().isAlive())
+								// halcmd is alive - lets run postgui file
+								new MachinekitRunPostgui().runSshCmd();
+								//if (BBBHalRComp.getInstance().isAlive())
 								BBBHalRComp.getInstance().startBind();
 							}
 						} else if (contReturned.getType().equals(ContainerType.MT_HALRCOMP_BIND_CONFIRM)) {
 							BBBHalRComp.getInstance().isBinded = true;
 							BBBHalRComp.getInstance().isTryingToBind = false;
 							BBBHalRComp.getInstance().subcribe();
+							Settings.getInstance().log("Updating hal values...");
+							Settings.instance.updateHalValues();
 						} else {
 							Settings.getInstance().log("Unknown message: " + contReturned.getType());
 						}
@@ -214,7 +219,7 @@ public class BBBHalCommand implements Runnable {
 
 		if (ctx != null && socket != null) {
 			socket.close();
-			ctx.close();
+			// ctx.close();
 		}
 
 		ctx = new ZContext();
@@ -245,7 +250,7 @@ public class BBBHalCommand implements Runnable {
 						byte[] buff = container.toByteArray();
 
 						String hexOutput = javax.xml.bind.DatatypeConverter.printHexBinary(buff);
-						//System.out.println("PING Message: " + hexOutput);
+						// System.out.println("PING Message: " + hexOutput);
 
 						socket.send(buff, 0);
 					}

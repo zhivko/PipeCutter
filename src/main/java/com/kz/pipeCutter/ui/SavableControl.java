@@ -16,6 +16,14 @@ import javax.swing.JTextField;
 import javax.swing.SwingConstants;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
+
+import com.kz.pipeCutter.BBB.BBBHalCommand;
+import com.kz.pipeCutter.BBB.BBBHalRComp;
+
+import pb.Message.Container;
+import pb.Types.ContainerType;
+import pb.Types.ValueType;
+
 import java.awt.FlowLayout;
 
 @SuppressWarnings("serial")
@@ -24,6 +32,8 @@ public abstract class SavableControl extends JPanel implements IParameter, ISave
 	private String parId;
 	public String iniFullFileName;
 	private String labelTxt;
+	public boolean requiresHalRCompSet=false;
+
 
 	PinDef pinDef=null;
 
@@ -134,4 +144,39 @@ public abstract class SavableControl extends JPanel implements IParameter, ISave
 		return this.pinDef;
 	}
 	
+	
+	public void updateHal()
+	{
+		if(this.getPin()!=null && this.requiresHalRCompSet && !this.getParValue().equals(""))
+		{
+			pb.Message.Container.Builder builder = Container.newBuilder();
+			builder.setType(ContainerType.MT_HALRCOMP_SET);
+			
+			builder.setReplyRequired(true);
+			
+			pb.Object.Pin.Builder pin = pb.Object.Pin.newBuilder().setName(this.getPin().getPinName());
+			pin.setDir(this.getPin().getPinDir());
+			pin.setType(this.getPin().getPinType());
+			pin.setName(this.getPin().getPinName());
+			pin.setHandle(BBBHalRComp.getInstance().getPinHandle(this.getPin().getPinName()));
+			
+			if (this.getPin().getPinType() == ValueType.HAL_FLOAT) {
+				pin.setHalfloat(Double.valueOf(this.getParValue()).doubleValue());
+			}	else if (this.getPin().getPinType() == ValueType.HAL_S32) {
+				pin.setHals32(Integer.valueOf(this.getParValue()).intValue());
+			} else if (this.getPin().getPinType() == ValueType.HAL_U32) {
+					pin.setHalu32(Integer.valueOf(this.getParValue()).intValue());
+			} else if (this.getPin().getPinType() == ValueType.HAL_BIT) {
+				pin.setHalbit(Boolean.valueOf(this.getParValue()).booleanValue());
+			}
+			builder.addPin(pin);
+
+			byte[] buff = builder.build().toByteArray();
+			String hexOutput = javax.xml.bind.DatatypeConverter.printHexBinary(buff);
+			System.out.println("Message:  " + hexOutput);
+			BBBHalCommand.getInstance().socket.send(buff, 0);
+			
+		}
+		//this.getParent().revalidate();		
+	}
 }

@@ -1,4 +1,4 @@
-package com.kz.pipeCutter;
+package com.kz.pipeCutter.ui;
 
 import java.awt.MenuItem;
 import java.awt.PopupMenu;
@@ -13,10 +13,12 @@ import org.jzy3d.plot3d.rendering.view.modes.ViewBoundMode;
 import org.zeromq.ZMQ;
 
 import com.google.protobuf.InvalidProtocolBufferException;
+import com.kz.pipeCutter.CutThread;
+import com.kz.pipeCutter.MyPickablePoint;
+import com.kz.pipeCutter.SurfaceDemo;
 import com.kz.pipeCutter.BBB.BBBMachineTalkCommand;
 import com.kz.pipeCutter.BBB.BBBStatus;
 import com.kz.pipeCutter.BBB.commands.ExecuteMdi;
-import com.kz.pipeCutter.ui.Settings;
 
 import pb.Message.Container;
 import pb.Types.ContainerType;
@@ -67,6 +69,8 @@ public class MyPopupMenu extends PopupMenu {
 			public void actionPerformed(ActionEvent arg0) {
 				SurfaceDemo.ZOOM_PLASMA = false;
 				SurfaceDemo.ZOOM_POINT = true;
+				Settings.instance.setSetting("ui_zoom_plasma","0");
+				Settings.instance.setSetting("ui_zoom_point","1");
 				SurfaceDemo.instance.redrawPosition();
 			}
 		});
@@ -78,6 +82,8 @@ public class MyPopupMenu extends PopupMenu {
 			public void actionPerformed(ActionEvent arg0) {
 				SurfaceDemo.ZOOM_POINT = false;
 				SurfaceDemo.ZOOM_PLASMA = true;
+				Settings.instance.setSetting("ui_zoom_plasma","1");
+				Settings.instance.setSetting("ui_zoom_point","0");
 				SurfaceDemo.instance.redrawPosition();
 			}
 		});
@@ -225,8 +231,8 @@ public class MyPopupMenu extends PopupMenu {
 						// Float.valueOf(Settings.getInstance().getSetting("position_y"));
 						// float z =
 						// Float.valueOf(Settings.getInstance().getSetting("position_z"));
-						//
-						String mdiCommand = String.format(Locale.US, "G92 X%.3f Y%.3f Z%.3f\nG92.3", SurfaceDemo.instance.lastClickedPoint.xyz.x,
+						// "G92 X%.3f Y%.3f Z%.3f\nG92.3"
+						String mdiCommand = String.format(Locale.US, "G92 X%.3f Y%.3f Z%.3f", SurfaceDemo.instance.lastClickedPoint.xyz.x,
 								SurfaceDemo.instance.lastClickedPoint.xyz.y, SurfaceDemo.instance.lastClickedPoint.xyz.z);
 						Settings.getInstance().log(mdiCommand);
 						new ExecuteMdi(mdiCommand).start();

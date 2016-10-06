@@ -258,7 +258,7 @@ public class NamedList extends JPanel implements IParameter, IHasLabel {
 		}
 	}
 
-	public void getHalCmdServiceUrl(ServiceInfo serviceInfo) {
+	public static void getHalCmdServiceUrl(ServiceInfo serviceInfo) {
 		String hallGroupUrl = null;
 		ServiceInfo ret = null;
 		if (serviceInfo.getName().matches("HAL Rcommand.*")) {

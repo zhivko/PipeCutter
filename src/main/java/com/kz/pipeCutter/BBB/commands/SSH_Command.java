@@ -1,10 +1,13 @@
 package com.kz.pipeCutter.BBB.commands;
 
+import java.util.concurrent.TimeUnit;
+
 import javax.swing.SwingWorker;
 
 import com.jcraft.jsch.ChannelExec;
 import com.jcraft.jsch.JSch;
 import com.jcraft.jsch.Session;
+import com.kz.pipeCutter.BBB.MyOutputStreamReader;
 import com.kz.pipeCutter.ui.Settings;
 
 public abstract class SSH_Command {
@@ -60,5 +63,41 @@ public abstract class SSH_Command {
 
 		}
 	}
+	
+	public boolean SSH_CheckIfMachinekitRunning() {
+		boolean ret = false;
+		try {
+			this.SSH_Login();
+			// try to see if machinekit lready running
+			String command = "ps -aux | grep machinekit";
+			MyOutputStreamReader myOut = new MyOutputStreamReader();
+			channelExec = (ChannelExec) session.openChannel("exec");
+			channelExec.setCommand(command.getBytes());
+			channelExec.setOutputStream(myOut);
+			channelExec.connect();
+			while (channelExec.getExitStatus() == -1) {
+				try {
+					TimeUnit.SECONDS.sleep(1);
+				} catch (Exception e) {
+					System.out.println(e);
+				}
+			}
+			channelExec.disconnect();
+
+			for (String line : myOut.getLines()) {
+				if (line.matches("(.*)CRAMPS.ini")) {
+					System.out.println("MachineKit already started");
+					channelExec.disconnect();
+					ret = true;
+					break;
+				}
+			}
+			channelExec.disconnect();
+		} catch (Exception ex) {
+			ex.printStackTrace();
+		}
+		return ret;
+	}
+
 
 }

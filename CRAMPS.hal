@@ -35,10 +35,11 @@ loadrt [PRUCONF](DRIVER) prucode=$(HAL_RTMOD_DIR)/[PRUCONF](PRUBIN) [PRUCONF](CO
 loadrt pid count=2
 loadrt limit1 count=2
 
-
+# Commented by Klemen
 # Python user-mode HAL module to read ADC value and generate a thermostat output for PWM
 # c = analog input channel and thermistor table
-loadusr -Wn Therm hal_temp_bbb -n Therm -c 04:epcos_B57560G1104,05:epcos_B57560G1104 -b CRAMPS
+#
+#loadusr -Wn Therm hal_temp_bbb -n Therm -c 04:epcos_B57560G1104,05:epcos_B57560G1104 -b CRAMPS
 
 
 # ################################################
@@ -469,6 +470,9 @@ net servo.4 bb_gpio.p8.out-22
 # COMMENTED HEATER SECTION END KLEMEN
 
 
+
+
+
 newcomp mymotion timer=100
 newpin mymotion  mymotion.program-line       s32   in
 newpin mymotion  mymotion.spindle-on         bit   in
@@ -480,6 +484,31 @@ newpin mymotion  mymotion.dvz        		 float in
 newpin mymotion  mymotion.v        		 	 float in
 newpin mymotion  mymotion.current-radius	 float in
 ready  mymotion
+
+newcomp myini timer=100
+newpin myini  myini.maxvel_0	 	 float out
+newpin myini  myini.maxacc_0	 	 float out
+newpin myini  myini.maxvel_1	 	 float out
+newpin myini  myini.maxacc_1	 	 float out
+newpin myini  myini.maxvel_2	 	 float out
+newpin myini  myini.maxacc_2	 	 float out
+newpin myini  myini.maxvel_3	 	 float out
+newpin myini  myini.maxacc_3	 	 float out
+newpin myini  myini.maxvel_4	 	 float out
+newpin myini  myini.maxacc_4	 	 float out
+ready  myini
+
+net maxvelocity_0	myini.maxvel_0	=> hpg.stepgen.00.maxvel
+net maxaccel_0	myini.maxacc_0	=> hpg.stepgen.00.maxaccel
+net maxvelocity_1	myini.maxvel_1	=> hpg.stepgen.01.maxvel
+net maxaccel_1	myini.maxacc_1	=> hpg.stepgen.01.maxaccel
+net maxvelocity_2	myini.maxvel_2	=> hpg.stepgen.02.maxvel
+net maxaccel_2	myini.maxacc_2	=> hpg.stepgen.02.maxaccel
+net maxvelocity_3	myini.maxvel_3	=> hpg.stepgen.03.maxvel
+net maxaccel_3	myini.maxacc_3	=> hpg.stepgen.03.maxaccel
+net maxvelocity_4	myini.maxvel_4	=> hpg.stepgen.04.maxvel
+net maxaccel_4	myini.maxacc_4	=> hpg.stepgen.04.maxaccel
+
 
 #######################################################################################################################
 #net	netname		         	signal_src	                	target					target	              ... yadda

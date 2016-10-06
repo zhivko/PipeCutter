@@ -11,10 +11,14 @@ import javax.swing.JPanel;
 
 import com.kz.pipeCutter.BBB.commands.Jog;
 import com.kz.pipeCutter.ui.MyVerticalFlowLayout;
+import com.kz.pipeCutter.ui.PinDef;
 import com.kz.pipeCutter.ui.Positioner;
 import com.kz.pipeCutter.ui.SavableSlider;
 import com.kz.pipeCutter.ui.SavableText;
 import com.kz.pipeCutter.ui.Settings;
+
+import pb.Types.HalPinDirection;
+import pb.Types.ValueType;
 
 @SuppressWarnings("serial")
 public class XYZSettings extends JPanel {
@@ -41,12 +45,16 @@ public class XYZSettings extends JPanel {
 
 		SavableText x_vel = new SavableText();
 		x_vel.setParId("x_vel");
-		x_vel.setLabelTxt("velocity [mm/min]:");
+		x_vel.setLabelTxt("max velocity [mm/s]:");
+		x_vel.setPin(new PinDef("myini.maxvel_0", HalPinDirection.HAL_OUT, ValueType.HAL_FLOAT));
+		x_vel.requiresHalRCompSet = true;
 		panelXAxis.add(x_vel);
 
 		SavableText x_acel = new SavableText();
-		x_acel.setLabelTxt("acceleration:");
+		x_acel.setLabelTxt("max acceleration:");
 		panelXAxis.add(x_acel);
+		x_acel.setPin(new PinDef("myini.maxacc_0", HalPinDirection.HAL_OUT, ValueType.HAL_FLOAT));
+		x_acel.requiresHalRCompSet = true;
 		x_acel.setParId("x_acc");
 
 		SavableSlider sliderX = new SavableSlider();
@@ -55,12 +63,17 @@ public class XYZSettings extends JPanel {
 		sliderX.setParId("x_step");
 		panelXAxis.add(sliderX);
 
+		SavableText x_jog_speed = new SavableText();
+		x_jog_speed.setLabelTxt("jog velocity [mm/min]:");
+		x_jog_speed.setParId("x_jog_vel");
+		panelXAxis.add(x_jog_speed);
+		
 		JButton jog1 = new JButton("JOG");
 		jog1.setPreferredSize(new Dimension(100, 50));
 		panelXAxis.add(jog1);
 		jog1.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				Double velocity = Double.valueOf(Settings.getInstance().getSetting("x_vel"));
+				Double velocity = Double.valueOf(Settings.getInstance().getSetting("x_jog_vel"));
 				Double distance = Double.valueOf(Settings.getInstance().getSetting("x_step"));
 				new Jog(0, velocity/60, distance).start();
 			}
@@ -83,12 +96,17 @@ public class XYZSettings extends JPanel {
 
 		SavableText y_vel = new SavableText();
 		y_vel.setParId("y_vel");
-		y_vel.setLabelTxt("velocity [mm/min]:");
+		y_vel.setLabelTxt("max velocity [mm/s]:");
+		y_vel.setPin(new PinDef("myini.maxvel_1", HalPinDirection.HAL_OUT, ValueType.HAL_FLOAT));
+		y_vel.requiresHalRCompSet = true;
+		
 		panelYAxis.add(y_vel);
 
 		SavableText y_acc = new SavableText();
-		y_acc.setLabelTxt("acceleration:");
+		y_acc.setLabelTxt("max acceleration:");
 		y_acc.setParId("y_acc");
+		y_acc.setPin(new PinDef("myini.maxacc_1", HalPinDirection.HAL_OUT, ValueType.HAL_FLOAT));
+		y_acc.requiresHalRCompSet = true;		
 		panelYAxis.add(y_acc);
 
 		SavableSlider sliderY = new SavableSlider();
@@ -97,13 +115,17 @@ public class XYZSettings extends JPanel {
 		sliderY.setParId("y_step");
 		panelYAxis.add(sliderY);
 		
+		SavableText y_jog_speed = new SavableText();
+		y_jog_speed.setLabelTxt("jog velocity [mm/min]:");
+		y_jog_speed.setParId("y_jog_vel");
+		panelYAxis.add(y_jog_speed);		
 		
 		JButton jog2 = new JButton("JOG");
 		jog2.setPreferredSize(new Dimension(100, 50));
 		panelYAxis.add(jog2);
 		jog2.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				Double velocity = Double.valueOf(Settings.getInstance().getSetting("y_vel"));
+				Double velocity = Double.valueOf(Settings.getInstance().getSetting("y_jog_vel"));
 				Double distance = Double.valueOf(Settings.getInstance().getSetting("y_step"));
 				new Jog(1, velocity/60, distance).start();
 			}
@@ -125,13 +147,17 @@ public class XYZSettings extends JPanel {
 		panelZAxis.add(lblNewLabel3);
 
 		SavableText z_vel = new SavableText();
-		z_vel.setLabelTxt("velocity [mm/min]:");
+		z_vel.setLabelTxt("max velocity [mm/s]:");
 		z_vel.setParId("z_vel");
+		z_vel.setPin(new PinDef("myini.maxvel_2", HalPinDirection.HAL_OUT, ValueType.HAL_FLOAT));
+		z_vel.requiresHalRCompSet = true;		
 		panelZAxis.add(z_vel);
 
 		SavableText z_acc = new SavableText();
-		z_acc.setLabelTxt("acceleration:");
+		z_acc.setLabelTxt("max acceleration:");
 		z_acc.setParId("z_acc");
+		z_acc.setPin(new PinDef("myini.maxacc_2", HalPinDirection.HAL_OUT, ValueType.HAL_FLOAT));
+		z_acc.requiresHalRCompSet = true;				
 		panelZAxis.add(z_acc);
 
 		SavableSlider sliderZ = new SavableSlider();
@@ -140,12 +166,17 @@ public class XYZSettings extends JPanel {
 		sliderZ.setParId("z_step");
 		panelZAxis.add(sliderZ);
 		
+		SavableText z_jog_speed = new SavableText();
+		z_jog_speed.setLabelTxt("jog velocity [mm/min]:");
+		z_jog_speed.setParId("z_jog_vel");
+		panelZAxis.add(z_jog_speed);
+
 		JButton jog3 = new JButton("JOG");
 		jog3.setPreferredSize(new Dimension(100, 50));
 		panelZAxis.add(jog3);
 		jog3.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				Double velocity = Double.valueOf(Settings.getInstance().getSetting("z_vel"));
+				Double velocity = Double.valueOf(Settings.getInstance().getSetting("z_jog_vel"));
 				Double distance = Double.valueOf(Settings.getInstance().getSetting("z_step"));
 				new Jog(2, velocity/60, distance).start();
 			}

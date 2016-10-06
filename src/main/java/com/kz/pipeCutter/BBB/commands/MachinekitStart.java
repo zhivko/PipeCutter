@@ -10,6 +10,9 @@ import java.util.concurrent.TimeUnit;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import javax.jmdns.ServiceInfo;
+import javax.jmdns.impl.ServiceInfoImpl;
+
 import org.apache.log4j.Logger;
 
 import com.jcraft.jsch.ChannelExec;
@@ -18,6 +21,7 @@ import com.jcraft.jsch.JSch;
 import com.jcraft.jsch.Session;
 import com.kz.pipeCutter.BBB.Discoverer;
 import com.kz.pipeCutter.BBB.MyOutputStreamReader;
+import com.kz.pipeCutter.ui.NamedList;
 import com.kz.pipeCutter.ui.Settings;
 
 public class MachinekitStart extends SSH_Command {
@@ -75,8 +79,9 @@ public class MachinekitStart extends SSH_Command {
 
 		long startMs = System.currentTimeMillis();
 
-		//&& (noOfserviceStarted < 6) && System.currentTimeMillis() < (startMs + timeOutMs)
-		
+		// && (noOfserviceStarted < 6) && System.currentTimeMillis() < (startMs +
+		// timeOutMs)
+
 		while ((noOfserviceStarted < 6)) {
 			String line = null;
 			Thread.sleep(1000);
@@ -86,50 +91,25 @@ public class MachinekitStart extends SSH_Command {
 					Matcher m = p.matcher(line);
 					if (m.find()) {
 						Settings.instance.log("Service '" + m.group(2) + "' on port: " + m.group(1) + " on BBB is on.");
+						ServiceInfo serviceInfo = ServiceInfoImpl.create(m.group(2), m.group(2), Integer.valueOf(m.group(1)), "beaglebone.local");
+						NamedList.getCommandServiceUrl(serviceInfo);
+						NamedList.getErrorServiceUrl(serviceInfo);
+						NamedList.getStatusServiceUrl(serviceInfo);
+						NamedList.getPreviewStatusServiceUrl(serviceInfo);
+						NamedList.getHalRCompServiceUrl(serviceInfo);
+						NamedList.getHalCmdServiceUrl(serviceInfo);
+
 						noOfserviceStarted++;
-						if (noOfserviceStarted == 6) {
-							Settings.instance.log("Starting discoverer...");
-							Discoverer.getInstance().discover();
-						}
 					}
 				}
+
+//				if (noOfserviceStarted == 6) {
+//					Settings.instance.log("Starting discoverer...");
+//					Discoverer.getInstance().discover();
+//				}
 			}
 		}
 	}
 
-	public boolean SSH_CheckIfMachinekitRunning() {
-		boolean ret = false;
-		try {
-			this.SSH_Login();
-			// try to see if machinekit lready running
-			String command = "ps -aux | grep machinekit";
-			MyOutputStreamReader myOut = new MyOutputStreamReader();
-			channelExec = (ChannelExec) session.openChannel("exec");
-			channelExec.setCommand(command.getBytes());
-			channelExec.setOutputStream(myOut);
-			channelExec.connect();
-			while (channelExec.getExitStatus() == -1) {
-				try {
-					TimeUnit.SECONDS.sleep(1);
-				} catch (Exception e) {
-					System.out.println(e);
-				}
-			}
-			channelExec.disconnect();
-
-			for (String line : myOut.getLines()) {
-				if (line.matches("(.*)CRAMPS.ini")) {
-					System.out.println("MachineKit already started");
-					channelExec.disconnect();
-					ret = true;
-					break;
-				}
-			}
-			channelExec.disconnect();
-		} catch (Exception ex) {
-			ex.printStackTrace();
-		}
-		return ret;
-	}
 
 }

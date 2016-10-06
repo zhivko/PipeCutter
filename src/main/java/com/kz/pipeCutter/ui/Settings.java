@@ -528,4 +528,14 @@ public class Settings extends JFrame {
 		List<IHasPinDef> savableControls = harvestSupportsInterface(Settings.instance.getContentPane(), IHasPinDef.class);
 		return savableControls;
 	}
+	
+	public void updateHalValues()
+	{
+		for (SavableControl cntrl : controls.values()) {
+			if(cntrl.requiresHalRCompSet)
+			{
+				cntrl.updateHal();
+			}
+		}
+	}
 }

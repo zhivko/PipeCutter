@@ -7,9 +7,16 @@ import java.awt.geom.AffineTransform;
 
 import javax.swing.JTextField;
 import javax.swing.SwingConstants;
-import javax.swing.SwingUtilities;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
+
+import com.kz.pipeCutter.BBB.BBBHalCommand;
+import com.kz.pipeCutter.BBB.BBBHalRComp;
+
+import pb.Message.Container;
+import pb.Object.Pin;
+import pb.Types.ContainerType;
+import pb.Types.ValueType;
 
 @SuppressWarnings("serial")
 public class SavableText extends SavableControl {
@@ -57,16 +64,16 @@ public class SavableText extends SavableControl {
 	@Override
 	public void setParValue(String val) {
 		SavableText.this.jValue.setText(val);
-		//resizeBox();
-//		final String myValue = val;
-//		SwingUtilities.invokeLater(new Runnable() {
-//			
-//			@Override
-//			public void run() {
-//				SavableText.this.jValue.setText(myValue);
-//				//resizeBox();
-//			}
-//		});
+		// resizeBox();
+		// final String myValue = val;
+		// SwingUtilities.invokeLater(new Runnable() {
+		//
+		// @Override
+		// public void run() {
+		// SavableText.this.jValue.setText(myValue);
+		// //resizeBox();
+		// }
+		// });
 	}
 
 	@Override
@@ -78,8 +85,8 @@ public class SavableText extends SavableControl {
 	public void valueChangedFromUI() {
 		if (!preventResize) {
 			//resizeBox();
-			//this.getParent().revalidate();
 		}
+		updateHal();
 	}
 
 	private void resizeBox() {
@@ -90,13 +97,12 @@ public class SavableText extends SavableControl {
 		this.setFont(font);
 		int textwidth = (int) (font.getStringBounds(val, frc).getWidth() * 1.2);
 		int textheight = (int) (font.getStringBounds(val, frc).getHeight());
-		
-		if(textwidth<30)
+
+		if (textwidth < 30)
 			textwidth = 30;
-		
-		this.jValue
-				.setPreferredSize(new Dimension(textwidth, textheight + 3));
-		
+
+		this.jValue.setPreferredSize(new Dimension(textwidth, textheight + 3));
+
 	}
 
 	@Override

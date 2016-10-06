@@ -172,7 +172,7 @@ public class BBBPreviewStatus implements Runnable {
 
 		if (ctx != null && socket != null) {
 			socket.close();
-			ctx.close();
+			//ctx.close();
 		}
 
 		uri = Settings.getInstance().getSetting("machinekit_previewstatusService_url");

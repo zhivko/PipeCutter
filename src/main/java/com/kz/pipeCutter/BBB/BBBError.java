@@ -125,7 +125,7 @@ public class BBBError implements Runnable {
 		}
 		if (ctx != null && socket != null) {
 			socket.close();
-			ctx.close();
+			//ctx.close();
 		}
 
 		Random rand = new Random(23424234);

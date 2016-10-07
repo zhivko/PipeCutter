@@ -12,6 +12,8 @@ import org.jzy3d.chart.controllers.mouse.picking.AWTMousePickingController;
 import org.jzy3d.chart.controllers.thread.camera.CameraThreadController;
 import org.jzy3d.maths.Coord2d;
 
+import com.kz.pipeCutter.ui.Settings;
+
 public class MyAWTMousePickingController extends AWTMousePickingController implements MouseListener, MouseWheelListener,
 		MouseMotionListener {
 	public MyAWTMousePickingController() {
@@ -77,6 +79,11 @@ public class MyAWTMousePickingController extends AWTMousePickingController imple
 	public void mouseWheelMoved(MouseWheelEvent e) {
 		stopThreadController();
 		float factor = 1 + (e.getWheelRotation() / 10.0f);
+
+		String center = chart.getView().getBounds().getCenter().toString();
+		String radius = String.valueOf(chart.getView().getBounds().getRadius());
+		
+		Settings.instance.setSetting("ui_zoom", center + "#" + radius);
 		zoomZ(factor);
 	}
 

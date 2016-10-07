@@ -378,11 +378,29 @@ public class SurfaceDemo extends AbstractAnalysis {
 						});
 						// TODO Auto-generated method stub
 
-						if(Settings.instance.getSetting("ui_zoom_plasma").equals("1"))
+						if (Settings.instance.getSetting("ui_zoom_plasma").equals("1"))
+
 							SurfaceDemo.ZOOM_PLASMA = true;
-						if(Settings.instance.getSetting("ui_zoom_point").equals("1"))
+						if (Settings.instance.getSetting("ui_zoom_point").equals("1"))
 							SurfaceDemo.ZOOM_POINT = true;
-						
+
+						if (!Settings.instance.getSetting("ui_zoom").equals("")) {
+							try {
+								String center_str = Settings.instance.getSetting("ui_zoom").split("#")[0];
+								String radius = Settings.instance.getSetting("ui_zoom").split("#")[1];
+
+								float x = Float.valueOf(center_str.split("\\s")[0].split("=")[1]);
+								float y = Float.valueOf(center_str.split("\\s")[1].split("=")[1]);
+								float z = Float.valueOf(center_str.split("\\s")[2].split("=")[1]);
+
+								instance.chart.getView().setBoundManual(new BoundingBox3d(new Coord3d(x, y, z), Float.valueOf(radius)));
+							} catch (Exception ex) {
+								ex.printStackTrace();
+							}
+						}
+
+						new MyAWTMousePickingController(instance.chart);
+
 					}
 
 				});
@@ -768,7 +786,7 @@ public class SurfaceDemo extends AbstractAnalysis {
 				Coord3d cent = this.utils.continuousEdges.get(edge.getPointByIndex(0).continuousEdgeNo).center;
 				Coord3d delta = edge.center.sub(cent);
 				String radius = "";
-				
+
 				// 2 mm toward center
 				Coord3d textPoint = edge.center.sub(delta.getNormalizedTo(0.2f));
 				if (edge.edgeType == MyEdge.EdgeType.ONRADIUS)
@@ -777,16 +795,13 @@ public class SurfaceDemo extends AbstractAnalysis {
 				Coordinates c = new Coordinates(textPoint.x, textPoint.y, textPoint.z);
 				r.transform(c);
 
-				PickableDrawableTextBitmap t5 = new PickableDrawableTextBitmap(radius + String.valueOf(edge.edgeNo), new Coord3d(c.x, c.y, c.z),
-						Color.BLUE);
+				PickableDrawableTextBitmap t5 = new PickableDrawableTextBitmap(radius + String.valueOf(edge.edgeNo), new Coord3d(c.x, c.y, c.z), Color.BLUE);
 				t5.setHalign(Halign.CENTER); // TODO: invert
 				t5.setValign(Valign.CENTER); // TODO: invert
 				// t5.setValign(Valign.BOTTOM); // TODO: invert
 				// left/right
 				t5.setPickingId(edge.edgeNo);
-				
-				
-				
+
 				utils.edgeTexts.add(t5);
 			}
 			for (Integer pointNo : edge.points) {
@@ -1045,7 +1060,7 @@ public class SurfaceDemo extends AbstractAnalysis {
 		plasma.setPosition(abovePoint);
 		// SurfaceDemo.instance.redrawPosition();
 
-		String gcode = SurfaceDemo.instance.utils.coordinateToGcode(tempPoint, offset,false);
+		String gcode = SurfaceDemo.instance.utils.coordinateToGcode(tempPoint, offset, false);
 		plasma.setColor(Color.BLUE);
 		plasma.setWireframeColor(Color.BLUE);
 

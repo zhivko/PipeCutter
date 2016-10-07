@@ -100,15 +100,20 @@ public class OtherSettings extends JPanel {
 		SavableCheckBox uiZoomPlasma = new SavableCheckBox();
 		uiZoomPlasma.setLabelTxt("Zoom plasma");
 		uiZoomPlasma.setParId("ui_zoom_plasma");
+		uiZoomPlasma.setNeedsSave(true);
 		this.add(uiZoomPlasma);
-
 
 		SavableCheckBox uiZoomPoint = new SavableCheckBox();
 		uiZoomPoint.setLabelTxt("Zoom point");
 		uiZoomPoint.setParId("ui_zoom_point");
+		uiZoomPoint.setNeedsSave(true);
 		this.add(uiZoomPoint);
 				
-		
+		SavableText uiZoom = new SavableText();
+		uiZoom.setLabelTxt("Zoom");
+		uiZoom.setParId("ui_zoom");
+		uiZoom.setNeedsSave(true);
+		this.add(uiZoom);		
 		
 		
 		SavableText hal_vx = new SavableText();

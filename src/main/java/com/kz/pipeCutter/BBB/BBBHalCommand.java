@@ -218,7 +218,9 @@ public class BBBHalCommand implements Runnable {
 		}
 
 		if (ctx != null && socket != null) {
-			socket.close();
+			ctx.destroySocket(socket);
+			ctx.destroy();
+			//socket.close();
 			// ctx.close();
 		}
 

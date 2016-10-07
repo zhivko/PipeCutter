@@ -67,7 +67,7 @@ public class Settings extends JFrame {
 	public static BBBHalCommand halCmd;
 	public static BBBHalRComp halRComp;
 	public static BBBPreviewStatus previewStatus;
-	
+
 	public static HashMap<String, SavableControl> controls = new HashMap<String, SavableControl>();
 
 	public JSplitPane splitPane;
@@ -94,11 +94,10 @@ public class Settings extends JFrame {
 	}
 
 	public void initCommandService() {
-		if (BBBMachineTalkCommand.ctx != null)
-			BBBMachineTalkCommand.ctx.close();
-
-		if (BBBMachineTalkCommand.socket != null)
-			BBBMachineTalkCommand.socket.close();
+		if (BBBMachineTalkCommand.ctx != null) {
+			BBBMachineTalkCommand.ctx.destroySocket(BBBMachineTalkCommand.socket);
+			BBBMachineTalkCommand.ctx.destroy();
+		}
 
 		BBBMachineTalkCommand.ctx = null;
 		BBBMachineTalkCommand.socket = null;
@@ -134,12 +133,12 @@ public class Settings extends JFrame {
 	}
 
 	public void initPreviewStatusService() {
-		//if (previewStatus == null)
-			//previewStatus = new BBBPreviewStatus();
-		//else
-			//previewStatus.initSocket();
-	}	
-	
+		// if (previewStatus == null)
+		// previewStatus = new BBBPreviewStatus();
+		// else
+		// previewStatus.initSocket();
+	}
+
 	/**
 	 * Create the frame.
 	 */
@@ -313,8 +312,8 @@ public class Settings extends JFrame {
 							initStatusService();
 							initHalCmdService();
 							initHalRcompService();
-							//initPreviewStatusService();
-							
+							// initPreviewStatusService();
+
 							Settings.instance.pingBBB();
 						}
 					});
@@ -528,12 +527,10 @@ public class Settings extends JFrame {
 		List<IHasPinDef> savableControls = harvestSupportsInterface(Settings.instance.getContentPane(), IHasPinDef.class);
 		return savableControls;
 	}
-	
-	public void updateHalValues()
-	{
+
+	public void updateHalValues() {
 		for (SavableControl cntrl : controls.values()) {
-			if(cntrl.requiresHalRCompSet)
-			{
+			if (cntrl.requiresHalRCompSet) {
 				cntrl.updateHal();
 			}
 		}

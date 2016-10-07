@@ -246,12 +246,12 @@ public class MyPopupMenu extends PopupMenu {
 						// }
 						// }, 2500);
 
-						new java.util.Timer().schedule(new java.util.TimerTask() {
-							@Override
-							public void run() {
-								BBBStatus.getInstance().reSubscribeMotion();
-							}
-						}, 2000);
+//						new java.util.Timer().schedule(new java.util.TimerTask() {
+//							@Override
+//							public void run() {
+//								BBBStatus.getInstance().reSubscribeMotion();
+//							}
+//						}, 2000);
 
 					}
 				});

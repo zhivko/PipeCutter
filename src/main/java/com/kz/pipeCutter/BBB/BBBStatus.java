@@ -258,8 +258,8 @@ public class BBBStatus implements Runnable {
 		}
 
 		if (ctx != null && socket != null) {
-			socket.close();
-			//ctx.close();
+			ctx.destroySocket(socket);
+			ctx.destroy();
 		}
 
 		uri = Settings.getInstance().getSetting("machinekit_statusService_url");

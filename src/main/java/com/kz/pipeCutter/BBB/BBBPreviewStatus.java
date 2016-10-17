@@ -171,7 +171,6 @@ public class BBBPreviewStatus implements Runnable {
 		}
 
 		if (ctx != null && socket != null) {
-			ctx.destroySocket(socket);
 			ctx.destroy();
 		}
 

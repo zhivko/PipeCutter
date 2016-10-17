@@ -216,7 +216,6 @@ public class BBBHalRComp implements Runnable {
 
 	public void initSocket() {
 		if (ctx != null && socket != null) {
-			ctx.destroySocket(socket);
 			ctx.destroy();
 		}
 		if (readThread != null && readThread.isAlive()) {

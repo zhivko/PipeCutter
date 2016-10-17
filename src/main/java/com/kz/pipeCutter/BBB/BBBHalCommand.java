@@ -154,7 +154,7 @@ public class BBBHalCommand implements Runnable {
 							BBBHalRComp.getInstance().isTryingToBind = false;
 							BBBHalRComp.getInstance().subcribe();
 							Settings.getInstance().log("Updating hal values...");
-							Settings.instance.updateHalValues();
+							//Settings.instance.updateHalValues();
 						} else {
 							Settings.getInstance().log("Unknown message: " + contReturned.getType());
 						}
@@ -218,10 +218,7 @@ public class BBBHalCommand implements Runnable {
 		}
 
 		if (ctx != null && socket != null) {
-			ctx.destroySocket(socket);
 			ctx.destroy();
-			//socket.close();
-			// ctx.close();
 		}
 
 		ctx = new ZContext();

@@ -96,17 +96,22 @@ public class MachinekitStart extends SSH_Command {
 						NamedList.getErrorServiceUrl(serviceInfo);
 						NamedList.getStatusServiceUrl(serviceInfo);
 						NamedList.getPreviewStatusServiceUrl(serviceInfo);
-						NamedList.getHalRCompServiceUrl(serviceInfo);
 						NamedList.getHalCmdServiceUrl(serviceInfo);
 
 						noOfserviceStarted++;
 					}
 				}
 
-//				if (noOfserviceStarted == 6) {
-//					Settings.instance.log("Starting discoverer...");
-//					Discoverer.getInstance().discover();
-//				}
+				if (noOfserviceStarted == 5) {
+					//if all 5 services are started from mkwrapper
+					//start also halcmd and halrcomp
+					//Settings.instance.log("Starting discoverer...");
+					//Discoverer.getInstance().discover();
+					Settings.instance.log("Init HalCmd dealer");
+					Settings.instance.initHalCmdService();
+					Settings.instance.log("Init HalRComp XSUB subscriber");
+					Settings.instance.initHalRcompService();
+				}
 			}
 		}
 	}

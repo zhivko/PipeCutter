@@ -5,8 +5,12 @@ import java.util.concurrent.TimeUnit;
 import org.apache.commons.lang3.StringUtils;
 
 import com.jcraft.jsch.ChannelExec;
+import com.kz.pipeCutter.BBB.BBBMachineTalkCommand;
 import com.kz.pipeCutter.BBB.MyOutputStreamReader;
 import com.kz.pipeCutter.ui.Settings;
+
+import pb.Message.Container;
+import pb.Types.ContainerType;
 
 public class MachinekitStop extends SSH_Command {
 

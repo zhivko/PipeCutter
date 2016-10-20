@@ -167,7 +167,7 @@ public class Settings extends JFrame {
 		JSplitPane splitPane = new JSplitPane();
 		splitPane.setOrientation(JSplitPane.VERTICAL_SPLIT);
 		contentPane.add(splitPane, BorderLayout.NORTH);
-		splitPane.setDividerLocation(490);
+		splitPane.setDividerLocation(540);
 		splitPane.addComponentListener(new ComponentListener() {
 
 			@Override

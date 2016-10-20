@@ -154,9 +154,7 @@ public class NamedList extends JPanel implements IParameter, IHasLabel {
 				getErrorServiceUrl(serviceInfo);
 				getStatusServiceUrl(serviceInfo);
 				getPreviewStatusServiceUrl(serviceInfo);
-				getHalRCompServiceUrl(serviceInfo);
 				getHalCmdServiceUrl(serviceInfo);
-				
 				
 				for (int i = 0; i < listModel.getSize(); i++) {
 					String row = listModel.getElementAt(i).toString();
@@ -244,19 +242,19 @@ public class NamedList extends JPanel implements IParameter, IHasLabel {
 		}
 	}
 
-	public static void getHalRCompServiceUrl(ServiceInfo serviceInfo) {
-		ServiceInfo ret = null;
-		if (serviceInfo.getName().matches("HAL Rcomp.*")) {
-			ret = serviceInfo;
-		}
-		if (ret != null) {
-			String ip = Settings.getInstance().getSetting("machinekit_ip");
-			String host = Settings.getInstance().getSetting("machinekit_host");
-			final String hallRCompUri = "tcp://" + getServer(serviceInfo.getServer()) + ":" + ret.getPort();
-			Settings.getInstance().setSetting("machinekit_halRCompService_url", hallRCompUri);
-			Settings.getInstance().initHalRcompService();
-		}
-	}
+//	public static void getHalRCompServiceUrl(ServiceInfo serviceInfo) {
+//		ServiceInfo ret = null;
+//		if (serviceInfo.getName().matches("HAL Rcomp.*")) {
+//			ret = serviceInfo;
+//		}
+//		if (ret != null) {
+//			String ip = Settings.getInstance().getSetting("machinekit_ip");
+//			String host = Settings.getInstance().getSetting("machinekit_host");
+//			final String hallRCompUri = "tcp://" + getServer(serviceInfo.getServer()) + ":" + ret.getPort();
+//			Settings.getInstance().setSetting("machinekit_halRCompService_url", hallRCompUri);
+//			Settings.getInstance().initHalRcompService();
+//		}
+//	}
 
 	public static void getHalCmdServiceUrl(ServiceInfo serviceInfo) {
 		String hallGroupUrl = null;

@@ -29,7 +29,7 @@ import pb.Types.ValueType;
 public class BBBHalRComp implements Runnable {
 	private String halRCompUri;
 	public Socket socket = null;
-	private static BBBHalRComp instance;
+	public static BBBHalRComp instance;
 	private ZContext ctx;
 	private pb.Message.Container.Builder builder;
 	private Thread readThread;
@@ -40,8 +40,8 @@ public class BBBHalRComp implements Runnable {
 
 	HashMap<String, String> halPins = new HashMap<>();
 
-	public boolean isBinded = false;
-	public boolean isTryingToBind = false;
+	public boolean isBinded;
+	public boolean isTryingToBind;
 	private long lastPingMs;
 
 	public BBBHalRComp() {
@@ -59,6 +59,7 @@ public class BBBHalRComp implements Runnable {
 	}
 
 	public BBBHalRComp(String uri) {
+		this();
 		this.halRCompUri = uri;
 		prepareBindContainer();
 		initSocket();
@@ -215,7 +216,10 @@ public class BBBHalRComp implements Runnable {
 	// Thread.currentThread().interrupt();
 
 	public void initSocket() {
+		isBinded = false;
+		isTryingToBind = false;
 		if (ctx != null && socket != null) {
+			ctx.destroySocket(socket);
 			ctx.destroy();
 		}
 		if (readThread != null && readThread.isAlive()) {

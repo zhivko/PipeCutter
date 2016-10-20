@@ -27,6 +27,7 @@ import com.kz.pipeCutter.BBB.commands.OpenGCode;
 import com.kz.pipeCutter.BBB.commands.PlayGCode;
 import com.kz.pipeCutter.BBB.commands.PowerOff;
 import com.kz.pipeCutter.BBB.commands.PowerOn;
+import com.kz.pipeCutter.BBB.commands.ShutDown;
 import com.kz.pipeCutter.BBB.commands.UnHomeAllAxis;
 
 import pb.Status.EmcTaskModeType;
@@ -71,14 +72,23 @@ public class CommandPanel extends JPanel {
 		};
 		machineKitPanel.add(listMachineKit);
 
-		MyButton MachineKitStop = new MyButton("Kill MK") {
+		MyButton MachineKitShutdown = new MyButton("ShutDown MK") {
+			@Override
+			public void doIt() {
+				new ShutDown().start();
+			}
+		};
+		machineKitPanel.add(MachineKitShutdown);
+
+		MyButton MachineKitKill = new MyButton("Kill MK") {
 			@Override
 			public void doIt() {
 				new MachinekitStop().start();
 			}
 		};
-		machineKitPanel.add(MachineKitStop);
-
+		machineKitPanel.add(MachineKitKill);		
+		
+		
 		// ----------machineTalkPanel---------------------------
 		JPanel machineTalkPanel = new JPanel();
 		machineTalkPanel.setPreferredSize(new Dimension(130, 350));

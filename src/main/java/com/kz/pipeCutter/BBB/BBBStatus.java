@@ -65,6 +65,7 @@ public class BBBStatus implements Runnable {
 	public double toolOff_c = 0;
 
 	private long lastPingMs;
+	private boolean readThreadShouldStop;
 
 	public BBBStatus() {
 		initSocket();
@@ -95,8 +96,10 @@ public class BBBStatus implements Runnable {
 		if (!Settings.getInstance().isVisible())
 			return;
 
+		readThreadShouldStop = false;
+
 		Container contReturned;
-		while (!readThread.isInterrupted()) {
+		while (!readThreadShouldStop) {
 			try {
 				ZMsg receivedMessage = ZMsg.recvMsg(socket, ZMQ.DONTWAIT);
 				// System.out.println("loop: " + i);
@@ -246,7 +249,7 @@ public class BBBStatus implements Runnable {
 
 	public void initSocket() {
 		if (readThread != null && readThread.isAlive()) {
-			readThread.interrupt();
+			readThreadShouldStop = true;
 			while (readThread.isAlive()) {
 				try {
 					TimeUnit.MILLISECONDS.sleep(500);
@@ -287,20 +290,19 @@ public class BBBStatus implements Runnable {
 
 	public boolean isAlive() {
 		if (this.lastPingMs != 0)
-			return (System.currentTimeMillis() - this.lastPingMs > 1000);
+			return System.currentTimeMillis() > this.lastPingMs;
 		else
 			return false;
 	}
 
 	public void reSubscribeMotion() {
 		initOffsets();
-		
+
 		socket.unsubscribe("motion".getBytes());
 		socket.subscribe("motion".getBytes());
 	}
-	
-	public void initOffsets()
-	{
+
+	public void initOffsets() {
 		x = 0;
 		y = 0;
 		z = 0;

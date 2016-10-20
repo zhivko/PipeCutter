@@ -29,6 +29,9 @@ public class BBBHalCommand implements Runnable {
 	private String socketUri;
 	public Socket socket = null;
 	private ZContext ctx;
+	boolean readThreadShouldEnd;
+	boolean pingThreadShouldEnd;
+
 
 	public static BBBHalCommand instance;
 
@@ -112,7 +115,8 @@ public class BBBHalCommand implements Runnable {
 		// while (!Thread.currentThread().isInterrupted()) {
 		// Tick once per second, pulling in arriving messages
 		// for (int centitick = 0; centitick < 4; centitick++) {
-		while (true) {
+		readThreadShouldEnd = false;
+		while (!readThreadShouldEnd) {
 			try {
 				ZMsg receivedMessage = ZMsg.recvMsg(socket, ZMQ.DONTWAIT);
 				// System.out.println("loop: " + i);
@@ -146,15 +150,16 @@ public class BBBHalCommand implements Runnable {
 							if (BBBStatus.getInstance().isAlive() && !BBBHalRComp.getInstance().isBinded && !BBBHalRComp.getInstance().isTryingToBind) {
 								// halcmd is alive - lets run postgui file
 								new MachinekitRunPostgui().runSshCmd();
-								//if (BBBHalRComp.getInstance().isAlive())
+								// if (BBBHalRComp.getInstance().isAlive())
 								BBBHalRComp.getInstance().startBind();
 							}
 						} else if (contReturned.getType().equals(ContainerType.MT_HALRCOMP_BIND_CONFIRM)) {
+							Settings.instance.log("MT_HALRCOMP_BIND_CONFIRM");
 							BBBHalRComp.getInstance().isBinded = true;
 							BBBHalRComp.getInstance().isTryingToBind = false;
 							BBBHalRComp.getInstance().subcribe();
 							Settings.getInstance().log("Updating hal values...");
-							//Settings.instance.updateHalValues();
+							// Settings.instance.updateHalValues();
 						} else {
 							Settings.getInstance().log("Unknown message: " + contReturned.getType());
 						}
@@ -195,7 +200,7 @@ public class BBBHalCommand implements Runnable {
 
 	public void initSocket() {
 		if (readThread != null && readThread.isAlive()) {
-			readThread.interrupt();
+			readThreadShouldEnd = true;
 			while (readThread.isAlive()) {
 				try {
 					TimeUnit.MILLISECONDS.sleep(500);
@@ -206,7 +211,7 @@ public class BBBHalCommand implements Runnable {
 			}
 		}
 		if (pingThread != null && pingThread.isAlive()) {
-			pingThread.interrupt();
+			pingThreadShouldEnd = true;
 			while (pingThread.isAlive()) {
 				try {
 					TimeUnit.MILLISECONDS.sleep(500);
@@ -216,8 +221,9 @@ public class BBBHalCommand implements Runnable {
 				}
 			}
 		}
-
+		
 		if (ctx != null && socket != null) {
+			ctx.destroySocket(socket);
 			ctx.destroy();
 		}
 
@@ -237,11 +243,12 @@ public class BBBHalCommand implements Runnable {
 	}
 
 	private void startPingThread() {
+		pingThreadShouldEnd = false;
 		pingThread = new Thread(new Runnable() {
 
 			@Override
 			public void run() {
-				while (!pingThread.isInterrupted()) {
+				while (!pingThreadShouldEnd) {
 					if (BBBHalCommand.this.shouldPing) {
 						pb.Message.Container.Builder builder = Container.newBuilder();
 						builder.setType(ContainerType.MT_PING);

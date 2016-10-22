@@ -1,0 +1,41 @@
+# 
+# THC conf from https://github.com/modmaker/machinekit/blob/master/configs/by_interface/mesa/plasma-5i20/plasma-demo.hal
+#
+newinst thc thc0
+addf thc0 servo-thread
+
+# load udp for streaming data from laser sensor
+loadrt udp count=1 ip=192.168.1.115 port=1234 sensDistMm=120.0
+addf udp.0 servo-thread
+
+
+# position command and feedback
+# hijack position command and feed through thc
+net emcmot.02.pos-cmd thc0.z-pos-in <= axis.2.motor-pos-cmd
+net thc-pos-cmd thc0.z-pos-out => hpg.stepgen.02.position-cmd
+net motor.02.pos-fb axis.2.motor-pos-fb <= thc0.z-fb-out
+
+
+# Touch Off
+net torch-probe motion.probe-input <= udp.0.touchOff
+
+# Set up the Encoder for the THC
+#setp hm2_5i20.0.counter-mode 1
+
+#net thc-vel-in hm2_5i20.0.velocity => thc.encoder-vel
+setp thc0.encoder-vel 12.0
+
+setp thc0.scale-offset 119000
+setp thc0.vel-scale 0.00037866834
+
+# this might need to be increased
+setp thc0.correction-vel 0.0001
+
+# spindle on starts the arc
+# bb_gpio.p9.out-28 = SPI_CS0 = P503_4 = pin 928
+net spindle-on motion.spindle-on => bb_gpio.p9.out-28
+net spindle-on thc0.torch-on
+
+# starts the motion when the plasma arc has transfered to the work
+# bb_gpio.p9.in-30 = MOSI = P503_3 = pin 930
+net start-motion-input thc0.arc-ok <= motion.digital-in-00 <= bb_gpio.p9.in-30

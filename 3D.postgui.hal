@@ -1,0 +1,24 @@
+# Include your customized HAL commands here
+# The commands in this file are run after the AXIS GUI (including PyVCP panel) starts
+
+#net e0.temp.set  => pyvcp.E0.Temp.set
+#net e0.temp.meas => pyvcp.E0.Temp
+#net bed.temp.set  => pyvcp.Bed.Temp.set
+#net bed.temp.meas => pyvcp.Bed.Temp
+
+
+#######################################################################################################################
+#net	netname		         	signal_src	                	target					target	              ... yadda
+#######################################################################################################################
+net maxvelocity_3	myini.maxvelocity_3	=> hpg.stepgen.03.maxvel
+net maxvelocity_4	myini.maxvelocity_4	=> hpg.stepgen.04.maxvel
+
+
+# THC connections
+net thc-enable myini.thc-enable thc0.enable
+net thc-voltmeter myini.actual-volts thc0.volts
+net thc-voltset myini.volts-requested thc0.volts-requested
+net thc-req-vel thc0.requested-vel <= motion.requested-vel
+net thc-cur-vel thc0.current-vel <= motion.current-vel
+net thc-vel-status myini.vel-status thc0.vel-status
+net thc-vel-tol myini.vel-tol thc0.vel-tol

@@ -130,7 +130,7 @@ public class BBBHalCommand implements Runnable {
 							for (int i = 0; i < contReturned.getCompCount(); i++) {
 								for (int j = 0; j < contReturned.getComp(i).getPinCount(); j++) {
 									String value = null;
-									if (contReturned.getComp(i).getPin(j).getName().equals("motion.spindle-on"))
+									if (contReturned.getComp(i).getPin(j).getName().equals("mymotion.spindle-on"))
 										System.out.println("");
 									if (contReturned.getComp(i).getPin(j).getType() == ValueType.HAL_FLOAT) {
 										value = Double.valueOf(contReturned.getComp(i).getPin(j).getHalfloat()).toString();

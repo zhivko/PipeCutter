@@ -217,7 +217,7 @@ public class MyPopupMenu extends PopupMenu {
 		this.add(menuItem15);
 
 		// Gcodes for BBB
-		MenuItem menuItem12 = new MenuItem("SET POINT LOCATION AS ORIGIN - G92");
+		MenuItem menuItem12 = new MenuItem("SET POINT LOCATION AS ORIGIN - G92 (A=0deg and B=0deg)");
 		menuItem12.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
@@ -232,7 +232,7 @@ public class MyPopupMenu extends PopupMenu {
 						// float z =
 						// Float.valueOf(Settings.getInstance().getSetting("position_z"));
 						// "G92 X%.3f Y%.3f Z%.3f\nG92.3"
-						String mdiCommand = String.format(Locale.US, "G92 X%.3f Y%.3f Z%.3f", SurfaceDemo.instance.lastClickedPoint.xyz.x,
+						String mdiCommand = String.format(Locale.US, "G92 X%.3f Y%.3f Z%.3f A0 B0", SurfaceDemo.instance.lastClickedPoint.xyz.x,
 								SurfaceDemo.instance.lastClickedPoint.xyz.y, SurfaceDemo.instance.lastClickedPoint.xyz.z);
 						Settings.getInstance().log(mdiCommand);
 						new ExecuteMdi(mdiCommand).start();
@@ -286,8 +286,8 @@ public class MyPopupMenu extends PopupMenu {
 						}
 						String speed = Settings.getInstance().getSetting("gcode_feedrate_g0");
 
-						mdiCommand = String.format(Locale.US, "G00 X%.3f Y%.3f Z%.3f F%s", SurfaceDemo.instance.lastClickedPoint.xyz.x - x,
-								SurfaceDemo.instance.lastClickedPoint.xyz.y - y, SurfaceDemo.instance.lastClickedPoint.xyz.z - z, speed);
+						mdiCommand = String.format(Locale.US, "G01 X%.3f Y%.3f Z%.3f F%s", SurfaceDemo.instance.lastClickedPoint.xyz.x,
+								SurfaceDemo.instance.lastClickedPoint.xyz.y, SurfaceDemo.instance.lastClickedPoint.xyz.z, speed);
 						Settings.getInstance().log(mdiCommand);
 						new ExecuteMdi(mdiCommand).start();
 

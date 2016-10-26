@@ -8,6 +8,7 @@ import java.awt.Insets;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.List;
 import java.util.Properties;
 
 import javax.swing.JLabel;
@@ -101,6 +102,8 @@ public abstract class SavableControl extends JPanel implements IParameter, ISave
 
 	public void setParId(String parId) {
 		this.parId = parId;
+		Settings.controls.put(this.parId, this);
+
 		try {
 			load();
 		} catch (IOException e1) {

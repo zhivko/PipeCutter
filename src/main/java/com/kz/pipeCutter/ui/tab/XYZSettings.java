@@ -44,7 +44,7 @@ public class XYZSettings extends JPanel {
 		panelXAxis.add(lblNewLabel1);
 
 		SavableText x_vel = new SavableText();
-		x_vel.setParId("x_vel");
+		x_vel.setParId("myini.maxvel_0");
 		x_vel.setLabelTxt("max velocity [mm/s]:");
 		x_vel.setPin(new PinDef("myini.maxvel_0", HalPinDirection.HAL_OUT, ValueType.HAL_FLOAT));
 		x_vel.requiresHalRCompSet = true;
@@ -55,7 +55,7 @@ public class XYZSettings extends JPanel {
 		panelXAxis.add(x_acel);
 		x_acel.setPin(new PinDef("myini.maxacc_0", HalPinDirection.HAL_OUT, ValueType.HAL_FLOAT));
 		x_acel.requiresHalRCompSet = true;
-		x_acel.setParId("x_acc");
+		x_acel.setParId("myini.maxacc_0");
 
 		SavableSlider sliderX = new SavableSlider();
 		sliderX.setValues(moveToText);
@@ -95,7 +95,7 @@ public class XYZSettings extends JPanel {
 		panelYAxis.add(lblNewLabel2);
 
 		SavableText y_vel = new SavableText();
-		y_vel.setParId("y_vel");
+		y_vel.setParId("myini.maxvel_1");
 		y_vel.setLabelTxt("max velocity [mm/s]:");
 		y_vel.setPin(new PinDef("myini.maxvel_1", HalPinDirection.HAL_OUT, ValueType.HAL_FLOAT));
 		y_vel.requiresHalRCompSet = true;
@@ -104,7 +104,7 @@ public class XYZSettings extends JPanel {
 
 		SavableText y_acc = new SavableText();
 		y_acc.setLabelTxt("max acceleration:");
-		y_acc.setParId("y_acc");
+		y_acc.setParId("myini.maxacc_1");
 		y_acc.setPin(new PinDef("myini.maxacc_1", HalPinDirection.HAL_OUT, ValueType.HAL_FLOAT));
 		y_acc.requiresHalRCompSet = true;		
 		panelYAxis.add(y_acc);
@@ -148,14 +148,14 @@ public class XYZSettings extends JPanel {
 
 		SavableText z_vel = new SavableText();
 		z_vel.setLabelTxt("max velocity [mm/s]:");
-		z_vel.setParId("z_vel");
+		z_vel.setParId("myini.maxvel_2");
 		z_vel.setPin(new PinDef("myini.maxvel_2", HalPinDirection.HAL_OUT, ValueType.HAL_FLOAT));
 		z_vel.requiresHalRCompSet = true;		
 		panelZAxis.add(z_vel);
 
 		SavableText z_acc = new SavableText();
 		z_acc.setLabelTxt("max acceleration:");
-		z_acc.setParId("z_acc");
+		z_acc.setParId("myini.maxacc_2");
 		z_acc.setPin(new PinDef("myini.maxacc_2", HalPinDirection.HAL_OUT, ValueType.HAL_FLOAT));
 		z_acc.requiresHalRCompSet = true;				
 		panelZAxis.add(z_acc);

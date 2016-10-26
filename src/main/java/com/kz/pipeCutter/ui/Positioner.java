@@ -24,6 +24,11 @@ import javax.websocket.WebSocketContainer;
 
 import org.glassfish.tyrus.client.ClientManager;
 
+// Nema23 motor
+// step angle: 1.8, 200 steps ful degree
+// Thread spec: TR8x2
+// step/mm = 100 step/mm
+
 @SuppressWarnings("serial")
 public class Positioner extends JPanel {
 	WebSocketContainer wsContainer;

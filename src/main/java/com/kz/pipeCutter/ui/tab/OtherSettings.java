@@ -164,6 +164,8 @@ public class OtherSettings extends JPanel {
 		hal_v.setNeedsSave(false);
 		hal_v.setPin(new PinDef("mymotion.v", HalPinDirection.HAL_IN, ValueType.HAL_FLOAT));
 		this.add(hal_v);
+
+		
 		
 		
 	}

@@ -32,7 +32,6 @@ public class BBBHalCommand implements Runnable {
 	boolean readThreadShouldEnd;
 	boolean pingThreadShouldEnd;
 
-
 	public static BBBHalCommand instance;
 
 	HashMap<String, String> halPin = new HashMap<>();
@@ -130,8 +129,6 @@ public class BBBHalCommand implements Runnable {
 							for (int i = 0; i < contReturned.getCompCount(); i++) {
 								for (int j = 0; j < contReturned.getComp(i).getPinCount(); j++) {
 									String value = null;
-									if (contReturned.getComp(i).getPin(j).getName().equals("mymotion.spindle-on"))
-										System.out.println("");
 									if (contReturned.getComp(i).getPin(j).getType() == ValueType.HAL_FLOAT) {
 										value = Double.valueOf(contReturned.getComp(i).getPin(j).getHalfloat()).toString();
 									} else if (contReturned.getComp(i).getPin(j).getType() == ValueType.HAL_S32) {
@@ -148,8 +145,6 @@ public class BBBHalCommand implements Runnable {
 							this.lastPingMs = System.currentTimeMillis();
 							MachinekitSettings.instance.pingHalCommand();
 							if (BBBStatus.getInstance().isAlive() && !BBBHalRComp.getInstance().isBinded && !BBBHalRComp.getInstance().isTryingToBind) {
-								// halcmd is alive - lets run postgui file
-								new MachinekitRunPostgui().runSshCmd();
 								// if (BBBHalRComp.getInstance().isAlive())
 								BBBHalRComp.getInstance().startBind();
 							}
@@ -159,7 +154,18 @@ public class BBBHalCommand implements Runnable {
 							BBBHalRComp.getInstance().isTryingToBind = false;
 							BBBHalRComp.getInstance().subcribe();
 							Settings.getInstance().log("Updating hal values...");
-							// Settings.instance.updateHalValues();
+
+							for (int i = 0; i < contReturned.getCompCount(); i++) {
+								for (int j = 0; j < contReturned.getComp(i).getPinCount(); j++) {
+									BBBHalRComp.instance.pinsByHandle.put(contReturned.getComp(i).getPin(j).getHandle(),
+											BBBHalRComp.instance.pinsByName.get(contReturned.getComp(i).getPin(j).getName()));
+								}
+							}
+							
+							// lets run postgui file
+							new MachinekitRunPostgui().runSshCmd();
+							
+							Settings.instance.updateHalValues();
 						} else {
 							Settings.getInstance().log("Unknown message: " + contReturned.getType());
 						}
@@ -221,7 +227,7 @@ public class BBBHalCommand implements Runnable {
 				}
 			}
 		}
-		
+
 		if (ctx != null && socket != null) {
 			ctx.destroySocket(socket);
 			ctx.destroy();

@@ -11,6 +11,7 @@ import javax.swing.JPanel;
 
 import com.kz.pipeCutter.BBB.commands.ExecuteMdi;
 import com.kz.pipeCutter.BBB.commands.Jog;
+import com.kz.pipeCutter.ui.MyButton;
 import com.kz.pipeCutter.ui.MyVerticalFlowLayout;
 import com.kz.pipeCutter.ui.PinDef;
 import com.kz.pipeCutter.ui.Positioner;
@@ -23,10 +24,13 @@ import pb.Types.ValueType;
 
 @SuppressWarnings("serial")
 public class RotatorSettings extends JPanel {
+	
+	Positioner pos2;
+	Positioner pos1;
 
 	public RotatorSettings() {
 		super();
-		Dimension panelPreferedDimension = new Dimension(220, 480);
+		Dimension panelPreferedDimension = new Dimension(220, 520);
 
 		this.setPreferredSize(new Dimension(420, 450));
 		FlowLayout flowLayout = (FlowLayout) this.getLayout();
@@ -46,17 +50,16 @@ public class RotatorSettings extends JPanel {
 		SavableText rotator1_vel = new SavableText();
 		rotator1_vel.setPin(new PinDef("myini.maxvel_3", HalPinDirection.HAL_OUT, ValueType.HAL_FLOAT));
 		rotator1_vel.requiresHalRCompSet = true;
-		rotator1_vel.setParId("rotator1_vel");
+		rotator1_vel.setParId("myini.maxvel_3");
 		rotator1_vel.setLabelTxt("max velocity [°/sec]:");
 		panelRotator1.add(rotator1_vel);
 
 		SavableText rotator1_acc = new SavableText();
 		rotator1_acc.setLabelTxt("max acceleration:");
 		panelRotator1.add(rotator1_acc);
-		rotator1_acc.setParId("rotator1_acc");
+		rotator1_acc.setParId("myini.maxacc_3");
 		rotator1_acc.setPin(new PinDef("myini.maxacc_3", HalPinDirection.HAL_OUT, ValueType.HAL_FLOAT));
 		rotator1_acc.requiresHalRCompSet = true;
-
 
 		SavableSlider sliderRot1 = new SavableSlider();
 		sliderRot1.setValues(moveToText);
@@ -67,19 +70,16 @@ public class RotatorSettings extends JPanel {
 		SavableText rot1_jog_speed = new SavableText();
 		rot1_jog_speed.setLabelTxt("jog velocity [mm/min]:");
 		rot1_jog_speed.setParId("r1_jog_vel");
-		panelRotator1.add(rot1_jog_speed);		
-		
-		
+		panelRotator1.add(rot1_jog_speed);
+
 		JButton jog1 = new JButton("JOG");
 		jog1.setPreferredSize(new Dimension(100, 50));
 		panelRotator1.add(jog1);
 		jog1.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				Double velocity = Double.valueOf(Settings.getInstance()
-						.getSetting("r1_jog_vel"));
-				Double distance = Double.valueOf(Settings.getInstance()
-						.getSetting("rotator1_step"));
-			  //new Jog(3, velocity/60, distance).start();
+				Double velocity = Double.valueOf(Settings.getInstance().getSetting("r1_jog_vel"));
+				Double distance = Double.valueOf(Settings.getInstance().getSetting("rotator1_step"));
+				// new Jog(3, velocity/60, distance).start();
 				RotatorSettings.this.jog(3, velocity, distance);
 			}
 		});
@@ -90,8 +90,15 @@ public class RotatorSettings extends JPanel {
 		positionA.setParId("position_a");
 		positionA.setNeedsSave(false);
 
-		Positioner pos1 = new Positioner(1);
+		pos1 = new Positioner(1);
 		panelRotator1.add(pos1);
+
+		SavableText laserDistance0 = new SavableText();
+		laserDistance0.setLabelTxt("LasDist: ");
+		laserDistance0.setParId("mymotion.laserHeight0");
+		laserDistance0.setNeedsSave(false);
+		laserDistance0.setPin(new PinDef("mymotion.laserHeight0", HalPinDirection.HAL_IN, ValueType.HAL_FLOAT));
+		panelRotator1.add(laserDistance0);
 
 		// ----------ROTATOR 2---------------------------
 		JPanel panelRotator2 = new JPanel();
@@ -106,15 +113,15 @@ public class RotatorSettings extends JPanel {
 		rotator2_vel.setPin(new PinDef("myini.maxvel_4", HalPinDirection.HAL_OUT, ValueType.HAL_FLOAT));
 		rotator2_vel.requiresHalRCompSet = true;
 		rotator2_vel.setLabelTxt("max velocity [°/sec]:");
+		rotator2_vel.setParId("myini.maxvel_4");
 		panelRotator2.add(rotator2_vel);
-		rotator2_vel.setParId("rotator2_vel");
 
 		SavableText rotator2_acc = new SavableText();
 		rotator2_acc.setLabelTxt("max acceleration:");
-		rotator2_acc.setParId("rotator2_acc");
-		rotator2_acc.setPin(new PinDef("myini.maxacc_4", HalPinDirection.HAL_OUT, ValueType.HAL_FLOAT));
+		rotator2_acc.setParId("myini.maxacc_4");
 		rotator2_acc.requiresHalRCompSet = true;
-		
+		rotator2_acc.setPin(new PinDef("myini.maxacc_4", HalPinDirection.HAL_OUT, ValueType.HAL_FLOAT));
+
 		panelRotator2.add(rotator2_acc);
 
 		SavableSlider sliderRot2 = new SavableSlider();
@@ -126,17 +133,15 @@ public class RotatorSettings extends JPanel {
 		SavableText rot2_jog_speed = new SavableText();
 		rot2_jog_speed.setLabelTxt("jog velocity [mm/min]:");
 		rot2_jog_speed.setParId("r2_jog_vel");
-		panelRotator2.add(rot2_jog_speed);				
-		
+		panelRotator2.add(rot2_jog_speed);
+
 		JButton jog2 = new JButton("JOG");
 		jog2.setPreferredSize(new Dimension(100, 50));
 		panelRotator2.add(jog2);
 		jog2.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				Double velocity = Double.valueOf(Settings.getInstance()
-						.getSetting("r2_jog_vel"));
-				Double distance = Double.valueOf(Settings.getInstance()
-						.getSetting("rotator2_step"));
+				Double velocity = Double.valueOf(Settings.getInstance().getSetting("r2_jog_vel"));
+				Double distance = Double.valueOf(Settings.getInstance().getSetting("rotator2_step"));
 				RotatorSettings.this.jog(4, velocity, distance);
 			}
 		});
@@ -147,8 +152,45 @@ public class RotatorSettings extends JPanel {
 		positionB.setParId("position_b");
 		positionB.setNeedsSave(false);
 
-		Positioner pos2 = new Positioner(2);
+		pos2 = new Positioner(2);
 		panelRotator2.add(pos2);
+
+		SavableText laserDistance1 = new SavableText();
+		laserDistance1.setLabelTxt("LasDist: ");
+		laserDistance1.setParId("mymotion.laserHeight1");
+		laserDistance1.setNeedsSave(false);
+		laserDistance1.setPin(new PinDef("mymotion.laserHeight1", HalPinDirection.HAL_IN, ValueType.HAL_FLOAT));
+		panelRotator2.add(laserDistance1);
+
+		MyButton mybutton1Center = new MyButton("Center");
+		mybutton1Center.addActionListener(new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent ev) {
+
+				int angle = 0;
+				new ExecuteMdi("G0 A" + angle + " B" + angle).start();
+				float z = Float.valueOf(Settings.instance.getSetting("mymotion.laserHeight0"));
+				angle = 90;
+				new ExecuteMdi("G0 A" + angle + " B" + angle).start();
+				float x = Float.valueOf(Settings.instance.getSetting("mymotion.laserHeight0"));
+				angle = 180;
+				new ExecuteMdi("G0 A" + angle + " B" + angle).start();
+				float y = Float.valueOf(Settings.instance.getSetting("mymotion.laserHeight0"));
+				angle = 270;
+				new ExecuteMdi("G0 A" + angle + " B" + angle).start();
+				float e = Float.valueOf(Settings.instance.getSetting("mymotion.laserHeight0"));
+
+				//vertical
+				double middleVert = (z-e)/2.0;
+				int stepsVert = (int)Math.round(middleVert*100.0);
+				
+				String signZ = ((stepsVert >= 0) ? "+" : "-");
+				String commToSend = "Z" + signZ + Math.abs(stepsVert) + " E" + signZ + Math.abs(stepsVert);
+				RotatorSettings.this.pos2.socketSend(commToSend);				
+				
+			}
+		});
 
 		// ----------ROTATOR 3---------------------------
 		JPanel panelRotator3 = new JPanel();
@@ -178,17 +220,15 @@ public class RotatorSettings extends JPanel {
 		SavableText rot3_jog_speed = new SavableText();
 		rot3_jog_speed.setLabelTxt("jog velocity [mm/min]:");
 		rot3_jog_speed.setParId("r3_jog_vel");
-		panelRotator3.add(rot3_jog_speed);		
-		
+		panelRotator3.add(rot3_jog_speed);
+
 		JButton jog3 = new JButton("JOG");
 		jog3.setPreferredSize(new Dimension(100, 50));
 		panelRotator3.add(jog3);
 		jog3.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				Long velocity = Long.valueOf(Settings.getInstance()
-						.getSetting("r3_jog_vel"));
-				Double distance = Double.valueOf(Settings.getInstance()
-						.getSetting("rotator3_step"));
+				Long velocity = Long.valueOf(Settings.getInstance().getSetting("r3_jog_vel"));
+				Double distance = Double.valueOf(Settings.getInstance().getSetting("rotator3_step"));
 				RotatorSettings.this.jog(5, velocity, distance);
 			}
 		});
@@ -213,21 +253,22 @@ public class RotatorSettings extends JPanel {
 		if (Settings.getInstance().getParameter(settingRot1).getParValue().equals("1")
 				|| Settings.getInstance().getParameter(settingRot2).getParValue().equals("1")
 				|| Settings.getInstance().getParameter(settingRot3).getParValue().equals("1")) {
-			
+
 			String mdiCommand = "G91";
 			new ExecuteMdi(mdiCommand).start();
-			
+
 			mdiCommand = "G01";
-			if(Settings.getInstance().getParameter(settingRot1).getParValue().equals("1"))
+			if (Settings.getInstance().getParameter(settingRot1).getParValue().equals("1"))
 				mdiCommand += " A" + distance;
-			if(Settings.getInstance().getParameter(settingRot2).getParValue().equals("1"))
+			if (Settings.getInstance().getParameter(settingRot2).getParValue().equals("1"))
 				mdiCommand += " B" + distance;
-			if(Settings.getInstance().getParameter(settingRot3).getParValue().equals("1"))
+			if (Settings.getInstance().getParameter(settingRot3).getParValue().equals("1"))
 				mdiCommand += " C" + distance;
-			
+
 			mdiCommand += " F" + String.valueOf(speed);
-			new ExecuteMdi(mdiCommand).start();;
-			
+			new ExecuteMdi(mdiCommand).start();
+			;
+
 		} else {
 			new Jog(axisId, speed, distance).start();
 		}

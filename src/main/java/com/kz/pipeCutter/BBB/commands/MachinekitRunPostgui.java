@@ -6,22 +6,12 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.PrintStream;
-import java.util.concurrent.TimeUnit;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
-import javax.jmdns.ServiceInfo;
-import javax.jmdns.impl.ServiceInfoImpl;
-
-import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 
-import com.jcraft.jsch.ChannelExec;
 import com.jcraft.jsch.ChannelShell;
 import com.jcraft.jsch.JSch;
 import com.jcraft.jsch.Session;
-import com.kz.pipeCutter.BBB.MyOutputStreamReader;
-import com.kz.pipeCutter.ui.NamedList;
 import com.kz.pipeCutter.ui.Settings;
 
 public class MachinekitRunPostgui extends SSH_Command {
@@ -61,10 +51,10 @@ public class MachinekitRunPostgui extends SSH_Command {
 		// String command = "source ~/git/machinekit/scripts/rip-environment";
 		// ps.println(command);
 		Settings.instance.log("Running postgui hal....");
-		String command = "halcmd -f ~/machinekit/configs/ARM.BeagleBone.CRAMPS/3D.postgui.hal";
-		Settings.instance.log("Running postgui hal. DONE.");
+		String command = "halcmd -f /home/machinekit/machinekit/configs/ARM.BeagleBone.CRAMPS/3D.postgui.hal\n";
 		ps.println(command);
 		//readOutput(channelShell);
+		Settings.instance.log("Running postgui hal. DONE.");
 
 		channelShell.disconnect();
 
@@ -74,15 +64,14 @@ public class MachinekitRunPostgui extends SSH_Command {
 		InputStream in = channelShell.getInputStream();
 		BufferedReader buffReader = new BufferedReader(new InputStreamReader(in));
 
-		int noOfserviceStarted = 0;
-		Pattern p = Pattern.compile("^.*port\\s=\\s(.*)\\stxtrec\\s.*name\\s=\\s(.*)\\son.*");
-
-		int timeOutMs = 300 * 1000;
+		int timeOutMs = 3 * 1000;
 
 		long startMs = System.currentTimeMillis();
 		String line;
-		while ((line = buffReader.readLine()) != null) {
-			Logger.getLogger(this.getClass()).info(line);
+		while (System.currentTimeMillis() < (startMs + timeOutMs)) {
+			line = buffReader.readLine();
+			if (line != null)
+				Logger.getLogger(this.getClass()).info(line);
 
 		}
 	}

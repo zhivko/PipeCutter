@@ -160,13 +160,16 @@ net emcmot.02.enable <= axis.2.amp-enable-out
 net emcmot.02.enable => hpg.stepgen.02.enable
 
 
-# position command and feedback
+## position command and feedback
 #net emcmot.02.pos-cmd <= axis.2.motor-pos-cmd
 #net emcmot.02.pos-cmd => hpg.stepgen.02.position-cmd
+#
 #net motor.02.pos-fb <= hpg.stepgen.02.position-fb
 #net motor.02.pos-fb => axis.2.motor-pos-fb
-#net emcmot.02.pos-cmd => axis.2.motor-pos-fb 
-# in THC.hal
+##net emcmot.02.pos-cmd => axis.2.motor-pos-fb 
+
+
+
 
 
 # timing parameters

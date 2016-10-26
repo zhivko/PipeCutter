@@ -1,3 +1,16 @@
+# load udp for streaming data from laser sensor
+#newinst udp udp.0 --- ip=192.168.1.114 port=1234 sensDistMm=120.0
+#newinst udp udp.1 --- ip=192.168.1.115 port=1234 sensDistMm=120.0
+#addf udp.0 servo-thread
+#addf udp.1 servo-thread
+
+loadrt myrand names=rand.0
+addf rand.0 servo-thread
+setp rand.0.amplitude 2.0
+setp rand.0.value 60.0
+setp rand.0.timeDelta 0.001
+
+
 newcomp mymotion timer=100
 newpin mymotion  mymotion.program-line       s32   in
 newpin mymotion  mymotion.spindle-on         bit   in
@@ -8,6 +21,8 @@ newpin mymotion  mymotion.dvx        		 float in
 newpin mymotion  mymotion.dvz        		 float in
 newpin mymotion  mymotion.v        		 	 float in
 newpin mymotion  mymotion.current-radius	 float in
+newpin mymotion  mymotion.laserHeight1	 	 float in
+newpin mymotion  mymotion.laserHeight0	 	 float in
 ready  mymotion
 
 newcomp myini timer=100
@@ -21,24 +36,23 @@ newpin myini  myini.maxvel_3	 	 float out
 newpin myini  myini.maxacc_3	 	 float out
 newpin myini  myini.maxvel_4	 	 float out
 newpin myini  myini.maxacc_4	 	 float out
+newpin myini  myini.thc-enable 		 bit out
+newpin myini  myini.actual-volts 	 float in
+newpin myini  myini.volts-requested  float out
+newpin myini  myini.vel-status 		 bit in
+newpin myini  myini.vel-tol 		 float out
+
 ready  myini
 
-net maxvelocity_0	myini.maxvel_0	=> hpg.stepgen.00.maxvel
-net maxaccel_0	myini.maxacc_0	=> hpg.stepgen.00.maxaccel
-net maxvelocity_1	myini.maxvel_1	=> hpg.stepgen.01.maxvel
-net maxaccel_1	myini.maxacc_1	=> hpg.stepgen.01.maxaccel
-net maxvelocity_2	myini.maxvel_2	=> hpg.stepgen.02.maxvel
-net maxaccel_2	myini.maxacc_2	=> hpg.stepgen.02.maxaccel
-net maxvelocity_3	myini.maxvel_3	=> hpg.stepgen.03.maxvel
-net maxaccel_3	myini.maxacc_3	=> hpg.stepgen.03.maxaccel
-net maxvelocity_4	myini.maxvel_4	=> hpg.stepgen.04.maxvel
-net maxaccel_4	myini.maxacc_4	=> hpg.stepgen.04.maxaccel
+#net netLaserHeight0	udp.0.distance	mymotion.laserHeight0
+#net netLaserHeight1	udp.1.distance => mymotion.laserHeight1
+
+#net netLaserHeight1	rand.0.out mymotion.laserHeight1
 
 
 #######################################################################################################################
 #net	netname		         	signal_src	                	target					target	              ... yadda
 #######################################################################################################################
-#net     net-spindle-on    	motion.spindle-on		=>   	bb_gpio.p8.out-11		mymotion.spindle-on
 net		net-program-line	motion.program-line     =>		mymotion.program-line 	
 
 

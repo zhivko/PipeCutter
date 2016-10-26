@@ -370,17 +370,7 @@ public class Settings extends JFrame {
 	}
 
 	public String getSetting(String parameterId) {
-		SavableControl svableControl = null;
-		if (controls.get(parameterId) == null) {
-			List<SavableControl> savableControls = harvestMatches(Settings.instance.getContentPane(), SavableControl.class);
-			for (SavableControl savableControl : savableControls) {
-				if (savableControl.getParId().equals(parameterId)) {
-					svableControl = savableControl;
-					controls.put(parameterId, svableControl);
-					break;
-				}
-			}
-		}
+
 		return controls.get(parameterId).getParValue();
 	}
 
@@ -530,6 +520,7 @@ public class Settings extends JFrame {
 
 	public void updateHalValues() {
 		for (SavableControl cntrl : controls.values()) {
+			Logger.getLogger(this.getClass()).info(cntrl.getParId());
 			if (cntrl.requiresHalRCompSet) {
 				cntrl.updateHal();
 			}

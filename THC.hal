@@ -4,11 +4,6 @@
 newinst thc thc0
 addf thc0 servo-thread
 
-# load udp for streaming data from laser sensor
-loadrt udp count=1 ip=192.168.1.115 port=1234 sensDistMm=120.0
-addf udp.0 servo-thread
-
-
 # position command and feedback
 # hijack position command and feed through thc
 net emcmot.02.pos-cmd thc0.z-pos-in <= axis.2.motor-pos-cmd
@@ -17,7 +12,8 @@ net motor.02.pos-fb axis.2.motor-pos-fb <= thc0.z-fb-out
 
 
 # Touch Off
-net torch-probe motion.probe-input <= udp.0.touchOff
+# klemen uncoment back
+#net torch-probe motion.probe-input <= udp.1.touchOff
 
 # Set up the Encoder for the THC
 #setp hm2_5i20.0.counter-mode 1
@@ -33,7 +29,7 @@ setp thc0.correction-vel 0.0001
 
 # spindle on starts the arc
 # bb_gpio.p9.out-28 = SPI_CS0 = P503_4 = pin 928
-net spindle-on motion.spindle-on => bb_gpio.p9.out-28
+net spindle-on motion.spindle-on => mymotion.spindle-on => bb_gpio.p9.out-28
 net spindle-on thc0.torch-on
 
 # starts the motion when the plasma arc has transfered to the work

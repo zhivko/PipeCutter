@@ -4,6 +4,7 @@ import java.io.ByteArrayInputStream;
 import java.util.Random;
 import java.util.concurrent.TimeUnit;
 
+import org.apache.log4j.Logger;
 import org.jzy3d.maths.Coord3d;
 import org.zeromq.ZContext;
 import org.zeromq.ZFrame;
@@ -110,6 +111,10 @@ public class BBBStatus implements Runnable {
 						byte[] returnedBytes = frame.getData();
 						String messageType = new String(returnedBytes);
 						// System.out.println("type: " + messageType);
+						
+	//					if(messageType.equals("motion"))
+//							System.out.println("");
+						
 						if (!messageType.equals("motion") && !messageType.equals("task") && !messageType.equals("io") && !messageType.equals("interp")) {
 
 							contReturned = Message.Container.parseFrom(returnedBytes);
@@ -137,23 +142,6 @@ public class BBBStatus implements Runnable {
 									}
 								}
 
-								if (SurfaceDemo.getInstance() != null && SurfaceDemo.instance != null) {
-									if (SurfaceDemo.getInstance().getChart() != null) {
-										// System.out.println(String.format("%1$,.2f, %2$,.2f,
-										// %3$,.2f",x,y,z));
-
-										if (BBBStatus.instance != null) {
-											Coord3d coord = new Coord3d(BBBStatus.instance.x, BBBStatus.instance.y, BBBStatus.instance.z);
-											SurfaceDemo.getInstance().utils.rotatePoints(BBBStatus.instance.a, false, false);
-
-											SurfaceDemo.getInstance().getPlasma().setPosition(coord);
-											SurfaceDemo.getInstance().redrawPosition();
-										}
-
-										SurfaceDemo.getInstance().redrawPosition();
-									}
-								}
-
 								getG92Offset(contReturned);
 								getG5XOffset(contReturned);
 								getToolOffset(contReturned);
@@ -173,6 +161,23 @@ public class BBBStatus implements Runnable {
 								Settings.getInstance().setSetting("position_a", a);
 								Settings.getInstance().setSetting("position_b", b);
 								Settings.getInstance().setSetting("position_c", c);
+								
+								if (SurfaceDemo.getInstance() != null && SurfaceDemo.instance != null) {
+									if (SurfaceDemo.getInstance().getChart() != null) {
+										// System.out.println(String.format("%1$,.2f, %2$,.2f,
+										// %3$,.2f",x,y,z));
+
+										if (BBBStatus.instance != null) {
+											Coord3d coord = new Coord3d(BBBStatus.instance.x, BBBStatus.instance.y, BBBStatus.instance.z);
+											SurfaceDemo.getInstance().utils.rotatePoints(BBBStatus.instance.a, false, false);
+
+											SurfaceDemo.getInstance().getPlasma().setPosition(coord);
+											SurfaceDemo.getInstance().redrawPosition();
+										}
+
+										SurfaceDemo.getInstance().redrawPosition();
+									}
+								}								
 							} else if (contReturned.getType().equals(ContainerType.MT_PING)) {
 								this.lastPingMs = System.currentTimeMillis();
 								MachinekitSettings.instance.pingStatus();
@@ -278,7 +283,7 @@ public class BBBStatus implements Runnable {
 		socket.subscribe("task".getBytes());
 		socket.subscribe("io".getBytes());
 		socket.subscribe("interp".getBytes());
-		// socket.setHWM(10000);
+		socket.setHWM(10000);
 		socket.setReceiveTimeOut(5);
 		socket.setSendTimeOut(1000);
 		socket.connect(this.uri);

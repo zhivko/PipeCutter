@@ -10,8 +10,8 @@
 #######################################################################################################################
 #net	netname		         	signal_src	                	target					target	              ... yadda
 #######################################################################################################################
-net maxvelocity_3	myini.maxvelocity_3	=> hpg.stepgen.03.maxvel
-net maxvelocity_4	myini.maxvelocity_4	=> hpg.stepgen.04.maxvel
+#net maxvelocity_3	myini.maxvelocity_3	=> hpg.stepgen.03.maxvel
+#net maxvelocity_4	myini.maxvelocity_4	=> hpg.stepgen.04.maxvel
 
 
 # THC connections
@@ -22,3 +22,16 @@ net thc-req-vel thc0.requested-vel <= motion.requested-vel
 net thc-cur-vel thc0.current-vel <= motion.current-vel
 net thc-vel-status myini.vel-status thc0.vel-status
 net thc-vel-tol myini.vel-tol thc0.vel-tol
+
+	
+# velocity and accell control
+net maxvelocity_0	myini.maxvel_0 ini.0.max_velocity
+net maxaccel_0	myini.maxacc_0 ini.0.max_acceleration
+net maxvelocity_1	myini.maxvel_1 ini.1.max_velocity
+net maxaccel_1	myini.maxacc_1 ini.1.max_acceleration
+net maxvelocity_2	myini.maxvel_2 ini.2.max_velocity
+net maxaccel_2	myini.maxacc_2 ini.2.max_acceleration
+net maxvelocity_3	myini.maxvel_3 ini.3.max_velocity
+net maxaccel_3	myini.maxacc_3 ini.3.max_acceleration
+net maxvelocity_4	myini.maxvel_4 ini.4.max_velocity
+net maxaccel_4	myini.maxacc_4 ini.4.max_acceleration

@@ -44,6 +44,8 @@ public class BBBHalRComp implements Runnable {
 	public boolean isTryingToBind;
 	private long lastPingMs;
 
+	private boolean shouldRead;
+
 	public BBBHalRComp() {
 		prepareBindContainer();
 		initSocket();
@@ -109,7 +111,8 @@ public class BBBHalRComp implements Runnable {
 		// Tick once per second, pulling in arriving messages
 		// for (int centitick = 0; centitick < 4; centitick++) {
 		// System.out.println(Thread.currentThread().getName());
-		while (!readThread.isInterrupted()) {
+		shouldRead = true;
+		while (shouldRead) {
 			ZMsg receivedMessage = ZMsg.recvMsg(socket, ZMQ.DONTWAIT);
 			// System.out.println("loop: " + i);
 			if (receivedMessage != null) {
@@ -118,7 +121,7 @@ public class BBBHalRComp implements Runnable {
 					Container contReturned;
 					try {
 						String data = new String(frame.getData());
-						if (!components.keySet().contains(data)) {
+						if (!components.keySet().contains(data) && pinsByHandle.size() > 0) {
 							contReturned = Message.Container.parseFrom(frame.getData());
 							if (contReturned.getType().equals(ContainerType.MT_HALRCOMP_FULL_UPDATE)) {
 								for (int i = 0; i < contReturned.getCompCount(); i++) {
@@ -134,24 +137,34 @@ public class BBBHalRComp implements Runnable {
 											value = Boolean.valueOf(contReturned.getComp(i).getPin(j).getHalbit()).toString();
 										}
 										halPins.put(contReturned.getComp(i).getPin(j).getName(), value);
-										pinsByHandle.put(contReturned.getComp(i).getPin(j).getHandle(), pinsByName.get(contReturned.getComp(i).getPin(j).getName()));
+
+										if(BBBHalRComp.instance.pinsByName.get(contReturned.getComp(i).getPin(j).getName()) == null)
+											throw new Exception("Missing PIN !!!");
+										
+										if (BBBHalRComp.instance.pinsByHandle.get(contReturned.getComp(i).getPin(j).getHandle()) == null
+												&& BBBHalRComp.instance.pinsByName.get(contReturned.getComp(i).getPin(j).getName()) != null)
+											BBBHalRComp.instance.pinsByHandle.put(contReturned.getComp(i).getPin(j).getHandle(),
+													BBBHalRComp.instance.pinsByName.get(contReturned.getComp(i).getPin(j).getName()));
+
 									}
 								}
 
 								SwingUtilities.invokeLater(new Runnable() {
 									@Override
 									public void run() {
-										GcodeViewer.instance.setLineNumber(Integer.valueOf(halPins.get("mymotion.program-line")).intValue());
-										GcodeViewer.instance.setPlasmaOn(Boolean.valueOf(halPins.get("mymotion.spindle-on")).booleanValue());
+										if (halPins.get("mymotion.program-line") != null) {
+											GcodeViewer.instance.setLineNumber(Integer.valueOf(halPins.get("mymotion.program-line")).intValue());
+											GcodeViewer.instance.setPlasmaOn(Boolean.valueOf(halPins.get("mymotion.spindle-on")).booleanValue());
 
-										Settings.instance.setSetting("mymotion.vx", String.format("%.3f", Float.valueOf(halPins.get("mymotion.vx"))));
-										Settings.instance.setSetting("mymotion.dvx", String.format("%.3f", Float.valueOf(halPins.get("mymotion.dvx"))));
-										Settings.instance.setSetting("mymotion.vz", String.format("%.3f", Float.valueOf(halPins.get("mymotion.vz"))));
-										Settings.instance.setSetting("mymotion.dvz", String.format("%.3f", Float.valueOf(halPins.get("mymotion.dvz"))));
-										Settings.instance.setSetting("mymotion.current-radius",
-												String.format("%.3f", Float.valueOf(halPins.get("mymotion.current-radius"))));
-										Settings.instance.setSetting("mymotion.vy", String.format("%.3f", Float.valueOf(halPins.get("mymotion.vy"))));
-										Settings.instance.setSetting("mymotion.v", String.format("%.3f", Float.valueOf(halPins.get("mymotion.v"))));
+											Settings.instance.setSetting("mymotion.vx", String.format("%.3f", Float.valueOf(halPins.get("mymotion.vx"))));
+											Settings.instance.setSetting("mymotion.dvx", String.format("%.3f", Float.valueOf(halPins.get("mymotion.dvx"))));
+											Settings.instance.setSetting("mymotion.vz", String.format("%.3f", Float.valueOf(halPins.get("mymotion.vz"))));
+											Settings.instance.setSetting("mymotion.dvz", String.format("%.3f", Float.valueOf(halPins.get("mymotion.dvz"))));
+											Settings.instance.setSetting("mymotion.current-radius",
+													String.format("%.3f", Float.valueOf(halPins.get("mymotion.current-radius"))));
+											Settings.instance.setSetting("mymotion.vy", String.format("%.3f", Float.valueOf(halPins.get("mymotion.vy"))));
+											Settings.instance.setSetting("mymotion.v", String.format("%.3f", Float.valueOf(halPins.get("mymotion.v"))));
+										}
 									}
 								});
 							} else if (contReturned.getType().equals(ContainerType.MT_PING)) {
@@ -177,16 +190,20 @@ public class BBBHalRComp implements Runnable {
 								SwingUtilities.invokeLater(new Runnable() {
 									@Override
 									public void run() {
-										GcodeViewer.instance.setLineNumber(Integer.valueOf(halPins.get("mymotion.program-line")).intValue());
-										GcodeViewer.instance.setPlasmaOn(Boolean.valueOf(halPins.get("mymotion.spindle-on")).booleanValue());
-										Settings.instance.setSetting("mymotion.vx", String.format("%.3f", Float.valueOf(halPins.get("mymotion.vx"))));
-										Settings.instance.setSetting("mymotion.dvx", String.format("%.3f", Float.valueOf(halPins.get("mymotion.dvx"))));
-										Settings.instance.setSetting("mymotion.vz", String.format("%.3f", Float.valueOf(halPins.get("mymotion.vz"))));
-										Settings.instance.setSetting("mymotion.dvz", String.format("%.3f", Float.valueOf(halPins.get("mymotion.dvz"))));
-										Settings.instance.setSetting("mymotion.current-radius",
-												String.format("%.3f", Float.valueOf(halPins.get("mymotion.current-radius"))));
-										Settings.instance.setSetting("mymotion.vy", String.format("%.3f", Float.valueOf(halPins.get("mymotion.vy"))));
-										Settings.instance.setSetting("mymotion.v", String.format("%.3f", Float.valueOf(halPins.get("mymotion.v"))));
+										if (halPins.get("mymotion.program-line") != null) {
+											GcodeViewer.instance.setLineNumber(Integer.valueOf(halPins.get("mymotion.program-line")).intValue());
+											GcodeViewer.instance.setPlasmaOn(Boolean.valueOf(halPins.get("mymotion.spindle-on")).booleanValue());
+											Settings.instance.setSetting("mymotion.vx", String.format("%.3f", Float.valueOf(halPins.get("mymotion.vx"))));
+											Settings.instance.setSetting("mymotion.dvx", String.format("%.3f", Float.valueOf(halPins.get("mymotion.dvx"))));
+											Settings.instance.setSetting("mymotion.vz", String.format("%.3f", Float.valueOf(halPins.get("mymotion.vz"))));
+											Settings.instance.setSetting("mymotion.dvz", String.format("%.3f", Float.valueOf(halPins.get("mymotion.dvz"))));
+											Settings.instance.setSetting("mymotion.current-radius",
+													String.format("%.3f", Float.valueOf(halPins.get("mymotion.current-radius"))));
+											Settings.instance.setSetting("mymotion.vy", String.format("%.3f", Float.valueOf(halPins.get("mymotion.vy"))));
+											Settings.instance.setSetting("mymotion.v", String.format("%.3f", Float.valueOf(halPins.get("mymotion.v"))));
+											Settings.instance.setSetting("mymotion.laserHeight1",
+													String.format("%.3f", Float.valueOf(halPins.get("mymotion.laserHeight1"))));
+										}
 									}
 								});
 
@@ -218,6 +235,7 @@ public class BBBHalRComp implements Runnable {
 	public void initSocket() {
 		isBinded = false;
 		isTryingToBind = false;
+		shouldRead = false;
 		if (ctx != null && socket != null) {
 			ctx.destroySocket(socket);
 			ctx.destroy();

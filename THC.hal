@@ -27,6 +27,7 @@ setp thc.0.correction-vel 0.0001
 #   encoder thc config
 ###################################
 setp hpg.encoder.00.out.00.counter-mode 	2
+setp hpg.encoder.00.out.00.B-pin			16
 setp hpg.encoder.00.out.00.B-pin			27
 setp hpg.encoder.00.out.00.index-pin		27
 setp hpg.encoder.00.out.00.scale			1

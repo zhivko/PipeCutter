@@ -6,6 +6,9 @@
 #
 # ########################################
 
+log rt 5
+log user 5
+
 # start haltalk server
 #loadusr -W haltalk -d 1
 #loadusr -W haltalk -d 5
@@ -30,11 +33,11 @@ loadrt [EMCMOT]EMCMOT servo_period_nsec=[EMCMOT]SERVO_PERIOD num_joints=[TRAJ]AX
 
 
 # load low-level drivers
-loadrt hal_bb_gpio output_pins=816,822,823,824,825,826,914,923,925,928 input_pins=807,808,809,810,817,911,913,930
+
+loadrt hal_bb_gpio output_pins=816,822,823,824,825,826,914,923,925,928,931 input_pins=807,808,809,810,817,911,913,929,930
 loadrt [PRUCONF](DRIVER) prucode=$(HAL_RTMOD_DIR)/[PRUCONF](PRUBIN) [PRUCONF](CONFIG) halname=hpg
 loadrt pid count=2
 loadrt limit1 count=2
-loadrt encoder
 
 # Commented by Klemen
 # Python user-mode HAL module to read ADC value and generate a thermostat output for PWM
@@ -43,23 +46,21 @@ loadrt encoder
 #loadusr -Wn Therm hal_temp_bbb -n Therm -c 04:epcos_B57560G1104,05:epcos_B57560G1104 -b CRAMPS
 
 
-# ################################################
+##################################################
 # THREADS
-# ################################################
-
+##################################################
 addf hpg.capture-position   			servo-thread
 addf bb_gpio.read                       servo-thread
 addf motion-command-handler             servo-thread
 addf motion-controller                  servo-thread
 addf pid.0.do-pid-calcs                 servo-thread
 addf pid.1.do-pid-calcs                 servo-thread
-addf limit1.0                           servo-thread
-addf limit1.1                           servo-thread
+#addf limit1.0                           servo-thread
+#addf limit1.1                           servo-thread
 addf hpg.update             			servo-thread
 addf bb_gpio.write                      servo-thread
-addf encoder.capture-position			servo-thread
-addf encoder.update-counters			servo-thread
-
+#addf encoder.capture-position			servo-thread
+#addf encoder.update-counters			servo-thread
 
 
 # ######################################################
@@ -361,20 +362,20 @@ setp bb_gpio.p8.out-16.invert 1
 
 # Servo signals, output only, driven by an 'ACT125
 
-newsig servo.1 bit
-newsig servo.2 bit
-newsig servo.3 bit
-newsig servo.4 bit
+#newsig servo.1 bit
+#newsig servo.2 bit
+#newsig servo.3 bit
+#newsig servo.4 bit
 
-sets servo.1 0
-sets servo.2 0
-sets servo.3 0
-sets servo.4 0
+#sets servo.1 0
+#sets servo.2 0
+#sets servo.3 0
+#sets servo.4 0
 
-net servo.1 bb_gpio.p8.out-25
-net servo.2 bb_gpio.p8.out-24
-net servo.3 bb_gpio.p8.out-23
-net servo.4 bb_gpio.p8.out-22
+#net servo.1 bb_gpio.p8.out-25
+#net servo.2 bb_gpio.p8.out-24
+#net servo.3 bb_gpio.p8.out-23
+#net servo.4 bb_gpio.p8.out-22
 
 #  KLEMEN: COMMENTED HEATER SECTION START
 # ##################################################

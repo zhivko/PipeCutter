@@ -36,6 +36,7 @@ newpin myini  myini.maxvel_3	 	 float out
 newpin myini  myini.maxacc_3	 	 float out
 newpin myini  myini.maxvel_4	 	 float out
 newpin myini  myini.maxacc_4	 	 float out
+
 newpin myini  myini.thc-enable 		 bit out
 newpin myini  myini.actual-volts 	 float in
 newpin myini  myini.volts-requested  float out

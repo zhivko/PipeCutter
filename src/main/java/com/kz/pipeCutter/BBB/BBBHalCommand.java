@@ -153,7 +153,6 @@ public class BBBHalCommand implements Runnable {
 							BBBHalRComp.getInstance().isBinded = true;
 							BBBHalRComp.getInstance().isTryingToBind = false;
 							BBBHalRComp.getInstance().subcribe();
-							Settings.getInstance().log("Updating hal values...");
 
 							for (int i = 0; i < contReturned.getCompCount(); i++) {
 								for (int j = 0; j < contReturned.getComp(i).getPinCount(); j++) {
@@ -166,6 +165,7 @@ public class BBBHalCommand implements Runnable {
 							new MachinekitRunPostgui().runSshCmd();
 							
 							Settings.instance.updateHalValues();
+							Settings.instance.setLaser1IP();
 						} else {
 							Settings.getInstance().log("Unknown message: " + contReturned.getType());
 						}

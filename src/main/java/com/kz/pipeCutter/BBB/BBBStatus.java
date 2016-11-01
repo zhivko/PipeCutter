@@ -160,7 +160,7 @@ public class BBBStatus implements Runnable {
 								Settings.getInstance().setSetting("position_z", z);
 								Settings.getInstance().setSetting("position_a", a);
 								Settings.getInstance().setSetting("position_b", b);
-								Settings.getInstance().setSetting("position_c", c);
+								//Settings.getInstance().setSetting("position_c", c);
 								
 								if (SurfaceDemo.getInstance() != null && SurfaceDemo.instance != null) {
 									if (SurfaceDemo.getInstance().getChart() != null) {

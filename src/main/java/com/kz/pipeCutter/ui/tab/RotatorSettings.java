@@ -24,15 +24,22 @@ import pb.Types.ValueType;
 
 @SuppressWarnings("serial")
 public class RotatorSettings extends JPanel {
+	public static RotatorSettings instance;
 	
-	Positioner pos2;
-	Positioner pos1;
+	public Positioner pos2;
+	public Positioner pos1;
 
+	SavableText rotator1_stepgvel;
+	SavableText rotator1_stepgacc; 
+
+	SavableText rotator2_stepgvel;
+	SavableText rotator2_stepgacc; 
+	
 	public RotatorSettings() {
 		super();
-		Dimension panelPreferedDimension = new Dimension(220, 520);
+		Dimension panelPreferedDimension = new Dimension(220, 580);
 
-		this.setPreferredSize(new Dimension(420, 450));
+		this.setPreferredSize(new Dimension(420, 600));
 		FlowLayout flowLayout = (FlowLayout) this.getLayout();
 		flowLayout.setAlignment(FlowLayout.LEFT);
 
@@ -61,6 +68,22 @@ public class RotatorSettings extends JPanel {
 		rotator1_acc.setPin(new PinDef("myini.maxacc_3", HalPinDirection.HAL_OUT, ValueType.HAL_FLOAT));
 		rotator1_acc.requiresHalRCompSet = true;
 
+		SavableText rotator1_stepgvel = new SavableText();
+		rotator1_stepgvel.setPin(new PinDef("myini.stepgen_maxvel_3", HalPinDirection.HAL_OUT, ValueType.HAL_FLOAT));
+		rotator1_stepgvel.requiresHalRCompSet = true;
+		rotator1_stepgvel.setLabelTxt("max stepgen velocity [step/sec]:");
+		rotator1_stepgvel.setParId("myini.stepgen_maxvel_3");
+		rotator1_stepgvel.setEnabled(false);
+		panelRotator1.add(rotator1_stepgvel);
+
+		SavableText rotator1_stepgacc = new SavableText();
+		rotator1_stepgacc.setPin(new PinDef("myini.stepgen_maxacc_3", HalPinDirection.HAL_OUT, ValueType.HAL_FLOAT));
+		rotator1_stepgacc.requiresHalRCompSet = true;
+		rotator1_stepgacc.setLabelTxt("max stepgen acc [step/sec^2]:");
+		rotator1_stepgacc.setParId("myini.stepgen_maxacc_3");
+		rotator1_stepgacc.setEnabled(false);
+		panelRotator1.add(rotator1_stepgacc);
+		
 		SavableSlider sliderRot1 = new SavableSlider();
 		sliderRot1.setValues(moveToText);
 		sliderRot1.setLabelTxt("Move for:");
@@ -117,13 +140,28 @@ public class RotatorSettings extends JPanel {
 		panelRotator2.add(rotator2_vel);
 
 		SavableText rotator2_acc = new SavableText();
-		rotator2_acc.setLabelTxt("max acceleration:");
+		rotator2_acc.setLabelTxt("max acceleration [°/sec^2]:");
 		rotator2_acc.setParId("myini.maxacc_4");
 		rotator2_acc.requiresHalRCompSet = true;
 		rotator2_acc.setPin(new PinDef("myini.maxacc_4", HalPinDirection.HAL_OUT, ValueType.HAL_FLOAT));
-
 		panelRotator2.add(rotator2_acc);
 
+		SavableText rotator2_stepgvel = new SavableText();
+		rotator2_stepgvel.setPin(new PinDef("myini.stepgen_maxvel_4", HalPinDirection.HAL_OUT, ValueType.HAL_FLOAT));
+		rotator2_stepgvel.requiresHalRCompSet = true;
+		rotator2_stepgvel.setLabelTxt("max stepgen velocity [step/sec]:");
+		rotator2_stepgvel.setParId("myini.stepgen_maxvel_4");
+		//rotator2_stepgvel.setEnabled(false);
+		panelRotator2.add(rotator2_stepgvel);
+
+		SavableText rotator2_stepgacc = new SavableText();
+		rotator2_stepgacc.setPin(new PinDef("myini.stepgen_maxacc_4", HalPinDirection.HAL_OUT, ValueType.HAL_FLOAT));
+		rotator2_stepgacc.requiresHalRCompSet = true;
+		rotator2_stepgacc.setLabelTxt("max stepgen acc [step/sec^2]:");
+		rotator2_stepgacc.setParId("myini.stepgen_maxacc_4");
+		//rotator2_stepgacc.setEnabled(false);
+		panelRotator2.add(rotator2_stepgacc);
+		
 		SavableSlider sliderRot2 = new SavableSlider();
 		sliderRot2.setValues(moveToText);
 		sliderRot2.setLabelTxt("Move for:");
@@ -162,37 +200,8 @@ public class RotatorSettings extends JPanel {
 		laserDistance1.setPin(new PinDef("mymotion.laserHeight1", HalPinDirection.HAL_IN, ValueType.HAL_FLOAT));
 		panelRotator2.add(laserDistance1);
 
-		MyButton mybutton1Center = new MyButton("Center");
-		mybutton1Center.addActionListener(new ActionListener() {
-
-			@Override
-			public void actionPerformed(ActionEvent ev) {
-
-				int angle = 0;
-				new ExecuteMdi("G0 A" + angle + " B" + angle).start();
-				float z = Float.valueOf(Settings.instance.getSetting("mymotion.laserHeight0"));
-				angle = 90;
-				new ExecuteMdi("G0 A" + angle + " B" + angle).start();
-				float x = Float.valueOf(Settings.instance.getSetting("mymotion.laserHeight0"));
-				angle = 180;
-				new ExecuteMdi("G0 A" + angle + " B" + angle).start();
-				float y = Float.valueOf(Settings.instance.getSetting("mymotion.laserHeight0"));
-				angle = 270;
-				new ExecuteMdi("G0 A" + angle + " B" + angle).start();
-				float e = Float.valueOf(Settings.instance.getSetting("mymotion.laserHeight0"));
-
-				//vertical
-				double middleVert = (z-e)/2.0;
-				int stepsVert = (int)Math.round(middleVert*100.0);
-				
-				String signZ = ((stepsVert >= 0) ? "+" : "-");
-				String commToSend = "Z" + signZ + Math.abs(stepsVert) + " E" + signZ + Math.abs(stepsVert);
-				RotatorSettings.this.pos2.socketSend(commToSend);				
-				
-			}
-		});
-
 		// ----------ROTATOR 3---------------------------
+		/*
 		JPanel panelRotator3 = new JPanel();
 		panelRotator3.setPreferredSize(panelPreferedDimension);
 		panelRotator3.setLayout(new MyVerticalFlowLayout());
@@ -240,6 +249,8 @@ public class RotatorSettings extends JPanel {
 
 		Positioner pos3 = new Positioner(3);
 		panelRotator3.add(pos3);
+		*/
+		instance = this;
 	}
 
 	protected void jog(int axisId, double speed, Double distance) {

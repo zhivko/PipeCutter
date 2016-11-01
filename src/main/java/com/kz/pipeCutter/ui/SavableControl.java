@@ -33,10 +33,9 @@ public abstract class SavableControl extends JPanel implements IParameter, ISave
 	private String parId;
 	public String iniFullFileName;
 	private String labelTxt;
-	public boolean requiresHalRCompSet=false;
+	public boolean requiresHalRCompSet = false;
 
-
-	PinDef pinDef=null;
+	PinDef pinDef = null;
 
 	public JLabel jLabel;
 	boolean needsSave = true;
@@ -59,7 +58,7 @@ public abstract class SavableControl extends JPanel implements IParameter, ISave
 		setLayout(new FlowLayout(FlowLayout.LEFT, 1, 1));
 		jLabel = new JLabel("This is label:");
 		add(jLabel);
-		
+
 	}
 
 	public synchronized void save() throws IOException {
@@ -142,44 +141,46 @@ public abstract class SavableControl extends JPanel implements IParameter, ISave
 	public void setPin(PinDef pinDef) {
 		this.pinDef = pinDef;
 	}
-	
+
 	public PinDef getPin() {
 		return this.pinDef;
 	}
-	
-	
-	public void updateHal()
-	{
-		if(this.getPin()!=null && this.requiresHalRCompSet && !this.getParValue().equals(""))
-		{
+
+	public void updateHal() {
+		if (this.getPin() != null && this.requiresHalRCompSet && !this.getParValue().equals("")) {
 			pb.Message.Container.Builder builder = Container.newBuilder();
 			builder.setType(ContainerType.MT_HALRCOMP_SET);
-			
+
 			builder.setReplyRequired(true);
-			
+
 			pb.Object.Pin.Builder pin = pb.Object.Pin.newBuilder().setName(this.getPin().getPinName());
 			pin.setDir(this.getPin().getPinDir());
 			pin.setType(this.getPin().getPinType());
 			pin.setName(this.getPin().getPinName());
 			pin.setHandle(BBBHalRComp.getInstance().getPinHandle(this.getPin().getPinName()));
-			
-			if (this.getPin().getPinType() == ValueType.HAL_FLOAT) {
-				pin.setHalfloat(Double.valueOf(this.getParValue()).doubleValue());
-			}	else if (this.getPin().getPinType() == ValueType.HAL_S32) {
-				pin.setHals32(Integer.valueOf(this.getParValue()).intValue());
-			} else if (this.getPin().getPinType() == ValueType.HAL_U32) {
+
+			try {
+
+				if (this.getPin().getPinType() == ValueType.HAL_FLOAT) {
+					pin.setHalfloat(Double.valueOf(this.getParValue()).doubleValue());
+				} else if (this.getPin().getPinType() == ValueType.HAL_S32) {
+					pin.setHals32(Integer.valueOf(this.getParValue()).intValue());
+				} else if (this.getPin().getPinType() == ValueType.HAL_U32) {
 					pin.setHalu32(Integer.valueOf(this.getParValue()).intValue());
-			} else if (this.getPin().getPinType() == ValueType.HAL_BIT) {
-				pin.setHalbit(Boolean.valueOf(this.getParValue()).booleanValue());
+				} else if (this.getPin().getPinType() == ValueType.HAL_BIT) {
+					pin.setHalbit(Boolean.valueOf(this.getParValue()).booleanValue());
+				}
+				builder.addPin(pin);
+			} catch (Exception ex) {
+				ex.printStackTrace();
 			}
-			builder.addPin(pin);
 
 			byte[] buff = builder.build().toByteArray();
 			String hexOutput = javax.xml.bind.DatatypeConverter.printHexBinary(buff);
 			System.out.println("Message:  " + hexOutput);
 			BBBHalCommand.getInstance().socket.send(buff, 0);
-			
+
 		}
-		//this.getParent().revalidate();		
+		// this.getParent().revalidate();
 	}
 }

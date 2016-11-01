@@ -1,5 +1,7 @@
 package com.kz.pipeCutter.ui;
 
+import java.io.IOException;
+
 import javax.websocket.ClientEndpoint;
 import javax.websocket.OnClose;
 import javax.websocket.OnError;
@@ -21,6 +23,15 @@ public class MyWebsocketClient {
 		if(Settings.instance!=null)
 			Settings.instance.log("\tConnected to: " + session.getRequestURI());
 		this.positioner.isConnected = true;
+		
+		String reassignString = Settings.instance.getSetting("rotator_" + this.positioner.id + "_reassign");
+		try {
+			if(reassignString!=null && !reassignString.equals(""))
+			session.getBasicRemote().sendText("reassign " + reassignString);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 
 	@OnMessage

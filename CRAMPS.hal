@@ -36,8 +36,8 @@ loadrt [EMCMOT]EMCMOT servo_period_nsec=[EMCMOT]SERVO_PERIOD num_joints=[TRAJ]AX
 
 loadrt hal_bb_gpio output_pins=816,822,823,824,825,826,914,923,925,928,931 input_pins=807,808,809,810,817,911,913,929,930
 loadrt [PRUCONF](DRIVER) prucode=$(HAL_RTMOD_DIR)/[PRUCONF](PRUBIN) [PRUCONF](CONFIG) halname=hpg
-loadrt pid count=2
-loadrt limit1 count=2
+#loadrt pid count=2
+#loadrt limit1 count=2
 
 # Commented by Klemen
 # Python user-mode HAL module to read ADC value and generate a thermostat output for PWM
@@ -53,8 +53,8 @@ addf hpg.capture-position   			servo-thread
 addf bb_gpio.read                       servo-thread
 addf motion-command-handler             servo-thread
 addf motion-controller                  servo-thread
-addf pid.0.do-pid-calcs                 servo-thread
-addf pid.1.do-pid-calcs                 servo-thread
+#addf pid.0.do-pid-calcs                 servo-thread
+#addf pid.1.do-pid-calcs                 servo-thread
 #addf limit1.0                           servo-thread
 #addf limit1.1                           servo-thread
 addf hpg.update             			servo-thread

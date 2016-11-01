@@ -667,6 +667,9 @@ public class SurfaceDemo extends AbstractAnalysis {
 		float minZ = sortedZList.get(0).getZ();
 		float maxZ = sortedZList.get(sortedZList.size() - 1).getZ();
 
+		Settings.instance.setSetting("pipe_dim_x", Double.valueOf(maxX - minX));
+		Settings.instance.setSetting("pipe_dim_z", Double.valueOf(maxZ - minZ));
+
 		ArrayList<MyEdge> edgesToRemove = new ArrayList<MyEdge>();
 
 		Iterator<MyEdge> edgeIt = utils.edges.values().iterator();

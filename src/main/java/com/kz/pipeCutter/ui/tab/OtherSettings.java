@@ -68,10 +68,24 @@ public class OtherSettings extends JPanel {
 		radius.setParId("radius");
 		this.add(radius);
 		
+		SavableText pipeDimX = new SavableText();
+		pipeDimX.setNeedsSave(true);
+		pipeDimX.setLabelTxt("Pipe X dimension:");
+		pipeDimX.setParId("pipe_dim_x");
+		this.add(pipeDimX);
+
+		
+		SavableText pipeDimZ = new SavableText();
+		pipeDimZ.setNeedsSave(true);
+		pipeDimZ.setLabelTxt("Pipe Z dimension:");
+		pipeDimZ.setParId("pipe_dim_z");
+		this.add(pipeDimZ);
+		
 		
 		SavableText zoomBounds = new SavableText();
 		zoomBounds.setLabelTxt("Zoom bounds:");
 		zoomBounds.setParId("zoom_bounds");
+		zoomBounds.setNeedsSave(true);
 		this.add(zoomBounds);
 
 		SavableCheckBox pingBBBHalCmd = new SavableCheckBox() {
@@ -114,6 +128,25 @@ public class OtherSettings extends JPanel {
 		uiZoom.setParId("ui_zoom");
 		uiZoom.setNeedsSave(true);
 		this.add(uiZoom);		
+
+		SavableText laser1IP = new SavableText();
+		laser1IP.setLabelTxt("Laser 1 IP");
+		laser1IP.setParId("laser_1_ip");
+		laser1IP.setNeedsSave(true);
+		this.add(laser1IP);		
+
+		SavableText positioner1reassign = new SavableText();
+		positioner1reassign.setLabelTxt("Positioner 1 reassign: ");
+		positioner1reassign.setParId("rotator_1_reassign");
+		positioner1reassign.setNeedsSave(true);
+		this.add(positioner1reassign);		
+		
+		SavableText positioner2reassign = new SavableText();
+		positioner2reassign.setLabelTxt("Positioner 2 reassign: ");
+		positioner2reassign.setParId("rotator_2_reassign");
+		positioner2reassign.setNeedsSave(true);
+		this.add(positioner2reassign);		
+		
 		
 		
 		SavableText hal_vx = new SavableText();

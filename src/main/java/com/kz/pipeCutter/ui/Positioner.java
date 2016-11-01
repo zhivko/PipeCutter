@@ -16,6 +16,7 @@ import javax.swing.JButton;
 import javax.swing.JPanel;
 import javax.swing.JSlider;
 import javax.swing.SwingConstants;
+import javax.swing.SwingUtilities;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import javax.websocket.ContainerProvider;
@@ -23,6 +24,10 @@ import javax.websocket.Session;
 import javax.websocket.WebSocketContainer;
 
 import org.glassfish.tyrus.client.ClientManager;
+
+import com.kz.pipeCutter.BBB.commands.CenterPipe;
+import com.kz.pipeCutter.BBB.commands.ExecuteMdi;
+import com.kz.pipeCutter.ui.tab.RotatorSettings;
 
 // Nema23 motor
 // step angle: 1.8, 200 steps ful degree
@@ -127,7 +132,7 @@ public class Positioner extends JPanel {
 			// TODO Auto-generated catch block
 			e1.printStackTrace();
 		}
-		btnUp.setBounds(75, 0, 54, 33);
+		btnUp.setBounds(75, 1, 54, 31);
 		btnUp.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				String message = "Z+" + positionerStep.getParValue() + " E+" + positionerStep.getParValue();
@@ -144,7 +149,7 @@ public class Positioner extends JPanel {
 			// TODO Auto-generated catch block
 			e1.printStackTrace();
 		}
-		btnLeft.setBounds(30, 32, 48, 31);
+		btnLeft.setBounds(29, 32, 48, 31);
 		btnLeft.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				String message = "X-" + positionerStep.getParValue() + " Y-" + positionerStep.getParValue();
@@ -161,7 +166,7 @@ public class Positioner extends JPanel {
 			// TODO Auto-generated catch block
 			e1.printStackTrace();
 		}
-		btnDown.setBounds(75, 61, 54, 31);
+		btnDown.setBounds(75, 64, 54, 31);
 		btnDown.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				String message = "Z-" + positionerStep.getParValue() + " E-" + positionerStep.getParValue();
@@ -177,7 +182,7 @@ public class Positioner extends JPanel {
 			// TODO Auto-generated catch block
 			e1.printStackTrace();
 		}
-		btnRight.setBounds(127, 32, 48, 31);
+		btnRight.setBounds(128, 32, 54, 31);
 		btnRight.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				String message = "X+" + positionerStep.getParValue() + " Y+" + positionerStep.getParValue();
@@ -262,7 +267,7 @@ public class Positioner extends JPanel {
 			@Override
 			public void valueChangedFromUI() {
 				String messageToSend;
-				if (getParValue().equals("1"))
+				if (getParValue().equals("True"))
 					messageToSend = "enable";
 				else
 					messageToSend = "disable";
@@ -284,6 +289,17 @@ public class Positioner extends JPanel {
 			}
 		});
 		add(stopBtn);
+
+		JButton btnC = new JButton("C");
+		btnC.setBounds(75, 32, 54, 31);
+		add(btnC);
+		btnC.addActionListener(new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent e1) {
+				new Thread(new CenterPipe()).start();
+			}
+		});
 
 		Thread initThread = new Thread(new Runnable() {
 			@Override

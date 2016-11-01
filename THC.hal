@@ -7,6 +7,11 @@
 #CRAMPS_P503_4 SCK  P931 ...  plasma start
 #CRAMPS_P503_6 MOSI P930 ...  transfer start CNC machine motion
 
+loadrt myrand names=rand.0
+addf rand.0 servo-thread
+setp rand.0.amplitude 1.0
+setp rand.0.value 120.0
+setp rand.0.timeDelta 0.001
 
 newinst thc thc.0
 addf thc.0 servo-thread
@@ -26,18 +31,12 @@ setp thc.0.correction-vel 0.0001
 ###################################
 #   encoder thc config
 ###################################
-setp hpg.encoder.00.out.00.counter-mode 	2
-setp hpg.encoder.00.out.00.B-pin			16
-setp hpg.encoder.00.out.00.B-pin			27
-setp hpg.encoder.00.out.00.index-pin		27
-setp hpg.encoder.00.out.00.scale			1
-setp hpg.encoder.00.out.00.vel-timeout      3.0
-
-
-
-
-
-	
+setp hpg.encoder.00.chan.00.counter-mode 	2
+setp hpg.encoder.00.chan.00.B-pin			16
+setp hpg.encoder.00.chan.00.B-pin			27
+setp hpg.encoder.00.chan.00.index-pin		27
+setp hpg.encoder.00.chan.00.scale			1
+setp hpg.encoder.00.chan.00.vel-timeout      3.0
 
 
 # position command and feedback
@@ -52,7 +51,7 @@ net motor.02.pos-fb axis.2.motor-pos-fb <= thc.0.z-fb-out
 #net torch-probe motion.probe-input <= udp.1.touchOff
 
 # Set up the Encoder for the THC
-#setp hm2_5i20.0.counter-mode 1
+#setp hm2_5i20.0.counter-mode 1curr
 
 #net thc-vel-in hm2_5i20.0.velocity => thc.encoder-vel
 #setp thc0.encoder-vel 12.0
@@ -63,31 +62,25 @@ net motor.02.pos-fb axis.2.motor-pos-fb <= thc.0.z-fb-out
 # this might need to be increased
 #setp thc0.correction-vel 0.0001
 
-# spindle on starts the arc
-# bb_gpio.p9.out-28 = SPI_CS0 = P503_4 = pin 928
-#net spindle-on motion.spindle-on => mymotion.spindle-on => bb_gpio.p9.out-28
-#net spindle-on thc0.torch-on
-
 # starts the motion when the plasma arc has transfered to the work
 # bb_gpio.p9.in-30 = MOSI = P503_3 = pin 930
 #net start-motion-input thc0.arc-ok <= motion.digital-in-00 <= bb_gpio.p9.in-30
 
 #######################################
-#######################################
+####  HAL PLASMA 				   ####
 #######################################
 
-#    HAL Plasma Connections
-encoder.nn.velocity => thc.encoder-vel #(tip voltage)
-motion.spindle-on => output pin #(start the arc)
-thc.arc-ok <= motion.digital-in-00 <= input pin #(arc ok signal)
+net net-arc-ok thc.0.arc-ok <= motion.digital-in-00 <= bb_gpio.p9.in-30 #(arc ok signal)
+#net thc-vel-in hpg.encoder.00.chan.00.velocity => thc.0.encoder-vel
+net thc-vel-in rand.0.out => thc.0.encoder-vel
 
 #    HAL Motion Connections  
-thc.requested-vel <= motion.requested-vel
-thc.current-vel <= motion.current-vel
 
-net spindle-on motion.spindle-on => mymotion.spindle-on => bb_gpio.p9.out-28
-net spindle-on thc.0.torch-on
+#net net-reqvel thc.0.requested-vel <= motion.requested-vel
+# use 3d velocity that compensates for rotating pipe!
+net net-reqvel thc.0.requested-vel <= v
+net net-currvel thc.0.current-vel <= motion.current-vel
 
-net start-motion-input thc.0.arc-ok <= motion.digital-in-00 <= bb_gpio.p9.in-30
-
-net thc-vel-in eQEP0.velocity => thc.encoder-vel
+# spindle on starts the arc
+# bb_gpio.p9.out-28 = SPI_CS0 = P503_4 = pin 928
+net spindle-on motion.spindle-on => mymotion.spindle-on => thc.0.torch-on =>   bb_gpio.p9.out-28

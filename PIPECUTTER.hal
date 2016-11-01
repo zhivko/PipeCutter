@@ -1,15 +1,8 @@
 # load udp for streaming data from laser sensor
 #newinst udp udp.0 --- ip=192.168.1.114 port=1234 sensDistMm=120.0
-#newinst udp udp.1 --- ip=192.168.1.115 port=1234 sensDistMm=120.0
+newinst udp udp.1 --- ip=192.168.1.115 port=1234 sensDistMm=120.0
 #addf udp.0 servo-thread
-#addf udp.1 servo-thread
-
-loadrt myrand names=rand.0
-addf rand.0 servo-thread
-setp rand.0.amplitude 2.0
-setp rand.0.value 60.0
-setp rand.0.timeDelta 0.001
-
+addf udp.1 servo-thread
 
 newcomp mymotion timer=100
 newpin mymotion  mymotion.program-line       s32   in
@@ -37,6 +30,17 @@ newpin myini  myini.maxacc_3	 	 float out
 newpin myini  myini.maxvel_4	 	 float out
 newpin myini  myini.maxacc_4	 	 float out
 
+newpin myini myini.stepgen_maxvel_0	 float out
+newpin myini myini.stepgen_maxacc_0	 float out
+newpin myini myini.stepgen_maxvel_1	 float out
+newpin myini myini.stepgen_maxacc_1	 float out
+newpin myini myini.stepgen_maxvel_2	 float out
+newpin myini myini.stepgen_maxacc_2	 float out
+newpin myini myini.stepgen_maxvel_3  float out
+newpin myini myini.stepgen_maxacc_3	 float out
+newpin myini myini.stepgen_maxvel_4	 float out
+newpin myini myini.stepgen_maxacc_4	 float out
+
 newpin myini  myini.thc-enable 		 bit out
 newpin myini  myini.actual-volts 	 float in
 newpin myini  myini.volts-requested  float out
@@ -46,7 +50,7 @@ newpin myini  myini.vel-tol 		 float out
 ready  myini
 
 #net netLaserHeight0	udp.0.distance	mymotion.laserHeight0
-#net netLaserHeight1	udp.1.distance => mymotion.laserHeight1
+net netLaserHeight1	udp.1.distance => mymotion.laserHeight1
 
 #net netLaserHeight1	rand.0.out mymotion.laserHeight1
 

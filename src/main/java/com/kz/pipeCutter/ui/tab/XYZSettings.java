@@ -9,6 +9,8 @@ import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 
+import com.kz.pipeCutter.BBB.commands.CenterPipe;
+import com.kz.pipeCutter.BBB.commands.CenterXOnPipe;
 import com.kz.pipeCutter.BBB.commands.Jog;
 import com.kz.pipeCutter.ui.MyVerticalFlowLayout;
 import com.kz.pipeCutter.ui.PinDef;
@@ -57,6 +59,22 @@ public class XYZSettings extends JPanel {
 		x_acel.requiresHalRCompSet = true;
 		x_acel.setParId("myini.maxacc_0");
 
+		SavableText x_stepgvel = new SavableText();
+		x_stepgvel.setPin(new PinDef("myini.stepgen_maxvel_0", HalPinDirection.HAL_OUT, ValueType.HAL_FLOAT));
+		x_stepgvel.requiresHalRCompSet = true;
+		x_stepgvel.setLabelTxt("max stepgen velocity [step/sec]:");
+		x_stepgvel.setParId("myini.stepgen_maxvel_0");
+		panelXAxis.add(x_stepgvel);
+
+		SavableText x_stepgacc = new SavableText();
+		x_stepgacc.setPin(new PinDef("myini.stepgen_maxacc_0", HalPinDirection.HAL_OUT, ValueType.HAL_FLOAT));
+		x_stepgacc.requiresHalRCompSet = true;
+		x_stepgacc.setLabelTxt("max stepgen acc [step/sec^2]:");
+		x_stepgacc.setParId("myini.stepgen_maxacc_0");
+		panelXAxis.add(x_stepgacc);
+		
+		
+		
 		SavableSlider sliderX = new SavableSlider();
 		sliderX.setValues(moveToText);
 		sliderX.setLabelTxt("Move for:");
@@ -82,7 +100,20 @@ public class XYZSettings extends JPanel {
 		positionX.setLabelTxt("Position:");
 		panelXAxis.add(positionX);
 		positionX.setParId("position_x");
-		positionX.setNeedsSave(false);		
+		positionX.setNeedsSave(false);
+		
+		JButton btnC = new JButton("Center X on pipe");
+		btnC.setBounds(75, 32, 54, 31);
+		panelXAxis.add(btnC);
+		btnC.addActionListener(new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent e1) {
+				new Thread(new CenterXOnPipe()).start();
+			}
+		});
+		
+		
 		
 
 		// ---------- Y AXIS ---------------------------
@@ -98,8 +129,7 @@ public class XYZSettings extends JPanel {
 		y_vel.setParId("myini.maxvel_1");
 		y_vel.setLabelTxt("max velocity [mm/s]:");
 		y_vel.setPin(new PinDef("myini.maxvel_1", HalPinDirection.HAL_OUT, ValueType.HAL_FLOAT));
-		y_vel.requiresHalRCompSet = true;
-		
+		y_vel.requiresHalRCompSet = true;		
 		panelYAxis.add(y_vel);
 
 		SavableText y_acc = new SavableText();
@@ -108,6 +138,22 @@ public class XYZSettings extends JPanel {
 		y_acc.setPin(new PinDef("myini.maxacc_1", HalPinDirection.HAL_OUT, ValueType.HAL_FLOAT));
 		y_acc.requiresHalRCompSet = true;		
 		panelYAxis.add(y_acc);
+		
+		SavableText y_stepgvel = new SavableText();
+		y_stepgvel.setPin(new PinDef("myini.stepgen_maxvel_1", HalPinDirection.HAL_OUT, ValueType.HAL_FLOAT));
+		y_stepgvel.requiresHalRCompSet = true;
+		y_stepgvel.setLabelTxt("max stepgen velocity [step/sec]:");
+		y_stepgvel.setParId("myini.stepgen_maxvel_1");
+		panelYAxis.add(y_stepgvel);
+
+		SavableText y_stepgacc = new SavableText();
+		y_stepgacc.setPin(new PinDef("myini.stepgen_maxacc_1", HalPinDirection.HAL_OUT, ValueType.HAL_FLOAT));
+		y_stepgacc.requiresHalRCompSet = true;
+		y_stepgacc.setLabelTxt("max stepgen acc [step/sec^2]:");
+		y_stepgacc.setParId("myini.stepgen_maxacc_1");
+		panelYAxis.add(y_stepgacc);
+			
+		
 
 		SavableSlider sliderY = new SavableSlider();
 		sliderY.setValues(moveToText);
@@ -160,6 +206,22 @@ public class XYZSettings extends JPanel {
 		z_acc.requiresHalRCompSet = true;				
 		panelZAxis.add(z_acc);
 
+		SavableText z_stepgvel = new SavableText();
+		z_stepgvel.setPin(new PinDef("myini.stepgen_maxvel_2", HalPinDirection.HAL_OUT, ValueType.HAL_FLOAT));
+		z_stepgvel.requiresHalRCompSet = true;
+		z_stepgvel.setLabelTxt("max stepgen velocity [step/sec]:");
+		z_stepgvel.setParId("myini.stepgen_maxvel_2");
+		panelZAxis.add(z_stepgvel);
+
+		SavableText z_stepgacc = new SavableText();
+		z_stepgacc.setPin(new PinDef("myini.stepgen_maxacc_2", HalPinDirection.HAL_OUT, ValueType.HAL_FLOAT));
+		z_stepgacc.requiresHalRCompSet = true;
+		z_stepgacc.setLabelTxt("max stepgen acc [step/sec^2]:");
+		z_stepgacc.setParId("myini.stepgen_maxacc_2");
+		panelZAxis.add(z_stepgacc);
+		
+		
+		
 		SavableSlider sliderZ = new SavableSlider();
 		sliderZ.setValues(moveToText);
 		sliderZ.setLabelTxt("Move for:");

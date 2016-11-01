@@ -16,6 +16,7 @@ import com.kz.pipeCutter.BBB.commands.Jog;
 import com.kz.pipeCutter.ui.MyVerticalFlowLayout;
 import com.kz.pipeCutter.ui.PinDef;
 import com.kz.pipeCutter.ui.Positioner;
+import com.kz.pipeCutter.ui.SavableCheckBox;
 import com.kz.pipeCutter.ui.SavableSlider;
 import com.kz.pipeCutter.ui.SavableText;
 import com.kz.pipeCutter.ui.Settings;
@@ -52,31 +53,33 @@ public class PlasmaSettings extends JPanel {
 		plasmaCutOffsetMm.setParId("plasma_cut_offset_mm");
 		this.add(plasmaCutOffsetMm);					
 		
-		SavableText thcEnablel = new SavableText();
+		SavableCheckBox thcEnablel = new SavableCheckBox();
 		thcEnablel.setPin(new PinDef("myini.thc-enable", HalPinDirection.HAL_OUT, ValueType.HAL_BIT));
+		thcEnablel.setNeedsSave(true);
 		thcEnablel.requiresHalRCompSet = true;
-		thcEnablel.setParId("myini.myini.thc-enable");
+		thcEnablel.setParId("myini.thc-enable");
 		thcEnablel.setLabelTxt("Thc enable:");
 		this.add(thcEnablel);		
 
 		SavableText actualVolts = new SavableText();
 		actualVolts.setPin(new PinDef("myini.actual-volts", HalPinDirection.HAL_IN, ValueType.HAL_FLOAT));
-		actualVolts.requiresHalRCompSet = true;
-		actualVolts.setParId("myini.myini.thc-enable");
+		actualVolts.requiresHalRCompSet = false;
+		actualVolts.setParId("myini.actual-volts");
 		actualVolts.setLabelTxt("Actual volts [V]:");
 		this.add(actualVolts);				
 
 		SavableText voltsRequested = new SavableText();
 		voltsRequested.setPin(new PinDef("myini.volts-requested", HalPinDirection.HAL_OUT, ValueType.HAL_FLOAT));
 		voltsRequested.requiresHalRCompSet = true;
-		voltsRequested.setParId("myini.myini.thc-enable");
+		voltsRequested.setNeedsSave(true);
+		voltsRequested.setParId("myini.volts-requested");
 		voltsRequested.setLabelTxt("VoltsRequested [V]:");
 		voltsRequested.setToolTipText("Tip Volts current_vel >= min_velocity requested");
 		this.add(voltsRequested);		
 
 		SavableText velStatus = new SavableText();
 		velStatus.setPin(new PinDef("myini.vel-status", HalPinDirection.HAL_IN, ValueType.HAL_BIT));
-		velStatus.requiresHalRCompSet = true;
+		velStatus.requiresHalRCompSet = false;
 		velStatus.setParId("myini.vel-status");
 		velStatus.setLabelTxt("Velocity status:");
 		velStatus.setToolTipText("When the THC thinks we are at requested speed");
@@ -86,10 +89,10 @@ public class PlasmaSettings extends JPanel {
 		SavableText velTol = new SavableText();
 		velTol.setPin(new PinDef("myini.vel-tol", HalPinDirection.HAL_OUT, ValueType.HAL_FLOAT));
 		velTol.requiresHalRCompSet = true;
+		velTol.setNeedsSave(true);
 		velTol.setParId("myini.vel-tol");
 		velTol.setLabelTxt("Velocity Tolerance (Corner Lock):");
 		velTol.setToolTipText("Velocity Tolerance (Corner Lock)s");
-		
 		this.add(velTol);			
 		
 	}

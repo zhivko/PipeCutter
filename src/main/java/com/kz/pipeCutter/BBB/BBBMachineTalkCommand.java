@@ -142,7 +142,7 @@ public abstract class BBBMachineTalkCommand implements Callable<String> {
 				if (receivedMessageCount == neededReceivedMessageCount)
 					break;
 			}
-			if (System.currentTimeMillis() > (timeStart + 10000))
+			if (System.currentTimeMillis() > (timeStart + 15000))
 				throw new TimeoutException();
 		}
 	}

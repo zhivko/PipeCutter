@@ -17,6 +17,8 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.net.InetAddress;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.net.UnknownHostException;
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
@@ -29,6 +31,10 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
 import java.util.Properties;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -38,8 +44,13 @@ import javax.swing.JSplitPane;
 import javax.swing.JTabbedPane;
 import javax.swing.SwingUtilities;
 import javax.swing.border.EmptyBorder;
+import javax.websocket.ContainerProvider;
+import javax.websocket.DeploymentException;
+import javax.websocket.Session;
+import javax.websocket.WebSocketContainer;
 
 import org.apache.log4j.Logger;
+import org.glassfish.tyrus.client.ClientManager;
 import org.jzy3d.chart.factories.ChartComponentFactory;
 
 import com.kz.pipeCutter.BBB.BBBError;
@@ -167,7 +178,7 @@ public class Settings extends JFrame {
 		JSplitPane splitPane = new JSplitPane();
 		splitPane.setOrientation(JSplitPane.VERTICAL_SPLIT);
 		contentPane.add(splitPane, BorderLayout.NORTH);
-		splitPane.setDividerLocation(540);
+		splitPane.setDividerLocation(570);
 		splitPane.addComponentListener(new ComponentListener() {
 
 			@Override
@@ -185,7 +196,7 @@ public class Settings extends JFrame {
 			@Override
 			public void componentMoved(ComponentEvent e) {
 				// TODO Auto-generated method stub
-
+				System.out.println("splitter moved");
 			}
 
 			@Override
@@ -370,7 +381,6 @@ public class Settings extends JFrame {
 	}
 
 	public String getSetting(String parameterId) {
-
 		return controls.get(parameterId).getParValue();
 	}
 
@@ -399,6 +409,7 @@ public class Settings extends JFrame {
 			if (controls.get(parameterId) == null) {
 				List<SavableControl> savableControls = harvestMatches(Settings.instance.getContentPane(), SavableControl.class);
 				for (SavableControl savableControl : savableControls) {
+					Logger.getLogger(this.getClass()).info(savableControl.getPin().pinName);
 					if (savableControl.getParId().equals(parameterId)) {
 						mysavable = savableControl;
 						break;
@@ -519,11 +530,43 @@ public class Settings extends JFrame {
 	}
 
 	public void updateHalValues() {
+		Settings.getInstance().log("Update-ing hal values...");
 		for (SavableControl cntrl : controls.values()) {
 			Logger.getLogger(this.getClass()).info(cntrl.getParId());
 			if (cntrl.requiresHalRCompSet) {
+				Settings.getInstance().log("\t" + cntrl.getParId());
 				cntrl.updateHal();
 			}
 		}
+		Settings.getInstance().log("Update-ing hal values...DONE.");
+	}
+
+	public void setLaser1IP() {
+		String laserUrl = "ws://" + Settings.instance.getParameter("laser_1_ip").getParValue();
+		ClientManager cm = ClientManager.createClient();
+		URI uri;
+		try {
+			uri = new URI(laserUrl);
+			MyLaserWebsocketClient myWebsocketClient = new MyLaserWebsocketClient(Settings.instance.getParameter("machinekit_ip").getParValue(), 1234);
+			if (Settings.instance != null)
+				Settings.instance.log("Connecting to: " + uri.toString());
+			Session wsSession = cm.asyncConnectToServer(myWebsocketClient, uri).get(2000, TimeUnit.MILLISECONDS);
+		} catch (URISyntaxException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (ExecutionException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (TimeoutException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (DeploymentException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
 	}
 }

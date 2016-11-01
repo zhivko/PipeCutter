@@ -75,10 +75,7 @@ net net-arc-ok thc.0.arc-ok <= motion.digital-in-00 <= bb_gpio.p9.in-30 #(arc ok
 net thc-vel-in rand.0.out => thc.0.encoder-vel
 
 #    HAL Motion Connections  
-
-#net net-reqvel thc.0.requested-vel <= motion.requested-vel
-# use 3d velocity that compensates for rotating pipe!
-net net-reqvel thc.0.requested-vel <= v
+net net-reqvel thc.0.requested-vel <= motion.requested-vel
 net net-currvel thc.0.current-vel <= motion.current-vel
 
 # spindle on starts the arc

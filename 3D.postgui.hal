@@ -20,7 +20,7 @@ net thc-voltmeter myini.actual-volts thc.0.volts
 net thc-voltset myini.volts-requested thc.0.volts-requested
 net thc-req-vel thc.0.requested-vel <= motion.requested-vel
 net thc-cur-vel thc.0.current-vel <= motion.current-vel
-net thc-vel-status thc.0.vel-status myini.vel-status
+net thc-vel-status myini.vel-status thc.0.vel-status
 net thc-vel-tol myini.vel-tol thc.0.vel-tol
 
 	

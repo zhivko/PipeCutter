@@ -1029,6 +1029,7 @@ public class SurfaceDemo extends AbstractAnalysis {
 			} else {
 				if (alreadyCutting) {
 					writeToGcodeFile("M5");
+					writeToGcodeFile("G94");
 				}
 				writeToGcodeFile(String.format(java.util.Locale.US, "G01 %s (pointId: %d)", gcode, tempPoint.id));
 				alreadyCutting = false;
@@ -1077,6 +1078,7 @@ public class SurfaceDemo extends AbstractAnalysis {
 			writeToGcodeFile("G01 " + gcode);
 			if (!alreadyCutting) {
 				SurfaceDemo.instance.utils.previousEdge = null;
+				writeToGcodeFile("G93");
 				writeToGcodeFile("M3 S400");
 				alreadyCutting = true;
 			}

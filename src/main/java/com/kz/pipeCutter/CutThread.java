@@ -243,6 +243,7 @@ public class CutThread extends SwingWorker<String, Object> {
 						SurfaceDemo.getInstance().move(safeRetractPoint, false, cutOffsetMm, true);
 
 						// SurfaceDemo.getInstance().moveAbove(safeRetractPoint, 0, 0);
+						// for move above switch from g93 (inverse time) mode to g94 mode (units per minute)
 						SurfaceDemo.getInstance().moveAbove(myPoint, pierceOffsetMm, pierceTimeMs);
 						double angle = followThePath(myPoint, this.alAlreadyAddedPoints, (rotationDirection == -1 ? true : false));
 						hasBeenCutting = true;

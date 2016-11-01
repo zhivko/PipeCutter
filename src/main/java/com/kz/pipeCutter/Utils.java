@@ -434,7 +434,8 @@ public class Utils {
 		double length = 0;
 		Coord3d p1 = new Coord3d(x, y, z);
 
-		if (SurfaceDemo.instance.g93mode) {
+		//if (SurfaceDemo.instance.g93mode) {
+		if (cut) {
 			// length calculation
 			// v = s/t
 			// t = s / v

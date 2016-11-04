@@ -116,8 +116,8 @@ public class BBBHalRComp implements Runnable {
 			ZMsg receivedMessage = ZMsg.recvMsg(socket, ZMQ.DONTWAIT);
 			// System.out.println("loop: " + i);
 			if (receivedMessage != null) {
-				while (!receivedMessage.isEmpty()) {
-					ZFrame frame = receivedMessage.poll();
+				ZFrame frame = receivedMessage.poll();
+				while (frame !=null) {
 					Container contReturned;
 					try {
 						String data = new String(frame.getData());
@@ -223,6 +223,7 @@ public class BBBHalRComp implements Runnable {
 					// // TODO Auto-generated catch block
 					// e.printStackTrace();
 					// }
+					frame = receivedMessage.poll();
 				}
 				receivedMessage.destroy();
 				receivedMessage = null;
@@ -241,7 +242,7 @@ public class BBBHalRComp implements Runnable {
 			ctx.destroy();
 		}
 		if (readThread != null && readThread.isAlive()) {
-			readThread.interrupt();
+			shouldRead = false;
 			while (readThread.isAlive()) {
 				try {
 					TimeUnit.MILLISECONDS.sleep(500);
@@ -269,8 +270,6 @@ public class BBBHalRComp implements Runnable {
 		readThread = new Thread(this);
 		readThread.setName("BBBHalRComp");
 		readThread.start();
-
-		isBinded = false;
 	}
 
 	public Socket getSocket() {

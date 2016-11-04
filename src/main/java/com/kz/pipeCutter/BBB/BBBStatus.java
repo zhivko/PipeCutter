@@ -105,9 +105,9 @@ public class BBBStatus implements Runnable {
 				ZMsg receivedMessage = ZMsg.recvMsg(socket, ZMQ.DONTWAIT);
 				// System.out.println("loop: " + i);
 				if (receivedMessage != null) {
-					while (!receivedMessage.isEmpty()) {
+					ZFrame frame = receivedMessage.poll();
+					while (frame!=null) {
 
-						ZFrame frame = receivedMessage.poll();
 						byte[] returnedBytes = frame.getData();
 						String messageType = new String(returnedBytes);
 						// System.out.println("type: " + messageType);
@@ -185,6 +185,7 @@ public class BBBStatus implements Runnable {
 								System.out.println(contReturned.getType());
 							}
 						}
+						frame = receivedMessage.poll();
 					}
 					receivedMessage.destroy();
 					receivedMessage = null;

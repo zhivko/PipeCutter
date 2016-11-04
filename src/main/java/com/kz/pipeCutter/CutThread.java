@@ -123,35 +123,36 @@ public class CutThread extends SwingWorker<String, Object> {
 		double mminY = sortedList.get(0).xyz.y;
 		double mmaxY = sortedList.get(sortedList.size() - 1).xyz.y;
 
+		
+		ArrayList<MyPickablePoint> sortedList2 = new ArrayList(SurfaceDemo.getInstance().utils.points.values());
+		Collections.sort(sortedList2, new MyPickablePointZMidXYComparator());
+		SurfaceDemo.instance.utils.previousPoint = sortedList2.get(0).xyz;
+		SurfaceDemo.instance.utils.previousAngle = 0.0f;
+		
 		SurfaceDemo.getInstance().angleTxt = "0.0";
-		try {
-			PrintWriter out = new PrintWriter(new BufferedWriter(new FileWriter(this.gcodeFile.getAbsolutePath(), true)));
-			out.println("G94");
-			// out.println(String.format(Locale.US, "G00 Z%.3f F%s", diagonal / 2.0f +
-			// 20.0f, Settings.getInstance().getSetting("gcode_feedrate_g0")));
+		SurfaceDemo.instance.writeToGcodeFile("G94");
 
-			double diagonal = (SurfaceDemo.getInstance().utils.maxEdge * Math.sqrt(2.0f));
-			out.println(String.format(Locale.US, "G00 Z%.3f F%s", diagonal / 2.0f + 20.0f, Settings.getInstance().getSetting("gcode_feedrate_g0")));
+		// out.println(String.format(Locale.US, "G00 Z%.3f F%s", diagonal / 2.0f +
+		// 20.0f, Settings.getInstance().getSetting("gcode_feedrate_g0")));
 
-			// double diagonal = (SurfaceDemo.getInstance().utils.maxEdge *
-			// Math.sqrt(2.0f));
-			// MyPickablePoint safeRetractPoint = new MyPickablePoint(-100000, new
-			// Coord3d(0, SurfaceDemo.getInstance().utils.maxY, diagonal / 2 + 20),
-			// Color.BLACK,
-			// 0.4f, -200000);
-			// SurfaceDemo.instance.utils.previousPoint = safeRetractPoint.xyz;
-			// SurfaceDemo.getInstance().move(safeRetractPoint, false, cutOffsetMm,
-			// true);
+		double diagonal = (SurfaceDemo.getInstance().utils.maxEdge * Math.sqrt(2.0f));
+		SurfaceDemo.instance
+				.writeToGcodeFile(String.format(Locale.US, "G00 X%.3f Y%.3f Z%.3f F%s", SurfaceDemo.instance.utils.previousPoint.x, SurfaceDemo.instance.utils.previousPoint.y, diagonal / 2.0f + 20.0f, Settings.getInstance().getSetting("gcode_feedrate_g0")));
+		
+		
+		// double diagonal = (SurfaceDemo.getInstance().utils.maxEdge *
+		// Math.sqrt(2.0f));
+		// MyPickablePoint safeRetractPoint = new MyPickablePoint(-100000, new
+		// Coord3d(0, SurfaceDemo.getInstance().utils.maxY, diagonal / 2 + 20),
+		// Color.BLACK,
+		// 0.4f, -200000);
+		// SurfaceDemo.instance.utils.previousPoint = safeRetractPoint.xyz;
+		// SurfaceDemo.getInstance().move(safeRetractPoint, false, cutOffsetMm,
+		// true);
 
-			// lets turn on path blending
-			out.println("G64 P2");
-			out.flush();
-			out.close();
-
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+		// lets turn on path blending
+		SurfaceDemo.instance.writeToGcodeFile("G64 P.05 Q.05");
+		SurfaceDemo.instance.writeToGcodeFile("G93");
 
 		float currentY = (float) mmaxY;
 		alAlreadyAddedPoints = new ArrayList<MyPickablePoint>();
@@ -179,7 +180,7 @@ public class CutThread extends SwingWorker<String, Object> {
 			rotationDirection = -1;
 		cutSegment(minY, maxY, false, rotationDirection);
 		try {
-			PrintWriter out = new PrintWriter(new BufferedWriter(new FileWriter(this.gcodeFile.getAbsolutePath(), true)));
+			PrintWriter out = new PrintWriter(new BufferedWriter(new FileWriter(CutThread.gcodeFile.getAbsolutePath(), true)));
 			out.println("M2");
 			out.flush();
 		} catch (IOException e) {
@@ -239,11 +240,10 @@ public class CutThread extends SwingWorker<String, Object> {
 						double diagonal = (SurfaceDemo.getInstance().utils.maxEdge * Math.sqrt(2.0f));
 						MyPickablePoint safeRetractPoint = new MyPickablePoint(-100000, new Coord3d(myPoint.xyz.x, myPoint.xyz.y, diagonal / 2 + 20), Color.BLACK,
 								0.4f, -200000);
-						
+
 						SurfaceDemo.getInstance().move(safeRetractPoint, false, cutOffsetMm, true);
 
 						// SurfaceDemo.getInstance().moveAbove(safeRetractPoint, 0, 0);
-						// for move above switch from g93 (inverse time) mode to g94 mode (units per minute)
 						SurfaceDemo.getInstance().moveAbove(myPoint, pierceOffsetMm, pierceTimeMs);
 						double angle = followThePath(myPoint, this.alAlreadyAddedPoints, (rotationDirection == -1 ? true : false));
 						hasBeenCutting = true;

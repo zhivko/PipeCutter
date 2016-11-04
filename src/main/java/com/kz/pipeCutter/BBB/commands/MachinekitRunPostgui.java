@@ -7,6 +7,8 @@ import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.PrintStream;
 
+import javax.swing.SwingUtilities;
+
 import org.apache.log4j.Logger;
 
 import com.jcraft.jsch.ChannelShell;
@@ -50,21 +52,24 @@ public class MachinekitRunPostgui extends SSH_Command {
 
 		// String command = "source ~/git/machinekit/scripts/rip-environment";
 		// ps.println(command);
-		Settings.instance.log("Running postgui hal....");
-		String command = "halcmd -f /home/machinekit/machinekit/configs/ARM.BeagleBone.CRAMPS/3D.postgui.hal\n";
-		ps.println(command);
-		//readOutput(channelShell);
+		try {
+			Settings.instance.log("Running postgui hal....");
+			String command = "halcmd -f /home/machinekit/machinekit/configs/ARM.BeagleBone.CRAMPS/3D.postgui.hal\n";
+			ps.println(command);
+			readOutput(channelShell);
+		} catch (Exception ex) {
+			ex.printStackTrace();
+		} finally {
+			channelShell.disconnect();
+		}
 		Settings.instance.log("Running postgui hal. DONE.");
-
-		channelShell.disconnect();
-
 	}
 
 	private void readOutput(ChannelShell channelShell) throws IOException, InterruptedException {
 		InputStream in = channelShell.getInputStream();
 		BufferedReader buffReader = new BufferedReader(new InputStreamReader(in));
 
-		int timeOutMs = 3 * 1000;
+		int timeOutMs = 10 * 1000;
 
 		long startMs = System.currentTimeMillis();
 		String line;
@@ -72,7 +77,7 @@ public class MachinekitRunPostgui extends SSH_Command {
 			line = buffReader.readLine();
 			if (line != null)
 				Logger.getLogger(this.getClass()).info(line);
-
+			Thread.sleep(100);
 		}
 	}
 

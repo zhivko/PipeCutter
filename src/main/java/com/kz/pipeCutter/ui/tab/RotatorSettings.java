@@ -63,17 +63,16 @@ public class RotatorSettings extends JPanel {
 
 		SavableText rotator1_acc = new SavableText();
 		rotator1_acc.setLabelTxt("max acceleration:");
-		panelRotator1.add(rotator1_acc);
 		rotator1_acc.setParId("myini.maxacc_3");
 		rotator1_acc.setPin(new PinDef("myini.maxacc_3", HalPinDirection.HAL_OUT, ValueType.HAL_FLOAT));
 		rotator1_acc.requiresHalRCompSet = true;
+		panelRotator1.add(rotator1_acc);
 
 		SavableText rotator1_stepgvel = new SavableText();
 		rotator1_stepgvel.setPin(new PinDef("myini.stepgen_maxvel_3", HalPinDirection.HAL_OUT, ValueType.HAL_FLOAT));
 		rotator1_stepgvel.requiresHalRCompSet = true;
 		rotator1_stepgvel.setLabelTxt("max stepgen velocity [step/sec]:");
 		rotator1_stepgvel.setParId("myini.stepgen_maxvel_3");
-		rotator1_stepgvel.setEnabled(false);
 		panelRotator1.add(rotator1_stepgvel);
 
 		SavableText rotator1_stepgacc = new SavableText();

@@ -675,12 +675,8 @@ public class SurfaceDemo extends AbstractAnalysis {
 		Iterator<MyEdge> edgeIt = utils.edges.values().iterator();
 		while (edgeIt.hasNext()) {
 			MyEdge edge = edgeIt.next();
-			if (edge.edgeNo == 19) {
-				System.out.println();
-			}
 			if (edge.length >= (maxX - minX) * 0.5 || edge.length >= (maxZ - minZ) * 0.5) {
 				// need to split edge - create 2 edges instead onež
-				System.out.println(edge.length);
 				MyPickablePoint p1 = SurfaceDemo.instance.utils.points.get(edge.points.get(0));
 				MyPickablePoint p2 = SurfaceDemo.instance.utils.points.get(edge.points.get(1));
 
@@ -812,12 +808,27 @@ public class SurfaceDemo extends AbstractAnalysis {
 				ls.add(utils.points.get(point.id));
 				if (SurfaceDemo.NUMBER_POINTS) {
 					if (!alreadyAddedPointsText.contains(pointNo)) {
-						DrawableTextBitmap t4 = new DrawableTextBitmap(String.valueOf(point.id), point.xyz, Color.BLACK);
+//						DrawableTextBitmap t4 = new DrawableTextBitmap(String.valueOf(point.id), point.xyz, Color.BLACK);
+//						t4.setHalign(Halign.CENTER); // TODO: invert
+//						t4.setValign(Valign.CENTER); // TODO: invert
+//						// left/right
+//						utils.pointTexts.add(t4);
+//						alreadyAddedPointsText.add(pointNo);
+						Coord3d cent = this.utils.continuousEdges.get(edge.getPointByIndex(0).continuousEdgeNo).center;
+						Coord3d delta = point.xyz.sub(cent);
+						// 2 mm toward center
+						Coord3d textPoint = point.xyz.sub(delta.getNormalizedTo(0.2f));
+						//Rotation r = new Rotation(0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f, -1.0f * Float.valueOf(SurfaceDemo.instance.angleTxt) * Math.PI / 180);
+						//Coordinates c = new Coordinates(textPoint.x, textPoint.y, textPoint.z);
+						//r.transform(c);
+
+						PickableDrawableTextBitmap t4 = new PickableDrawableTextBitmap(String.valueOf(point.id), new Coord3d(textPoint.x, textPoint.y, textPoint.z), Color.BLUE);
 						t4.setHalign(Halign.CENTER); // TODO: invert
 						t4.setValign(Valign.CENTER); // TODO: invert
+						// t5.setValign(Valign.BOTTOM); // TODO: invert
 						// left/right
+						t4.setPickingId(edge.edgeNo);
 						utils.pointTexts.add(t4);
-						alreadyAddedPointsText.add(pointNo);
 					}
 				}
 			}
@@ -885,6 +896,7 @@ public class SurfaceDemo extends AbstractAnalysis {
 					{
 						if (picked.get(0).getClass().getName().equals("com.kz.pipeCutter.MyPickablePoint")) {
 							MyPickablePoint mp = ((MyPickablePoint) picked.get(0));
+							Settings.instance.log(mp.toString());
 							SurfaceDemo.this.selectedPointChanged(mp);
 						} else if (picked.get(0).getClass().getName().equals("org.jzy3d.plot3d.primitives.pickable.PickablePolygon")) {
 						} else {
@@ -897,7 +909,7 @@ public class SurfaceDemo extends AbstractAnalysis {
 		}
 	}
 
-	protected void selectedPointChanged(MyPickablePoint mp) {
+	public void selectedPointChanged(MyPickablePoint mp) {
 		lastClickedPoint = mp;
 		Point p = SurfaceDemo.instance.utils.calculateOffsetPoint(mp);
 		p.setColor(Color.GREEN);
@@ -1022,16 +1034,13 @@ public class SurfaceDemo extends AbstractAnalysis {
 		if (writeToGCode) {
 			String gcode = SurfaceDemo.instance.utils.coordinateToGcode(tempPoint, offset, cut);
 			if (cut) {
-				MyEdge edge = utils.getEdgeFromPoint(tempPoint, true);
-				writeToGcodeFile(String.format(java.util.Locale.US, "G01 %s (p:%d, e:%s, e.length: %.2f angle: %.3f)", gcode, tempPoint.id,
-						edge.edgeType + " " + edge.edgeNo, edge.length, Float.valueOf(SurfaceDemo.instance.angleTxt)));
+				writeToGcodeFile(String.format(java.util.Locale.US, "G01 %s", gcode));
 				alreadyCutting = true;
 			} else {
 				if (alreadyCutting) {
 					writeToGcodeFile("M5");
-					writeToGcodeFile("G94");
 				}
-				writeToGcodeFile(String.format(java.util.Locale.US, "G01 %s (pointId: %d)", gcode, tempPoint.id));
+				writeToGcodeFile(String.format(java.util.Locale.US, "G00 %s (pointId: %d)", gcode, tempPoint.id));
 				alreadyCutting = false;
 			}
 		} else {
@@ -1075,10 +1084,9 @@ public class SurfaceDemo extends AbstractAnalysis {
 				ex.printStackTrace();
 			}
 
-			writeToGcodeFile("G01 " + gcode);
+			writeToGcodeFile("G00 " + gcode);
 			if (!alreadyCutting) {
-				SurfaceDemo.instance.utils.previousEdge = null;
-				writeToGcodeFile("G93");
+				//SurfaceDemo.instance.utils.previousEdge = null;
 				writeToGcodeFile("M3 S400");
 				alreadyCutting = true;
 			}
@@ -1143,11 +1151,11 @@ public class SurfaceDemo extends AbstractAnalysis {
 		try {
 			out = new PrintWriter(new BufferedWriter(new FileWriter(CutThread.gcodeFile.getAbsolutePath(), true)));
 
-			if (this.gCodeLineNo == 2 && Settings.instance.getSetting("gcode_g93").equals("1")) {
-				SurfaceDemo.instance.g93mode = true;
-				out.println("G93");
-				this.gCodeLineNo++;
-			}
+//			if (this.gCodeLineNo == 2 && Settings.instance.getSetting("gcode_g93").equals("1")) {
+//				SurfaceDemo.instance.g93mode = true;
+//				out.println("G93");
+//				this.gCodeLineNo++;
+//			}
 
 			// System.out.println(txt);
 			// System.out.println(SurfaceDemo.instance.utils.previousPoint);

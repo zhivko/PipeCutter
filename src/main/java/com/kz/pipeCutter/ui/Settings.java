@@ -10,6 +10,8 @@ import java.awt.Point;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 import java.awt.event.ComponentListener;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileInputStream;
@@ -32,7 +34,6 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Properties;
 import java.util.concurrent.ExecutionException;
-import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 import java.util.regex.Matcher;
@@ -44,10 +45,8 @@ import javax.swing.JSplitPane;
 import javax.swing.JTabbedPane;
 import javax.swing.SwingUtilities;
 import javax.swing.border.EmptyBorder;
-import javax.websocket.ContainerProvider;
 import javax.websocket.DeploymentException;
 import javax.websocket.Session;
-import javax.websocket.WebSocketContainer;
 
 import org.apache.log4j.Logger;
 import org.glassfish.tyrus.client.ClientManager;
@@ -178,31 +177,14 @@ public class Settings extends JFrame {
 		JSplitPane splitPane = new JSplitPane();
 		splitPane.setOrientation(JSplitPane.VERTICAL_SPLIT);
 		contentPane.add(splitPane, BorderLayout.NORTH);
-		splitPane.setDividerLocation(570);
-		splitPane.addComponentListener(new ComponentListener() {
+		splitPane.setDividerLocation(600);
 
+		splitPane.addPropertyChangeListener(JSplitPane.DIVIDER_LOCATION_PROPERTY, new PropertyChangeListener() {
 			@Override
-			public void componentShown(ComponentEvent e) {
-				// TODO Auto-generated method stub
-
-			}
-
-			@Override
-			public void componentResized(ComponentEvent e) {
-				// TODO Auto-generated method stub
-
-			}
-
-			@Override
-			public void componentMoved(ComponentEvent e) {
-				// TODO Auto-generated method stub
-				System.out.println("splitter moved");
-			}
-
-			@Override
-			public void componentHidden(ComponentEvent e) {
-				// TODO Auto-generated method stub
-
+			public void propertyChange(PropertyChangeEvent pce) {
+				System.out.println("split changed");
+				Logger.getLogger(this.getClass()).info("splitter resized");
+				Logger.getLogger(this.getClass()).info(pce.getPropertyName() + "=" + pce.getNewValue());
 			}
 		});
 
@@ -214,6 +196,7 @@ public class Settings extends JFrame {
 		splitPane.setBottomComponent(commandPanel);
 
 		this.addComponentListener(new ComponentAdapter() {
+
 			public void componentResized(ComponentEvent evt) {
 				Component c = (Component) evt.getSource();
 				// System.out.println(c.getName() + " resized: " +
@@ -542,10 +525,11 @@ public class Settings extends JFrame {
 	}
 
 	public void setLaser1IP() {
-		String laserUrl = "ws://" + Settings.instance.getParameter("laser_1_ip").getParValue();
-		ClientManager cm = ClientManager.createClient();
-		URI uri;
 		try {
+			String laserUrl = "ws://" + Settings.instance.getParameter("laser_1_ip").getParValue();
+			ClientManager cm = ClientManager.createClient();
+			URI uri;
+
 			uri = new URI(laserUrl);
 			MyLaserWebsocketClient myWebsocketClient = new MyLaserWebsocketClient(Settings.instance.getParameter("machinekit_ip").getParValue(), 1234);
 			if (Settings.instance != null)

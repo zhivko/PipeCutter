@@ -48,8 +48,8 @@ public class Utils {
 
 	public float maxEdge = 0;
 	public Coord3d previousPoint;
-	private float previousAngle;
-	public MyEdge previousEdge;
+	float previousAngle;
+	// public MyEdge previousEdge;
 	private int previousPointId;
 
 	static double Math_E = 0.0001;
@@ -386,85 +386,110 @@ public class Utils {
 		else
 			calcSpeed = SurfaceDemo.instance.g0Speed;
 
-		MyEdge edge = getEdgeFromPoint(p, false);
-		if (edge != null && edge.edgeType == MyEdge.EdgeType.ONRADIUS) {
-			if (previousEdge != null) {
-				if (previousEdge.edgeType == MyEdge.EdgeType.NORMAL && edge.edgeType == MyEdge.EdgeType.ONRADIUS) {
-					// calcSpeed calculated above
-					//System.out.println("");
-				} else if (previousEdge.edgeType == MyEdge.EdgeType.ONRADIUS && edge.edgeType == MyEdge.EdgeType.ONRADIUS) {
-					/*
-					 * // lets calculate fillet speed since it is not defined // x_width
-					 * needs to be traversed in what time? double time = (this.maxX * 2) /
-					 * CutThread.instance.g1Speed; // in minutes // in this time rotation
-					 * of 90 degrees should be done double w = (Math.PI / 2) / time;
-					 * double radius = (this.maxX) * 1.41; double v = w * radius * 180 /
-					 * Math.PI;
-					 */
-					// fillet length
-					float radius_of_edge = Float.valueOf(Settings.instance.getSetting("radius"));
-					float maxLength = (float) Math.sqrt(this.maxX * this.maxX + this.maxZ * this.maxZ);
-					// float s = ((this.maxX * 2.0f - 2 * radius_of_edge) + (this.maxZ *
-					// 2.0f - 2 * radius_of_edge)) / 2.0f;
-					//float s = maxLength * 2.0f - 2 * radius_of_edge;
-					float s = (float) (maxLength * Math.PI / 2)*1.0f;
-					float arc_length = (float) (radius_of_edge * Math.PI / 2);
-					// float v = (CutThread.instance.g1Speed) * (this.maxX * 2 + 2 *
-					// radius_of_edge) / arc_length;
-					float v = (SurfaceDemo.instance.g1Speed) * s / arc_length * 1.0f;
-					// double w = 90.0f / time;
-					float dv = v - SurfaceDemo.instance.g1Speed;
-					float t = s / SurfaceDemo.instance.g1Speed;
+		double length = 0;
+		MyEdge edge = null;
+		if (this.previousPointId > 0 && (p.id != this.previousPointId)) {
+			edge = getEdgeFromTwoPoints(p, SurfaceDemo.instance.utils.points.get(this.previousPointId));
+			if (edge != null && edge.edgeType == MyEdge.EdgeType.ONRADIUS) {
+				// if (previousEdge != null) {
+				// if (previousEdge.edgeType == MyEdge.EdgeType.NORMAL && edge.edgeType
+				// ==
+				// MyEdge.EdgeType.ONRADIUS) {
+				// calcSpeed calculated above
+				// System.out.println("");
+				// } else if (previousEdge.edgeType == MyEdge.EdgeType.ONRADIUS &&
+				// edge.edgeType == MyEdge.EdgeType.ONRADIUS) {
+				/*
+				 * // lets calculate fillet speed since it is not defined // x_width
+				 * needs to be traversed in what time? double time = (this.maxX * 2) /
+				 * CutThread.instance.g1Speed; // in minutes // in this time rotation of
+				 * 90 degrees should be done double w = (Math.PI / 2) / time; double
+				 * radius = (this.maxX) * 1.41; double v = w * radius * 180 / Math.PI;
+				 */
+				// fillet length
+				float radius_of_edge = Float.valueOf(Settings.instance.getSetting("radius"));
+				float maxRadius = (float) Math.sqrt(this.maxX * this.maxX + this.maxZ * this.maxZ);
+				// float s = ((this.maxX * 2.0f - 2 * radius_of_edge) + (this.maxZ *
+				// 2.0f - 2 * radius_of_edge)) / 2.0f;
+				// float s = maxLength * 2.0f - 2 * radius_of_edge;
+				float s = (float) (maxRadius * Math.PI) * 1.0f;
+				float arc_length = (float) (radius_of_edge * Math.PI / 2);
+				// float v = (CutThread.instance.g1Speed) * (this.maxX * 2 + 2 *
+				// radius_of_edge) / arc_length;
+				float v = SurfaceDemo.instance.g1Speed * s / arc_length * 1.0f;
+				// float v = (SurfaceDemo.instance.g1Speed);
+				float dv = v - SurfaceDemo.instance.g1Speed;
+				float t = s / SurfaceDemo.instance.g1Speed;
 
-					float a = 2 * dv / t;
+				float a = 2 * dv / t;
 
-					double currAngle = Math.atan2(p.getCoord().z, p.getCoord().x) * 180.0 / Math.PI;
-					double maxAngle = Math.atan2(this.maxZ, (this.maxX - radius_of_edge)) * 180.0 / Math.PI;
+				double currAngle = Math.atan2(p.getCoord().z, p.getCoord().x) * 180.0 / Math.PI;
+				double maxAngle = Math.atan2(this.maxZ, (this.maxX - radius_of_edge)) * 180.0 / Math.PI;
 
-					System.out.println(String.format("%.3f / %.3f", currAngle, maxAngle));
+				System.out.println(String.format("%.3f / %.3f", currAngle, maxAngle));
 
-					CutThread.instance.filletSpeed = Double.valueOf(v).floatValue();
+				CutThread.instance.filletSpeed = Double.valueOf(v).floatValue();
 
-					calcSpeed = CutThread.instance.filletSpeed;
-				}
+				calcSpeed = CutThread.instance.filletSpeed;
+				length = edge.length;
 			}
 		}
-
 		double feed = 1;
-		double length = 0;
 		Coord3d p1 = new Coord3d(x, y, z);
 
-		//if (SurfaceDemo.instance.g93mode) {
-		if (cut) {
-			// length calculation
-			// v = s/t
-			// t = s / v
-			// 1 / t = v / s
-			
-			if(edge==null || this.previousEdge==null)
-			{
+		// if (SurfaceDemo.instance.g93mode) {
+		// if (cut) {
+		// length calculation
+		// v = s/t
+		// t = s / v
+		// 1 / t = v / s
+
+		/*
+		 * if(edge==null || this.previousEdge==null) { length =
+		 * p1.distance(this.previousPoint); } else { length =
+		 * this.origPoints.get(p.id).distance(this.origPoints.get(this.
+		 * previousPointId)); }
+		 */
+
+
+		if (length == 0) {
+//			float middleX = (p1.x + this.previousPoint.x) / 2.0f;
+//			float middleZ = (p1.z + this.previousPoint.z) / 2.0f;
+//			if (previousAngle != angle)
+//				length = Math.abs((Math.PI / 180.0f) * (angle - previousAngle) * Math.sqrt(middleX * middleX + middleZ * middleZ))
+//						+ Math.abs(p1.y - this.previousPoint.y);
+//			else
 				length = p1.distance(this.previousPoint);
-			}
-			else
-			{
-				length = this.origPoints.get(p.id).distance(this.origPoints.get(this.previousPointId));
-			}
-			if (length != 0) {
-				feed = (calcSpeed) / length;
-				// feed = 1000;
-			} else
-				feed = 10000;
-		} else {
-			feed = calcSpeed;
 		}
-		ret = String.format(java.util.Locale.US, "X%.3f Y%.3f Z%.3f A%.3f B%.3f F%.3f (move length: %.3f)", x, y, z, angle, angle, feed, length);
-		if (this.previousPoint == null || !this.previousPoint.equals(p1)) {
-			// System.out.println("previous to: " + coord.toString());
-			this.previousPoint = p1;
-			this.previousAngle = angle;
-		}
-		this.previousEdge = edge;
+
+		if (length != 0) {
+			feed = (calcSpeed) / length;
+			// feed = 1000;
+		} else
+			feed = 10000;
+		/*
+		 * } else { feed = calcSpeed; }
+		 */
+
+		
+		String edgeDescription = "";
+		if(edge!=null)
+			edgeDescription  = edge.edgeType + " no:" + edge.edgeNo; // + " length=" + edge.length ;
+		if (cut)
+			ret = String.format(java.util.Locale.US, "X%.1f Y%.1f Z%.1f A%.1f B%.1f F%.1f (move length: %.1f speed:%.1f p:%d, e:%s)", x, y, z, angle, angle, feed, length, calcSpeed, p.id,
+					edgeDescription);
+		else
+			ret = String.format(java.util.Locale.US, "X%.1f Y%.1f Z%.1f A%.1f B%.1f (move length: %.1f speed:%.1f)", x, y, z, angle, angle, length, calcSpeed);
+
+		// if (this.previousPoint == null || !this.previousPoint.equals(p1)) {
+		// // System.out.println("previous to: " + coord.toString());
+		// this.previousPoint = p1;
+		// // this.previousAngle = angle;
+		// }
+
+		this.previousPoint = p1;
 		this.previousPointId = p.id;
+		this.previousAngle = angle;
 
 		return ret;
 	}
@@ -874,9 +899,27 @@ public class Utils {
 		return ret;
 	}
 
+	public MyEdge getEdgeFromTwoPoints(MyPickablePoint point1, MyPickablePoint point2) {
+
+		MyEdge ret = null;
+		for (MyEdge edge : edges.values()) {
+			if (edge.getPointByIndex(0).equals(point1) && edge.getPointByIndex(1).equals(point2)
+					|| edge.getPointByIndex(0).equals(point2) && edge.getPointByIndex(1).equals(point1)) {
+				ret = edge;
+				break;
+			}
+		}
+		return ret;
+	}
+
 	public String c(MyPickablePoint tempPoint, float offset) {
 		// TODO Auto-generated method stub
 		return coordinateToGcode(tempPoint, offset, false);
 	}
 
+	public MyPickablePoint getPointbyId(Integer id)
+	{
+		return points.get(id);
+	}
+	
 }

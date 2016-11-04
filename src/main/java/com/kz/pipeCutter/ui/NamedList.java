@@ -155,6 +155,7 @@ public class NamedList extends JPanel implements IParameter, IHasLabel {
 				getStatusServiceUrl(serviceInfo);
 				getPreviewStatusServiceUrl(serviceInfo);
 				getHalCmdServiceUrl(serviceInfo);
+				getHalRCompServiceUrl(serviceInfo);
 				
 				for (int i = 0; i < listModel.getSize(); i++) {
 					String row = listModel.getElementAt(i).toString();
@@ -242,22 +243,22 @@ public class NamedList extends JPanel implements IParameter, IHasLabel {
 		}
 	}
 
-//	public static void getHalRCompServiceUrl(ServiceInfo serviceInfo) {
-//		ServiceInfo ret = null;
-//		if (serviceInfo.getName().matches("HAL Rcomp.*")) {
-//			ret = serviceInfo;
-//		}
-//		if (ret != null) {
-//			String ip = Settings.getInstance().getSetting("machinekit_ip");
-//			String host = Settings.getInstance().getSetting("machinekit_host");
-//			final String hallRCompUri = "tcp://" + getServer(serviceInfo.getServer()) + ":" + ret.getPort();
-//			Settings.getInstance().setSetting("machinekit_halRCompService_url", hallRCompUri);
-//			Settings.getInstance().initHalRcompService();
-//		}
-//	}
+	public static void getHalRCompServiceUrl(ServiceInfo serviceInfo) {
+		ServiceInfo ret = null;
+		if (serviceInfo.getName().matches("HAL Rcomp.*")) {
+			ret = serviceInfo;
+		}
+		if (ret != null) {
+			String ip = Settings.getInstance().getSetting("machinekit_ip");
+			String host = Settings.getInstance().getSetting("machinekit_host");
+			final String hallRCompUri = "tcp://" + getServer(serviceInfo.getServer()) + ":" + ret.getPort();
+			Settings.getInstance().setSetting("machinekit_halRCompService_url", hallRCompUri);
+			Settings.getInstance().initHalRcompService();
+		}
+	}
 
 	public static void getHalCmdServiceUrl(ServiceInfo serviceInfo) {
-		String hallGroupUrl = null;
+		String hallCmdUrl = null;
 		ServiceInfo ret = null;
 		if (serviceInfo.getName().matches("HAL Rcommand.*")) {
 			ret = serviceInfo;
@@ -265,9 +266,9 @@ public class NamedList extends JPanel implements IParameter, IHasLabel {
 		if (ret != null) {
 			String ip = Settings.getInstance().getSetting("machinekit_ip");
 			String host = Settings.getInstance().getSetting("machinekit_host");
-			hallGroupUrl = "tcp://" + getServer(serviceInfo.getServer()) + ":" + ret.getPort();
-			if (!hallGroupUrl.equals(Settings.getInstance().getSetting("machinekit_halCmdService_url"))) {
-				Settings.getInstance().setSetting("machinekit_halCmdService_url", hallGroupUrl);
+			hallCmdUrl = "tcp://" + getServer(serviceInfo.getServer()) + ":" + ret.getPort();
+			if (!hallCmdUrl.equals(Settings.getInstance().getSetting("machinekit_halCmdService_url"))) {
+				Settings.getInstance().setSetting("machinekit_halCmdService_url", hallCmdUrl);
 				Settings.instance.initHalCmdService();
 			}
 		}

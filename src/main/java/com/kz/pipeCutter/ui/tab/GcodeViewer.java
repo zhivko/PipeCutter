@@ -19,17 +19,22 @@ import java.nio.file.StandardWatchEventKinds;
 import java.nio.file.WatchEvent;
 import java.nio.file.WatchKey;
 import java.nio.file.WatchService;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import javax.swing.JButton;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextPane;
 import javax.swing.SwingUtilities;
+import javax.swing.event.CaretEvent;
+import javax.swing.event.CaretListener;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.DefaultHighlighter;
 import javax.swing.text.DefaultHighlighter.DefaultHighlightPainter;
+import javax.swing.text.Utilities;
 
 import com.kz.pipeCutter.SurfaceDemo;
 import com.kz.pipeCutter.BBB.commands.AbortGCode;
@@ -80,6 +85,46 @@ public class GcodeViewer extends JPanel {
 		textArea = new JTextPane();
 		// textArea.setContentType("application/html");
 		// textArea.setEditorKit(new NumberedEditorKit());
+
+		textArea.addCaretListener(new CaretListener() {
+
+			@Override
+			public void caretUpdate(CaretEvent e) {
+				JTextPane editArea = (JTextPane) e.getSource();
+
+				// Lets start with some default values for the line and column.
+				int linenum = 1;
+				int columnnum = 1;
+
+				// We create a try catch to catch any exceptions. We will simply ignore
+				// such an error for our demonstration.
+				try {
+					// First we find the position of the caret. This is the number of
+					// where the caret is in relation to the start of the JTextArea
+					// in the upper left corner. We use this position to find offset
+					// values (eg what line we are on for the given position as well as
+					// what position that line starts on.
+					int caretPos = editArea.getCaretPosition();
+					int offsetEnd = 0;
+					int offset;
+					offset = Utilities.getRowStart(textArea, caretPos) - 1;
+					offsetEnd = Utilities.getRowEnd(textArea, caretPos + 1) - 1;
+					String lineStr = editArea.getDocument().getText(offset + 1, offsetEnd - offset);
+					//System.out.println("Row: " + rowNum + ": " + lineStr.toString());
+
+					Pattern p = Pattern.compile("p:(.*?),");
+					Matcher m = p.matcher(lineStr);
+					if (m.find()) {
+						//System.out.println(m.group(1));
+						SurfaceDemo.instance.lastClickedPoint = SurfaceDemo.instance.utils.getPointbyId(Integer.valueOf(m.group(1)));
+						SurfaceDemo.instance.selectedPointChanged(SurfaceDemo.instance.lastClickedPoint);
+					}
+
+				} catch (Exception ex) {
+					ex.printStackTrace();
+				}
+			}
+		});
 
 		JScrollPane scroll = new JScrollPane(textArea); // place the JTextArea
 		// in a
@@ -389,10 +434,16 @@ public class GcodeViewer extends JPanel {
 	public void setPlasmaOn(boolean on) {
 		if (this.plasmaOn != on) {
 			if (on) {
-				SurfaceDemo.instance.getPlasma().setColor(org.jzy3d.colors.Color.RED);
+				org.jzy3d.colors.Color color = org.jzy3d.colors.Color.RED;
+				color.a = 0.55f;
+
+				SurfaceDemo.instance.getPlasma().setColor(color);
 				SurfaceDemo.instance.getPlasma().setWireframeColor(org.jzy3d.colors.Color.RED);
 			} else {
-				SurfaceDemo.instance.getPlasma().setColor(org.jzy3d.colors.Color.BLUE);
+				org.jzy3d.colors.Color color = org.jzy3d.colors.Color.BLUE;
+				color.a = 0.55f;
+
+				SurfaceDemo.instance.getPlasma().setColor(color);
 				SurfaceDemo.instance.getPlasma().setWireframeColor(org.jzy3d.colors.Color.BLUE);
 			}
 			this.plasmaOn = on;

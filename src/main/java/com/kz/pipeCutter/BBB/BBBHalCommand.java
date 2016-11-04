@@ -162,7 +162,7 @@ public class BBBHalCommand implements Runnable {
 							}
 							
 							// lets run postgui file
-							new MachinekitRunPostgui().runSshCmd();
+							//new MachinekitRunPostgui().runSshCmd();
 							
 							Settings.instance.updateHalValues();
 							Settings.instance.setLaser1IP();
@@ -261,7 +261,7 @@ public class BBBHalCommand implements Runnable {
 						Container container = builder.build();
 						byte[] buff = container.toByteArray();
 
-						String hexOutput = javax.xml.bind.DatatypeConverter.printHexBinary(buff);
+						//String hexOutput = javax.xml.bind.DatatypeConverter.printHexBinary(buff);
 						// System.out.println("PING Message: " + hexOutput);
 
 						socket.send(buff, 0);

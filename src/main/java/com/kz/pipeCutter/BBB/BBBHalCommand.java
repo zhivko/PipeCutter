@@ -162,7 +162,7 @@ public class BBBHalCommand implements Runnable {
 							}
 							
 							// lets run postgui file
-							new MachinekitRunPostgui().runSshCmd();
+							new MachinekitRunPostgui().start();
 							
 							Settings.instance.updateHalValues();
 							Settings.instance.setLaser1IP();

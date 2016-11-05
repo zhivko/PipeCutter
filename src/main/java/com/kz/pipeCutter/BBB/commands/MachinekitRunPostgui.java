@@ -18,85 +18,64 @@ import com.kz.pipeCutter.ui.Settings;
 
 public class MachinekitRunPostgui {
 
-	public void start()
-	{
-		
-		TimerTask timerTask = new TimerTask() {
-			
-			@Override
-			public void run() {
-				try {
-					MachinekitRunPostgui.this.runSshCmd();
-				} catch (Exception e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-			}
-		};
-		(new Timer()).schedule(timerTask, 15000);
-	}
-	
-	public void runSshCmd() throws Exception {
-
-		// this.SSH_Login();
+	public void start() {
 		JSch jsch = new JSch();
 		Session session;
-
-		String ip = Settings.getInstance().getSetting("machinekit_ip");
-		String user = Settings.getInstance().getSetting("machinekit_user");
-		String pass = Settings.getInstance().getSetting("machinekit_password");
-		Settings.getInstance().log("MK instance at IP: " + ip);
-		// Settings.instance.log("MK instance at host: " + host);
-		session = jsch.getSession(user, ip, 22);
-		session.setPassword(pass);
-
-		session.setConfig("StrictHostKeyChecking", "no");
-		session.setConfig("PreferredAuthentications", "publickey,keyboard-interactive,password");
-
-		session.setServerAliveInterval(2000);
-		session.setServerAliveCountMax(Integer.MAX_VALUE);
-
-		session.setOutputStream(System.out);
-		session.connect(15000); // making a connection with timeout.
-
-		ChannelShell channelShell = (ChannelShell) session.openChannel("shell");
-		OutputStream ops = channelShell.getOutputStream();
-		PrintStream ps = new PrintStream(ops, true);
-
-		// channelShell.setAgentForwarding(true);
-		// channelShell.setXForwarding(true);
-		channelShell.connect(5 * 1000);
-
-		// String command = "source ~/git/machinekit/scripts/rip-environment";
-		// ps.println(command);
+		ChannelShell channelShell = null;
 		try {
+			String ip = Settings.getInstance().getSetting("machinekit_ip");
+			String user = Settings.getInstance().getSetting("machinekit_user");
+			String pass = Settings.getInstance().getSetting("machinekit_password");
+			Settings.getInstance().log("MK instance at IP: " + ip);
+			// Settings.instance.log("MK instance at host: " + host);
+			session = jsch.getSession(user, ip, 22);
+			session.setPassword(pass);
+
+			session.setConfig("StrictHostKeyChecking", "no");
+			session.setConfig("PreferredAuthentications", "publickey,keyboard-interactive,password");
+
+			session.setServerAliveInterval(2000);
+			session.setServerAliveCountMax(Integer.MAX_VALUE);
+
+			session.setOutputStream(System.out);
+			session.connect(15000); // making a connection with timeout.
+
+			channelShell = (ChannelShell) session.openChannel("shell");
+			OutputStream ops = channelShell.getOutputStream();
+			PrintStream ps = new PrintStream(ops, true);
+
+			// channelShell.setAgentForwarding(true);
+			// channelShell.setXForwarding(true);
+			channelShell.connect(5 * 1000);
+
+			// String command = "source ~/git/machinekit/scripts/rip-environment";
+			// ps.println(command);
 			Settings.instance.log("Running postgui hal....");
-			String command = "halcmd -f /home/machinekit/machinekit/configs/ARM.BeagleBone.CRAMPS/3D.postgui.hal\n";
+			String command = "halcmd -f /home/machinekit/machinekit/configs/ARM.BeagleBone.CRAMPS/3D.postgui.hal || echo 'hal completed'\n";
 			ps.println(command);
 			readOutput(channelShell);
 		} catch (Exception ex) {
 			ex.printStackTrace();
 		} finally {
-			channelShell.disconnect();
+			if (channelShell != null && channelShell.isConnected())
+				channelShell.disconnect();
+			Settings.instance.log("Running postgui hal....COMPLETED.");
 		}
-		Settings.instance.log("Running postgui hal. DONE.");
 	}
 
 	private void readOutput(ChannelShell channelShell) throws IOException, InterruptedException {
 		InputStream in = channelShell.getInputStream();
 		BufferedReader buffReader = new BufferedReader(new InputStreamReader(in));
 
-		int timeOutMs = 20 * 1000;
-
-		long startMs = System.currentTimeMillis();
 		String line;
-		while (System.currentTimeMillis() < (startMs + timeOutMs)) {
+		while (true) {
 			line = buffReader.readLine();
 			if (line != null)
 				Logger.getLogger(this.getClass()).info(line);
+			if (line.contains("hal completed"))
+				break;
 			Thread.sleep(100);
 		}
-		System.out.println("sf");
 	}
 
 }

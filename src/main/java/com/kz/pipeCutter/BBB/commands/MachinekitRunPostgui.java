@@ -6,8 +6,8 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.PrintStream;
-
-import javax.swing.SwingUtilities;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import org.apache.log4j.Logger;
 
@@ -16,9 +16,26 @@ import com.jcraft.jsch.JSch;
 import com.jcraft.jsch.Session;
 import com.kz.pipeCutter.ui.Settings;
 
-public class MachinekitRunPostgui extends SSH_Command {
+public class MachinekitRunPostgui {
 
-	@Override
+	public void start()
+	{
+		
+		TimerTask timerTask = new TimerTask() {
+			
+			@Override
+			public void run() {
+				try {
+					MachinekitRunPostgui.this.runSshCmd();
+				} catch (Exception e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}
+		};
+		(new Timer()).schedule(timerTask, 15000);
+	}
+	
 	public void runSshCmd() throws Exception {
 
 		// this.SSH_Login();
@@ -48,7 +65,7 @@ public class MachinekitRunPostgui extends SSH_Command {
 
 		// channelShell.setAgentForwarding(true);
 		// channelShell.setXForwarding(true);
-		channelShell.connect(3 * 1000);
+		channelShell.connect(5 * 1000);
 
 		// String command = "source ~/git/machinekit/scripts/rip-environment";
 		// ps.println(command);
@@ -69,7 +86,7 @@ public class MachinekitRunPostgui extends SSH_Command {
 		InputStream in = channelShell.getInputStream();
 		BufferedReader buffReader = new BufferedReader(new InputStreamReader(in));
 
-		int timeOutMs = 10 * 1000;
+		int timeOutMs = 20 * 1000;
 
 		long startMs = System.currentTimeMillis();
 		String line;
@@ -79,6 +96,7 @@ public class MachinekitRunPostgui extends SSH_Command {
 				Logger.getLogger(this.getClass()).info(line);
 			Thread.sleep(100);
 		}
+		System.out.println("sf");
 	}
 
 }

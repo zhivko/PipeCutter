@@ -130,7 +130,7 @@ public class SurfaceDemo extends AbstractAnalysis {
 
 						instance.canvas = (CanvasAWT) instance.getChart().getCanvas();
 
-						//instance.canvas.getAnimator().setUpdateFPSFrames(20, System.out);
+						// instance.canvas.getAnimator().setUpdateFPSFrames(20, System.out);
 						// instance.canvas.setSize(600, 600);
 
 						// Iterator<AbstractCameraController> itController =
@@ -382,8 +382,12 @@ public class SurfaceDemo extends AbstractAnalysis {
 						});
 						// TODO Auto-generated method stub
 
-						if (OSValidator.isWindows())
-							new MyAWTMousePickingController(instance.chart);
+						System.out.println("Thread name:" + Thread.currentThread().getName());
+						// if (OSValidator.isWindows)
+						// on linux the rotation of chart is freezing if I add this line
+						// if I comment it - rotation works but I get no picking events
+						// as said same code works OK on windows on same java 8 jvm
+						new MyAWTMousePickingController(instance.chart);
 
 					}
 

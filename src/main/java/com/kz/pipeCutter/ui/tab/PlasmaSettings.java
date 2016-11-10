@@ -95,5 +95,53 @@ public class PlasmaSettings extends JPanel {
 		velTol.setToolTipText("Velocity Tolerance (Corner Lock)s");
 		this.add(velTol);			
 		
+		
+		SavableText scaleOff = new SavableText();
+		scaleOff.setPin(new PinDef("myini.scale-offset", HalPinDirection.HAL_OUT, ValueType.HAL_FLOAT));
+		scaleOff.requiresHalRCompSet = true;
+		scaleOff.setNeedsSave(true);
+		scaleOff.setParId("myini.scale-offset");
+		scaleOff.setLabelTxt("Scale offset:");
+		scaleOff.setToolTipText("Scale offset");
+		this.add(scaleOff);		
+		
+		SavableText velScale = new SavableText();
+		velScale.setPin(new PinDef("myini.vel-scale", HalPinDirection.HAL_OUT, ValueType.HAL_FLOAT));
+		velScale.requiresHalRCompSet = true;
+		velScale.setNeedsSave(true);
+		velScale.setParId("myini.vel-scale");
+		velScale.setLabelTxt("Velocit scale:");
+		velScale.setToolTipText("Velocity scale");
+		this.add(velScale);				
+
+		SavableText volTolerance = new SavableText();
+		volTolerance.setPin(new PinDef("myini.voltage-tol", HalPinDirection.HAL_OUT, ValueType.HAL_FLOAT));
+		volTolerance.requiresHalRCompSet = true;
+		volTolerance.setNeedsSave(true);
+		volTolerance.setParId("myini.voltage-tol");
+		volTolerance.setLabelTxt("Voltage tolerance:");
+		volTolerance.setToolTipText("Voltage tolerance");
+		this.add(volTolerance);					
+
+		SavableText corrVel = new SavableText();
+		corrVel.setPin(new PinDef("myini.correction-vel", HalPinDirection.HAL_OUT, ValueType.HAL_FLOAT));
+		corrVel.requiresHalRCompSet = true;
+		corrVel.setNeedsSave(true);
+		corrVel.setParId("myini.correction-vel");
+		corrVel.setLabelTxt("Correction velocity:");
+		corrVel.setToolTipText("Correction velocity");
+		this.add(corrVel);		
+		
+		
+		SavableCheckBox thcTorchProbe = new SavableCheckBox();
+		thcTorchProbe.setPin(new PinDef("myini.torch-probe", HalPinDirection.HAL_IN, ValueType.HAL_BIT));
+		thcTorchProbe.setNeedsSave(false);
+		thcTorchProbe.requiresHalRCompSet = false;
+		thcTorchProbe.setParId("myini.torch-probe");
+		thcTorchProbe.setLabelTxt("Torch probe");
+		this.add(thcTorchProbe);		
+		
+		
+		
 	}
 }

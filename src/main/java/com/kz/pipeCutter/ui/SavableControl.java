@@ -18,6 +18,8 @@ import javax.swing.SwingConstants;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 
+import org.apache.log4j.Logger;
+
 import com.kz.pipeCutter.BBB.BBBHalCommand;
 import com.kz.pipeCutter.BBB.BBBHalRComp;
 
@@ -81,6 +83,7 @@ public abstract class SavableControl extends JPanel implements IParameter, ISave
 
 	public void load() throws IOException {
 		// TODO Auto-generated method stub
+		Logger.getLogger(this.getClass()).info("Loading value for: " + this.getParId());
 		this.isLoadingValue = true;
 		FileInputStream in = new FileInputStream(Settings.iniFullFileName);
 		Properties props = new Properties();
@@ -101,10 +104,9 @@ public abstract class SavableControl extends JPanel implements IParameter, ISave
 
 	public void setParId(String parId) {
 		this.parId = parId;
-		Settings.controls.put(this.parId, this);
-
 		try {
 			load();
+			Settings.controls.put(this.parId, this);
 		} catch (IOException e1) {
 			// TODO Auto-generated catch block
 			e1.printStackTrace();

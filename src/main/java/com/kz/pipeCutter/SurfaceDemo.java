@@ -378,26 +378,6 @@ public class SurfaceDemo extends AbstractAnalysis {
 						});
 						// TODO Auto-generated method stub
 
-						if (Settings.instance.getSetting("ui_zoom_plasma").equals("1"))
-
-							SurfaceDemo.ZOOM_PLASMA = true;
-						if (Settings.instance.getSetting("ui_zoom_point").equals("1"))
-							SurfaceDemo.ZOOM_POINT = true;
-
-						if (!Settings.instance.getSetting("ui_zoom").equals("")) {
-							try {
-								String center_str = Settings.instance.getSetting("ui_zoom").split("#")[0];
-								String radius = Settings.instance.getSetting("ui_zoom").split("#")[1];
-
-								float x = Float.valueOf(center_str.split("\\s")[0].split("=")[1]);
-								float y = Float.valueOf(center_str.split("\\s")[1].split("=")[1]);
-								float z = Float.valueOf(center_str.split("\\s")[2].split("=")[1]);
-
-								instance.chart.getView().setBoundManual(new BoundingBox3d(new Coord3d(x, y, z), Float.valueOf(radius)));
-							} catch (Exception ex) {
-								ex.printStackTrace();
-							}
-						}
 
 						new MyAWTMousePickingController(instance.chart);
 
@@ -614,6 +594,26 @@ public class SurfaceDemo extends AbstractAnalysis {
 			// pauseAnimator();
 			// resumeAnimator();
 			// SurfaceDemo.instance.canvas.getAnimator().start();
+			if (Settings.instance.getSetting("ui_zoom_plasma").equals("True"))
+
+				SurfaceDemo.ZOOM_PLASMA = true;
+			if (Settings.instance.getSetting("ui_zoom_point").equals("True"))
+				SurfaceDemo.ZOOM_POINT = true;
+
+			if (!Settings.instance.getSetting("ui_zoom").equals("")) {
+				try {
+					String center_str = Settings.instance.getSetting("ui_zoom").split("#")[0];
+					String radius = Settings.instance.getSetting("ui_zoom").split("#")[1];
+
+					float x = Float.valueOf(center_str.split("\\s")[0].split("=")[1]);
+					float y = Float.valueOf(center_str.split("\\s")[1].split("=")[1]);
+					float z = Float.valueOf(center_str.split("\\s")[2].split("=")[1]);
+
+					instance.chart.getView().setBoundManual(new BoundingBox3d(new Coord3d(x, y, z), Float.valueOf(radius)));
+				} catch (Exception ex) {
+					ex.printStackTrace();
+				}
+			}
 
 			initDraw();
 			System.out.println("Thread: " + Thread.currentThread().getName());

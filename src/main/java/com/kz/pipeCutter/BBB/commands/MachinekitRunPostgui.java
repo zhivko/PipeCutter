@@ -72,7 +72,7 @@ public class MachinekitRunPostgui {
 			line = buffReader.readLine();
 			if (line != null)
 				Logger.getLogger(this.getClass()).info(line);
-			if (line.contains("hal completed"))
+			if (line.contains("'stepg_maxaccel_4'"))
 				break;
 			Thread.sleep(100);
 		}

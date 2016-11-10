@@ -330,6 +330,14 @@ To log pin value to file:
 ) &
 disown
 ```
+**install ordinary component *.comp**
+```
+comp --install ./git/machinekit/mycomponents/mythc.comp
+```
+**instal instantiable component *.icomp**
+```
+instcomp --install ./git/machinekit/mycomponents/udp.icomp
+```
 #Plasma integration
 Plasma used: Powermax 45 XP
 <br>
@@ -345,6 +353,12 @@ Max voltage at thcad: 360.0/40.0=9.0V
 <br>
 The BBB & Hypertherm CPC connection
 ![PLASMA_WIREUP](https://raw.githubusercontent.com/zhivko/PipeCutter/master/screenshots/PLASMA_WIREUP.jpg)
+Pins to be used on BBB:
+```
+CRAMPS_P503_2 MISO P929 ...  for thc voltage from mesa thc 10v - needs to go to pru_generic encoder
+CRAMPS_P503_6 MOSI P930 ...  arc OK - transfer start CNC machine motion
+CRAMPS_P503_4 SCK  P931 ...  plasma start physically connected to 3.3V relay
+```
 ##THCAD
 [THCAD 10V manual](./screenshots/THCAD_10v.pdf)
 <br>

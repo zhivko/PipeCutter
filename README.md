@@ -293,7 +293,22 @@ issue:
 ```
 find ~/git/machinekit/src -type f -exec touch {} +
 ```
+###Building machinekit java protobuff classes
+On BBB or system where you want to build protobuf java machinkeit classes clone repository
+```
+git clone https://github.com/machinekoder/machinetalk-protobuf.git
+```
+checkout java branch with:
+```
+git checkout java
+```
+Start build of java remote protobuff classes for machinekit with
+```
+make clean all
+```
+Then you get java remote classes that are used in PipeCutter machinekit client app.
 
+ 
 
 ###Hal remote components
 https://github.com/mhaberler/asciidoc-sandbox/wiki/Remote-HAL-Components

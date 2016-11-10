@@ -69,8 +69,8 @@ public class MyPopupMenu extends PopupMenu {
 			public void actionPerformed(ActionEvent arg0) {
 				SurfaceDemo.ZOOM_PLASMA = false;
 				SurfaceDemo.ZOOM_POINT = true;
-				Settings.instance.setSetting("ui_zoom_plasma","0");
-				Settings.instance.setSetting("ui_zoom_point","1");
+				Settings.instance.setSetting("ui_zoom_plasma","False");
+				Settings.instance.setSetting("ui_zoom_point","True");
 				SurfaceDemo.instance.redrawPosition();
 			}
 		});
@@ -82,8 +82,9 @@ public class MyPopupMenu extends PopupMenu {
 			public void actionPerformed(ActionEvent arg0) {
 				SurfaceDemo.ZOOM_POINT = false;
 				SurfaceDemo.ZOOM_PLASMA = true;
-				Settings.instance.setSetting("ui_zoom_plasma","1");
-				Settings.instance.setSetting("ui_zoom_point","0");
+				Settings.instance.setSetting("ui_zoom_plasma","True");
+				Settings.instance.setSetting("ui_zoom_point","False");
+
 				SurfaceDemo.instance.redrawPosition();
 			}
 		});

@@ -144,23 +144,19 @@
 		<!-- <version>${jogl.version}</version> -->
 		<!-- </dependency> -->
 
-		<!-- <dependency> -->
-		<!-- <groupId>org.zeromq</groupId> -->
-		<!-- <artifactId>jeromq</artifactId> -->
-		<!-- <version>0.3.5</version> -->
-		<!-- </dependency> -->
+		<dependency>
+		<groupId>org.zeromq</groupId>
+		<artifactId>jeromq</artifactId>
+		<version>0.3.5</version>
+		</dependency>
 
-		<dependency>
-			<groupId>net.lukepalmer</groupId>
-			<artifactId>zeromq-native</artifactId>
-			<version>4.1.5-SNAPSHOT</version>
-		</dependency>
+<!-- 		<dependency> -->
+<!-- 			<groupId>net.lukepalmer</groupId> -->
+<!-- 			<artifactId>zeromq-native</artifactId> -->
+<!-- 			<version>4.1.5-SNAPSHOT</version> -->
+<!-- 		</dependency> -->
 		<!-- https://mvnrepository.com/artifact/org.zeromq/jzmq -->
-		<dependency>
-			<groupId>net.lukepalmer</groupId>
-			<artifactId>jzmq</artifactId>
-			<version>3.1.1-SNAPSHOT</version>
-		</dependency>
+
 <!-- 		<dependency> -->
 <!-- 			<groupId>org.zeromq</groupId> -->
 <!-- 			<artifactId>jzmq</artifactId> -->
@@ -215,6 +211,13 @@
 		<!-- <artifactId>jzmq-api</artifactId> -->
 		<!-- <version>0.1.0-SNAPSHOT</version> -->
 		<!-- </dependency> -->
+		
+		
+<!-- 		<dependency> -->
+<!-- 			<groupId>net.lukepalmer</groupId> -->
+<!-- 			<artifactId>jzmq</artifactId> -->
+<!-- 			<version>3.1.1-SNAPSHOT</version> -->
+<!-- 		</dependency>		 -->
 
 		<dependency>
 			<groupId>javax.jmdns</groupId>

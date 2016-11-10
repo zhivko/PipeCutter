@@ -82,12 +82,24 @@ public class OtherSettings extends JPanel {
 		this.add(pipeDimZ);
 		
 		
-		SavableText zoomBounds = new SavableText();
-		zoomBounds.setLabelTxt("Zoom bounds:");
-		zoomBounds.setParId("zoom_bounds");
-		zoomBounds.setNeedsSave(true);
-		this.add(zoomBounds);
+//		SavableText zoomBounds = new SavableText();
+//		zoomBounds.setLabelTxt("Zoom bounds:");
+//		zoomBounds.setParId("ui_zoom_bounds");
+//		zoomBounds.setNeedsSave(true);
+//		this.add(zoomBounds);
 
+		SavableText zoomCenter = new SavableText();
+		zoomCenter.setLabelTxt("Zoom center:");
+		zoomCenter.setParId("ui_zoom_center");
+		zoomCenter.setNeedsSave(true);
+		this.add(zoomCenter);		
+		
+		SavableText zoomRadius = new SavableText();
+		zoomRadius.setLabelTxt("Zoom radius:");
+		zoomRadius.setParId("ui_zoom_radius");
+		zoomRadius.setNeedsSave(true);
+		this.add(zoomRadius);		
+		
 		SavableCheckBox pingBBBHalCmd = new SavableCheckBox() {
 			@Override
 			public void valueChangedFromUI() {

@@ -600,20 +600,33 @@ public class SurfaceDemo extends AbstractAnalysis {
 			if (Settings.instance.getSetting("ui_zoom_point").equals("True"))
 				SurfaceDemo.ZOOM_POINT = true;
 
-			if (!Settings.instance.getSetting("ui_zoom").equals("")) {
-				try {
-					String center_str = Settings.instance.getSetting("ui_zoom").split("#")[0];
-					String radius = Settings.instance.getSetting("ui_zoom").split("#")[1];
+			SwingUtilities.invokeLater(new Runnable() {
+				public void run() {
+					try {
+						Thread.sleep(2000);
+					} catch (InterruptedException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+					if (!Settings.instance.getSetting("ui_zoom_center").equals("")) {
+						try {
+							String center_str = Settings.instance.getSetting("ui_zoom_center");
+							String radius = Settings.instance.getSetting("ui_zoom_radius");
 
-					float x = Float.valueOf(center_str.split("\\s")[0].split("=")[1]);
-					float y = Float.valueOf(center_str.split("\\s")[1].split("=")[1]);
-					float z = Float.valueOf(center_str.split("\\s")[2].split("=")[1]);
+							
+							float x = Float.valueOf(center_str.split("\\s")[0].split("=")[1]);
+							float y = Float.valueOf(center_str.split("\\s")[1].split("=")[1]);
+							float z = Float.valueOf(center_str.split("\\s")[2].split("=")[1]);
 
-					instance.chart.getView().setBoundManual(new BoundingBox3d(new Coord3d(x, y, z), Float.valueOf(radius)));
-				} catch (Exception ex) {
-					ex.printStackTrace();
+							
+							instance.chart.getView().setBoundManual(new BoundingBox3d(new Coord3d(x, y, z), Float.valueOf(radius)));
+						} catch (Exception ex) {
+							ex.printStackTrace();
+						}
+					}
+					
 				}
-			}
+			});
 
 			initDraw();
 			System.out.println("Thread: " + Thread.currentThread().getName());
@@ -1125,11 +1138,11 @@ public class SurfaceDemo extends AbstractAnalysis {
 		return ret;
 	}
 
-	public float getZoomBounds() {
-		float ret = 0.0f;
-		ret = Float.valueOf(Settings.getInstance().getSetting("zoom_bounds")).floatValue();
-		return ret;
-	}
+//	public float getZoomBounds() {
+//		float ret = 0.0f;
+//		ret = Float.valueOf(Settings.getInstance().getSetting("ui_zoom_bounds")).floatValue();
+//		return ret;
+//	}
 
 	public void redrawPosition() {
 		if (instance.getChart().getView().getCanvas() != null) {

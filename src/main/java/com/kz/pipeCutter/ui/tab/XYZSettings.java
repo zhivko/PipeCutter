@@ -9,12 +9,11 @@ import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 
-import com.kz.pipeCutter.BBB.commands.CenterPipe;
 import com.kz.pipeCutter.BBB.commands.CenterXOnPipe;
 import com.kz.pipeCutter.BBB.commands.Jog;
+import com.kz.pipeCutter.BBB.commands.MakeXHorizontal;
 import com.kz.pipeCutter.ui.MyVerticalFlowLayout;
 import com.kz.pipeCutter.ui.PinDef;
-import com.kz.pipeCutter.ui.Positioner;
 import com.kz.pipeCutter.ui.SavableSlider;
 import com.kz.pipeCutter.ui.SavableText;
 import com.kz.pipeCutter.ui.Settings;
@@ -248,5 +247,18 @@ public class XYZSettings extends JPanel {
 		panelZAxis.add(positionZ);
 		positionZ.setParId("position_z");
 		positionZ.setNeedsSave(false);
+
+		JButton btnZRot = new JButton("Make X plane horizontal");
+		btnZRot.setBounds(75, 32, 54, 31);
+		panelZAxis.add(btnZRot);
+		btnZRot.addActionListener(new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent e1) {
+				new Thread(new MakeXHorizontal()).start();
+			}
+		});
+		
+	
 	}
 }

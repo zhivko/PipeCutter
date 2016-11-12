@@ -123,23 +123,22 @@ public class CutThread extends SwingWorker<String, Object> {
 		double mminY = sortedList.get(0).xyz.y;
 		double mmaxY = sortedList.get(sortedList.size() - 1).xyz.y;
 
-		
 		ArrayList<MyPickablePoint> sortedList2 = new ArrayList(SurfaceDemo.getInstance().utils.points.values());
 		Collections.sort(sortedList2, new MyPickablePointZMidXYComparator());
 		SurfaceDemo.instance.utils.previousPoint = sortedList2.get(0).xyz;
 		SurfaceDemo.instance.utils.previousAngle = 0.0f;
-		
+
 		SurfaceDemo.getInstance().angleTxt = "0.0";
-		SurfaceDemo.instance.writeToGcodeFile("G94");
+		SurfaceDemo.instance.writeToGcodeFile("G90 (switch to absolute coordinates)");
+		SurfaceDemo.instance.writeToGcodeFile("G94 (units per minute mode)");
 
 		// out.println(String.format(Locale.US, "G00 Z%.3f F%s", diagonal / 2.0f +
 		// 20.0f, Settings.getInstance().getSetting("gcode_feedrate_g0")));
 
 		double diagonal = (SurfaceDemo.getInstance().utils.maxEdge * Math.sqrt(2.0f));
-		SurfaceDemo.instance
-				.writeToGcodeFile(String.format(Locale.US, "G00 X%.3f Y%.3f Z%.3f F%s", SurfaceDemo.instance.utils.previousPoint.x, SurfaceDemo.instance.utils.previousPoint.y, diagonal / 2.0f + 20.0f, Settings.getInstance().getSetting("gcode_feedrate_g0")));
-		
-		
+		SurfaceDemo.instance.writeToGcodeFile(String.format(Locale.US, "G00 X%.3f Y%.3f Z%.3f F%s", SurfaceDemo.instance.utils.previousPoint.x,
+				SurfaceDemo.instance.utils.previousPoint.y, diagonal / 2.0f + 20.0f, Settings.getInstance().getSetting("gcode_feedrate_g0")));
+
 		// double diagonal = (SurfaceDemo.getInstance().utils.maxEdge *
 		// Math.sqrt(2.0f));
 		// MyPickablePoint safeRetractPoint = new MyPickablePoint(-100000, new
@@ -151,8 +150,8 @@ public class CutThread extends SwingWorker<String, Object> {
 		// true);
 
 		// lets turn on path blending
-		SurfaceDemo.instance.writeToGcodeFile("G64 P.05 Q.05");
-		SurfaceDemo.instance.writeToGcodeFile("G93");
+		SurfaceDemo.instance.writeToGcodeFile("G64 P.05 (path blending - P away from point)");
+		SurfaceDemo.instance.writeToGcodeFile("G93 (inverse time mode)");
 
 		float currentY = (float) mmaxY;
 		alAlreadyAddedPoints = new ArrayList<MyPickablePoint>();
@@ -179,15 +178,8 @@ public class CutThread extends SwingWorker<String, Object> {
 		if (sumAngle >= 360.0)
 			rotationDirection = -1;
 		cutSegment(minY, maxY, false, rotationDirection);
-		try {
-			PrintWriter out = new PrintWriter(new BufferedWriter(new FileWriter(CutThread.gcodeFile.getAbsolutePath(), true)));
-			out.println("M2");
-			out.flush();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-
+		SurfaceDemo.instance.writeToGcodeFile("G94");
+		SurfaceDemo.instance.writeToGcodeFile("M2");
 	}
 
 	private void cutSegment(float minY, double maxY, boolean withoutLastPoints, int rotationDirection) {
@@ -359,17 +351,10 @@ public class CutThread extends SwingWorker<String, Object> {
 		System.out.println("File " + gcodeFile.getAbsolutePath() + " deleted?" + gcodeFile.delete());
 		if (this.wholePipe)
 			cut();
-		else
-			try {
-				this.followThePath(this.startPoint, this.alAlreadyAddedPoints, true);
-				PrintWriter out = new PrintWriter(new BufferedWriter(new FileWriter(CutThread.gcodeFile.getAbsolutePath(), true)));
-				out.println("M2");
-				out.flush();
-				out.close();
-			} catch (Exception ex) {
-				ex.printStackTrace();
-			}
-
+		else {
+			this.followThePath(this.startPoint, this.alAlreadyAddedPoints, true);
+			SurfaceDemo.instance.writeToGcodeFile("M2");
+		}
 		return "Done";
 	}
 

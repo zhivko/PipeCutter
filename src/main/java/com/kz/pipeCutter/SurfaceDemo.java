@@ -55,6 +55,7 @@ import org.jzy3d.plot3d.primitives.Point;
 import org.jzy3d.plot3d.primitives.Sphere;
 import org.jzy3d.plot3d.rendering.canvas.CanvasAWT;
 import org.jzy3d.plot3d.rendering.canvas.Quality;
+import org.jzy3d.plot3d.rendering.view.modes.CameraMode;
 import org.jzy3d.plot3d.rendering.view.modes.ViewBoundMode;
 import org.jzy3d.plot3d.rendering.view.modes.ViewPositionMode;
 import org.jzy3d.plot3d.text.align.Halign;
@@ -124,12 +125,12 @@ public class SurfaceDemo extends AbstractAnalysis {
 							e2.printStackTrace();
 						}
 						Logger.getLogger(this.getClass()).info("Is daemon: " + Thread.currentThread().isDaemon());
-						Logger.getLogger(this.getClass()).info("Is eventdispatched thread? " + javax.swing.SwingUtilities.isEventDispatchThread());
+						Logger.getLogger(this.getClass())
+								.info("Is eventdispatched thread? " + javax.swing.SwingUtilities.isEventDispatchThread());
 
 						instance.canvas = (CanvasAWT) instance.getChart().getCanvas();
-						instance.canvas.getAnimator().start();
-						// instance.canvas.getAnimator().setUpdateFPSFrames(20,
-						// System.out);
+
+						// instance.canvas.getAnimator().setUpdateFPSFrames(20, System.out);
 						// instance.canvas.setSize(600, 600);
 
 						// Iterator<AbstractCameraController> itController =
@@ -281,7 +282,8 @@ public class SurfaceDemo extends AbstractAnalysis {
 							@Override
 							public void componentShown(ComponentEvent e) {
 								// TODO Auto-generated method stub
-								float radiusOfPlasma = Double.valueOf(SurfaceDemo.instance.canvas.getView().getBounds().getRadius()).floatValue() / 20.0f;
+								float radiusOfPlasma = Double.valueOf(SurfaceDemo.instance.canvas.getView().getBounds().getRadius())
+										.floatValue() / 20.0f;
 								plasma.setVolume(radiusOfPlasma);
 
 								Component c = (Component) e.getSource();
@@ -301,8 +303,8 @@ public class SurfaceDemo extends AbstractAnalysis {
 												String[] splittedSize = size.split("x");
 												instance.canvas.validate();
 												instance.canvas.repaint();
-												instance.canvas.getParent()
-														.setSize(new Dimension(Double.valueOf(splittedSize[0]).intValue(), Double.valueOf(splittedSize[1]).intValue()));
+												instance.canvas.getParent().setSize(
+														new Dimension(Double.valueOf(splittedSize[0]).intValue(), Double.valueOf(splittedSize[1]).intValue()));
 											} catch (Exception ex) {
 												ex.printStackTrace();
 											}
@@ -329,7 +331,8 @@ public class SurfaceDemo extends AbstractAnalysis {
 										in.close();
 
 										FileOutputStream out = new FileOutputStream(Settings.iniFullFileName);
-										props.setProperty("surfaceDemo_size", instance.canvas.getSize().getWidth() + "x" + instance.canvas.getSize().getHeight());
+										props.setProperty("surfaceDemo_size",
+												instance.canvas.getSize().getWidth() + "x" + instance.canvas.getSize().getHeight());
 										props.store(out, null);
 										out.close();
 
@@ -356,7 +359,8 @@ public class SurfaceDemo extends AbstractAnalysis {
 										in.close();
 
 										FileOutputStream out = new FileOutputStream(Settings.iniFullFileName);
-										props.setProperty("surfaceDemo_position", (int) c.getLocationOnScreen().getX() + "x" + (int) c.getLocationOnScreen().getY());
+										props.setProperty("surfaceDemo_position",
+												(int) c.getLocationOnScreen().getX() + "x" + (int) c.getLocationOnScreen().getY());
 										props.store(out, null);
 										out.close();
 
@@ -378,7 +382,11 @@ public class SurfaceDemo extends AbstractAnalysis {
 						});
 						// TODO Auto-generated method stub
 
-
+						System.out.println("Thread name:" + Thread.currentThread().getName());
+						// if (OSValidator.isWindows)
+						// on linux the rotation of chart is freezing if I add this line
+						// if I comment it - rotation works but I get no picking events
+						// as said same code works OK on windows on same java 8 jvm
 						new MyAWTMousePickingController(instance.chart);
 
 					}
@@ -595,7 +603,6 @@ public class SurfaceDemo extends AbstractAnalysis {
 			// resumeAnimator();
 			// SurfaceDemo.instance.canvas.getAnimator().start();
 			if (Settings.instance.getSetting("ui_zoom_plasma").equals("True"))
-
 				SurfaceDemo.ZOOM_PLASMA = true;
 			if (Settings.instance.getSetting("ui_zoom_point").equals("True"))
 				SurfaceDemo.ZOOM_POINT = true;
@@ -603,30 +610,41 @@ public class SurfaceDemo extends AbstractAnalysis {
 			SwingUtilities.invokeLater(new Runnable() {
 				public void run() {
 					try {
-						Thread.sleep(2000);
+						Settings.instance.log("Sleeping...");
+						Thread.sleep(100);
+						Settings.instance.log("Sleeping...Done.");
 					} catch (InterruptedException e) {
 						// TODO Auto-generated catch block
 						e.printStackTrace();
 					}
+					Settings.instance.log("Starting zoom and focus to last point...");
 					if (!Settings.instance.getSetting("ui_zoom_center").equals("")) {
 						try {
 							String center_str = Settings.instance.getSetting("ui_zoom_center");
 							String radius = Settings.instance.getSetting("ui_zoom_radius");
 
-							
 							float x = Float.valueOf(center_str.split("\\s")[0].split("=")[1]);
 							float y = Float.valueOf(center_str.split("\\s")[1].split("=")[1]);
 							float z = Float.valueOf(center_str.split("\\s")[2].split("=")[1]);
 
-							
 							instance.chart.getView().setBoundManual(new BoundingBox3d(new Coord3d(x, y, z), Float.valueOf(radius)));
+
+							instance.enablePicking(instance.utils.points.values(), instance.chart, 10);
+
+							instance.canvas.getAnimator().start();
+
 						} catch (Exception ex) {
 							ex.printStackTrace();
 						}
 					}
-					
+					Settings.instance.log("Starting zoom and focus to last point...Done.");
+
 				}
 			});
+
+			instance.canvas.getView().setViewPositionMode(ViewPositionMode.FREE);
+			instance.canvas.getView().setMaximized(true);
+			instance.canvas.getView().setCameraMode(CameraMode.ORTHOGONAL);
 
 			initDraw();
 			System.out.println("Thread: " + Thread.currentThread().getName());
@@ -803,11 +821,13 @@ public class SurfaceDemo extends AbstractAnalysis {
 				Coord3d textPoint = edge.center.sub(delta.getNormalizedTo(0.2f));
 				if (edge.edgeType == MyEdge.EdgeType.ONRADIUS)
 					radius = "R";
-				Rotation r = new Rotation(0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f, -1.0f * Float.valueOf(SurfaceDemo.instance.angleTxt) * Math.PI / 180);
+				Rotation r = new Rotation(0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f,
+						-1.0f * Float.valueOf(SurfaceDemo.instance.angleTxt) * Math.PI / 180);
 				Coordinates c = new Coordinates(textPoint.x, textPoint.y, textPoint.z);
 				r.transform(c);
 
-				PickableDrawableTextBitmap t5 = new PickableDrawableTextBitmap(radius + String.valueOf(edge.edgeNo), new Coord3d(c.x, c.y, c.z), Color.BLUE);
+				PickableDrawableTextBitmap t5 = new PickableDrawableTextBitmap(radius + String.valueOf(edge.edgeNo),
+						new Coord3d(c.x, c.y, c.z), Color.BLUE);
 				t5.setHalign(Halign.CENTER); // TODO: invert
 				t5.setValign(Valign.CENTER); // TODO: invert
 				// t5.setValign(Valign.BOTTOM); // TODO: invert
@@ -821,21 +841,24 @@ public class SurfaceDemo extends AbstractAnalysis {
 				ls.add(utils.points.get(point.id));
 				if (SurfaceDemo.NUMBER_POINTS) {
 					if (!alreadyAddedPointsText.contains(pointNo)) {
-//						DrawableTextBitmap t4 = new DrawableTextBitmap(String.valueOf(point.id), point.xyz, Color.BLACK);
-//						t4.setHalign(Halign.CENTER); // TODO: invert
-//						t4.setValign(Valign.CENTER); // TODO: invert
-//						// left/right
-//						utils.pointTexts.add(t4);
-//						alreadyAddedPointsText.add(pointNo);
+						// DrawableTextBitmap t4 = new
+						// DrawableTextBitmap(String.valueOf(point.id), point.xyz, Color.BLACK);
+						// t4.setHalign(Halign.CENTER); // TODO: invert
+						// t4.setValign(Valign.CENTER); // TODO: invert
+						// // left/right
+						// utils.pointTexts.add(t4);
+						// alreadyAddedPointsText.add(pointNo);
 						Coord3d cent = this.utils.continuousEdges.get(edge.getPointByIndex(0).continuousEdgeNo).center;
 						Coord3d delta = point.xyz.sub(cent);
 						// 2 mm toward center
 						Coord3d textPoint = point.xyz.sub(delta.getNormalizedTo(0.2f));
-						//Rotation r = new Rotation(0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f, -1.0f * Float.valueOf(SurfaceDemo.instance.angleTxt) * Math.PI / 180);
-						//Coordinates c = new Coordinates(textPoint.x, textPoint.y, textPoint.z);
-						//r.transform(c);
+						// Rotation r = new Rotation(0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f, -1.0f *
+						// Float.valueOf(SurfaceDemo.instance.angleTxt) * Math.PI / 180);
+						// Coordinates c = new Coordinates(textPoint.x, textPoint.y, textPoint.z);
+						// r.transform(c);
 
-						PickableDrawableTextBitmap t4 = new PickableDrawableTextBitmap(String.valueOf(point.id), new Coord3d(textPoint.x, textPoint.y, textPoint.z), Color.BLUE);
+						PickableDrawableTextBitmap t4 = new PickableDrawableTextBitmap(String.valueOf(point.id),
+								new Coord3d(textPoint.x, textPoint.y, textPoint.z), Color.BLUE);
 						t4.setHalign(Halign.CENTER); // TODO: invert
 						t4.setValign(Valign.CENTER); // TODO: invert
 						// t5.setValign(Valign.BOTTOM); // TODO: invert
@@ -866,7 +889,6 @@ public class SurfaceDemo extends AbstractAnalysis {
 			myComposite.add(utils.pointTexts);
 		}
 		instance.getChart().getScene().getGraph().add(instance.myComposite);
-		instance.enablePicking(instance.utils.points.values(), instance.chart, 10);
 		// instance.canvas.getAnimator().start();
 		System.out.println("Composite element size: " + myComposite.getDrawables().size());
 	}
@@ -1099,7 +1121,7 @@ public class SurfaceDemo extends AbstractAnalysis {
 
 			writeToGcodeFile("G00 " + gcode);
 			if (!alreadyCutting) {
-				//SurfaceDemo.instance.utils.previousEdge = null;
+				// SurfaceDemo.instance.utils.previousEdge = null;
 				writeToGcodeFile("M3 S400");
 				alreadyCutting = true;
 			}
@@ -1138,20 +1160,23 @@ public class SurfaceDemo extends AbstractAnalysis {
 		return ret;
 	}
 
-//	public float getZoomBounds() {
-//		float ret = 0.0f;
-//		ret = Float.valueOf(Settings.getInstance().getSetting("ui_zoom_bounds")).floatValue();
-//		return ret;
-//	}
+	// public float getZoomBounds() {
+	// float ret = 0.0f;
+	// ret =
+	// Float.valueOf(Settings.getInstance().getSetting("ui_zoom_bounds")).floatValue();
+	// return ret;
+	// }
 
 	public void redrawPosition() {
 		if (instance.getChart().getView().getCanvas() != null) {
 			float currentViewRadius = SurfaceDemo.instance.canvas.getView().getAxe().getBoxBounds().getXmax()
 					- SurfaceDemo.instance.canvas.getView().getAxe().getBoxBounds().getXmin();
 			if (ZOOM_PLASMA) {
-				SurfaceDemo.instance.canvas.getView().setBoundManual(new BoundingBox3d(SurfaceDemo.instance.getPlasma().getPosition(), currentViewRadius));
+				SurfaceDemo.instance.canvas.getView()
+						.setBoundManual(new BoundingBox3d(SurfaceDemo.instance.getPlasma().getPosition(), currentViewRadius));
 			} else if (ZOOM_POINT) {
-				SurfaceDemo.instance.canvas.getView().setBoundManual(new BoundingBox3d(SurfaceDemo.instance.lastClickedPoint.getCoord(), currentViewRadius));
+				SurfaceDemo.instance.canvas.getView()
+						.setBoundManual(new BoundingBox3d(SurfaceDemo.instance.lastClickedPoint.getCoord(), currentViewRadius));
 			} else
 				SurfaceDemo.instance.canvas.getView().setBoundMode(ViewBoundMode.AUTO_FIT);
 
@@ -1164,11 +1189,12 @@ public class SurfaceDemo extends AbstractAnalysis {
 		try {
 			out = new PrintWriter(new BufferedWriter(new FileWriter(CutThread.gcodeFile.getAbsolutePath(), true)));
 
-//			if (this.gCodeLineNo == 2 && Settings.instance.getSetting("gcode_g93").equals("1")) {
-//				SurfaceDemo.instance.g93mode = true;
-//				out.println("G93");
-//				this.gCodeLineNo++;
-//			}
+			// if (this.gCodeLineNo == 2 &&
+			// Settings.instance.getSetting("gcode_g93").equals("1")) {
+			// SurfaceDemo.instance.g93mode = true;
+			// out.println("G93");
+			// this.gCodeLineNo++;
+			// }
 
 			// System.out.println(txt);
 			// System.out.println(SurfaceDemo.instance.utils.previousPoint);

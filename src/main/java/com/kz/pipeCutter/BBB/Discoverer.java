@@ -45,9 +45,9 @@ public class Discoverer {
 
 		Enumeration<NetworkInterface> ifc;
 		try {
-			Logger.getLogger(this.getClass().getName()).info("Getting network iterfaces...");
+			Logger.getLogger(this.getClass().getName()).info("Getting network interfaces...");
 			ifc = NetworkInterface.getNetworkInterfaces();
-			Logger.getLogger(this.getClass().getName()).info("Getting network iterfaces...done.");
+			Logger.getLogger(this.getClass().getName()).info("Getting network interfaces...done.");
 			bonjourServiceListener = new ServiceListener() {
 
 				@Override

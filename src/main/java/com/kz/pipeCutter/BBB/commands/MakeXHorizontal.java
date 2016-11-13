@@ -15,8 +15,9 @@ public class MakeXHorizontal implements Runnable {
 		HashMap<Float, Float> xz = new HashMap<Float, Float>();
 
 		int waitPositionMs = 200;
+		float maxDx = (Float.valueOf(Settings.instance.getSetting("pipe_dim_x")) - 2.0f * Float.valueOf(Settings.instance.getSetting("radius"))) / 2.0f;
 
-		String speed = " F1000";
+		int speed = 1000;
 		float xmin, xmax;
 		float z;
 		float xPos = Float.valueOf(Settings.getInstance().getSetting("position_x"));
@@ -26,7 +27,8 @@ public class MakeXHorizontal implements Runnable {
 		float deltaX = 1.5f;
 		while (true) {
 			float newXPos = Math.round((xPos + deltaX) * 10) / 10.0f;
-			new ExecuteMdi("G01 X" + newXPos + speed).start();
+			new ExecuteMdi(String.format("G01 X%5.3f F%d", newXPos, speed)).start();
+
 			while (true) {
 				String xVal = Settings.getInstance().getSetting("position_x");
 				if (xVal != null && !xVal.equals("")) {
@@ -40,19 +42,22 @@ public class MakeXHorizontal implements Runnable {
 					ex.printStackTrace();
 				}
 			}
+			try {
+				Thread.sleep(waitPositionMs);
+			} catch (Exception ex) {
+				ex.printStackTrace();
+			}
 			z = Float.valueOf(Settings.instance.getSetting("mymotion.laserHeight1"));
 			xz.put(Float.valueOf(xPos), Float.valueOf(z));
 			regression.addData(xPos, z);
 
-			if (z > startZ + 1.5f)
-				deltaX = 0.1f;
-			if (z > 1000) {
+			if (z > 1000 || Math.abs(startX - newXPos) > maxDx) {
 				xmin = xPos;
 				break;
 			}
 		}
 
-		new ExecuteMdi("G01 X" + startX + speed).start();
+		new ExecuteMdi(String.format("G01 X%5.3f F%d", startX, speed)).start();
 
 		while (true) {
 			String xVal = Settings.getInstance().getSetting("position_x");
@@ -71,7 +76,7 @@ public class MakeXHorizontal implements Runnable {
 		deltaX = -1.5f;
 		while (true) {
 			float newXPos = Math.round((xPos + deltaX) * 10) / 10.0f;
-			new ExecuteMdi("G01 X" + newXPos + speed).start();
+			new ExecuteMdi(String.format("G01 X%5.3f F%d", newXPos, speed)).start();
 			while (true) {
 				String xVal = Settings.getInstance().getSetting("position_x");
 				if (xVal != null && !xVal.equals("")) {
@@ -85,17 +90,20 @@ public class MakeXHorizontal implements Runnable {
 					ex.printStackTrace();
 				}
 			}
+			try {
+				Thread.sleep(waitPositionMs);
+			} catch (Exception ex) {
+				ex.printStackTrace();
+			}
 			z = Float.valueOf(Settings.instance.getSetting("mymotion.laserHeight1"));
 			xz.put(Float.valueOf(xPos), Float.valueOf(z));
 			regression.addData(xPos, z);
-			if (z > startZ + 1.5f)
-				deltaX = -0.1f;
-			if (z > 1000) {
+			if (z > 1000 || Math.abs(startX - newXPos) > maxDx) {
 				xmax = xPos;
 				break;
 			}
 		}
-		new ExecuteMdi(String.format("G01 X%5.3f F%d", (xmin + xmax) / 2.0f, speed)).start();
+		new ExecuteMdi(String.format("G01 X%5.3f F%d", startX, speed)).start();
 
 		System.out.println(regression.getIntercept());
 		// displays intercept of regression line
@@ -109,9 +117,11 @@ public class MakeXHorizontal implements Runnable {
 
 		Settings.instance.log(String.format("xmin: %5.3f xmax: %5.3f x_center: %5.3f", xmin, xmax, (xmin + xmax) / 2.0f));
 		Settings.instance.log(String.format("angle: %5.3f", angleDeg));
-		Settings.instance.log(String.format("Rotating for half angle: %5.3f", angle / 2.0f));
-		
-		new ExecuteMdi(String.format("G91\nG01 A%5.3f B%5.3f %d\nG90", angle / 2.0f, angle / 2.0f, speed)).start();
+		double angleCorr = -angleDeg;
+		Settings.instance.log(String.format("Rotating for angle: %5.3f", angleCorr));
+
+		Float maxRotSpeed = Float.valueOf(Settings.instance.getSetting("myini.maxvel_3"));
+		new ExecuteMdi(String.format("G91\nG01 A%5.3f B%5.3f F%5.3f\nG90", angleCorr, angleCorr, maxRotSpeed)).start();
 	}
 
 }

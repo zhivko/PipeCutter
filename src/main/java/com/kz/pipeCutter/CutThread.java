@@ -150,7 +150,7 @@ public class CutThread extends SwingWorker<String, Object> {
 		// true);
 
 		// lets turn on path blending
-		SurfaceDemo.instance.writeToGcodeFile("G64 P.05 (path blending - P away from point)");
+		SurfaceDemo.instance.writeToGcodeFile("G64 P.5 Q.5 (path blending - P away from point)");
 		SurfaceDemo.instance.writeToGcodeFile("G93 (inverse time mode)");
 
 		float currentY = (float) mmaxY;

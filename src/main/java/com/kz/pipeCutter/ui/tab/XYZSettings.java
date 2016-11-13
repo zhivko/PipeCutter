@@ -12,6 +12,7 @@ import javax.swing.JPanel;
 import com.kz.pipeCutter.BBB.commands.CenterXOnPipe;
 import com.kz.pipeCutter.BBB.commands.Jog;
 import com.kz.pipeCutter.BBB.commands.MakeXHorizontal;
+import com.kz.pipeCutter.BBB.commands.PlasmaTouch;
 import com.kz.pipeCutter.ui.MyVerticalFlowLayout;
 import com.kz.pipeCutter.ui.PinDef;
 import com.kz.pipeCutter.ui.SavableSlider;
@@ -248,7 +249,7 @@ public class XYZSettings extends JPanel {
 		positionZ.setParId("position_z");
 		positionZ.setNeedsSave(false);
 
-		JButton btnZRot = new JButton("Make X plane horizontal");
+		JButton btnZRot = new JButton("Make X axis horizontal");
 		btnZRot.setBounds(75, 32, 54, 31);
 		panelZAxis.add(btnZRot);
 		btnZRot.addActionListener(new ActionListener() {
@@ -259,6 +260,16 @@ public class XYZSettings extends JPanel {
 			}
 		});
 		
+		JButton btnPlasmaTouch = new JButton("Plasma touch");
+		btnPlasmaTouch.setBounds(75, 32, 54, 31);
+		panelZAxis.add(btnPlasmaTouch);
+		btnPlasmaTouch.addActionListener(new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent e1) {
+				new Thread(new PlasmaTouch()).start();
+			}
+		});
 	
 	}
 }

@@ -33,6 +33,12 @@ public class PlasmaSettings extends JPanel {
 		MyVerticalFlowLayout flowLayout = new MyVerticalFlowLayout();
 		this.setLayout(flowLayout);
 
+		SavableText plasmaLengthMm = new SavableText();
+		plasmaLengthMm.setLabelTxt("Plasma length [mm]:");
+		plasmaLengthMm.setParId("plasma_length_mm");
+		this.add(plasmaLengthMm);
+
+		
 		SavableText plasmaPierceOffsetMm = new SavableText();
 		plasmaPierceOffsetMm.setLabelTxt("Plasma pierce offset [mm]:");
 		plasmaPierceOffsetMm.setParId("plasma_pierce_offset_mm");

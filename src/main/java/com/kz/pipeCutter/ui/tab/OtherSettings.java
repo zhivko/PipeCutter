@@ -65,7 +65,7 @@ public class OtherSettings extends JPanel {
 
 		SavableText radius = new SavableText();
 		radius.setLabelTxt("Pipe radius:");
-		radius.setParId("radius");
+		radius.setParId("pipe_radius");
 		this.add(radius);
 		
 		SavableText pipeDimX = new SavableText();

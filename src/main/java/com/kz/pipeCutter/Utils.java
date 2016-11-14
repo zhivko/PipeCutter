@@ -407,7 +407,7 @@ public class Utils {
 				 * radius = (this.maxX) * 1.41; double v = w * radius * 180 / Math.PI;
 				 */
 				// fillet length
-				float radius_of_edge = Float.valueOf(Settings.instance.getSetting("radius"));
+				float radius_of_edge = Float.valueOf(Settings.instance.getSetting("pipe_radius"));
 				float maxRadius = (float) Math.sqrt(this.maxX * this.maxX + this.maxZ * this.maxZ);
 				// float s = ((this.maxX * 2.0f - 2 * radius_of_edge) + (this.maxZ *
 				// 2.0f - 2 * radius_of_edge)) / 2.0f;
@@ -851,7 +851,7 @@ public class Utils {
 	}
 
 	public void markRadiusPoints() {
-		float radius = Float.valueOf(Settings.instance.getSetting("radius"));
+		float radius = Float.valueOf(Settings.instance.getSetting("pipe_radius"));
 
 		float rx_min = -this.maxX + radius;
 		float rx_max = this.maxX - radius;

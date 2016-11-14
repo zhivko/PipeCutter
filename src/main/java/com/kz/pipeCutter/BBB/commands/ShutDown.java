@@ -3,6 +3,7 @@ package com.kz.pipeCutter.BBB.commands;
 import com.google.protobuf.InvalidProtocolBufferException;
 import com.kz.pipeCutter.BBB.BBBHalRComp;
 import com.kz.pipeCutter.BBB.BBBMachineTalkCommand;
+import com.kz.pipeCutter.BBB.BBBStatus;
 import com.kz.pipeCutter.ui.Settings;
 
 import pb.Message.Container;
@@ -15,7 +16,11 @@ public class ShutDown extends BBBMachineTalkCommand {
 	@Override
 	public Container prepareContainer() throws Exception {
 		// TODO Auto-generated method stub
-
+		if (BBBHalRComp.instance != null)
+			BBBHalRComp.instance.stop();
+		if (BBBStatus.instance != null)
+			BBBStatus.instance.stop();
+		
 		pb.Message.Container.Builder builder = Container.newBuilder();
 		builder.setType(ContainerType.MT_SHUTDOWN);
 		builder.setTicket(getNextTicket());

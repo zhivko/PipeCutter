@@ -15,7 +15,7 @@ public class MakeXHorizontal implements Runnable {
 		HashMap<Float, Float> xz = new HashMap<Float, Float>();
 
 		int waitPositionMs = 200;
-		float maxDx = (Float.valueOf(Settings.instance.getSetting("pipe_dim_x")) - 2.0f * Float.valueOf(Settings.instance.getSetting("radius"))) / 2.0f;
+		float maxDx = (Float.valueOf(Settings.instance.getSetting("pipe_dim_x")) - 2.0f * Float.valueOf(Settings.instance.getSetting("pipe_radius"))) / 2.0f;
 
 		int speed = 1000;
 		float xmin, xmax;

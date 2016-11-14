@@ -355,4 +355,10 @@ public class BBBHalRComp implements Runnable {
 		}
 		return -1;
 	}
+	
+	public void stop()
+	{
+		shouldRead = false;
+	}
+	
 }

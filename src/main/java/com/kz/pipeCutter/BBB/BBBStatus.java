@@ -345,4 +345,8 @@ public class BBBStatus implements Runnable {
 		toolOff_c = 0;
 	}
 
+	public void stop() {
+		this.readThreadShouldStop = true;
+	}
+
 }

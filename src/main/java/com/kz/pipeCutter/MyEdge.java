@@ -149,7 +149,7 @@ public class MyEdge {
 	
 	public String toString()
 	{
-		return String.valueOf(this.edgeNo);
+		return this.edgeType + " " + String.valueOf(this.edgeNo);
 	}
 
 }

@@ -9,7 +9,6 @@ import java.awt.FlowLayout;
 import java.awt.Point;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
-import java.awt.event.ComponentListener;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.io.BufferedWriter;
@@ -389,17 +388,19 @@ public class Settings extends JFrame {
 	public void setSetting(String parameterId, String value) {
 		try {
 			SavableControl mysavable = null;
-//			if (controls.get(parameterId) == null) {
-//				List<SavableControl> savableControls = harvestMatches(Settings.instance.getContentPane(), SavableControl.class);
-//				for (SavableControl savableControl : savableControls) {
-//					Logger.getLogger(this.getClass()).info(savableControl.getPin().pinName);
-//					if (savableControl.getParId().equals(parameterId)) {
-//						mysavable = savableControl;
-//						break;
-//					}
-//				}
-//				controls.put(parameterId, mysavable);
-//			}
+			// if (controls.get(parameterId) == null) {
+			// List<SavableControl> savableControls =
+			// harvestMatches(Settings.instance.getContentPane(),
+			// SavableControl.class);
+			// for (SavableControl savableControl : savableControls) {
+			// Logger.getLogger(this.getClass()).info(savableControl.getPin().pinName);
+			// if (savableControl.getParId().equals(parameterId)) {
+			// mysavable = savableControl;
+			// break;
+			// }
+			// }
+			// controls.put(parameterId, mysavable);
+			// }
 			mysavable = controls.get(parameterId);
 			mysavable.setParValue(value);
 			mysavable.save();

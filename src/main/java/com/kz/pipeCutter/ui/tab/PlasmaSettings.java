@@ -83,11 +83,11 @@ public class PlasmaSettings extends JPanel {
 		voltsRequested.setToolTipText("Tip Volts current_vel >= min_velocity requested");
 		this.add(voltsRequested);		
 
-		SavableText velStatus = new SavableText();
+		SavableCheckBox velStatus = new SavableCheckBox();
 		velStatus.setPin(new PinDef("myini.vel-status", HalPinDirection.HAL_IN, ValueType.HAL_BIT));
 		velStatus.requiresHalRCompSet = false;
 		velStatus.setParId("myini.vel-status");
-		velStatus.setLabelTxt("Velocity status:");
+		velStatus.setLabelTxt("Velocity status");
 		velStatus.setToolTipText("When the THC thinks we are at requested speed");
 		this.add(velStatus);				
 		

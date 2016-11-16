@@ -42,7 +42,7 @@ public class SavableCheckBox extends SavableControl {
 
 	@Override
 	public void setParValue(String val) {
-		if (val.equals("True"))
+		if (val.toLowerCase().equals("true"))
 			val = "True";
 		else
 			val = "False";

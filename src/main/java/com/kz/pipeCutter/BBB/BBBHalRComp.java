@@ -203,6 +203,14 @@ public class BBBHalRComp implements Runnable {
 											Settings.instance.setSetting("mymotion.v", String.format("%.3f", Float.valueOf(halPins.get("mymotion.v"))));
 											Settings.instance.setSetting("mymotion.laserHeight1",
 													String.format("%.3f", Float.valueOf(halPins.get("mymotion.laserHeight1"))));
+										
+											Settings.instance.setSetting("myini.actual-volts",
+													String.format("%.3f", Float.valueOf(halPins.get("myini.actual-volts"))));
+											Settings.instance.setSetting("myini.vel-status",
+													String.format("%s", Boolean.valueOf(halPins.get("myini.vel-status"))));
+											
+											
+										
 										}
 									}
 								});

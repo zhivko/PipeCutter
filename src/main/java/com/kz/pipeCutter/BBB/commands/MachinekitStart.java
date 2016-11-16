@@ -60,7 +60,7 @@ public class MachinekitStart extends SSH_Command {
 
 			// String command = "source ~/git/machinekit/scripts/rip-environment";
 			// ps.println(command);
-			String command = "machinekit ~/machinekit/configs/ARM.BeagleBone.CRAMPS/CRAMPS.ini &";
+			String command = "machinekit ~/git/machinekit/myini/CRAMPS.ini &";
 			ps.println(command);
 			readOutput(channelShell);
 

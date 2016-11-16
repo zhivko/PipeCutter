@@ -70,6 +70,7 @@ public class PlasmaSettings extends JPanel {
 		SavableText actualVolts = new SavableText();
 		actualVolts.setPin(new PinDef("myini.actual-volts", HalPinDirection.HAL_IN, ValueType.HAL_FLOAT));
 		actualVolts.requiresHalRCompSet = false;
+		actualVolts.setNeedsSave(false);
 		actualVolts.setParId("myini.actual-volts");
 		actualVolts.setLabelTxt("Actual volts [V]:");
 		this.add(actualVolts);				
@@ -86,6 +87,7 @@ public class PlasmaSettings extends JPanel {
 		SavableCheckBox velStatus = new SavableCheckBox();
 		velStatus.setPin(new PinDef("myini.vel-status", HalPinDirection.HAL_IN, ValueType.HAL_BIT));
 		velStatus.requiresHalRCompSet = false;
+		velStatus.setNeedsSave(false);
 		velStatus.setParId("myini.vel-status");
 		velStatus.setLabelTxt("Velocity status");
 		velStatus.setToolTipText("When the THC thinks we are at requested speed");
@@ -148,6 +150,13 @@ public class PlasmaSettings extends JPanel {
 		this.add(thcTorchProbe);		
 		
 		
-		
+		SavableText thcZPos = new SavableText();
+		thcZPos.setPin(new PinDef("myini.thc-z-pos", HalPinDirection.HAL_IN, ValueType.HAL_FLOAT));
+		thcZPos.requiresHalRCompSet = false;
+		thcZPos.setNeedsSave(false);
+		thcZPos.setParId("myini.thc-z-pos");
+		thcZPos.setLabelTxt("thc z-pos");
+		this.add(thcZPos);	
+
 	}
 }

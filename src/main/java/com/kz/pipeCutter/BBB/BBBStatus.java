@@ -131,6 +131,8 @@ public class BBBStatus implements Runnable {
 									if (contReturned.getEmcStatusMotion().getActualPosition().hasZ()) {
 										base_z = contReturned.getEmcStatusMotion().getActualPosition().getZ();
 									}
+									//base_z = Float.valueOf(BBBHalRComp.instance.halPins.get("myini.thc-z-pos"));
+									
 									if (contReturned.getEmcStatusMotion().getActualPosition().hasA()) {
 										base_a = contReturned.getEmcStatusMotion().getActualPosition().getA();
 									}

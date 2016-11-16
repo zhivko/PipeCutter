@@ -209,6 +209,8 @@ public class BBBHalRComp implements Runnable {
 											Settings.instance.setSetting("myini.vel-status",
 													String.format("%s", Boolean.valueOf(halPins.get("myini.vel-status"))));
 											
+											Settings.instance.setSetting("myini.thc-z-pos",
+													String.format("%.3f", Float.valueOf(halPins.get("myini.thc-z-pos"))));
 											
 										
 										}

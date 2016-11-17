@@ -12,6 +12,7 @@ import java.util.concurrent.TimeUnit;
 import javax.jmdns.ServiceInfo;
 import javax.jmdns.ServiceListener;
 
+import org.omg.CORBA.ShortSeqHolder;
 import org.zeromq.ZContext;
 import org.zeromq.ZFrame;
 import org.zeromq.ZMQ;
@@ -30,7 +31,7 @@ public class BBBError implements Runnable {
 	ServiceListener bonjourServiceListener;
 	ArrayList<ServiceInfo> services;
 	Socket socket = null;
-	static BBBError instance = null;
+	public static BBBError instance = null;
 
 	ByteArrayInputStream is;
 	public ChannelExec channelExec = null;
@@ -41,6 +42,7 @@ public class BBBError implements Runnable {
 
 	private Thread readThread;
 	private long lastPingMs=0;
+	private boolean shouldRead=false;
 
 	private final static ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
 
@@ -59,7 +61,7 @@ public class BBBError implements Runnable {
 
 	public void run() {
 		Container contReturned;
-		while (!readThread.isInterrupted()) {
+		while (shouldRead) {
 			try {
 				ZMsg receivedMessage = ZMsg.recvMsg(socket, ZMQ.DONTWAIT);
 				// System.out.println("loop: " + i);
@@ -113,7 +115,7 @@ public class BBBError implements Runnable {
 
 	public void initSocket() {
 		if (readThread != null && readThread.isAlive()) {
-			readThread.interrupt();
+			shouldRead=false;
 			while (readThread.isAlive()) {
 				try {
 					TimeUnit.MILLISECONDS.sleep(500);
@@ -146,6 +148,7 @@ public class BBBError implements Runnable {
 		socket.setIdentity(identity.getBytes());
 		socket.connect(uri);
 
+		shouldRead=true;
 		readThread = new Thread(this);
 		readThread.setName("BBBError");
 		readThread.start();
@@ -161,5 +164,10 @@ public class BBBError implements Runnable {
 			return (System.currentTimeMillis()-this.lastPingMs > 1000);
 		else
 			return false;
+	}
+
+	public void stop() {
+		// TODO Auto-generated method stub
+		shouldRead = false;
 	}
 }

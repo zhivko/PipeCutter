@@ -21,13 +21,13 @@ import com.kz.pipeCutter.BBB.commands.ExecuteMdi;
 import com.kz.pipeCutter.BBB.commands.HomeAllAxis;
 import com.kz.pipeCutter.BBB.commands.MachinekitListProcesses;
 import com.kz.pipeCutter.BBB.commands.MachinekitStart;
-import com.kz.pipeCutter.BBB.commands.MachinekitStop;
+import com.kz.pipeCutter.BBB.commands.MachinekitKill;
 import com.kz.pipeCutter.BBB.commands.MachinekitUpload;
 import com.kz.pipeCutter.BBB.commands.OpenGCode;
 import com.kz.pipeCutter.BBB.commands.PlayGCode;
 import com.kz.pipeCutter.BBB.commands.PowerOff;
 import com.kz.pipeCutter.BBB.commands.PowerOn;
-import com.kz.pipeCutter.BBB.commands.ShutDown;
+import com.kz.pipeCutter.BBB.commands.MachineKitShutDown;
 import com.kz.pipeCutter.BBB.commands.UnHomeAllAxis;
 
 import pb.Status.EmcTaskModeType;
@@ -75,7 +75,7 @@ public class CommandPanel extends JPanel {
 		MyButton MachineKitShutdown = new MyButton("ShutDown MK") {
 			@Override
 			public void doIt() {
-				new ShutDown().start();
+				new MachineKitShutDown().start();
 			}
 		};
 		machineKitPanel.add(MachineKitShutdown);
@@ -83,7 +83,7 @@ public class CommandPanel extends JPanel {
 		MyButton MachineKitKill = new MyButton("Kill MK") {
 			@Override
 			public void doIt() {
-				new MachinekitStop().start();
+				new MachinekitKill().start();
 			}
 		};
 		machineKitPanel.add(MachineKitKill);		

@@ -147,6 +147,14 @@ public class Discoverer {
 			@Override
 			protected Void doInBackground() throws Exception {
 				try {
+
+					if (BBBHalRComp.instance != null)
+						BBBHalRComp.instance.stop();
+					if (BBBStatus.instance != null)
+						BBBStatus.instance.stop();
+					if (BBBError.instance != null)
+						BBBError.instance.stop();
+
 					if (MachinekitSettings.instance != null)
 						MachinekitSettings.instance.machinekitServices.removeAll();
 

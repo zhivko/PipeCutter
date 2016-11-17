@@ -154,7 +154,9 @@ public class Discoverer {
 						BBBStatus.instance.stop();
 					if (BBBError.instance != null)
 						BBBError.instance.stop();
-
+					if (BBBHalCommand.instance != null)
+						BBBHalCommand.instance.stop();
+					
 					if (MachinekitSettings.instance != null)
 						MachinekitSettings.instance.machinekitServices.removeAll();
 

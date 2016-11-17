@@ -2,7 +2,6 @@ package com.kz.pipeCutter.ui;
 
 import java.awt.Dimension;
 import java.awt.FlowLayout;
-import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 
 import javax.jmdns.ServiceInfo;
@@ -15,7 +14,10 @@ import javax.swing.SwingUtilities;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
-import com.kz.pipeCutter.BBB.BBBMachineTalkCommand;
+import com.kz.pipeCutter.BBB.BBBError;
+import com.kz.pipeCutter.BBB.BBBHalCommand;
+import com.kz.pipeCutter.BBB.BBBPreviewStatus;
+import com.kz.pipeCutter.BBB.BBBStatus;
 import com.kz.pipeCutter.BBB.MyServiceInfo;
 
 @SuppressWarnings("serial")
@@ -64,7 +66,8 @@ public class NamedList extends JPanel implements IParameter, IHasLabel {
 		// Dimension d1 = new Dimension(d.width-20, d.height-20);
 		// myList.setPreferredSize(d);
 		pane.setPreferredSize(d);
-		this.setPreferredSize(new Dimension(new Double(d.getWidth()).intValue(), new Double(d.getHeight()).intValue() + 25));
+		this.setPreferredSize(
+				new Dimension(new Double(d.getWidth()).intValue(), new Double(d.getHeight()).intValue() + 25));
 		// this.setPreferredSize(d1);
 	}
 
@@ -149,14 +152,14 @@ public class NamedList extends JPanel implements IParameter, IHasLabel {
 		SwingUtilities.invokeLater(new Runnable() {
 			@Override
 			public void run() {
-				
+
 				getCommandServiceUrl(serviceInfo);
 				getErrorServiceUrl(serviceInfo);
 				getStatusServiceUrl(serviceInfo);
 				getPreviewStatusServiceUrl(serviceInfo);
 				getHalCmdServiceUrl(serviceInfo);
 				getHalRCompServiceUrl(serviceInfo);
-				
+
 				for (int i = 0; i < listModel.getSize(); i++) {
 					String row = listModel.getElementAt(i).toString();
 					if (row.startsWith(mi.name)) {
@@ -204,7 +207,8 @@ public class NamedList extends JPanel implements IParameter, IHasLabel {
 			String ip = Settings.getInstance().getSetting("machinekit_ip");
 			String host = Settings.getInstance().getSetting("machinekit_host");
 			final String errorUrl = "tcp://" + getServer(serviceInfo.getServer()) + ":" + ret.getPort();
-			if (!errorUrl.equals(Settings.getInstance().getSetting("machinekit_errorService_url"))) {
+			if (!errorUrl.equals(Settings.getInstance().getSetting("machinekit_errorService_url"))
+					|| !BBBError.instance.isAlive()) {
 				Settings.getInstance().setSetting("machinekit_errorService_url", errorUrl);
 				Settings.instance.initErrorService();
 			}
@@ -220,7 +224,8 @@ public class NamedList extends JPanel implements IParameter, IHasLabel {
 			String ip = Settings.getInstance().getSetting("machinekit_ip");
 			String host = Settings.getInstance().getSetting("machinekit_host");
 			final String statusUrl = "tcp://" + getServer(serviceInfo.getServer()) + ":" + ret.getPort();
-			if (!statusUrl.equals(Settings.getInstance().getSetting("machinekit_statusService_url"))) {
+			if (!statusUrl.equals(Settings.getInstance().getSetting("machinekit_statusService_url"))
+					|| !BBBStatus.instance.isAlive()) {
 				Settings.getInstance().setSetting("machinekit_statusService_url", statusUrl);
 				Settings.instance.initStatusService();
 			}
@@ -236,7 +241,8 @@ public class NamedList extends JPanel implements IParameter, IHasLabel {
 			String ip = Settings.getInstance().getSetting("machinekit_ip");
 			String host = Settings.getInstance().getSetting("machinekit_host");
 			final String previewStatusUrl = "tcp://" + getServer(serviceInfo.getServer()) + ":" + ret.getPort();
-			if (!previewStatusUrl.equals(Settings.getInstance().getSetting("machinekit_previewstatusService_url"))) {
+			if (!previewStatusUrl.equals(Settings.getInstance().getSetting("machinekit_previewstatusService_url"))
+					|| BBBPreviewStatus.instance == null || !BBBPreviewStatus.instance.isAlive()) {
 				Settings.getInstance().setSetting("machinekit_previewstatusService_url", previewStatusUrl);
 				Settings.getInstance().initPreviewStatusService();
 			}
@@ -267,7 +273,8 @@ public class NamedList extends JPanel implements IParameter, IHasLabel {
 			String ip = Settings.getInstance().getSetting("machinekit_ip");
 			String host = Settings.getInstance().getSetting("machinekit_host");
 			hallCmdUrl = "tcp://" + getServer(serviceInfo.getServer()) + ":" + ret.getPort();
-			if (!hallCmdUrl.equals(Settings.getInstance().getSetting("machinekit_halCmdService_url"))) {
+			if (!hallCmdUrl.equals(Settings.getInstance().getSetting("machinekit_halCmdService_url"))
+					|| !BBBHalCommand.instance.isAlive()) {
 				Settings.getInstance().setSetting("machinekit_halCmdService_url", hallCmdUrl);
 				Settings.instance.initHalCmdService();
 			}

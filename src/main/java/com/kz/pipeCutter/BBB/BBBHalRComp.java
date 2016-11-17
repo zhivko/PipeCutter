@@ -116,10 +116,10 @@ public class BBBHalRComp implements Runnable {
 			ZMsg receivedMessage = ZMsg.recvMsg(socket, ZMQ.DONTWAIT);
 			// System.out.println("loop: " + i);
 			if (receivedMessage != null) {
-				ZFrame frame = receivedMessage.poll();
-				while (frame !=null) {
-					Container contReturned;
-					try {
+				try {
+					ZFrame frame = receivedMessage.poll();
+					while (frame != null) {
+						Container contReturned;
 						String data = new String(frame.getData());
 						if (!components.keySet().contains(data) && pinsByHandle.size() > 0) {
 							contReturned = Message.Container.parseFrom(frame.getData());
@@ -138,9 +138,9 @@ public class BBBHalRComp implements Runnable {
 										}
 										halPins.put(contReturned.getComp(i).getPin(j).getName(), value);
 
-										if(BBBHalRComp.instance.pinsByName.get(contReturned.getComp(i).getPin(j).getName()) == null)
+										if (BBBHalRComp.instance.pinsByName.get(contReturned.getComp(i).getPin(j).getName()) == null)
 											throw new Exception("Missing PIN !!!");
-										
+
 										if (BBBHalRComp.instance.pinsByHandle.get(contReturned.getComp(i).getPin(j).getHandle()) == null
 												&& BBBHalRComp.instance.pinsByName.get(contReturned.getComp(i).getPin(j).getName()) != null)
 											BBBHalRComp.instance.pinsByHandle.put(contReturned.getComp(i).getPin(j).getHandle(),
@@ -153,17 +153,25 @@ public class BBBHalRComp implements Runnable {
 									@Override
 									public void run() {
 										if (halPins.get("mymotion.program-line") != null) {
-											GcodeViewer.instance.setLineNumber(Integer.valueOf(halPins.get("mymotion.program-line")).intValue());
-											GcodeViewer.instance.setPlasmaOn(Boolean.valueOf(halPins.get("mymotion.spindle-on")).booleanValue());
+											GcodeViewer.instance
+													.setLineNumber(Integer.valueOf(halPins.get("mymotion.program-line")).intValue());
+											GcodeViewer.instance
+													.setPlasmaOn(Boolean.valueOf(halPins.get("mymotion.spindle-on")).booleanValue());
 
-											Settings.instance.setSetting("mymotion.vx", String.format("%.3f", Float.valueOf(halPins.get("mymotion.vx"))));
-											Settings.instance.setSetting("mymotion.dvx", String.format("%.3f", Float.valueOf(halPins.get("mymotion.dvx"))));
-											Settings.instance.setSetting("mymotion.vz", String.format("%.3f", Float.valueOf(halPins.get("mymotion.vz"))));
-											Settings.instance.setSetting("mymotion.dvz", String.format("%.3f", Float.valueOf(halPins.get("mymotion.dvz"))));
+											Settings.instance.setSetting("mymotion.vx",
+													String.format("%.3f", Float.valueOf(halPins.get("mymotion.vx"))));
+											Settings.instance.setSetting("mymotion.dvx",
+													String.format("%.3f", Float.valueOf(halPins.get("mymotion.dvx"))));
+											Settings.instance.setSetting("mymotion.vz",
+													String.format("%.3f", Float.valueOf(halPins.get("mymotion.vz"))));
+											Settings.instance.setSetting("mymotion.dvz",
+													String.format("%.3f", Float.valueOf(halPins.get("mymotion.dvz"))));
 											Settings.instance.setSetting("mymotion.current-radius",
 													String.format("%.3f", Float.valueOf(halPins.get("mymotion.current-radius"))));
-											Settings.instance.setSetting("mymotion.vy", String.format("%.3f", Float.valueOf(halPins.get("mymotion.vy"))));
-											Settings.instance.setSetting("mymotion.v", String.format("%.3f", Float.valueOf(halPins.get("mymotion.v"))));
+											Settings.instance.setSetting("mymotion.vy",
+													String.format("%.3f", Float.valueOf(halPins.get("mymotion.vy"))));
+											Settings.instance.setSetting("mymotion.v",
+													String.format("%.3f", Float.valueOf(halPins.get("mymotion.v"))));
 										}
 									}
 								});
@@ -191,28 +199,35 @@ public class BBBHalRComp implements Runnable {
 									@Override
 									public void run() {
 										if (halPins.get("mymotion.program-line") != null) {
-											GcodeViewer.instance.setLineNumber(Integer.valueOf(halPins.get("mymotion.program-line")).intValue());
-											GcodeViewer.instance.setPlasmaOn(Boolean.valueOf(halPins.get("mymotion.spindle-on")).booleanValue());
-											Settings.instance.setSetting("mymotion.vx", String.format("%.3f", Float.valueOf(halPins.get("mymotion.vx"))));
-											Settings.instance.setSetting("mymotion.dvx", String.format("%.3f", Float.valueOf(halPins.get("mymotion.dvx"))));
-											Settings.instance.setSetting("mymotion.vz", String.format("%.3f", Float.valueOf(halPins.get("mymotion.vz"))));
-											Settings.instance.setSetting("mymotion.dvz", String.format("%.3f", Float.valueOf(halPins.get("mymotion.dvz"))));
+											GcodeViewer.instance
+													.setLineNumber(Integer.valueOf(halPins.get("mymotion.program-line")).intValue());
+											GcodeViewer.instance
+													.setPlasmaOn(Boolean.valueOf(halPins.get("mymotion.spindle-on")).booleanValue());
+											Settings.instance.setSetting("mymotion.vx",
+													String.format("%.3f", Float.valueOf(halPins.get("mymotion.vx"))));
+											Settings.instance.setSetting("mymotion.dvx",
+													String.format("%.3f", Float.valueOf(halPins.get("mymotion.dvx"))));
+											Settings.instance.setSetting("mymotion.vz",
+													String.format("%.3f", Float.valueOf(halPins.get("mymotion.vz"))));
+											Settings.instance.setSetting("mymotion.dvz",
+													String.format("%.3f", Float.valueOf(halPins.get("mymotion.dvz"))));
 											Settings.instance.setSetting("mymotion.current-radius",
 													String.format("%.3f", Float.valueOf(halPins.get("mymotion.current-radius"))));
-											Settings.instance.setSetting("mymotion.vy", String.format("%.3f", Float.valueOf(halPins.get("mymotion.vy"))));
-											Settings.instance.setSetting("mymotion.v", String.format("%.3f", Float.valueOf(halPins.get("mymotion.v"))));
+											Settings.instance.setSetting("mymotion.vy",
+													String.format("%.3f", Float.valueOf(halPins.get("mymotion.vy"))));
+											Settings.instance.setSetting("mymotion.v",
+													String.format("%.3f", Float.valueOf(halPins.get("mymotion.v"))));
 											Settings.instance.setSetting("mymotion.laserHeight1",
 													String.format("%.3f", Float.valueOf(halPins.get("mymotion.laserHeight1"))));
-										
+
 											Settings.instance.setSetting("myini.actual-volts",
 													String.format("%.3f", Float.valueOf(halPins.get("myini.actual-volts"))));
 											Settings.instance.setSetting("myini.vel-status",
 													String.format("%s", Boolean.valueOf(halPins.get("myini.vel-status"))));
-											
+
 											Settings.instance.setSetting("myini.thc-z-pos",
 													String.format("%.3f", Float.valueOf(halPins.get("myini.thc-z-pos"))));
-											
-										
+
 										}
 									}
 								});
@@ -221,23 +236,18 @@ public class BBBHalRComp implements Runnable {
 								System.out.println(contReturned.getType().toString());
 							}
 						}
-						// System.out.println();
-
-					} catch (Exception e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
+						frame = receivedMessage.poll();
 					}
-					// try {
-					// TimeUnit.MILLISECONDS.sleep(100);
-					// } catch (InterruptedException e) {
-					// // TODO Auto-generated catch block
-					// e.printStackTrace();
-					// }
-					frame = receivedMessage.poll();
+					receivedMessage.destroy();
+					receivedMessage = null;
+					Thread.sleep(100);
+				} catch (Exception ex) {
+					ex.printStackTrace();
+				} finally {
+
 				}
-				receivedMessage.destroy();
-				receivedMessage = null;
 			}
+
 		}
 	}
 
@@ -365,10 +375,9 @@ public class BBBHalRComp implements Runnable {
 		}
 		return -1;
 	}
-	
-	public void stop()
-	{
+
+	public void stop() {
 		shouldRead = false;
 	}
-	
+
 }

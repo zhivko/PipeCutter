@@ -67,6 +67,7 @@ public class BBBStatus implements Runnable {
 
 	private long lastPingMs;
 	private boolean readThreadShouldStop;
+	private double pingDelay = 1500;
 
 	public BBBStatus() {
 		initSocket();
@@ -106,16 +107,17 @@ public class BBBStatus implements Runnable {
 				// System.out.println("loop: " + i);
 				if (receivedMessage != null) {
 					ZFrame frame = receivedMessage.poll();
-					while (frame!=null) {
+					while (frame != null) {
 
 						byte[] returnedBytes = frame.getData();
 						String messageType = new String(returnedBytes);
 						// System.out.println("type: " + messageType);
-						
-	//					if(messageType.equals("motion"))
-//							System.out.println("");
-						
-						if (!messageType.equals("motion") && !messageType.equals("task") && !messageType.equals("io") && !messageType.equals("interp")) {
+
+						// if(messageType.equals("motion"))
+						// System.out.println("");
+
+						if (!messageType.equals("motion") && !messageType.equals("task") && !messageType.equals("io")
+								&& !messageType.equals("interp")) {
 
 							contReturned = Message.Container.parseFrom(returnedBytes);
 							if ((contReturned.getType().equals(ContainerType.MT_EMCSTAT_FULL_UPDATE)
@@ -131,8 +133,9 @@ public class BBBStatus implements Runnable {
 									if (contReturned.getEmcStatusMotion().getActualPosition().hasZ()) {
 										base_z = contReturned.getEmcStatusMotion().getActualPosition().getZ();
 									}
-									//base_z = Float.valueOf(BBBHalRComp.instance.halPins.get("myini.thc-z-pos"));
-									
+									// base_z =
+									// Float.valueOf(BBBHalRComp.instance.halPins.get("myini.thc-z-pos"));
+
 									if (contReturned.getEmcStatusMotion().getActualPosition().hasA()) {
 										base_a = contReturned.getEmcStatusMotion().getActualPosition().getA();
 									}
@@ -162,8 +165,8 @@ public class BBBStatus implements Runnable {
 								Settings.getInstance().setSetting("position_z", z);
 								Settings.getInstance().setSetting("position_a", a);
 								Settings.getInstance().setSetting("position_b", b);
-								//Settings.getInstance().setSetting("position_c", c);
-								
+								// Settings.getInstance().setSetting("position_c", c);
+
 								if (SurfaceDemo.getInstance() != null && SurfaceDemo.instance != null) {
 									if (SurfaceDemo.getInstance().getChart() != null) {
 										// System.out.println(String.format("%1$,.2f, %2$,.2f,
@@ -179,7 +182,7 @@ public class BBBStatus implements Runnable {
 
 										SurfaceDemo.getInstance().redrawPosition();
 									}
-								}								
+								}
 							} else if (contReturned.getType().equals(ContainerType.MT_PING)) {
 								this.lastPingMs = System.currentTimeMillis();
 								MachinekitSettings.instance.pingStatus();
@@ -189,6 +192,7 @@ public class BBBStatus implements Runnable {
 						}
 						frame = receivedMessage.poll();
 					}
+					Thread.sleep(50);
 					receivedMessage.destroy();
 					receivedMessage = null;
 				}
@@ -298,7 +302,10 @@ public class BBBStatus implements Runnable {
 
 	public boolean isAlive() {
 		if (this.lastPingMs != 0)
-			return System.currentTimeMillis() > this.lastPingMs;
+			if ((System.currentTimeMillis() - this.lastPingMs) < 3000)
+				return true;
+			else
+				return false;
 		else
 			return false;
 	}

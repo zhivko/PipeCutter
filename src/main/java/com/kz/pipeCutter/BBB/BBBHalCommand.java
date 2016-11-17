@@ -40,6 +40,7 @@ public class BBBHalCommand implements Runnable {
 	private Thread pingThread;
 	private long lastPingMs = 0;
 	private boolean shouldPing = true;
+	private long pingDelay = 1000;
 
 	static String identity;
 	static {
@@ -144,7 +145,8 @@ public class BBBHalCommand implements Runnable {
 						} else if (contReturned.getType().equals(ContainerType.MT_PING_ACKNOWLEDGE)) {
 							this.lastPingMs = System.currentTimeMillis();
 							MachinekitSettings.instance.pingHalCommand();
-							if (BBBStatus.getInstance().isAlive() && !BBBHalRComp.getInstance().isBinded && !BBBHalRComp.getInstance().isTryingToBind) {
+							if (BBBStatus.getInstance().isAlive() && !BBBHalRComp.getInstance().isBinded
+									&& !BBBHalRComp.getInstance().isTryingToBind) {
 								// if (BBBHalRComp.getInstance().isAlive())
 								BBBHalRComp.getInstance().startBind();
 							}
@@ -160,10 +162,10 @@ public class BBBHalCommand implements Runnable {
 											BBBHalRComp.instance.pinsByName.get(contReturned.getComp(i).getPin(j).getName()));
 								}
 							}
-							
+
 							// lets run postgui file
 							new MachinekitRunPostgui().start();
-							
+
 							Settings.instance.updateHalValues();
 							Settings.instance.setLaser1IP();
 						} else {
@@ -261,13 +263,14 @@ public class BBBHalCommand implements Runnable {
 						Container container = builder.build();
 						byte[] buff = container.toByteArray();
 
-						//String hexOutput = javax.xml.bind.DatatypeConverter.printHexBinary(buff);
+						// String hexOutput =
+						// javax.xml.bind.DatatypeConverter.printHexBinary(buff);
 						// System.out.println("PING Message: " + hexOutput);
 
 						socket.send(buff, 0);
 					}
 					try {
-						Thread.sleep(2000);
+						Thread.sleep(pingDelay);
 					} catch (InterruptedException e) {
 						// TODO Auto-generated catch block
 						e.printStackTrace();
@@ -285,7 +288,10 @@ public class BBBHalCommand implements Runnable {
 
 	public boolean isAlive() {
 		if (this.lastPingMs != 0)
-			return (System.currentTimeMillis() - this.lastPingMs > 1000);
+			if ((System.currentTimeMillis() - this.lastPingMs) < 3000)
+				return true;
+			else
+				return false;
 		else
 			return false;
 	}
@@ -296,5 +302,10 @@ public class BBBHalCommand implements Runnable {
 
 	public void startPing() {
 		shouldPing = true;
+	}
+
+	public void stop() {
+		readThreadShouldEnd = true;
+		pingThreadShouldEnd = true;
 	}
 }

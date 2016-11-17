@@ -2,6 +2,7 @@ package com.kz.pipeCutter.BBB.commands;
 
 import com.google.protobuf.InvalidProtocolBufferException;
 import com.kz.pipeCutter.BBB.BBBError;
+import com.kz.pipeCutter.BBB.BBBHalCommand;
 import com.kz.pipeCutter.BBB.BBBHalRComp;
 import com.kz.pipeCutter.BBB.BBBMachineTalkCommand;
 import com.kz.pipeCutter.BBB.BBBStatus;
@@ -23,6 +24,8 @@ public class MachineKitShutDown extends BBBMachineTalkCommand {
 			BBBStatus.instance.stop();
 		if (BBBError.instance != null)
 			BBBError.instance.stop();
+		if (BBBHalCommand.instance != null)
+			BBBHalCommand.instance.stop();
 		
 		
 		pb.Message.Container.Builder builder = Container.newBuilder();

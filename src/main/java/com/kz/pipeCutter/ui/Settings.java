@@ -73,7 +73,7 @@ public class Settings extends JFrame {
 	public static Discoverer discoverer;
 	public static BBBError error;
 	public static BBBStatus status;
-	public static BBBHalCommand halCmd;
+	public static BBBHalCommand halCommand;
 	public static BBBHalRComp halRComp;
 	public static BBBPreviewStatus previewStatus;
 
@@ -128,10 +128,10 @@ public class Settings extends JFrame {
 	}
 
 	public void initHalCmdService() {
-		if (halCmd == null)
-			halCmd = new BBBHalCommand();
+		if (halCommand == null)
+			halCommand = new BBBHalCommand();
 		else
-			halCmd.initSocket();
+			halCommand.initSocket();
 	}
 
 	public void initHalRcompService() {

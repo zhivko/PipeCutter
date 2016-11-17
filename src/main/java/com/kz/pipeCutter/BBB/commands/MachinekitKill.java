@@ -6,6 +6,7 @@ import org.apache.commons.lang3.StringUtils;
 
 import com.jcraft.jsch.ChannelExec;
 import com.kz.pipeCutter.BBB.BBBError;
+import com.kz.pipeCutter.BBB.BBBHalCommand;
 import com.kz.pipeCutter.BBB.BBBHalRComp;
 import com.kz.pipeCutter.BBB.BBBStatus;
 import com.kz.pipeCutter.BBB.MyOutputStreamReader;
@@ -22,6 +23,8 @@ public class MachinekitKill extends SSH_Command {
 			BBBStatus.instance.stop();
 		if (BBBError.instance != null)
 			BBBError.instance.stop();
+		if (BBBHalCommand.instance != null)
+			BBBHalCommand.instance.stop();
 		
 
 		MyOutputStreamReader myOut = new MyOutputStreamReader();

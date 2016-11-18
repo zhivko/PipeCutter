@@ -1,9 +1,0 @@
-component sincos_;
-pin out float sin_;
-pin out float cos_;
-pin in float theta_;
-function _;
-license "GPL"; // indicates GPL v2 or later
-;;
-#include <rtapi_math.h>
-FUNCTION(_) { sin_ = sin(theta_); cos_ = cos(theta_); }

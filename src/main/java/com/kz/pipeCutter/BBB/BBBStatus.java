@@ -252,7 +252,7 @@ public class BBBStatus implements Runnable {
 
 	public void initSocket() {
 		if (readThread != null && readThread.isAlive()) {
-			shouldRead = true;
+			shouldRead = false;
 			while (readThread.isAlive()) {
 				try {
 					TimeUnit.MILLISECONDS.sleep(500);

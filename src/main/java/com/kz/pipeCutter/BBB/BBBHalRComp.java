@@ -331,7 +331,10 @@ public class BBBHalRComp implements Runnable {
 		@Override
 		public void run() {
 			if (halPins.get("mymotion.program-line") != null) {
-				GcodeViewer.instance.setLineNumber(Integer.valueOf(halPins.get("mymotion.program-line")).intValue());
+				//GcodeViewer.instance.setLineNumber(Integer.valueOf(halPins.get("mymotion.program-line")).intValue());
+
+				Settings.instance.setSetting("mymotion.program-line", String.format("%d", Integer.valueOf(halPins.get("mymotion.program-line"))));
+				
 				GcodeViewer.instance.setPlasmaOn(Boolean.valueOf(halPins.get("mymotion.spindle-on")).booleanValue());
 				Settings.instance.setSetting("mymotion.vx", String.format("%.3f", Float.valueOf(halPins.get("mymotion.vx"))));
 				Settings.instance.setSetting("mymotion.dvx", String.format("%.3f", Float.valueOf(halPins.get("mymotion.dvx"))));

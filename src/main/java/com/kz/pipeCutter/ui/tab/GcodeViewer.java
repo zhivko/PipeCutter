@@ -171,6 +171,7 @@ public class GcodeViewer extends JPanel {
 		currentLine.setLabelTxt("line:");
 		currentLine.preventResize = true;
 		currentLine.jValue.setColumns(3);
+		currentLine.setParId("mymotion.program-line");
 		currentLine.setNeedsSave(false);
 		currentLine.jValue.getDocument().addDocumentListener(new DocumentListener() {
 
@@ -418,18 +419,18 @@ public class GcodeViewer extends JPanel {
 		}
 	}
 
-	public void setLineNumber(int lineNo) {
-		if (this.lineNo != lineNo) {
-			this.lineNo = lineNo;
-			SwingUtilities.invokeLater(new Runnable() {
-				@Override
-				public void run() {
-					// TODO Auto-generated method stub
-					GcodeViewer.instance.currentLine.setParValue(String.valueOf(GcodeViewer.this.lineNo));
-				}
-			});
-		}
-	}
+//	public void setLineNumber(int lineNo) {
+//		if (this.lineNo != lineNo) {
+//			this.lineNo = lineNo;
+//			SwingUtilities.invokeLater(new Runnable() {
+//				@Override
+//				public void run() {
+//					// TODO Auto-generated method stub
+//					GcodeViewer.instance.currentLine.setParValue(String.valueOf(GcodeViewer.this.lineNo));
+//				}
+//			});
+//		}
+//	}
 
 	public void setPlasmaOn(boolean on) {
 		if (this.plasmaOn != on) {

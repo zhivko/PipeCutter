@@ -12,6 +12,8 @@ import javax.jmdns.ServiceInfo;
 import org.zeromq.ZContext;
 import org.zeromq.ZFrame;
 import org.zeromq.ZMQ;
+import org.zeromq.ZMQ.PollItem;
+import org.zeromq.ZMQ.Poller;
 import org.zeromq.ZMQ.Socket;
 import org.zeromq.ZMsg;
 
@@ -29,7 +31,7 @@ public class BBBHalCommand implements Runnable {
 	private String socketUri;
 	public Socket socket = null;
 	private ZContext ctx;
-	boolean readThreadShouldEnd;
+	boolean shouldRead;
 	boolean pingThreadShouldEnd;
 
 	public static BBBHalCommand instance;
@@ -115,15 +117,18 @@ public class BBBHalCommand implements Runnable {
 		// while (!Thread.currentThread().isInterrupted()) {
 		// Tick once per second, pulling in arriving messages
 		// for (int centitick = 0; centitick < 4; centitick++) {
-		readThreadShouldEnd = false;
-		while (!readThreadShouldEnd) {
-			try {
-				ZMsg receivedMessage = ZMsg.recvMsg(socket, ZMQ.DONTWAIT);
-				// System.out.println("loop: " + i);
-				if (receivedMessage != null) {
-					while (!receivedMessage.isEmpty()) {
+		shouldRead = true;
+		PollItem[] pollItems = new PollItem[] { new PollItem(socket, Poller.POLLIN) };
+		while (shouldRead) {
 
-						ZFrame frame = receivedMessage.poll();
+			int rc = ZMQ.poll(pollItems, 100);
+			// System.out.println("loop: " + i);
+			for (int l = 0; l < rc; l++) {
+				ZMsg msg = ZMsg.recvMsg(socket);
+				try {
+					ZFrame frame = null;
+					while (pollItems[0].isReadable() && (frame = msg.poll()) != null) {
+
 						byte[] returnedBytes = frame.getData();
 						Container contReturned = Message.Container.parseFrom(returnedBytes);
 						if (contReturned.getType().equals(ContainerType.MT_HALRCOMMAND_DESCRIPTION)) {
@@ -145,8 +150,7 @@ public class BBBHalCommand implements Runnable {
 						} else if (contReturned.getType().equals(ContainerType.MT_PING_ACKNOWLEDGE)) {
 							this.lastPingMs = System.currentTimeMillis();
 							MachinekitSettings.instance.pingHalCommand();
-							if (BBBStatus.getInstance().isAlive() && !BBBHalRComp.getInstance().isBinded
-									&& !BBBHalRComp.getInstance().isTryingToBind) {
+							if (BBBStatus.getInstance().isAlive() && !BBBHalRComp.getInstance().isBinded && !BBBHalRComp.getInstance().isTryingToBind) {
 								// if (BBBHalRComp.getInstance().isAlive())
 								BBBHalRComp.getInstance().startBind();
 							}
@@ -185,30 +189,26 @@ public class BBBHalCommand implements Runnable {
 					// Boolean.valueOf(halPin.get("motion.spindle-on")).booleanValue();
 					// SurfaceDemo.instance.spindleOn=spindleOn;
 					// }
-					receivedMessage.destroy();
-					receivedMessage = null;
-					// TimeUnit.MILLISECONDS.sleep(1000);
-					// requestDescribe();
-				} else {
-					// requestDescribe();
+				} catch (Exception ex) {
+					ex.printStackTrace();
 				}
-			} catch (Exception e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				msg.destroy();
+				// TimeUnit.MILLISECONDS.sleep(1000);
+				// requestDescribe();
 			}
-			try {
-				TimeUnit.MILLISECONDS.sleep(200);
-			} catch (InterruptedException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-
+//			try {
+//				Thread.sleep(100);
+//			} catch (InterruptedException e) {
+//				// TODO Auto-generated catch block
+//				e.printStackTrace();
+//			}
 		}
+
 	}
 
 	public void initSocket() {
 		if (readThread != null && readThread.isAlive()) {
-			readThreadShouldEnd = true;
+			shouldRead = true;
 			while (readThread.isAlive()) {
 				try {
 					TimeUnit.MILLISECONDS.sleep(500);
@@ -239,7 +239,7 @@ public class BBBHalCommand implements Runnable {
 		// Set random identity to make tracing easier
 		socket = ctx.createSocket(ZMQ.DEALER);
 		socket.setIdentity(identity.getBytes());
-		socket.setReceiveTimeOut(5);
+		socket.setReceiveTimeOut(15);
 		socket.setSendTimeOut(1000);
 		socket.connect(this.socketUri);
 
@@ -305,7 +305,7 @@ public class BBBHalCommand implements Runnable {
 	}
 
 	public void stop() {
-		readThreadShouldEnd = true;
+		shouldRead = false;
 		pingThreadShouldEnd = true;
 	}
 }

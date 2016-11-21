@@ -4,11 +4,12 @@ import java.io.ByteArrayInputStream;
 import java.util.Random;
 import java.util.concurrent.TimeUnit;
 
-import org.apache.log4j.Logger;
 import org.jzy3d.maths.Coord3d;
 import org.zeromq.ZContext;
 import org.zeromq.ZFrame;
 import org.zeromq.ZMQ;
+import org.zeromq.ZMQ.PollItem;
+import org.zeromq.ZMQ.Poller;
 import org.zeromq.ZMQ.Socket;
 import org.zeromq.ZMsg;
 
@@ -66,7 +67,7 @@ public class BBBStatus implements Runnable {
 	public double toolOff_c = 0;
 
 	private long lastPingMs;
-	private boolean readThreadShouldStop;
+	private boolean shouldRead;
 	private double pingDelay = 1500;
 
 	public BBBStatus() {
@@ -98,27 +99,19 @@ public class BBBStatus implements Runnable {
 		if (!Settings.getInstance().isVisible())
 			return;
 
-		readThreadShouldStop = false;
-
+		shouldRead = true;
 		Container contReturned;
-		while (!readThreadShouldStop) {
-			try {
-				ZMsg receivedMessage = ZMsg.recvMsg(socket, ZMQ.DONTWAIT);
-				// System.out.println("loop: " + i);
-				if (receivedMessage != null) {
-					ZFrame frame = receivedMessage.poll();
-					while (frame != null) {
-
-						byte[] returnedBytes = frame.getData();
-						String messageType = new String(returnedBytes);
-						// System.out.println("type: " + messageType);
-
-						// if(messageType.equals("motion"))
-						// System.out.println("");
-
-						if (!messageType.equals("motion") && !messageType.equals("task") && !messageType.equals("io")
-								&& !messageType.equals("interp")) {
-
+		PollItem[] pollItems = new PollItem[] { new PollItem(socket, Poller.POLLIN) };
+		while (shouldRead) {
+			int rc = ZMQ.poll(pollItems, 100);
+			for (int l = 0; l < rc; l++) {
+				ZMsg msg = ZMsg.recvMsg(socket, ZMQ.DONTWAIT);
+				ZFrame frame = null;
+				while (pollItems[0].isReadable() && (frame = msg.poll()) != null) {
+					byte[] returnedBytes = frame.getData();
+					String messageType = new String(returnedBytes);
+					if (!messageType.equals("motion") && !messageType.equals("task") && !messageType.equals("io") && !messageType.equals("interp")) {
+						try {
 							contReturned = Message.Container.parseFrom(returnedBytes);
 							if ((contReturned.getType().equals(ContainerType.MT_EMCSTAT_FULL_UPDATE)
 									|| contReturned.getType().equals(ContainerType.MT_EMCSTAT_INCREMENTAL_UPDATE))) {
@@ -189,23 +182,21 @@ public class BBBStatus implements Runnable {
 							} else {
 								System.out.println(contReturned.getType());
 							}
+
+						} catch (Exception ex) {
+							ex.printStackTrace();
 						}
-						frame = receivedMessage.poll();
 					}
-					Thread.sleep(50);
-					receivedMessage.destroy();
-					receivedMessage = null;
 				}
-			} catch (Exception e) {
-				e.printStackTrace();
 			}
-			// try {
-			// TimeUnit.MILLISECONDS.sleep(200);
-			// } catch (InterruptedException e) {
-			// // TODO Auto-generated catch block
-			// e.printStackTrace();
-			// }
+//			try {
+//				Thread.sleep(100);
+//			} catch (InterruptedException e) {
+//				// TODO Auto-generated catch block
+//				e.printStackTrace();
+//			}
 		}
+
 	}
 
 	private void getToolOffset(Container contReturned) {
@@ -261,7 +252,7 @@ public class BBBStatus implements Runnable {
 
 	public void initSocket() {
 		if (readThread != null && readThread.isAlive()) {
-			readThreadShouldStop = true;
+			shouldRead = true;
 			while (readThread.isAlive()) {
 				try {
 					TimeUnit.MILLISECONDS.sleep(500);
@@ -286,15 +277,14 @@ public class BBBStatus implements Runnable {
 		String identity = String.format("%04X-%04X", rand.nextInt(), rand.nextInt());
 
 		socket.setIdentity(identity.getBytes());
-		socket.subscribe("motion".getBytes());
-		socket.subscribe("task".getBytes());
-		socket.subscribe("io".getBytes());
-		socket.subscribe("interp".getBytes());
+
 		socket.setHWM(10000);
 		socket.setReceiveTimeOut(5);
 		socket.setSendTimeOut(1000);
 		socket.connect(this.uri);
 
+		reSubscribeMotion();
+		
 		readThread = new Thread(this);
 		readThread.setName("BBBStatus");
 		readThread.start();
@@ -314,7 +304,14 @@ public class BBBStatus implements Runnable {
 		initOffsets();
 
 		socket.unsubscribe("motion".getBytes());
+		socket.unsubscribe("task".getBytes());
+		socket.unsubscribe("io".getBytes());
+		socket.unsubscribe("interp".getBytes());
+
 		socket.subscribe("motion".getBytes());
+		socket.subscribe("task".getBytes());
+		socket.subscribe("io".getBytes());
+		socket.subscribe("interp".getBytes());
 	}
 
 	public void initOffsets() {
@@ -355,7 +352,7 @@ public class BBBStatus implements Runnable {
 	}
 
 	public void stop() {
-		this.readThreadShouldStop = true;
+		this.shouldRead = false;
 	}
 
 }

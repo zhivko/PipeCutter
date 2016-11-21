@@ -113,8 +113,7 @@ public abstract class BBBMachineTalkCommand implements Callable<String> {
 			socket.setIdentity(identity.getBytes());
 			socket.setReceiveTimeOut(1000);
 			socket.setSendTimeOut(1000);
-			socket.connect(uri);
-			
+			socket.connect(uri);			
 		}
 	}
 

@@ -12,6 +12,8 @@ import javax.swing.SwingUtilities;
 import org.zeromq.ZContext;
 import org.zeromq.ZFrame;
 import org.zeromq.ZMQ;
+import org.zeromq.ZMQ.PollItem;
+import org.zeromq.ZMQ.Poller;
 import org.zeromq.ZMQ.Socket;
 import org.zeromq.ZMsg;
 
@@ -112,13 +114,15 @@ public class BBBHalRComp implements Runnable {
 		// for (int centitick = 0; centitick < 4; centitick++) {
 		// System.out.println(Thread.currentThread().getName());
 		shouldRead = true;
+		PollItem[] pollItems = new PollItem[] { new PollItem(socket, Poller.POLLIN) };
 		while (shouldRead) {
-			ZMsg receivedMessage = ZMsg.recvMsg(socket, ZMQ.DONTWAIT);
+			int rc = ZMQ.poll(pollItems, 100);
 			// System.out.println("loop: " + i);
-			if (receivedMessage != null) {
+			for (int l = 0; l < rc; l++) {
+				ZMsg msg = ZMsg.recvMsg(socket);
 				try {
-					ZFrame frame = receivedMessage.poll();
-					while (frame != null) {
+					ZFrame frame = null;
+					while (pollItems[0].isReadable() && (frame = msg.poll()) != null) {
 						Container contReturned;
 						String data = new String(frame.getData());
 						if (!components.keySet().contains(data) && pinsByHandle.size() > 0) {
@@ -149,32 +153,7 @@ public class BBBHalRComp implements Runnable {
 									}
 								}
 
-								SwingUtilities.invokeLater(new Runnable() {
-									@Override
-									public void run() {
-										if (halPins.get("mymotion.program-line") != null) {
-											GcodeViewer.instance
-													.setLineNumber(Integer.valueOf(halPins.get("mymotion.program-line")).intValue());
-											GcodeViewer.instance
-													.setPlasmaOn(Boolean.valueOf(halPins.get("mymotion.spindle-on")).booleanValue());
-
-											Settings.instance.setSetting("mymotion.vx",
-													String.format("%.3f", Float.valueOf(halPins.get("mymotion.vx"))));
-											Settings.instance.setSetting("mymotion.dvx",
-													String.format("%.3f", Float.valueOf(halPins.get("mymotion.dvx"))));
-											Settings.instance.setSetting("mymotion.vz",
-													String.format("%.3f", Float.valueOf(halPins.get("mymotion.vz"))));
-											Settings.instance.setSetting("mymotion.dvz",
-													String.format("%.3f", Float.valueOf(halPins.get("mymotion.dvz"))));
-											Settings.instance.setSetting("mymotion.current-radius",
-													String.format("%.3f", Float.valueOf(halPins.get("mymotion.current-radius"))));
-											Settings.instance.setSetting("mymotion.vy",
-													String.format("%.3f", Float.valueOf(halPins.get("mymotion.vy"))));
-											Settings.instance.setSetting("mymotion.v",
-													String.format("%.3f", Float.valueOf(halPins.get("mymotion.v"))));
-										}
-									}
-								});
+								SwingUtilities.invokeLater(updateUi);
 							} else if (contReturned.getType().equals(ContainerType.MT_PING)) {
 								this.lastPingMs = System.currentTimeMillis();
 								MachinekitSettings.instance.pingHalRcomp();
@@ -195,59 +174,26 @@ public class BBBHalRComp implements Runnable {
 									halPins.put(pinDef.getPinName(), value);
 								}
 
-								SwingUtilities.invokeLater(new Runnable() {
-									@Override
-									public void run() {
-										if (halPins.get("mymotion.program-line") != null) {
-											GcodeViewer.instance
-													.setLineNumber(Integer.valueOf(halPins.get("mymotion.program-line")).intValue());
-											GcodeViewer.instance
-													.setPlasmaOn(Boolean.valueOf(halPins.get("mymotion.spindle-on")).booleanValue());
-											Settings.instance.setSetting("mymotion.vx",
-													String.format("%.3f", Float.valueOf(halPins.get("mymotion.vx"))));
-											Settings.instance.setSetting("mymotion.dvx",
-													String.format("%.3f", Float.valueOf(halPins.get("mymotion.dvx"))));
-											Settings.instance.setSetting("mymotion.vz",
-													String.format("%.3f", Float.valueOf(halPins.get("mymotion.vz"))));
-											Settings.instance.setSetting("mymotion.dvz",
-													String.format("%.3f", Float.valueOf(halPins.get("mymotion.dvz"))));
-											Settings.instance.setSetting("mymotion.current-radius",
-													String.format("%.3f", Float.valueOf(halPins.get("mymotion.current-radius"))));
-											Settings.instance.setSetting("mymotion.vy",
-													String.format("%.3f", Float.valueOf(halPins.get("mymotion.vy"))));
-											Settings.instance.setSetting("mymotion.v",
-													String.format("%.3f", Float.valueOf(halPins.get("mymotion.v"))));
-											Settings.instance.setSetting("mymotion.laserHeight1",
-													String.format("%.3f", Float.valueOf(halPins.get("mymotion.laserHeight1"))));
-
-											Settings.instance.setSetting("myini.actual-volts",
-													String.format("%.3f", Float.valueOf(halPins.get("myini.actual-volts"))));
-											Settings.instance.setSetting("myini.vel-status",
-													String.format("%s", Boolean.valueOf(halPins.get("myini.vel-status"))));
-
-											Settings.instance.setSetting("myini.thc-z-pos",
-													String.format("%.3f", Float.valueOf(halPins.get("myini.thc-z-pos"))));
-
-										}
-									}
-								});
+								SwingUtilities.invokeLater(updateUi);
 
 							} else {
 								System.out.println(contReturned.getType().toString());
 							}
 						}
-						frame = receivedMessage.poll();
 					}
-					receivedMessage.destroy();
-					receivedMessage = null;
-					Thread.sleep(100);
+					msg.destroy();
 				} catch (Exception ex) {
 					ex.printStackTrace();
 				} finally {
 
 				}
 			}
-
+//			try {
+//				Thread.sleep(100);
+//			} catch (InterruptedException e) {
+//				// TODO Auto-generated catch block
+//				e.printStackTrace();
+//			}
 		}
 	}
 
@@ -282,7 +228,7 @@ public class BBBHalRComp implements Runnable {
 		String identity = String.format("%04X-%04X", rand.nextInt(), rand.nextInt());
 
 		socket.setIdentity(identity.getBytes());
-		socket.setReceiveTimeOut(5);
+		socket.setReceiveTimeOut(200);
 		socket.setSendTimeOut(1000);
 		// socket.setRcvHWM(10000);
 		socket.connect(this.halRCompUri);
@@ -377,7 +323,33 @@ public class BBBHalRComp implements Runnable {
 	}
 
 	public void stop() {
-		shouldRead = false;
+		this.shouldRead = false;
 	}
 
+	Runnable updateUi = new Runnable() {
+		
+		@Override
+		public void run() {
+			if (halPins.get("mymotion.program-line") != null) {
+				GcodeViewer.instance.setLineNumber(Integer.valueOf(halPins.get("mymotion.program-line")).intValue());
+				GcodeViewer.instance.setPlasmaOn(Boolean.valueOf(halPins.get("mymotion.spindle-on")).booleanValue());
+				Settings.instance.setSetting("mymotion.vx", String.format("%.3f", Float.valueOf(halPins.get("mymotion.vx"))));
+				Settings.instance.setSetting("mymotion.dvx", String.format("%.3f", Float.valueOf(halPins.get("mymotion.dvx"))));
+				Settings.instance.setSetting("mymotion.vz", String.format("%.3f", Float.valueOf(halPins.get("mymotion.vz"))));
+				Settings.instance.setSetting("mymotion.dvz", String.format("%.3f", Float.valueOf(halPins.get("mymotion.dvz"))));
+				Settings.instance.setSetting("mymotion.current-radius",
+						String.format("%.3f", Float.valueOf(halPins.get("mymotion.current-radius"))));
+				Settings.instance.setSetting("mymotion.vy", String.format("%.3f", Float.valueOf(halPins.get("mymotion.vy"))));
+				Settings.instance.setSetting("mymotion.v", String.format("%.3f", Float.valueOf(halPins.get("mymotion.v"))));
+				Settings.instance.setSetting("mymotion.laserHeight1",
+						String.format("%.3f", Float.valueOf(halPins.get("mymotion.laserHeight1"))));
+
+				Settings.instance.setSetting("myini.actual-volts", String.format("%.3f", Float.valueOf(halPins.get("myini.actual-volts"))));
+				Settings.instance.setSetting("myini.vel-status", String.format("%s", Boolean.valueOf(halPins.get("myini.vel-status"))));
+
+				Settings.instance.setSetting("myini.thc-z-pos", String.format("%.3f", Float.valueOf(halPins.get("myini.thc-z-pos"))));
+			}
+		}
+	};
+	
 }

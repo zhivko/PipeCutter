@@ -24,7 +24,7 @@ public class MachinekitSettings extends JPanel {
 	SavableText commandUrl;
 	SavableText halCmdUrl;
 	SavableText halRCompUrl;
-	
+
 	public static void main(String[] args) {
 
 		SwingUtilities.invokeLater(new Runnable() {
@@ -105,12 +105,16 @@ public class MachinekitSettings extends JPanel {
 		flash(errorUrl.jValue);
 	}
 
-	public void pingStatus() throws InvocationTargetException, InterruptedException {
-		flash(statusUrl.jValue);
+	public void pingStatus() {
+		try {
+			flash(statusUrl.jValue);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 	}
 
 	private void flash(JTextField jValue) {
-		final JTextField control = jValue; 
+		final JTextField control = jValue;
 		SwingWorker<Void, Void> sw = new SwingWorker<Void, Void>() {
 			@Override
 			protected Void doInBackground() throws Exception {
@@ -128,12 +132,12 @@ public class MachinekitSettings extends JPanel {
 	public void pingCommand() {
 		flash(commandUrl.jValue);
 	}
-	
+
 	public void pingHalCommand() {
 		flash(halCmdUrl.jValue);
 	}
-	
+
 	public void pingHalRcomp() {
 		flash(halRCompUrl.jValue);
-	}	
+	}
 }

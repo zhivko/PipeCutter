@@ -24,7 +24,7 @@ import com.kz.pipeCutter.BBB.MyOutputStreamReader;
 import com.kz.pipeCutter.ui.NamedList;
 import com.kz.pipeCutter.ui.Settings;
 
-public class MachinekitStart extends SSH_Command {
+public class MachineKitStart extends SSH_Command {
 
 	@Override
 	public void runSshCmd() throws Exception {

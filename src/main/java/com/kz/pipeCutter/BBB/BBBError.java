@@ -16,6 +16,8 @@ import org.omg.CORBA.ShortSeqHolder;
 import org.zeromq.ZContext;
 import org.zeromq.ZFrame;
 import org.zeromq.ZMQ;
+import org.zeromq.ZMQ.PollItem;
+import org.zeromq.ZMQ.Poller;
 import org.zeromq.ZMQ.Socket;
 import org.zeromq.ZMsg;
 
@@ -41,8 +43,8 @@ public class BBBError implements Runnable {
 	static String identity;
 
 	private Thread readThread;
-	private long lastPingMs=0;
-	private boolean shouldRead=false;
+	private long lastPingMs = 0;
+	private boolean shouldRead = false;
 
 	private final static ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
 
@@ -62,19 +64,19 @@ public class BBBError implements Runnable {
 	public void run() {
 		Container contReturned;
 		while (shouldRead) {
-			try {
-				ZMsg receivedMessage = ZMsg.recvMsg(socket, ZMQ.DONTWAIT);
-				// System.out.println("loop: " + i);
-				if (receivedMessage != null) {
-					while (!receivedMessage.isEmpty()) {
-						ZFrame frame = receivedMessage.poll();
+			PollItem[] pollItems = new PollItem[] { new PollItem(socket, Poller.POLLIN) };
+			int rc = ZMQ.poll(pollItems, 100);
+			// System.out.println("loop: " + i);
+			for (int l = 0; l < rc; l++) {
+				ZMsg msg = ZMsg.recvMsg(socket,ZMQ.DONTWAIT);
+				try {
+					ZFrame frame = null;
+					while (pollItems[0].isReadable() && (frame = msg.poll()) != null) {
 						byte[] returnedBytes = frame.getData();
 						String messageType = new String(returnedBytes);
-						//System.out.println(messageType);
-						if (!messageType.equals("error") && !messageType.equals("text") && !messageType.equals("display")
-								&& !messageType.equals("status")) {
+						// System.out.println(messageType);
+						if (!messageType.equals("error") && !messageType.equals("text") && !messageType.equals("display") && !messageType.equals("status")) {
 							// System.out.println(messageType);
-
 							contReturned = Message.Container.parseFrom(returnedBytes);
 							if (contReturned.getType().equals(ContainerType.MT_PING)) {
 								this.lastPingMs = System.currentTimeMillis();
@@ -86,25 +88,21 @@ public class BBBError implements Runnable {
 									Settings.getInstance().log("\t" + note);
 								}
 							}
-
 						}
 					}
-					receivedMessage.destroy();
-					receivedMessage = null;
+				} catch (Exception ex) {
+					ex.printStackTrace();
 				}
-			} catch (Exception e) {
-				if (!e.getMessage().equals("Error:")) {
-					e.printStackTrace();
-					Settings.getInstance().log("Error: " + e.getMessage());
-				}
-
+				msg.destroy();
 			}
-			// try {
-			// TimeUnit.MILLISECONDS.sleep(100);
-			// } catch (Exception ex) {
-			// ex.printStackTrace();
-			// }
+//			try {
+//				Thread.sleep(100);
+//			} catch (InterruptedException e) {
+//				// TODO Auto-generated catch block
+//				e.printStackTrace();
+//			}
 		}
+
 	}
 
 	public static void main(String[] args) {
@@ -115,7 +113,7 @@ public class BBBError implements Runnable {
 
 	public void initSocket() {
 		if (readThread != null && readThread.isAlive()) {
-			shouldRead=false;
+			shouldRead = false;
 			while (readThread.isAlive()) {
 				try {
 					TimeUnit.MILLISECONDS.sleep(500);
@@ -127,7 +125,7 @@ public class BBBError implements Runnable {
 		}
 		if (ctx != null && socket != null) {
 			ctx.destroy();
-			//socket.close();
+			// socket.close();
 		}
 
 		Random rand = new Random(23424234);
@@ -148,7 +146,7 @@ public class BBBError implements Runnable {
 		socket.setIdentity(identity.getBytes());
 		socket.connect(uri);
 
-		shouldRead=true;
+		shouldRead = true;
 		readThread = new Thread(this);
 		readThread.setName("BBBError");
 		readThread.start();
@@ -157,11 +155,10 @@ public class BBBError implements Runnable {
 	public org.zeromq.ZMQ.Socket getSocket() {
 		return socket;
 	}
-	
-	public boolean isAlive()
-	{
-		if(this.lastPingMs!=0)
-			return (System.currentTimeMillis()-this.lastPingMs > 1000);
+
+	public boolean isAlive() {
+		if (this.lastPingMs != 0)
+			return (System.currentTimeMillis() - this.lastPingMs > 1000);
 		else
 			return false;
 	}

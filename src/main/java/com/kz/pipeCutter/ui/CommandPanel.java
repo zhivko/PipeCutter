@@ -20,7 +20,7 @@ import com.kz.pipeCutter.BBB.commands.EstopReset;
 import com.kz.pipeCutter.BBB.commands.ExecuteMdi;
 import com.kz.pipeCutter.BBB.commands.HomeAllAxis;
 import com.kz.pipeCutter.BBB.commands.MachinekitListProcesses;
-import com.kz.pipeCutter.BBB.commands.MachinekitStart;
+import com.kz.pipeCutter.BBB.commands.MachineKitStart;
 import com.kz.pipeCutter.BBB.commands.MachinekitKill;
 import com.kz.pipeCutter.BBB.commands.MachinekitUpload;
 import com.kz.pipeCutter.BBB.commands.OpenGCode;
@@ -51,7 +51,7 @@ public class CommandPanel extends JPanel {
 		MyButton startMachineKit = new MyButton("Start MK") {
 			@Override
 			public void doIt() {
-				new MachinekitStart().start();
+				new MachineKitStart().start();
 			}
 		};
 		machineKitPanel.add(startMachineKit);

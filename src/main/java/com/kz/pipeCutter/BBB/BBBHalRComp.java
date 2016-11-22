@@ -116,7 +116,7 @@ public class BBBHalRComp implements Runnable {
 		shouldRead = true;
 		PollItem[] pollItems = new PollItem[] { new PollItem(socket, Poller.POLLIN) };
 		while (shouldRead) {
-			int rc = ZMQ.poll(pollItems, 100);
+			int rc = ZMQ.poll(pollItems,1, 100);
 			// System.out.println("loop: " + i);
 			for (int l = 0; l < rc; l++) {
 				ZMsg msg = ZMsg.recvMsg(socket);
@@ -188,12 +188,6 @@ public class BBBHalRComp implements Runnable {
 
 				}
 			}
-//			try {
-//				Thread.sleep(100);
-//			} catch (InterruptedException e) {
-//				// TODO Auto-generated catch block
-//				e.printStackTrace();
-//			}
 		}
 	}
 

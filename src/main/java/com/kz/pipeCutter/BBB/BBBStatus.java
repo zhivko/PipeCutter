@@ -103,7 +103,7 @@ public class BBBStatus implements Runnable {
 		Container contReturned;
 		PollItem[] pollItems = new PollItem[] { new PollItem(socket, Poller.POLLIN) };
 		while (shouldRead) {
-			int rc = ZMQ.poll(pollItems, 100);
+			int rc = ZMQ.poll(pollItems,1, 100);
 			for (int l = 0; l < rc; l++) {
 				ZMsg msg = ZMsg.recvMsg(socket, ZMQ.DONTWAIT);
 				ZFrame frame = null;
@@ -189,12 +189,6 @@ public class BBBStatus implements Runnable {
 					}
 				}
 			}
-//			try {
-//				Thread.sleep(100);
-//			} catch (InterruptedException e) {
-//				// TODO Auto-generated catch block
-//				e.printStackTrace();
-//			}
 		}
 
 	}

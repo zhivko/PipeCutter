@@ -121,7 +121,7 @@ public class BBBHalCommand implements Runnable {
 		PollItem[] pollItems = new PollItem[] { new PollItem(socket, Poller.POLLIN) };
 		while (shouldRead) {
 
-			int rc = ZMQ.poll(pollItems, 100);
+			int rc = ZMQ.poll(pollItems,1, 100);
 			// System.out.println("loop: " + i);
 			for (int l = 0; l < rc; l++) {
 				ZMsg msg = ZMsg.recvMsg(socket);
@@ -166,42 +166,18 @@ public class BBBHalCommand implements Runnable {
 											BBBHalRComp.instance.pinsByName.get(contReturned.getComp(i).getPin(j).getName()));
 								}
 							}
-
-							// lets run postgui file
 							new MachinekitRunPostgui().start();
-
 							Settings.instance.updateHalValues();
 							Settings.instance.setLaser1IP();
 						} else {
 							Settings.getInstance().log("Unknown message: " + contReturned.getType());
 						}
 					}
-					// if (halPin.get("motion.program-line") != null &&
-					// SurfaceDemo.instance!=null) {
-					// int lineNo =
-					// Integer.valueOf(halPin.get("motion.program-line")).intValue();
-					// GcodeViewer.instance.setLineNumber(lineNo);
-					// }
-					// if (halPin.get("motion.spindle-on") != null &&
-					// SurfaceDemo.instance!=null) {
-					// System.out.println(halPin.get("motion.spindle-on"));
-					// boolean spindleOn =
-					// Boolean.valueOf(halPin.get("motion.spindle-on")).booleanValue();
-					// SurfaceDemo.instance.spindleOn=spindleOn;
-					// }
 				} catch (Exception ex) {
 					ex.printStackTrace();
 				}
 				msg.destroy();
-				// TimeUnit.MILLISECONDS.sleep(1000);
-				// requestDescribe();
 			}
-//			try {
-//				Thread.sleep(100);
-//			} catch (InterruptedException e) {
-//				// TODO Auto-generated catch block
-//				e.printStackTrace();
-//			}
 		}
 
 	}

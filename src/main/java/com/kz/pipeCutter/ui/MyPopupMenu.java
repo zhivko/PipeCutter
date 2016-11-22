@@ -35,6 +35,19 @@ public class MyPopupMenu extends PopupMenu {
 			}
 		});
 		this.add(menuItem);
+		
+		MenuItem menuItem6 = new MenuItem("Cut edge from point");
+		menuItem6.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+				if (SurfaceDemo.instance.lastClickedPoint.getClass().getName().equals("com.kz.pipeCutter.MyPickablePoint")) {
+					CutThread th = new CutThread(false, SurfaceDemo.instance.lastClickedPoint);
+					th.execute();
+				}
+			}
+		});
+		this.add(menuItem6);
+		
 		this.addSeparator();
 
 		MenuItem menuItem7 = new MenuItem("Toggle edges");
@@ -101,20 +114,6 @@ public class MyPopupMenu extends PopupMenu {
 		});
 		this.add(menuItem10);
 
-		this.addSeparator();
-
-		MenuItem menuItem6 = new MenuItem("Move on edge");
-		menuItem6.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent arg0) {
-				if (SurfaceDemo.instance.lastClickedPoint.getClass().getName().equals("com.kz.pipeCutter.MyPickablePoint")) {
-
-					CutThread th = new CutThread(false, SurfaceDemo.instance.lastClickedPoint);
-					th.execute();
-				}
-			}
-		});
-		this.add(menuItem6);
 		this.addSeparator();
 
 		MenuItem menuItem2 = new MenuItem("SMOOTHIE - Run last program");

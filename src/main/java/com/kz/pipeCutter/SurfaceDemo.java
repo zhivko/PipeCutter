@@ -99,7 +99,7 @@ public class SurfaceDemo extends AbstractAnalysis {
 	public Point cylinderPoint;
 	public Settings settingsFrame;
 
-	private boolean alreadyCutting;
+	public boolean alreadyCutting;
 	public boolean spindleOn;
 	public int gCodeLineNo;
 	
@@ -1170,11 +1170,11 @@ public class SurfaceDemo extends AbstractAnalysis {
 		instance.getChart().resumeAnimator();
 	}
 
-	public void move(MyPickablePoint mp, boolean cut, float offset) {
-		move(mp, cut, offset, true);
+	public void move(MyPickablePoint mp, boolean cut, float zOffset) {
+		move(mp, cut, zOffset, true);
 	}
 
-	public void move(MyPickablePoint tempPoint, boolean cut, float offset, boolean writeToGCode) {
+	public void move(MyPickablePoint tempPoint, boolean cut, float zOffset, boolean writeToGCode) {
 		if (plasma == null) {
 			// cylinder = new Cylinder(tempPoint);
 			getPlasma();
@@ -1200,11 +1200,11 @@ public class SurfaceDemo extends AbstractAnalysis {
 		}
 		cylinderPoint.setCoord(tempPoint.xyz);
 
-		Coord3d offsetedPoint = cylinderPoint.xyz.add(new Coord3d(0, 0, offset));
+		Coord3d offsetedPoint = cylinderPoint.xyz.add(new Coord3d(0, 0, zOffset));
 		plasma.setPosition(offsetedPoint);
 
 		if (writeToGCode) {
-			String gcode = SurfaceDemo.instance.utils.coordinateToGcode(tempPoint, offset, cut);
+			String gcode = SurfaceDemo.instance.utils.coordinateToGcode(tempPoint, zOffset, cut);
 			if (cut) {
 				writeToGcodeFile(String.format(java.util.Locale.US, "G01 %s", gcode));
 				alreadyCutting = true;
@@ -1219,25 +1219,8 @@ public class SurfaceDemo extends AbstractAnalysis {
 			System.out.println("OOPS");
 		}
 
-		// if (ZOOM_POINT) {
-		// float edge = canvas.getView().getBounds().getXmax() -
-		// canvas.getView().getBounds().getXmin();
-		// // canvas.getView().setBoundManual(new
-		// // BoundingBox3d(plasma.getPosition(), edge));
-		// canvas.getView().setBoundManual(new
-		// BoundingBox3d(lastClickedPoint.getCoord(), edge));
-		// }
-
 		if (instance.getChart().getView().getCanvas() != null)
 			instance.getChart().render();
-
-		// try {
-		// TimeUnit.MILLISECONDS.sleep(Cylinder.sleep);
-		// } catch (InterruptedException e) {
-		// // TODO Auto-generated catch block
-		// e.printStackTrace();
-		// }
-
 	}
 
 	public void moveAbove(MyPickablePoint tempPoint, float offset, long pierceTimeMs) {

@@ -213,28 +213,10 @@ public class CutThread extends SwingWorker<String, Object> {
 			if (pointsToCut.size() > 0) {
 				for (MyPickablePoint myPoint : pointsToCut) {
 					if (!listContainsPoint(myPoint, alAlreadyAddedPoints) && Math.abs(myPoint.getZ() - topZ) < 0.1) {
-
-						// try {
-						// PrintWriter out = new PrintWriter(
-						// new BufferedWriter(new
-						// FileWriter(CutThread.gcodeFile.getAbsolutePath(),
-						// true)));
-						// out.println(String.format(java.util.Locale.US, "G01
-						// A%.3f B%.3f
-						// F%s",
-						// Float.valueOf(SurfaceDemo.getInstance().angleTxt),
-						// Float.valueOf(SurfaceDemo.getInstance().angleTxt),
-						// Settings.getInstance().getSetting("gcode_feedrate_g0")));
-						// out.close();
-						// } catch (Exception e) {
-						// e.printStackTrace();
-						// }
 						double diagonal = (SurfaceDemo.getInstance().utils.maxEdge * Math.sqrt(2.0f));
 						MyPickablePoint safeRetractPoint = new MyPickablePoint(-100000, new Coord3d(myPoint.xyz.x, myPoint.xyz.y, diagonal / 2 + 20), Color.BLACK,
 								0.4f, -200000);
-
 						SurfaceDemo.getInstance().move(safeRetractPoint, false, cutOffsetMm, true);
-
 						// SurfaceDemo.getInstance().moveAbove(safeRetractPoint, 0, 0);
 						SurfaceDemo.getInstance().moveAbove(myPoint, pierceOffsetMm, pierceTimeMs);
 						double angle = followThePath(myPoint, this.alAlreadyAddedPoints, (rotationDirection == -1 ? true : false));
@@ -352,8 +334,7 @@ public class CutThread extends SwingWorker<String, Object> {
 		if (this.wholePipe)
 			cut();
 		else {
-			this.followThePath(this.startPoint, this.alAlreadyAddedPoints, true);
-			SurfaceDemo.instance.writeToGcodeFile("M2");
+			cutFromPoint(this.startPoint);
 		}
 		return "Done";
 	}
@@ -367,6 +348,29 @@ public class CutThread extends SwingWorker<String, Object> {
 		} catch (InterruptedException e) {
 			// Process e here
 		}
+	}
+
+	private void cutFromPoint(MyPickablePoint startPoint2) {
+		SurfaceDemo.instance.gCodeLineNo = 0;
+		SurfaceDemo.instance.g93mode = false;
+
+		SurfaceDemo.instance.utils.previousPoint = this.startPoint.xyz;
+		SurfaceDemo.instance.utils.previousAngle = Float.valueOf(SurfaceDemo.getInstance().angleTxt);
+
+		SurfaceDemo.instance.writeToGcodeFile("G90 (switch to absolute coordinates)");
+		SurfaceDemo.instance.writeToGcodeFile("G94 (units per minute mode)");
+
+		double diagonal = (SurfaceDemo.getInstance().utils.maxEdge * Math.sqrt(2.0f));
+		// lets turn on path blending
+		SurfaceDemo.instance.writeToGcodeFile("G64 P.5 Q.5 (path blending - P away from point)");
+
+		SurfaceDemo.getInstance().move(this.startPoint, false, (float)((diagonal / 2.0f + 20.0f)-pierceOffsetMm));
+		SurfaceDemo.getInstance().moveAbove(this.startPoint, pierceOffsetMm, pierceTimeMs);
+		SurfaceDemo.instance.writeToGcodeFile("G93 (inverse time mode)");
+		this.followThePath(this.startPoint, this.alAlreadyAddedPoints, true);
+		SurfaceDemo.getInstance().move(this.startPoint, false, (float)((diagonal / 2.0f + 20.0f)-pierceOffsetMm));
+		
+		SurfaceDemo.instance.writeToGcodeFile("M2");
 	}
 
 }

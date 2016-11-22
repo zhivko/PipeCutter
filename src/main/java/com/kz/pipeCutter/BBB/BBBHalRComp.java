@@ -328,7 +328,7 @@ public class BBBHalRComp implements Runnable {
 				//GcodeViewer.instance.setLineNumber(Integer.valueOf(halPins.get("mymotion.program-line")).intValue());
 
 				Settings.instance.setSetting("mymotion.program-line", String.format("%d", Integer.valueOf(halPins.get("mymotion.program-line"))));
-				
+								
 				GcodeViewer.instance.setPlasmaOn(Boolean.valueOf(halPins.get("mymotion.spindle-on")).booleanValue());
 				Settings.instance.setSetting("mymotion.vx", String.format("%.3f", Float.valueOf(halPins.get("mymotion.vx"))));
 				Settings.instance.setSetting("mymotion.dvx", String.format("%.3f", Float.valueOf(halPins.get("mymotion.dvx"))));
@@ -345,6 +345,7 @@ public class BBBHalRComp implements Runnable {
 				Settings.instance.setSetting("myini.vel-status", String.format("%s", Boolean.valueOf(halPins.get("myini.vel-status"))));
 
 				Settings.instance.setSetting("myini.thc-z-pos", String.format("%.3f", Float.valueOf(halPins.get("myini.thc-z-pos"))));
+				Settings.instance.setSetting("myini.offset-value", String.format("%.3f", Float.valueOf(halPins.get("myini.offset-value"))));
 			}
 		}
 	};

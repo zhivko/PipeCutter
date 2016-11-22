@@ -158,5 +158,12 @@ public class PlasmaSettings extends JPanel {
 		thcZPos.setLabelTxt("thc z-pos");
 		this.add(thcZPos);	
 
+		SavableText offsetValue = new SavableText();
+		offsetValue.setPin(new PinDef("myini.offset-value", HalPinDirection.HAL_IN, ValueType.HAL_FLOAT));
+		offsetValue.requiresHalRCompSet = false;
+		offsetValue.setNeedsSave(false);
+		offsetValue.setParId("myini.offset-value");
+		offsetValue.setLabelTxt("thc offset value");
+		this.add(offsetValue);
 	}
 }

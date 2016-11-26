@@ -234,26 +234,8 @@ public class SurfaceDemo extends AbstractAnalysis {
 
 							}
 						});
-						// remove horizontal edges that connect to separated surfaces
-						// edges with two point index 0 and 1
-
-						// // instance.centerObject();
-						// menu.addSeparator();
-						// MenuItem menuItem11 = new MenuItem("Start animator");
-						// menuItem11.addActionListener(new ActionListener() {
-						// @Override
-						// public void actionPerformed(ActionEvent arg0) {
-						// SurfaceDemo.instance.canvas.getAnimator().start();
-						// // SurfaceDemo.instance.resumeAnimator();
-						// //
-						// SurfaceDemo.instance.canvas.getAnimator().setUpdateFPSFrames(20,
-						// // System.out);
-						// }
-						// });
-						// menu.add(menuItem11);
 
 						instance.getChart().getView().setViewPositionMode(ViewPositionMode.FREE);
-						// instance.getChart().getView().setMaximized(true);
 
 						try {
 							FileInputStream in = new FileInputStream(Settings.iniFullFileName);
@@ -267,7 +249,6 @@ public class SurfaceDemo extends AbstractAnalysis {
 									String[] splittedSize = size.split("x");
 									Integer x = Integer.valueOf(splittedSize[0]);
 									Integer y = Integer.valueOf(splittedSize[1]);
-									// Toolkit.getDefaultToolkit().
 									((Frame) (SurfaceDemo.instance.canvas.getParent())).setLocation(new java.awt.Point(x, y));
 								} catch (Exception ex) {
 									ex.printStackTrace();
@@ -288,8 +269,6 @@ public class SurfaceDemo extends AbstractAnalysis {
 								plasma.setVolume(radiusOfPlasma);
 
 								Component c = (Component) e.getSource();
-								// System.out.println(c.getName() + " resized: " +
-								// c.getSize().toString());
 								if (c.getName().equals("frame1")) {
 									FileInputStream in;
 									try {
@@ -339,9 +318,6 @@ public class SurfaceDemo extends AbstractAnalysis {
 									} catch (Exception ex) {
 										ex.printStackTrace();
 									}
-									// splitPane.setDividerLocation(1 -
-									// (commandPanel.getHeight() /
-									// Settings.instance.getHeight()));
 								}
 							}
 
@@ -633,9 +609,7 @@ public class SurfaceDemo extends AbstractAnalysis {
 							float z = Float.valueOf(center_str.split("\\s")[2].split("=")[1]);
 
 							instance.chart.getView().setBoundManual(new BoundingBox3d(new Coord3d(x, y, z), Float.valueOf(radius)));
-
 							instance.enablePicking(instance.utils.points.values(), instance.chart, 10);
-
 							instance.canvas.getAnimator().start();
 
 						} catch (Exception ex) {
@@ -976,31 +950,13 @@ public class SurfaceDemo extends AbstractAnalysis {
 				ls.add(utils.points.get(point.id));
 				if (SurfaceDemo.NUMBER_POINTS) {
 					if (!alreadyAddedPointsText.contains(pointNo)) {
-						// DrawableTextBitmap t4 = new
-						// DrawableTextBitmap(String.valueOf(point.id), point.xyz,
-						// Color.BLACK);
-						// t4.setHalign(Halign.CENTER); // TODO: invert
-						// t4.setValign(Valign.CENTER); // TODO: invert
-						// // left/right
-						// utils.pointTexts.add(t4);
-						// alreadyAddedPointsText.add(pointNo);
 						Coord3d cent = this.utils.continuousEdges.get(edge.getPointByIndex(0).continuousEdgeNo).center;
 						Coord3d delta = point.xyz.sub(cent);
-						// 2 mm toward center
 						Coord3d textPoint = point.xyz.sub(delta.getNormalizedTo(0.2f));
-						// Rotation r = new Rotation(0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f,
-						// -1.0f *
-						// Float.valueOf(SurfaceDemo.instance.angleTxt) * Math.PI / 180);
-						// Coordinates c = new Coordinates(textPoint.x, textPoint.y,
-						// textPoint.z);
-						// r.transform(c);
-
 						PickableDrawableTextBitmap t4 = new PickableDrawableTextBitmap(String.valueOf(point.id),
 								new Coord3d(textPoint.x, textPoint.y, textPoint.z), Color.BLUE);
 						t4.setHalign(Halign.CENTER); // TODO: invert
 						t4.setValign(Valign.CENTER); // TODO: invert
-						// t5.setValign(Valign.BOTTOM); // TODO: invert
-						// left/right
 						t4.setPickingId(edge.edgeNo);
 						utils.pointTexts.add(t4);
 					}

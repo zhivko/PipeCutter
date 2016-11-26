@@ -391,45 +391,17 @@ public class Utils {
 		if (this.previousPointId > 0 && (p.id != this.previousPointId)) {
 			edge = getEdgeFromTwoPoints(p, SurfaceDemo.instance.utils.points.get(this.previousPointId));
 			if (edge != null && edge.edgeType == MyEdge.EdgeType.ONRADIUS) {
-				// if (previousEdge != null) {
-				// if (previousEdge.edgeType == MyEdge.EdgeType.NORMAL && edge.edgeType
-				// ==
-				// MyEdge.EdgeType.ONRADIUS) {
-				// calcSpeed calculated above
-				// System.out.println("");
-				// } else if (previousEdge.edgeType == MyEdge.EdgeType.ONRADIUS &&
-				// edge.edgeType == MyEdge.EdgeType.ONRADIUS) {
-				/*
-				 * // lets calculate fillet speed since it is not defined // x_width
-				 * needs to be traversed in what time? double time = (this.maxX * 2) /
-				 * CutThread.instance.g1Speed; // in minutes // in this time rotation of
-				 * 90 degrees should be done double w = (Math.PI / 2) / time; double
-				 * radius = (this.maxX) * 1.41; double v = w * radius * 180 / Math.PI;
-				 */
-				// fillet length
 				float radius_of_edge = Float.valueOf(Settings.instance.getSetting("pipe_radius"));
 				float maxRadius = (float) Math.sqrt(this.maxX * this.maxX + this.maxZ * this.maxZ);
-				// float s = ((this.maxX * 2.0f - 2 * radius_of_edge) + (this.maxZ *
-				// 2.0f - 2 * radius_of_edge)) / 2.0f;
-				// float s = maxLength * 2.0f - 2 * radius_of_edge;
 				float s = (float) (maxRadius * Math.PI) * 1.0f;
 				float arc_length = (float) (radius_of_edge * Math.PI / 2);
-				// float v = (CutThread.instance.g1Speed) * (this.maxX * 2 + 2 *
-				// radius_of_edge) / arc_length;
 				float v = SurfaceDemo.instance.g1Speed * s / arc_length * 1.0f;
-				// float v = (SurfaceDemo.instance.g1Speed);
 				float dv = v - SurfaceDemo.instance.g1Speed;
 				float t = s / SurfaceDemo.instance.g1Speed;
-
 				float a = 2 * dv / t;
-
 				double currAngle = Math.atan2(p.getCoord().z, p.getCoord().x) * 180.0 / Math.PI;
 				double maxAngle = Math.atan2(this.maxZ, (this.maxX - radius_of_edge)) * 180.0 / Math.PI;
-
-				System.out.println(String.format("%.3f / %.3f", currAngle, maxAngle));
-
 				CutThread.instance.filletSpeed = Double.valueOf(v).floatValue();
-
 				calcSpeed = CutThread.instance.filletSpeed;
 				length = edge.length;
 			}
@@ -437,40 +409,14 @@ public class Utils {
 		double feed = 1;
 		Coord3d p1 = new Coord3d(x, y, z);
 
-		// if (SurfaceDemo.instance.g93mode) {
-		// if (cut) {
-		// length calculation
-		// v = s/t
-		// t = s / v
-		// 1 / t = v / s
-
-		/*
-		 * if(edge==null || this.previousEdge==null) { length =
-		 * p1.distance(this.previousPoint); } else { length =
-		 * this.origPoints.get(p.id).distance(this.origPoints.get(this.
-		 * previousPointId)); }
-		 */
-
-
 		if (length == 0) {
-//			float middleX = (p1.x + this.previousPoint.x) / 2.0f;
-//			float middleZ = (p1.z + this.previousPoint.z) / 2.0f;
-//			if (previousAngle != angle)
-//				length = Math.abs((Math.PI / 180.0f) * (angle - previousAngle) * Math.sqrt(middleX * middleX + middleZ * middleZ))
-//						+ Math.abs(p1.y - this.previousPoint.y);
-//			else
 				length = p1.distance(this.previousPoint);
 		}
 
 		if (length != 0) {
 			feed = (calcSpeed) / length;
-			// feed = 1000;
 		} else
 			feed = 10000;
-		/*
-		 * } else { feed = calcSpeed; }
-		 */
-
 		
 		String edgeDescription = "";
 		if(edge!=null)
@@ -480,12 +426,6 @@ public class Utils {
 					edgeDescription);
 		else
 			ret = String.format(java.util.Locale.US, "X%.1f Y%.1f Z%.1f A%.1f B%.1f (move length: %.1f speed:%.1f)", x, y, z, angle, angle, length, calcSpeed);
-
-		// if (this.previousPoint == null || !this.previousPoint.equals(p1)) {
-		// // System.out.println("previous to: " + coord.toString());
-		// this.previousPoint = p1;
-		// // this.previousAngle = angle;
-		// }
 
 		this.previousPoint = p1;
 		this.previousPointId = p.id;
@@ -628,7 +568,6 @@ public class Utils {
 			MyPickablePoint nextPoint = continuousEdge.getPointByIndex(nextIndex);
 			System.out.println(prevPoint.id + " " + point.id + " " + nextPoint.id);
 
-			Vector3D centerVec = new Vector3D(continuousEdge.center.x, continuousEdge.center.y, continuousEdge.center.z);
 			Vector3D vecPrevPoint = new Vector3D(prevPoint.xyz.x, prevPoint.xyz.y, prevPoint.xyz.z);
 			Vector3D vecNextPoint = new Vector3D(nextPoint.xyz.x, nextPoint.xyz.y, nextPoint.xyz.z);
 			Vector3D vecPoint = new Vector3D(point.xyz.x, point.xyz.y, point.xyz.z);
@@ -637,6 +576,7 @@ public class Utils {
 				Plane plane = getPlaneForPoint(point);
 				double vectorCrossLengthY = plane.getNormal().crossProduct(new Vector3D(0f, 1.0f, 0.0f)).getNorm();
 				double vectorCrossLengthX = plane.getNormal().crossProduct(new Vector3D(1.0f, 0.0f, 0.0f)).getNorm();
+				double vectorCrossLengthZ = plane.getNormal().crossProduct(new Vector3D(0.0f, 0.0f, 1.0f)).getNorm();
 
 				if (Math.abs(vectorCrossLengthY) < Math_E) {
 					Logger.getLogger(this.getClass()).info("Plane is perpendicular to Y.");
@@ -644,9 +584,9 @@ public class Utils {
 					ret.xyz.x = (float) point.getX();
 					ret.xyz.y = (float) point.getY() - Math.signum(deltaY) * SurfaceDemo.instance.getKerfOffset();
 					ret.xyz.z = (float) point.getZ();
-				} else if (Math.abs(vectorCrossLengthX) < Math_E) {
+				} else if (Math.abs(vectorCrossLengthX) < Math_E || Math.abs(vectorCrossLengthZ) < Math_E) {
 					// plane is perpendicular to X
-					Logger.getLogger(this.getClass()).info("Plane is perpendicular to X.");
+					Logger.getLogger(this.getClass()).info("Plane is perpendicular to X or Z.");
 					Vector3D vecA = vecPrevPoint.subtract(vecPoint);
 					Vector3D vecB = vecNextPoint.subtract(vecPoint);
 					Rotation rotationP = new Rotation(plane.getNormal(), Math.PI / 2);

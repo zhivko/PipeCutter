@@ -410,22 +410,24 @@ public class Utils {
 		Coord3d p1 = new Coord3d(x, y, z);
 
 		if (length == 0) {
-				length = p1.distance(this.previousPoint);
+			length = p1.distance(this.previousPoint);
 		}
 
 		if (length != 0) {
 			feed = (calcSpeed) / length;
 		} else
 			feed = 10000;
-		
+
 		String edgeDescription = "";
-		if(edge!=null)
-			edgeDescription  = edge.edgeType + " no:" + edge.edgeNo; // + " length=" + edge.length ;
+		if (edge != null)
+			edgeDescription = edge.edgeType + " no:" + edge.edgeNo; // + " length=" +
+																															// edge.length ;
 		if (cut)
-			ret = String.format(java.util.Locale.US, "X%.1f Y%.1f Z%.1f A%.1f B%.1f F%.1f (move length: %.1f speed:%.1f p:%d, e:%s)", x, y, z, angle, angle, feed, length, calcSpeed, p.id,
-					edgeDescription);
+			ret = String.format(java.util.Locale.US, "X%.1f Y%.1f Z%.1f A%.1f B%.1f F%.1f (move length: %.1f speed:%.1f p:%d, e:%s)", x, y, z, angle, angle,
+					feed, length, calcSpeed, p.id, edgeDescription);
 		else
-			ret = String.format(java.util.Locale.US, "X%.1f Y%.1f Z%.1f A%.1f B%.1f (move length: %.1f speed:%.1f)", x, y, z, angle, angle, length, calcSpeed);
+			ret = String.format(java.util.Locale.US, "X%.1f Y%.1f Z%.1f A%.1f B%.1f (move length: %.1f speed:%.1f)", x, y, z, angle, angle, length,
+					calcSpeed);
 
 		this.previousPoint = p1;
 		this.previousPointId = p.id;
@@ -618,7 +620,7 @@ public class Utils {
 			} catch (org.apache.commons.math3.exception.MathArithmeticException ex) {
 				System.out.println("Middle point");
 
-				// this means point is between lines that are both in same same
+				// this means point is between lines that are both in same line
 				// parallel to - either XY or YZ plane
 				// is it parallel to XY - it must have maxZ or minZ coordinate?
 
@@ -857,9 +859,8 @@ public class Utils {
 		return coordinateToGcode(tempPoint, offset, false);
 	}
 
-	public MyPickablePoint getPointbyId(Integer id)
-	{
+	public MyPickablePoint getPointbyId(Integer id) {
 		return points.get(id);
 	}
-	
+
 }

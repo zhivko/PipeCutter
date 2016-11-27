@@ -551,7 +551,6 @@ public class SurfaceDemo extends AbstractAnalysis {
 
 			}
 
-			// splitLongEdges();
 			splitLongEdges();
 			splitNearRadiusEdge();
 
@@ -609,7 +608,6 @@ public class SurfaceDemo extends AbstractAnalysis {
 							float z = Float.valueOf(center_str.split("\\s")[2].split("=")[1]);
 
 							instance.chart.getView().setBoundManual(new BoundingBox3d(new Coord3d(x, y, z), Float.valueOf(radius)));
-							instance.enablePicking(instance.utils.points.values(), instance.chart, 10);
 							instance.canvas.getAnimator().start();
 
 						} catch (Exception ex) {
@@ -984,6 +982,8 @@ public class SurfaceDemo extends AbstractAnalysis {
 		System.out.println("Composite element size: " + myComposite.getDrawables().size());
 		getPlasma();
 		redrawPosition();
+		instance.enablePicking(instance.utils.points.values(), instance.chart, 10);
+
 	}
 
 	public Sphere getPlasma() {

@@ -8,13 +8,13 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
-import java.util.SortedSet;
-import java.util.TreeSet;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
 
 import javax.vecmath.Vector3d;
 
+import org.apache.commons.math3.geometry.Point;
+import org.apache.commons.math3.geometry.euclidean.threed.Euclidean3D;
 import org.apache.commons.math3.geometry.euclidean.threed.Line;
 import org.apache.commons.math3.geometry.euclidean.threed.Plane;
 import org.apache.commons.math3.geometry.euclidean.threed.Rotation;
@@ -91,7 +91,8 @@ public class Utils {
 		points = new ConcurrentHashMap<Integer, MyPickablePoint>();
 	}
 
-	public ArrayList<Integer> calculateCutPoints(MyPickablePoint clickedPoint, ArrayList<MyPickablePoint> alAlreadyAddedPoints, boolean verticals) {
+	public ArrayList<Integer> calculateCutPoints(MyPickablePoint clickedPoint,
+			ArrayList<MyPickablePoint> alAlreadyAddedPoints, boolean verticals) {
 		// TODO Auto-generated method stub
 		MyEdge edge = new MyEdge(-1, -1);
 
@@ -119,7 +120,8 @@ public class Utils {
 		}
 	}
 
-	public MyPickablePoint findConnectedPoint(MyPickablePoint point, ArrayList<MyPickablePoint> alreadyAdded, boolean direction) {
+	public MyPickablePoint findConnectedPoint(MyPickablePoint point, ArrayList<MyPickablePoint> alreadyAdded,
+			boolean direction) {
 		MyPickablePoint ret = null;
 		for (MyEdge edge : edges.values()) {
 			// System.out.println("EdgeNo: " + edge.edgeNo);
@@ -147,7 +149,8 @@ public class Utils {
 		return ret;
 	}
 
-	public ArrayList<MyPickablePoint> findConnectedPoints(MyPickablePoint point, ArrayList<MyPickablePoint> alreadyAdded) {
+	public ArrayList<MyPickablePoint> findConnectedPoints(MyPickablePoint point,
+			ArrayList<MyPickablePoint> alreadyAdded) {
 		ArrayList<MyPickablePoint> ret = new ArrayList<MyPickablePoint>();
 		for (MyEdge edge : edges.values()) {
 			if (edge.getPointByIndex(0).distance(point) < Math_E) {
@@ -170,7 +173,8 @@ public class Utils {
 		edges.put(edge.edgeNo, edge);
 	}
 
-	public static ArrayList<Coord3d> CalculateLineLineIntersection(Coord3d line1Point1, Coord3d line1Point2, Coord3d line2Point1, Coord3d line2Point2) {
+	public static ArrayList<Coord3d> CalculateLineLineIntersection(Coord3d line1Point1, Coord3d line1Point2,
+			Coord3d line2Point1, Coord3d line2Point2) {
 		// Algorithm is ported from the C algorithm of
 		// Paul Bourke at
 		// http://local.wasp.uwa.edu.au/~pbourke/geometry/lineline3d/
@@ -280,7 +284,8 @@ public class Utils {
 		ArrayList<MyPickablePoint> outerPoints = new ArrayList<MyPickablePoint>();
 		float sumAngle = 0;
 		for (int i = 0; i < 4; i++) {
-			List<MyPickablePoint> pointsSortedByZ = new ArrayList<MyPickablePoint>(SurfaceDemo.instance.utils.points.values());
+			List<MyPickablePoint> pointsSortedByZ = new ArrayList<MyPickablePoint>(
+					SurfaceDemo.instance.utils.points.values());
 			Collections.sort(pointsSortedByZ, new MyPickablePointZComparator());
 			float topZ = pointsSortedByZ.get(pointsSortedByZ.size() - 1).xyz.z;
 			if (topZ < 0)
@@ -423,11 +428,12 @@ public class Utils {
 			edgeDescription = edge.edgeType + " no:" + edge.edgeNo; // + " length=" +
 																															// edge.length ;
 		if (cut)
-			ret = String.format(java.util.Locale.US, "X%.1f Y%.1f Z%.1f A%.1f B%.1f F%.1f (move length: %.1f speed:%.1f p:%d, e:%s)", x, y, z, angle, angle,
-					feed, length, calcSpeed, p.id, edgeDescription);
+			ret = String.format(java.util.Locale.US,
+					"X%.1f Y%.1f Z%.1f A%.1f B%.1f F%.1f (move length: %.1f speed:%.1f p:%d, e:%s)", x, y, z, angle, angle, feed,
+					length, calcSpeed, p.id, edgeDescription);
 		else
-			ret = String.format(java.util.Locale.US, "X%.1f Y%.1f Z%.1f A%.1f B%.1f (move length: %.1f speed:%.1f)", x, y, z, angle, angle, length,
-					calcSpeed);
+			ret = String.format(java.util.Locale.US, "X%.1f Y%.1f Z%.1f A%.1f B%.1f (move length: %.1f speed:%.1f)", x, y, z,
+					angle, angle, length, calcSpeed);
 
 		this.previousPoint = p1;
 		this.previousPointId = p.id;
@@ -461,8 +467,8 @@ public class Utils {
 				double[] myPointDouble = { point.getX(), point.getY(), point.getZ() };
 				Vector3D myPoint = new Vector3D(myPointDouble);
 				Vector3D result = rotZ.applyTo(myPoint);
-				points.get(point.id).xyz.set(Double.valueOf(result.getX()).floatValue(), Double.valueOf(result.getY()).floatValue(),
-						Double.valueOf(result.getZ()).floatValue());
+				points.get(point.id).xyz.set(Double.valueOf(result.getX()).floatValue(),
+						Double.valueOf(result.getY()).floatValue(), Double.valueOf(result.getZ()).floatValue());
 			}
 			for (MyEdge edge : continuousEdges.values()) {
 				edge.calculateCenter();
@@ -483,8 +489,8 @@ public class Utils {
 					double[] myPointDouble = { point.getX(), point.getY(), point.getZ() };
 					Vector3D myPoint = new Vector3D(myPointDouble);
 					Vector3D result = rotZ.applyTo(myPoint);
-					points.get(point.id).xyz.set(Double.valueOf(result.getX()).floatValue(), Double.valueOf(result.getY()).floatValue(),
-							Double.valueOf(result.getZ()).floatValue());
+					points.get(point.id).xyz.set(Double.valueOf(result.getX()).floatValue(),
+							Double.valueOf(result.getY()).floatValue(), Double.valueOf(result.getZ()).floatValue());
 				}
 				for (MyEdge edge : continuousEdges.values()) {
 					edge.calculateCenter();
@@ -544,142 +550,8 @@ public class Utils {
 
 	}
 
-	public org.jzy3d.plot3d.primitives.Point calculateOffsetPoint(MyPickablePoint point) {
-		org.jzy3d.plot3d.primitives.Point ret = new org.jzy3d.plot3d.primitives.Point();
-
-		MyContinuousEdge continuousEdge = continuousEdges.get(point.continuousEdgeNo);
-
-		System.out.println(continuousEdge.edgeType);
-		Vector3D result = null;
-		if (continuousEdge.edgeType == MyContinuousEdge.EdgeType.ONPIPE) {
-			int index = continuousEdge.points.indexOf(point.id);
-			int prevIndex = -1;
-			int nextIndex = -1;
-
-			if (index == 0)
-				prevIndex = continuousEdge.points.size() - 1;
-			else
-				prevIndex = index - 1;
-
-			if (index == continuousEdge.points.size() - 1)
-				nextIndex = 0;
-			else
-				nextIndex = index + 1;
-
-			MyPickablePoint prevPoint = continuousEdge.getPointByIndex(prevIndex);
-			MyPickablePoint nextPoint = continuousEdge.getPointByIndex(nextIndex);
-			System.out.println(prevPoint.id + " " + point.id + " " + nextPoint.id);
-
-			Vector3D vecPrevPoint = new Vector3D(prevPoint.xyz.x, prevPoint.xyz.y, prevPoint.xyz.z);
-			Vector3D vecNextPoint = new Vector3D(nextPoint.xyz.x, nextPoint.xyz.y, nextPoint.xyz.z);
-			Vector3D vecPoint = new Vector3D(point.xyz.x, point.xyz.y, point.xyz.z);
-
-			try {
-				Plane plane = getPlaneForPoint(point);
-				double vectorCrossLengthY = plane.getNormal().crossProduct(new Vector3D(0f, 1.0f, 0.0f)).getNorm();
-				double vectorCrossLengthX = plane.getNormal().crossProduct(new Vector3D(1.0f, 0.0f, 0.0f)).getNorm();
-				double vectorCrossLengthZ = plane.getNormal().crossProduct(new Vector3D(0.0f, 0.0f, 1.0f)).getNorm();
-
-				if (Math.abs(vectorCrossLengthY) < Math_E) {
-					Logger.getLogger(this.getClass()).info("Plane is perpendicular to Y.");
-					float deltaY = point.getY() - continuousEdge.center.y;
-					ret.xyz.x = (float) point.getX();
-					ret.xyz.y = (float) point.getY() - Math.signum(deltaY) * SurfaceDemo.instance.getKerfOffset();
-					ret.xyz.z = (float) point.getZ();
-				} else if (Math.abs(vectorCrossLengthX) < Math_E || Math.abs(vectorCrossLengthZ) < Math_E) {
-					// plane is perpendicular to X
-					Logger.getLogger(this.getClass()).info("Plane is perpendicular to X or Z.");
-					Vector3D vecA = vecPrevPoint.subtract(vecPoint);
-					Vector3D vecB = vecNextPoint.subtract(vecPoint);
-					Rotation rotationP = new Rotation(plane.getNormal(), Math.PI / 2);
-					Rotation rotationN = new Rotation(plane.getNormal(), -Math.PI / 2);
-					Vector3D rotatedA = rotationP.applyTo(vecA).normalize();
-					Vector3D rotatedB = rotationN.applyTo(vecB).normalize();
-					Vector3D vecAoffset = vecA.add(rotatedA.scalarMultiply(SurfaceDemo.getInstance().getKerfOffset()));
-					Vector3D vecBoffset = vecB.add(rotatedB.scalarMultiply(SurfaceDemo.getInstance().getKerfOffset()));
-					Line lineA = new Line(vecPrevPoint.add(vecAoffset), vecPoint.add(vecAoffset), 0.0001);
-					Line lineB = new Line(vecNextPoint.add(vecBoffset), vecPoint.add(vecBoffset), 0.0001);
-					Vector3D intersect = lineA.intersection(lineB);
-					ret.xyz.x = (float) intersect.getX();
-					ret.xyz.y = (float) intersect.getY();
-					ret.xyz.z = (float) intersect.getZ();
-					// float deltaZ = point.getZ() - continuousEdge.center.z;
-					// ret.xyz.x = (float) point.getX();
-					// ret.xyz.y = (float) point.getY();
-					// ret.xyz.z = (float) point.getZ() - Math.signum(deltaZ) *
-					// SurfaceDemo.instance.getKerfOffset();
-				} else {
-					System.out.println("is between 0 and 1");
-					// subtract y from center of edge to find signum of y to be
-					// added
-					float deltaY = point.getY() - continuousEdge.center.y;
-					ret.xyz.x = (float) point.getX();
-					ret.xyz.y = (float) point.getY() - Math.signum(deltaY) * SurfaceDemo.instance.getKerfOffset();
-					ret.xyz.z = (float) point.getZ();
-				}
-			} catch (org.apache.commons.math3.exception.MathArithmeticException ex) {
-				System.out.println("Middle point");
-
-				// this means point is between lines that are both in same line
-				// parallel to - either XY or YZ plane
-				// is it parallel to XY - it must have maxZ or minZ coordinate?
-
-				if (point.getZ() == this.maxZ || point.getZ() == this.minZ) {
-					// in this case move offset toward center in Y direction
-					float deltaY = point.getY() - continuousEdge.center.y;
-					ret.xyz.x = (float) point.getX();
-					ret.xyz.y = (float) point.getY() - Math.signum(deltaY) * SurfaceDemo.instance.getKerfOffset();
-					ret.xyz.z = (float) point.getZ();
-				}
-				// is it parallel to YZ - it must have maxX or minX
-				// coordinate?
-				else if (point.getX() == this.maxX || point.getX() == this.minX) {
-					// in this case move offset toward center in X direction
-					float deltaZ = point.getZ() - continuousEdge.center.z;
-					ret.xyz.x = (float) point.getX();
-					ret.xyz.y = (float) point.getY();
-					ret.xyz.z = (float) point.getZ() - Math.signum(deltaZ) * SurfaceDemo.instance.getKerfOffset();
-				}
-
-				// // we will get plane from previous point.
-				// int prevPrevIndex = -1;
-				// if (prevIndex == 0)
-				// prevPrevIndex = continuousEdge.points.size() - 1;
-				// else
-				// prevPrevIndex = prevIndex - 1;
-				// MyPickablePoint prevPrevPoint =
-				// continuousEdge.getPointByIndex(prevPrevIndex);
-				// System.out.println("prevprevpoint=" + prevPrevPoint.id);
-				// Plane plane = getPlaneForMiddlePoint(prevPoint);
-				//
-				// Vector3D vecPrevPrevPoint = new Vector3D(prevPrevPoint.xyz.x,
-				// prevPrevPoint.xyz.y,
-				// prevPrevPoint.xyz.z);
-				// Vector3D vecA = vecPoint.subtract(vecPrevPoint);
-				//
-				// Rotation rotationP = new Rotation(plane.getNormal(), -Math.PI
-				// / 2);
-				// Vector3D rotatedA = rotationP.applyTo(vecA).normalize();
-				// result =
-				// vecPoint.add(rotatedA.scalarMultiply(SurfaceDemo.getInstance().getKerfOffset()));
-				// ret.xyz.x = (float) result.getX();
-				// ret.xyz.y = (float) result.getY();
-				// ret.xyz.z = (float) result.getZ();
-
-			}
-		} else {
-			Vector3D vecPoint = new Vector3D(point.xyz.x, point.xyz.y, point.xyz.z);
-			Vector3D vecOffset = new Vector3D(0, Math.signum(point.xyz.y) * SurfaceDemo.instance.getKerfOffset(), 0);
-			result = vecPoint.add(vecOffset);
-			ret.xyz.x = (float) result.getX();
-			ret.xyz.y = (float) result.getY();
-			ret.xyz.z = (float) result.getZ();
-		}
-
-		return ret;
-	}
-
-	public Plane getPlaneForPoint(MyPickablePoint point) throws org.apache.commons.math3.exception.MathArithmeticException {
+	public Plane getPlaneForPoint(MyPickablePoint point)
+			throws org.apache.commons.math3.exception.MathArithmeticException {
 		Plane plane = null;
 		MyEdge continuousEdge = continuousEdges.get(point.continuousEdgeNo);
 
@@ -717,8 +589,11 @@ public class Utils {
 
 	}
 
-	public Plane getPlaneForMiddlePoint(MyPickablePoint point) throws org.apache.commons.math3.exception.MathArithmeticException {
+	public Plane getPlaneForMiddlePoint(MyPickablePoint point)
+			throws org.apache.commons.math3.exception.MathArithmeticException {
 		Plane plane = null;
+		MyPickablePoint prevPoint = null;
+		MyPickablePoint nextPoint = null;
 		MyEdge continuousEdge = continuousEdges.get(point.continuousEdgeNo);
 
 		while (plane == null) {
@@ -736,8 +611,8 @@ public class Utils {
 			else
 				nextIndex = index + 1;
 
-			MyPickablePoint prevPoint = continuousEdge.getPointByIndex(prevIndex);
-			MyPickablePoint nextPoint = continuousEdge.getPointByIndex(nextIndex);
+			prevPoint = continuousEdge.getPointByIndex(prevIndex);
+			nextPoint = continuousEdge.getPointByIndex(nextIndex);
 			try {
 				System.out.println(prevPoint.id + " " + point.id + " " + nextPoint.id);
 
@@ -751,6 +626,7 @@ public class Utils {
 				point = prevPoint;
 			}
 		}
+
 		return plane;
 	}
 
@@ -861,6 +737,112 @@ public class Utils {
 
 	public MyPickablePoint getPointbyId(Integer id) {
 		return points.get(id);
+	}
+
+	public org.jzy3d.plot3d.primitives.Point calculateOffsetPoint(MyPickablePoint point) {
+		org.jzy3d.plot3d.primitives.Point ret = new org.jzy3d.plot3d.primitives.Point();
+
+		MyContinuousEdge continuousEdge = continuousEdges.get(point.continuousEdgeNo);
+
+		System.out.println(continuousEdge.edgeType);
+		Vector3D result = null;
+		if (continuousEdge.edgeType == MyContinuousEdge.EdgeType.ONPIPE) {
+			int index = continuousEdge.points.indexOf(point.id);
+			int prevIndex = -1;
+			int nextIndex = -1;
+
+			if (index == 0)
+				prevIndex = continuousEdge.points.size() - 1;
+			else
+				prevIndex = index - 1;
+
+			if (index == continuousEdge.points.size() - 1)
+				nextIndex = 0;
+			else
+				nextIndex = index + 1;
+
+			MyPickablePoint prevPoint = continuousEdge.getPointByIndex(prevIndex);
+			MyPickablePoint nextPoint = continuousEdge.getPointByIndex(nextIndex);
+			System.out.println(prevPoint.id + " " + point.id + " " + nextPoint.id);
+
+			Vector3D vecPrevPoint = new Vector3D(prevPoint.xyz.x, prevPoint.xyz.y, prevPoint.xyz.z);
+			Vector3D vecNextPoint = new Vector3D(nextPoint.xyz.x, nextPoint.xyz.y, nextPoint.xyz.z);
+			Vector3D vecPoint = new Vector3D(point.xyz.x, point.xyz.y, point.xyz.z);
+
+			Vector3D p1 = new Vector3D(-this.maxX, this.maxY, this.maxZ);
+			Vector3D p2 = new Vector3D(this.maxX, this.maxY, this.maxZ);
+			Vector3D p3 = new Vector3D(this.maxX, this.maxY, -this.maxZ);
+			Vector3D p4 = new Vector3D(-this.maxX, this.maxY, -this.maxZ);
+
+			Vector3D p1_ = new Vector3D(-this.maxX, -this.maxY, this.maxZ);
+			Vector3D p2_ = new Vector3D(this.maxX, -this.maxY, this.maxZ);
+			Vector3D p3_ = new Vector3D(this.maxX, -this.maxY, -this.maxZ);
+			// Vector3D p4_ = new Vector3D(-this.maxX, -this.maxY, -this.maxZ);
+
+			Plane pl1 = new Plane(p2, p3, p3_, Math_E);
+			Plane pl2 = new Plane(p1, p2, p2_, Math_E);
+			Plane pl3 = new Plane(p4, p1, p1_, Math_E);
+			Plane pl4 = new Plane(p4, p3, p3_, Math_E);
+			Plane[] planes = new Plane[] { pl1, pl2, pl3, pl4 };
+
+			Vector3D contEdgCenter = new Vector3D(continuousEdge.center.x, continuousEdge.center.y, continuousEdge.center.z);
+			Plane plane = null;
+			for (Plane pl : planes) {
+				if (pl.contains(vecPoint)) {
+					plane = pl;
+					break;
+				}
+			}
+
+			try {
+				Vector3D vecA = vecPrevPoint.subtract(vecPoint);
+				Vector3D vecB = vecNextPoint.subtract(vecPoint);
+
+				// check for collinearity
+				if (vecA.crossProduct(vecB).equals(Vector3D.ZERO)) {
+					Rotation rotation = new Rotation(plane.getNormal(), Math.PI / 2);
+					Vector3D rotatedA = rotation.applyTo(vecA).normalize();
+					Vector3D newPoint = vecPoint.add(rotatedA.scalarMultiply(SurfaceDemo.getInstance().getKerfOffset()));
+					ret.xyz.set((float)newPoint.getX(), (float)newPoint.getY(), (float)newPoint.getZ());
+				} else {
+					// Plane plane = getPlaneForPoint(point);
+					// plane is perpendicular to X
+					Logger.getLogger(this.getClass()).info("Plane is perpendicular to X or Z.");
+					Rotation rotationP = new Rotation(plane.getNormal(), Math.PI / 2);
+					Rotation rotationN = new Rotation(plane.getNormal(), -Math.PI / 2);
+					Vector3D rotatedA = rotationP.applyTo(vecA).normalize();
+					Vector3D rotatedB = rotationN.applyTo(vecB).normalize();
+					Vector3D vecAoffset = vecA.add(rotatedA.scalarMultiply(SurfaceDemo.getInstance().getKerfOffset()));
+					Vector3D vecBoffset = vecB.add(rotatedB.scalarMultiply(SurfaceDemo.getInstance().getKerfOffset()));
+					Line lineA = new Line(vecPrevPoint.add(vecAoffset), vecPoint.add(vecAoffset), Math_E);
+					Line lineB = new Line(vecNextPoint.add(vecBoffset), vecPoint.add(vecBoffset), Math_E);
+					Vector3D intersect = lineA.intersection(lineB);
+					ret.xyz.x = (float) intersect.getX();
+					ret.xyz.y = (float) intersect.getY();
+					ret.xyz.z = (float) intersect.getZ();
+				}
+			} catch (Exception ex) {
+
+				// if we are not at surface of four planes then we are on edge lets move
+				// kerf toward center of edge
+				Vector3D vecOffset = new Vector3D(0,
+						Math.signum(continuousEdge.center.y - point.xyz.y) * SurfaceDemo.instance.getKerfOffset(), 0);
+				result = vecPoint.add(vecOffset);
+				ret.xyz.x = (float) result.getX();
+				ret.xyz.y = (float) result.getY();
+				ret.xyz.z = (float) result.getZ();
+
+			}
+		} else {
+			Vector3D vecPoint = new Vector3D(point.xyz.x, point.xyz.y, point.xyz.z);
+			Vector3D vecOffset = new Vector3D(0, Math.signum(point.xyz.y) * SurfaceDemo.instance.getKerfOffset(), 0);
+			result = vecPoint.add(vecOffset);
+			ret.xyz.x = (float) result.getX();
+			ret.xyz.y = (float) result.getY();
+			ret.xyz.z = (float) result.getZ();
+		}
+
+		return ret;
 	}
 
 }

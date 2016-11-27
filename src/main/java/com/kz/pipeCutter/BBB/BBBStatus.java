@@ -165,7 +165,7 @@ public class BBBStatus implements Runnable {
 										// System.out.println(String.format("%1$,.2f, %2$,.2f,
 										// %3$,.2f",x,y,z));
 
-										if (BBBStatus.instance != null) {
+										if (BBBStatus.instance != null && BBBStatus.instance.isAlive()) {
 											Float zOffset = Float.valueOf(Settings.instance.getSetting("myini.offset-value"));
 											Coord3d coord = new Coord3d(BBBStatus.instance.x, BBBStatus.instance.y, BBBStatus.instance.z+zOffset);
 											SurfaceDemo.getInstance().utils.rotatePoints(BBBStatus.instance.a, false, false);

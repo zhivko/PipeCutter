@@ -99,8 +99,8 @@ public class PlasmaSettings extends JPanel {
 		velTol.requiresHalRCompSet = true;
 		velTol.setNeedsSave(true);
 		velTol.setParId("myini.vel-tol");
-		velTol.setLabelTxt("Velocity Tolerance (Corner Lock):");
-		velTol.setToolTipText("Velocity Tolerance (Corner Lock)s");
+		velTol.setLabelTxt("Velocity Tolerance [%] (Corner Lock):");
+		velTol.setToolTipText("Velocity Tolerance [%] (Corner Lock)s");
 		this.add(velTol);			
 		
 		

@@ -15,8 +15,7 @@ public class OpenGCode extends BBBMachineTalkCommand {
 	public Container prepareContainer() throws Exception {
 		System.out.println(new Object() {
 		}.getClass().getEnclosingMethod().getName());
-		
-		
+
 		pb.Message.Container.Builder builder = Container.newBuilder();
 		pb.Status.EmcCommandParameters emcCommandParameter = pb.Status.EmcCommandParameters.newBuilder()
 				.setTaskMode(EmcTaskModeType.EMC_TASK_MODE_AUTO).build();
@@ -26,10 +25,9 @@ public class OpenGCode extends BBBMachineTalkCommand {
 		builder.setTicket(ticket++);
 		Container container = builder.build();
 		byte[] buff = container.toByteArray();
-		getCommandSocket().send(buff,0);
+		getCommandSocket().send(buff, 0);
 		TimeUnit.MILLISECONDS.sleep(300);
 		parseAndOutput();
-		
 
 		builder = Container.newBuilder();
 		builder.setType(ContainerType.MT_EMC_TASK_PLAN_INIT);
@@ -37,7 +35,7 @@ public class OpenGCode extends BBBMachineTalkCommand {
 		builder.setTicket(ticket++);
 		container = builder.build();
 		buff = container.toByteArray();
-		getCommandSocket().send(buff,0);
+		getCommandSocket().send(buff, 0);
 		TimeUnit.MILLISECONDS.sleep(300);
 		parseAndOutput();
 
@@ -49,7 +47,7 @@ public class OpenGCode extends BBBMachineTalkCommand {
 		builder.setInterpName("execute");
 		builder.setTicket(ticket++);
 		container = builder.build();
-		
+
 		return container;
 	}
 

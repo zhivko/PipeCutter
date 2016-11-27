@@ -116,7 +116,7 @@ public class BBBHalRComp implements Runnable {
 		shouldRead = true;
 		PollItem[] pollItems = new PollItem[] { new PollItem(socket, Poller.POLLIN) };
 		while (shouldRead) {
-			int rc = ZMQ.poll(pollItems,1, 100);
+			int rc = ZMQ.poll(pollItems, 1, 100);
 			// System.out.println("loop: " + i);
 			for (int l = 0; l < rc; l++) {
 				ZMsg msg = ZMsg.recvMsg(socket);
@@ -321,33 +321,34 @@ public class BBBHalRComp implements Runnable {
 	}
 
 	Runnable updateUi = new Runnable() {
-		
+
 		@Override
 		public void run() {
 			if (halPins.get("mymotion.program-line") != null) {
-				//GcodeViewer.instance.setLineNumber(Integer.valueOf(halPins.get("mymotion.program-line")).intValue());
+				// GcodeViewer.instance.setLineNumber(Integer.valueOf(halPins.get("mymotion.program-line")).intValue());
 
-				Settings.instance.setSetting("mymotion.program-line", String.format("%d", Integer.valueOf(halPins.get("mymotion.program-line"))));
-								
+				Settings.instance.setSetting("mymotion.program-line", Integer.valueOf(halPins.get("mymotion.program-line")));
+
 				GcodeViewer.instance.setPlasmaOn(Boolean.valueOf(halPins.get("mymotion.spindle-on")).booleanValue());
-				Settings.instance.setSetting("mymotion.vx", String.format("%.3f", Float.valueOf(halPins.get("mymotion.vx"))));
-				Settings.instance.setSetting("mymotion.dvx", String.format("%.3f", Float.valueOf(halPins.get("mymotion.dvx"))));
-				Settings.instance.setSetting("mymotion.vz", String.format("%.3f", Float.valueOf(halPins.get("mymotion.vz"))));
-				Settings.instance.setSetting("mymotion.dvz", String.format("%.3f", Float.valueOf(halPins.get("mymotion.dvz"))));
+				Settings.instance.setSetting("mymotion.vx", Float.valueOf(halPins.get("mymotion.vx")));
+				Settings.instance.setSetting("mymotion.dvx", Float.valueOf(halPins.get("mymotion.dvx")));
+				Settings.instance.setSetting("mymotion.vz", Float.valueOf(halPins.get("mymotion.vz")));
+				Settings.instance.setSetting("mymotion.dvz", Float.valueOf(halPins.get("mymotion.dvz")));
 				Settings.instance.setSetting("mymotion.current-radius",
 						String.format("%.3f", Float.valueOf(halPins.get("mymotion.current-radius"))));
-				Settings.instance.setSetting("mymotion.vy", String.format("%.3f", Float.valueOf(halPins.get("mymotion.vy"))));
-				Settings.instance.setSetting("mymotion.v", String.format("%.3f", Float.valueOf(halPins.get("mymotion.v"))));
+				Settings.instance.setSetting("mymotion.vy", Float.valueOf(halPins.get("mymotion.vy")));
+				Settings.instance.setSetting("mymotion.v", Float.valueOf(halPins.get("mymotion.v")));
 				Settings.instance.setSetting("mymotion.laserHeight1",
 						String.format("%.3f", Float.valueOf(halPins.get("mymotion.laserHeight1"))));
 
-				Settings.instance.setSetting("myini.actual-volts", String.format("%.3f", Float.valueOf(halPins.get("myini.actual-volts"))));
-				Settings.instance.setSetting("myini.vel-status", String.format("%s", Boolean.valueOf(halPins.get("myini.vel-status"))));
+				Settings.instance.setSetting("myini.actual-volts", Float.valueOf(halPins.get("myini.actual-volts")));
+				Settings.instance.setSetting("myini.vel-status",
+						String.format("%s", Boolean.valueOf(halPins.get("myini.vel-status"))));
 
-				Settings.instance.setSetting("myini.thc-z-pos", String.format("%.3f", Float.valueOf(halPins.get("myini.thc-z-pos"))));
-				Settings.instance.setSetting("myini.offset-value", String.format("%.3f", Float.valueOf(halPins.get("myini.offset-value"))));
+				Settings.instance.setSetting("myini.thc-z-pos", Float.valueOf(halPins.get("myini.thc-z-pos")));
+				Settings.instance.setSetting("myini.offset-value", Float.valueOf(halPins.get("myini.offset-value")));
 			}
 		}
 	};
-	
+
 }

@@ -103,14 +103,15 @@ public class BBBStatus implements Runnable {
 		Container contReturned;
 		PollItem[] pollItems = new PollItem[] { new PollItem(socket, Poller.POLLIN) };
 		while (shouldRead) {
-			int rc = ZMQ.poll(pollItems,1, 100);
+			int rc = ZMQ.poll(pollItems, 1, 100);
 			for (int l = 0; l < rc; l++) {
 				ZMsg msg = ZMsg.recvMsg(socket, ZMQ.DONTWAIT);
 				ZFrame frame = null;
 				while (pollItems[0].isReadable() && (frame = msg.poll()) != null) {
 					byte[] returnedBytes = frame.getData();
 					String messageType = new String(returnedBytes);
-					if (!messageType.equals("motion") && !messageType.equals("task") && !messageType.equals("io") && !messageType.equals("interp")) {
+					if (!messageType.equals("motion") && !messageType.equals("task") && !messageType.equals("io")
+							&& !messageType.equals("interp")) {
 						try {
 							contReturned = Message.Container.parseFrom(returnedBytes);
 							if ((contReturned.getType().equals(ContainerType.MT_EMCSTAT_FULL_UPDATE)
@@ -165,15 +166,17 @@ public class BBBStatus implements Runnable {
 										// System.out.println(String.format("%1$,.2f, %2$,.2f,
 										// %3$,.2f",x,y,z));
 
-										if (BBBStatus.instance != null && BBBStatus.instance.isAlive()) {
-											Float zOffset = Float.valueOf(Settings.instance.getSetting("myini.offset-value"));
-											Coord3d coord = new Coord3d(BBBStatus.instance.x, BBBStatus.instance.y, BBBStatus.instance.z+zOffset);
+										if (BBBStatus.instance != null) {
+											float zOffset = 0;
+											if (!Settings.instance.getSetting("myini.offset-value").equals(""))
+												zOffset = Float.valueOf(Settings.instance.getSetting("myini.offset-value"));
+											Coord3d coord = new Coord3d(BBBStatus.instance.x, BBBStatus.instance.y, BBBStatus.instance.z + zOffset);
 											SurfaceDemo.getInstance().utils.rotatePoints(BBBStatus.instance.a, false, false);
 
 											SurfaceDemo.getInstance().getPlasma().setPosition(coord);
 											SurfaceDemo.getInstance().redrawPosition();
 										}
-
+										
 										SurfaceDemo.getInstance().redrawPosition();
 									}
 								}
@@ -279,7 +282,7 @@ public class BBBStatus implements Runnable {
 		socket.connect(this.uri);
 
 		reSubscribeMotion();
-		
+
 		readThread = new Thread(this);
 		readThread.setName("BBBStatus");
 		readThread.start();

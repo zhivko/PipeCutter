@@ -420,6 +420,14 @@ public class Settings extends JFrame {
 		setSetting(parameterId, strValue);
 	}
 
+	public void setSetting(String parameterId, Float value) {
+		setSetting(parameterId, (double)value);
+	}	
+
+	public void setSetting(String parameterId, Integer value) {
+		setSetting(parameterId, String.valueOf(value));
+	}		
+	
 	public IParameter getParameter(String parameterId) {
 		IParameter ret = null;
 		List<SavableControl> savableControls = harvestMatches(this.getContentPane(), SavableControl.class);

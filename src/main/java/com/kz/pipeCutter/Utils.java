@@ -799,8 +799,9 @@ public class Utils {
 				Vector3D vecB = vecNextPoint.subtract(vecPoint);
 
 				if (vecA.crossProduct(vecB).getNorm()<0.001) {
-					// check for collinearity
-					//try first with 90degree and with -90 degree and take the angle that produces point nearests to center of edge
+					// all 3 points are collinear
+					// point is NOT on radius edge
+					// try first with 90degree and with -90 degree and take the angle that produces point nearest to center of edge					
 					Rotation rotation1 = new Rotation(plane.getNormal(), Math.PI / 2);
 					Vector3D rotatedA = rotation1.applyTo(vecA).normalize();
 					Vector3D newPoint1 = vecPoint.add(rotatedA.scalarMultiply(SurfaceDemo.getInstance().getKerfOffset()));
@@ -808,17 +809,13 @@ public class Utils {
 					Vector3D rotatedB = rotation2.applyTo(vecA).normalize();
 					Vector3D newPoint2 = vecPoint.add(rotatedB.scalarMultiply(SurfaceDemo.getInstance().getKerfOffset()));
 					
-					System.out.println(newPoint1.toString());
-					System.out.println(newPoint2.toString());
-					
 					if(newPoint1.distance(contEdgCenter)<newPoint2.distance(contEdgCenter))
 						ret.xyz.set((float)newPoint1.getX(), (float)newPoint1.getY(), (float)newPoint1.getZ());
 					else
 						ret.xyz.set((float)newPoint2.getX(), (float)newPoint2.getY(), (float)newPoint2.getZ());
 						
 				} else {
-					// Plane plane = getPlaneForPoint(point);
-					// plane is perpendicular to X
+					// point is on radius edge
 					Logger.getLogger(this.getClass()).info("Plane is perpendicular to X or Z.");
 					Rotation rotationP = new Rotation(plane.getNormal(), Math.PI / 2);
 					Rotation rotationN = new Rotation(plane.getNormal(), -Math.PI / 2);
@@ -834,7 +831,6 @@ public class Utils {
 					ret.xyz.z = (float) intersect.getZ();
 				}
 			} catch (Exception ex) {
-
 				// if we are not at surface of four planes then we are on edge lets move
 				// kerf toward center of edge
 				Vector3D vecOffset = new Vector3D(0,
@@ -843,7 +839,6 @@ public class Utils {
 				ret.xyz.x = (float) result.getX();
 				ret.xyz.y = (float) result.getY();
 				ret.xyz.z = (float) result.getZ();
-
 			}
 		} else {
 			Vector3D vecPoint = new Vector3D(point.xyz.x, point.xyz.y, point.xyz.z);

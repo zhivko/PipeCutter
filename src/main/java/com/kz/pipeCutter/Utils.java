@@ -798,12 +798,24 @@ public class Utils {
 				Vector3D vecA = vecPrevPoint.subtract(vecPoint);
 				Vector3D vecB = vecNextPoint.subtract(vecPoint);
 
-				// check for collinearity
-				if (vecA.crossProduct(vecB).equals(Vector3D.ZERO)) {
-					Rotation rotation = new Rotation(plane.getNormal(), Math.PI / 2);
-					Vector3D rotatedA = rotation.applyTo(vecA).normalize();
-					Vector3D newPoint = vecPoint.add(rotatedA.scalarMultiply(SurfaceDemo.getInstance().getKerfOffset()));
-					ret.xyz.set((float)newPoint.getX(), (float)newPoint.getY(), (float)newPoint.getZ());
+				if (vecA.crossProduct(vecB).getNorm()<0.001) {
+					// check for collinearity
+					//try first with 90degree and with -90 degree and take the angle that produces point nearests to center of edge
+					Rotation rotation1 = new Rotation(plane.getNormal(), Math.PI / 2);
+					Vector3D rotatedA = rotation1.applyTo(vecA).normalize();
+					Vector3D newPoint1 = vecPoint.add(rotatedA.scalarMultiply(SurfaceDemo.getInstance().getKerfOffset()));
+					Rotation rotation2 = new Rotation(plane.getNormal(), -Math.PI / 2);
+					Vector3D rotatedB = rotation2.applyTo(vecA).normalize();
+					Vector3D newPoint2 = vecPoint.add(rotatedB.scalarMultiply(SurfaceDemo.getInstance().getKerfOffset()));
+					
+					System.out.println(newPoint1.toString());
+					System.out.println(newPoint2.toString());
+					
+					if(newPoint1.distance(contEdgCenter)<newPoint2.distance(contEdgCenter))
+						ret.xyz.set((float)newPoint1.getX(), (float)newPoint1.getY(), (float)newPoint1.getZ());
+					else
+						ret.xyz.set((float)newPoint2.getX(), (float)newPoint2.getY(), (float)newPoint2.getZ());
+						
 				} else {
 					// Plane plane = getPlaneForPoint(point);
 					// plane is perpendicular to X

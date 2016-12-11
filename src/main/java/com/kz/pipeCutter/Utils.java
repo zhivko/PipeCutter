@@ -31,8 +31,8 @@ import com.kz.pipeCutter.ui.Settings;
 public class Utils {
 	ConcurrentHashMap<Integer, MyPickablePoint> points = null;
 	HashMap<Integer, MySurface> surfaces = new HashMap<Integer, MySurface>();
-	ConcurrentHashMap<Integer, MyEdge> edges = new ConcurrentHashMap<Integer, MyEdge>();
-	ConcurrentHashMap<Integer, MyContinuousEdge> continuousEdges = new ConcurrentHashMap<Integer, MyContinuousEdge>();
+	public ConcurrentHashMap<Integer, MyEdge> edges = new ConcurrentHashMap<Integer, MyEdge>();
+	public ConcurrentHashMap<Integer, MyContinuousEdge> continuousEdges = new ConcurrentHashMap<Integer, MyContinuousEdge>();
 	HashMap<String, MinYMaxY> minAndMaxY;
 	ConcurrentHashMap<Integer, MyPickablePoint> origPoints = null;
 
@@ -149,8 +149,7 @@ public class Utils {
 		return ret;
 	}
 
-	public ArrayList<MyPickablePoint> findConnectedPoints(MyPickablePoint point,
-			ArrayList<MyPickablePoint> alreadyAdded) {
+	public ArrayList<MyPickablePoint> findConnectedPoints(MyPickablePoint point, ArrayList<MyPickablePoint> alreadyAdded) {
 		ArrayList<MyPickablePoint> ret = new ArrayList<MyPickablePoint>();
 		for (MyEdge edge : edges.values()) {
 			if (edge.getPointByIndex(0).distance(point) < Math_E) {
@@ -284,8 +283,7 @@ public class Utils {
 		ArrayList<MyPickablePoint> outerPoints = new ArrayList<MyPickablePoint>();
 		float sumAngle = 0;
 		for (int i = 0; i < 4; i++) {
-			List<MyPickablePoint> pointsSortedByZ = new ArrayList<MyPickablePoint>(
-					SurfaceDemo.instance.utils.points.values());
+			List<MyPickablePoint> pointsSortedByZ = new ArrayList<MyPickablePoint>(SurfaceDemo.instance.utils.points.values());
 			Collections.sort(pointsSortedByZ, new MyPickablePointZComparator());
 			float topZ = pointsSortedByZ.get(pointsSortedByZ.size() - 1).xyz.z;
 			if (topZ < 0)
@@ -385,30 +383,34 @@ public class Utils {
 
 		float angle = Float.valueOf(SurfaceDemo.instance.angleTxt);
 
+		MyEdge edge = null;
 		float calcSpeed = 0;
-		if (cut)
+		if (cut) {
 			calcSpeed = SurfaceDemo.instance.g1Speed;
-		else
+		} else
 			calcSpeed = SurfaceDemo.instance.g0Speed;
 
 		double length = 0;
-		MyEdge edge = null;
 		if (this.previousPointId > 0 && (p.id != this.previousPointId)) {
 			edge = getEdgeFromTwoPoints(p, SurfaceDemo.instance.utils.points.get(this.previousPointId));
-			if (edge != null && edge.edgeType == MyEdge.EdgeType.ONRADIUS) {
-				float radius_of_edge = Float.valueOf(Settings.instance.getSetting("pipe_radius"));
-				float maxRadius = (float) Math.sqrt(this.maxX * this.maxX + this.maxZ * this.maxZ);
-				float s = (float) (maxRadius * Math.PI) * 1.0f;
-				float arc_length = (float) (radius_of_edge * Math.PI / 2);
-				float v = SurfaceDemo.instance.g1Speed * s / arc_length * 1.0f;
-				float dv = v - SurfaceDemo.instance.g1Speed;
-				float t = s / SurfaceDemo.instance.g1Speed;
-				float a = 2 * dv / t;
-				double currAngle = Math.atan2(p.getCoord().z, p.getCoord().x) * 180.0 / Math.PI;
-				double maxAngle = Math.atan2(this.maxZ, (this.maxX - radius_of_edge)) * 180.0 / Math.PI;
-				CutThread.instance.filletSpeed = Double.valueOf(v).floatValue();
-				calcSpeed = CutThread.instance.filletSpeed;
+			if (edge != null) {
 				length = edge.length;
+				if (edge.edgeType == MyEdge.EdgeType.ONRADIUS) {
+					float radius_of_edge = Float.valueOf(Settings.instance.getSetting("pipe_radius"));
+					float maxRadius = (float) Math.sqrt(this.maxX * this.maxX + this.maxZ * this.maxZ);
+					float s = (float) (maxRadius * Math.PI) * 1.0f;
+					float arc_length = (float) (radius_of_edge * Math.PI / 2);
+					float v = SurfaceDemo.instance.g1Speed * s / arc_length * 1.0f;
+					float dv = v - SurfaceDemo.instance.g1Speed;
+					float t = s / SurfaceDemo.instance.g1Speed;
+					float a = 2 * dv / t;
+					double currAngle = Math.atan2(p.getCoord().z, p.getCoord().x) * 180.0 / Math.PI;
+					double maxAngle = Math.atan2(this.maxZ, (this.maxX - radius_of_edge)) * 180.0 / Math.PI;
+					CutThread.instance.filletSpeed = Double.valueOf(v).floatValue();
+					calcSpeed = CutThread.instance.filletSpeed;
+				}
+				if (edge.cutVelocity != 0)
+					calcSpeed = edge.cutVelocity;
 			}
 		}
 		double feed = 1;
@@ -426,7 +428,7 @@ public class Utils {
 		String edgeDescription = "";
 		if (edge != null)
 			edgeDescription = edge.edgeType + " no:" + edge.edgeNo; // + " length=" +
-																															// edge.length ;
+		// edge.length ;
 		if (cut)
 			ret = String.format(java.util.Locale.US,
 					"X%.1f Y%.1f Z%.1f A%.1f B%.1f F%.1f (move length: %.1f speed:%.1f p:%d, e:%s)", x, y, z, angle, angle, feed,
@@ -467,8 +469,8 @@ public class Utils {
 				double[] myPointDouble = { point.getX(), point.getY(), point.getZ() };
 				Vector3D myPoint = new Vector3D(myPointDouble);
 				Vector3D result = rotZ.applyTo(myPoint);
-				points.get(point.id).xyz.set(Double.valueOf(result.getX()).floatValue(),
-						Double.valueOf(result.getY()).floatValue(), Double.valueOf(result.getZ()).floatValue());
+				points.get(point.id).xyz.set(Double.valueOf(result.getX()).floatValue(), Double.valueOf(result.getY()).floatValue(),
+						Double.valueOf(result.getZ()).floatValue());
 			}
 			for (MyEdge edge : continuousEdges.values()) {
 				edge.calculateCenter();
@@ -798,22 +800,23 @@ public class Utils {
 				Vector3D vecA = vecPrevPoint.subtract(vecPoint);
 				Vector3D vecB = vecNextPoint.subtract(vecPoint);
 
-				if (vecA.crossProduct(vecB).getNorm()<0.001) {
+				if (vecA.crossProduct(vecB).getNorm() < 0.001) {
 					// all 3 points are collinear
 					// point is NOT on radius edge
-					// try first with 90degree and with -90 degree and take the angle that produces point nearest to center of edge					
+					// try first with 90degree and with -90 degree and take the angle that
+					// produces point nearest to center of edge
 					Rotation rotation1 = new Rotation(plane.getNormal(), Math.PI / 2);
 					Vector3D rotatedA = rotation1.applyTo(vecA).normalize();
 					Vector3D newPoint1 = vecPoint.add(rotatedA.scalarMultiply(SurfaceDemo.getInstance().getKerfOffset()));
 					Rotation rotation2 = new Rotation(plane.getNormal(), -Math.PI / 2);
 					Vector3D rotatedB = rotation2.applyTo(vecA).normalize();
 					Vector3D newPoint2 = vecPoint.add(rotatedB.scalarMultiply(SurfaceDemo.getInstance().getKerfOffset()));
-					
-					if(newPoint1.distance(contEdgCenter)<newPoint2.distance(contEdgCenter))
-						ret.xyz.set((float)newPoint1.getX(), (float)newPoint1.getY(), (float)newPoint1.getZ());
+
+					if (newPoint1.distance(contEdgCenter) < newPoint2.distance(contEdgCenter))
+						ret.xyz.set((float) newPoint1.getX(), (float) newPoint1.getY(), (float) newPoint1.getZ());
 					else
-						ret.xyz.set((float)newPoint2.getX(), (float)newPoint2.getY(), (float)newPoint2.getZ());
-						
+						ret.xyz.set((float) newPoint2.getX(), (float) newPoint2.getY(), (float) newPoint2.getZ());
+
 				} else {
 					// point is on radius edge
 					Logger.getLogger(this.getClass()).info("Plane is perpendicular to X or Z.");

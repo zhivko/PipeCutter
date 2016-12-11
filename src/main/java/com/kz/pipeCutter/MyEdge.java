@@ -1,5 +1,9 @@
 package com.kz.pipeCutter;
 
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.TreeMap;
@@ -8,6 +12,8 @@ import org.jzy3d.maths.Coord3d;
 import org.jzy3d.plot3d.primitives.LineStrip;
 
 import com.kz.pipeCutter.MyContinuousEdge.EdgeType;
+import com.kz.pipeCutter.ui.Settings;
+import com.kz.pipeCutter.ui.SortedProperties;
 
 public class MyEdge {
 
@@ -20,21 +26,31 @@ public class MyEdge {
 	Integer surfaceNo;
 	ArrayList<MyEdge> connectedEdges = null;
 	float length;
-	
+	float cutVelocity;
+	boolean toCut = false;
+
 	EdgeType edgeType;
-	
+
 	public enum EdgeType {
-    ONRADIUS, NORMAL
-	}	
-	
+		ONRADIUS, NORMAL
+	}
+
 	// length distribution
-	public static HashMap<Float, Integer> hmLengthDistrib = new HashMap<Float, Integer>();  
-	
+	public static HashMap<Float, Integer> hmLengthDistrib = new HashMap<Float, Integer>();
 
 	LineStrip lineStrip;
 
 	public MyEdge(Integer edgeNo, Integer surfaceNo) {
 		this.edgeNo = edgeNo;
+		try {
+			FileInputStream in = new FileInputStream(Settings.iniEdgeProperties);
+			SortedProperties props = new SortedProperties();
+			props.load(in);
+			this.cutVelocity = Float.valueOf(props.getProperty(this.edgeNo + ".cutVelocity"));
+			in.close();
+		} catch (Exception ex) {
+			ex.printStackTrace();
+		}
 		this.points = new ArrayList<Integer>();
 		this.center = new Coord3d();
 		this.surfaceNo = surfaceNo;
@@ -64,22 +80,22 @@ public class MyEdge {
 		// if (!alreadyAdded) {
 		points.add(pointNo);
 		calculateCenter();
-		if (points.size() >= 2)
-		{
+		if (points.size() >= 2) {
 			calculateLength();
-			if(!hmLengthDistrib.containsKey(this.length))
-					hmLengthDistrib.put(this.length, 0);
+			if (!hmLengthDistrib.containsKey(this.length))
+				hmLengthDistrib.put(this.length, 0);
 
-			hmLengthDistrib.put(this.length, hmLengthDistrib.get(this.length)+1);
+			hmLengthDistrib.put(this.length, hmLengthDistrib.get(this.length) + 1);
 		}
-		//System.out.println("Edge: " + this.edgeNo + " points:" + points.size());
+		// System.out.println("Edge: " + this.edgeNo + " points:" + points.size());
 	}
 
 	private void calculateLength() {
 		// TODO Auto-generated method stub
 		// @formatter:off
-		length = (float) Math.sqrt(Math.pow(SurfaceDemo.instance.utils.points.get(this.points.get(0))
-				.getX() - SurfaceDemo.instance.utils.points.get(this.points.get(1)).getX(), 2.0d)
+		length = (float) Math.sqrt(Math
+				.pow(SurfaceDemo.instance.utils.points.get(this.points.get(0)).getX()
+						- SurfaceDemo.instance.utils.points.get(this.points.get(1)).getX(), 2.0d)
 				+ Math.pow(SurfaceDemo.instance.utils.points.get(this.points.get(0)).getY()
 						- SurfaceDemo.instance.utils.points.get(this.points.get(1)).getY(), 2.0d)
 				+ Math.pow(SurfaceDemo.instance.utils.points.get(this.points.get(0)).getZ()
@@ -107,11 +123,11 @@ public class MyEdge {
 	 * points.
 	 * 
 	 * @param a
-	 *          A 3d point.
+	 *         A 3d point.
 	 * @param vertex
-	 *          The vertex point.
+	 *         The vertex point.
 	 * @param b
-	 *          A 3d point.
+	 *         A 3d point.
 	 * 
 	 * @return The angle, from 0 to 2 * PI, in radians.
 	 */
@@ -146,10 +162,88 @@ public class MyEdge {
 		Integer pointNo = this.points.get(index);
 		return SurfaceDemo.instance.utils.points.get(pointNo);
 	}
-	
-	public String toString()
-	{
+
+	public String toString() {
 		return this.edgeType + " " + String.valueOf(this.edgeNo);
+	}
+
+	public void setVelocity(float vel) {
+		this.cutVelocity = vel;
+
+		FileOutputStream out;
+		try {
+			FileInputStream in = new FileInputStream(Settings.iniEdgeProperties);
+			SortedProperties props = new SortedProperties();
+			props.load(in);
+			in.close();
+
+			out = new FileOutputStream(Settings.iniEdgeProperties);
+			props.setProperty(this.edgeNo + ".cutVelocity", String.valueOf(vel));
+			props.store(out, null);
+			out.close();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+
+	public void markAsRemoved() {
+
+		FileOutputStream out;
+		try {
+			FileInputStream in = new FileInputStream(Settings.iniEdgeProperties);
+			SortedProperties props = new SortedProperties();
+			props.load(in);
+			in.close();
+
+			out = new FileOutputStream(Settings.iniEdgeProperties);
+			props.setProperty(this.edgeNo + ".isRemoved", "True");
+			props.store(out, null);
+			out.close();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+
+	public void markToCut(boolean yesNo) {
+		this.toCut = true;
+
+		FileOutputStream out;
+		try {
+			FileInputStream in = new FileInputStream(Settings.iniEdgeProperties);
+			SortedProperties props = new SortedProperties();
+			props.load(in);
+			in.close();
+
+			if (yesNo) {
+				out = new FileOutputStream(Settings.iniEdgeProperties);
+				props.setProperty(this.edgeNo + ".toCut", "True");
+			} else {
+				out = new FileOutputStream(Settings.iniEdgeProperties);
+				props.remove(this.edgeNo + ".toCut");
+			}
+			props.store(out, null);
+			out.close();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+
+	public boolean getIsRemoved() {
+		try {
+			FileInputStream in = new FileInputStream(Settings.iniEdgeProperties);
+			SortedProperties props = new SortedProperties();
+			props.load(in);
+			if (props.containsKey(this.edgeNo + ".isRemoved"))
+				return true;
+			in.close();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return false;
 	}
 
 }

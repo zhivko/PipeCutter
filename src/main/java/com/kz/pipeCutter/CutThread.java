@@ -1,17 +1,12 @@
 package com.kz.pipeCutter;
 
-import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
 import java.util.concurrent.ExecutionException;
 
-import javax.swing.JOptionPane;
 import javax.swing.SwingWorker;
 
 import org.jzy3d.colors.Color;
@@ -40,9 +35,12 @@ public class CutThread extends SwingWorker<String, Object> {
 	ArrayList<MyPickablePoint> alAlreadyAddedPoints;
 
 	private boolean wholePipe = false;
+	private boolean onlySelected = false;
 	private MyPickablePoint startPoint = null;
 
 	public float filletSpeed = 0.0f;
+
+	ArrayList<MyPickablePoint> cuttingPoints = new ArrayList<MyPickablePoint>();
 
 	// http://www.pirate4x4.com/forum/11214232-post17.html
 	// For cutting 19.05mm with your Powermax1650 (this info is in your Powermax
@@ -65,22 +63,39 @@ public class CutThread extends SwingWorker<String, Object> {
 	// will be very satisfied with the results.
 	// Best regards, Jim Colt
 
-	public CutThread(boolean wholePipe) {
-		this();
-		calculateTopZ();
-		this.wholePipe = wholePipe;
-		this.startPoint = point;
-		this.alAlreadyAddedPoints = new ArrayList<MyPickablePoint>();
-	}
-
 	private void calculateTopZ() {
 		ArrayList<MyPickablePoint> sortedList = new ArrayList(SurfaceDemo.getInstance().utils.points.values());
 		Collections.sort(sortedList, new MyPickablePointZYXComparator());
 		topZ = sortedList.get(0).getZ();
 	}
 
-	public CutThread(boolean wholePipe, MyPickablePoint point) {
-		this(wholePipe);
+	public CutThread(boolean wholePipe, MyPickablePoint point, boolean onlySelected) {
+		this();
+
+		this.wholePipe = wholePipe;
+		this.startPoint = point;
+		this.alAlreadyAddedPoints = new ArrayList<MyPickablePoint>();
+
+		this.onlySelected = onlySelected;
+
+		if (onlySelected) {
+			for (MyEdge e : SurfaceDemo.instance.utils.edges.values()) {
+				if (e.toCut) {
+					if (!this.cuttingPoints.contains(e.getPointByIndex(0)))
+						this.cuttingPoints.add(e.getPointByIndex(0));
+					if (!this.cuttingPoints.contains(e.getPointByIndex(1)))
+						this.cuttingPoints.add(e.getPointByIndex(1));
+				}
+			}
+		}
+
+		if (wholePipe) {
+			for (MyPickablePoint p : SurfaceDemo.getInstance().utils.points.values()) {
+				this.cuttingPoints.add(p);
+			}
+		}
+		calculateTopZ();
+
 		this.startPoint = point;
 	}
 
@@ -113,17 +128,22 @@ public class CutThread extends SwingWorker<String, Object> {
 	public void cut() throws InterruptedException {
 		SurfaceDemo.instance.gCodeLineNo = 0;
 		SurfaceDemo.instance.g93mode = false;
-		ArrayList<MyPickablePoint> sortedList = new ArrayList(SurfaceDemo.getInstance().utils.points.values());
+		ArrayList<MyPickablePoint> sortedList = new ArrayList<MyPickablePoint>(cuttingPoints);
 		Collections.sort(sortedList, new MyPickablePointYComparator());
 
 		// SurfaceDemo.getInstance().utils.establishNeighbourPoints();
 		MyPickablePoint firstOuterPoint = sortedList.get(0);
-		firstPoints = SurfaceDemo.getInstance().utils.findAllConnectedPoints(firstOuterPoint, new ArrayList<MyPickablePoint>());
+
+		if (wholePipe)
+			firstPoints = SurfaceDemo.getInstance().utils.findAllConnectedPoints(firstOuterPoint,
+					new ArrayList<MyPickablePoint>());
+		else
+			firstPoints = new ArrayList<MyPickablePoint>();
 
 		double mminY = sortedList.get(0).xyz.y;
 		double mmaxY = sortedList.get(sortedList.size() - 1).xyz.y;
 
-		ArrayList<MyPickablePoint> sortedList2 = new ArrayList(SurfaceDemo.getInstance().utils.points.values());
+		ArrayList<MyPickablePoint> sortedList2 = new ArrayList<MyPickablePoint>(cuttingPoints);
 		Collections.sort(sortedList2, new MyPickablePointZMidXYComparator());
 		SurfaceDemo.instance.utils.previousPoint = sortedList2.get(0).xyz;
 		SurfaceDemo.instance.utils.previousAngle = 0.0f;
@@ -136,8 +156,9 @@ public class CutThread extends SwingWorker<String, Object> {
 		// 20.0f, Settings.getInstance().getSetting("gcode_feedrate_g0")));
 
 		double diagonal = (SurfaceDemo.getInstance().utils.maxEdge * Math.sqrt(2.0f));
-		SurfaceDemo.instance.writeToGcodeFile(String.format(Locale.US, "G00 X%.3f Y%.3f Z%.3f F%s", SurfaceDemo.instance.utils.previousPoint.x,
-				SurfaceDemo.instance.utils.previousPoint.y, diagonal / 2.0f + 20.0f, Settings.getInstance().getSetting("gcode_feedrate_g0")));
+		SurfaceDemo.instance.writeToGcodeFile(String.format(Locale.US, "G00 X%.3f Y%.3f Z%.3f F%s",
+				SurfaceDemo.instance.utils.previousPoint.x, SurfaceDemo.instance.utils.previousPoint.y, diagonal / 2.0f + 20.0f,
+				Settings.getInstance().getSetting("gcode_feedrate_g0")));
 
 		// double diagonal = (SurfaceDemo.getInstance().utils.maxEdge *
 		// Math.sqrt(2.0f));
@@ -177,6 +198,7 @@ public class CutThread extends SwingWorker<String, Object> {
 		sumAngle = Float.valueOf(SurfaceDemo.getInstance().angleTxt); // sumAngle
 		if (sumAngle >= 360.0)
 			rotationDirection = -1;
+
 		cutSegment(minY, maxY, false, rotationDirection);
 		SurfaceDemo.instance.writeToGcodeFile("G94");
 		SurfaceDemo.instance.writeToGcodeFile("M2");
@@ -189,8 +211,11 @@ public class CutThread extends SwingWorker<String, Object> {
 			System.out.println("TopZ=" + topZ);
 
 			ArrayList<MyPickablePoint> pointsToCut = new ArrayList<MyPickablePoint>();
-			for (MyPickablePoint p : SurfaceDemo.getInstance().utils.points.values()) {
-				if (p.xyz.y > minY && p.xyz.y <= maxY && Math.abs(p.getZ() - topZ) < 0.1) {
+			// for (MyPickablePoint p : SurfaceDemo.getInstance().utils.points.values())
+			// {
+			for (MyPickablePoint p : cuttingPoints) {
+
+				if (p.xyz.y > minY && p.xyz.y <= maxY && Math.abs(p.getZ() - topZ) < Utils.Math_E) {
 					{
 						if (withoutLastPoints) {
 							if (!listContainsPoint(p, firstPoints)) {
@@ -214,8 +239,8 @@ public class CutThread extends SwingWorker<String, Object> {
 				for (MyPickablePoint myPoint : pointsToCut) {
 					if (!listContainsPoint(myPoint, alAlreadyAddedPoints) && Math.abs(myPoint.getZ() - topZ) < 0.1) {
 						double diagonal = (SurfaceDemo.getInstance().utils.maxEdge * Math.sqrt(2.0f));
-						MyPickablePoint safeRetractPoint = new MyPickablePoint(-100000, new Coord3d(myPoint.xyz.x, myPoint.xyz.y, diagonal / 2 + 20), Color.BLACK,
-								0.4f, -200000);
+						MyPickablePoint safeRetractPoint = new MyPickablePoint(-100000,
+								new Coord3d(myPoint.xyz.x, myPoint.xyz.y, diagonal / 2 + 20), Color.BLACK, 0.4f, -200000);
 						SurfaceDemo.getInstance().move(safeRetractPoint, false, cutOffsetMm, true);
 						// SurfaceDemo.getInstance().moveAbove(safeRetractPoint, 0, 0);
 						SurfaceDemo.getInstance().moveAbove(myPoint, pierceOffsetMm, pierceTimeMs);
@@ -226,9 +251,8 @@ public class CutThread extends SwingWorker<String, Object> {
 			}
 			if (hasBeenCutting) {
 				double diagonal = (SurfaceDemo.getInstance().utils.maxEdge * Math.sqrt(2.0d));
-				MyPickablePoint newPoint = new MyPickablePoint(-100000,
-						new Coord3d(SurfaceDemo.getInstance().cylinderPoint.xyz.x, SurfaceDemo.getInstance().cylinderPoint.xyz.y, diagonal / 2.0f + 20),
-						Color.BLACK, 0.4f, -200000);
+				MyPickablePoint newPoint = new MyPickablePoint(-100000, new Coord3d(SurfaceDemo.getInstance().cylinderPoint.xyz.x,
+						SurfaceDemo.getInstance().cylinderPoint.xyz.y, diagonal / 2.0f + 20), Color.BLACK, 0.4f, -200000);
 				SurfaceDemo.getInstance().move(newPoint, false, cutOffsetMm, true);
 			}
 
@@ -331,7 +355,7 @@ public class CutThread extends SwingWorker<String, Object> {
 	protected String doInBackground() throws Exception {
 
 		System.out.println("File " + gcodeFile.getAbsolutePath() + " deleted?" + gcodeFile.delete());
-		if (this.wholePipe)
+		if (this.wholePipe || this.onlySelected)
 			cut();
 		else {
 			cutFromPoint(this.startPoint);
@@ -364,12 +388,12 @@ public class CutThread extends SwingWorker<String, Object> {
 		// lets turn on path blending
 		SurfaceDemo.instance.writeToGcodeFile("G64 P.5 Q.5 (path blending - P away from point)");
 
-		SurfaceDemo.getInstance().move(this.startPoint, false, (float)((diagonal / 2.0f + 20.0f)-pierceOffsetMm));
+		SurfaceDemo.getInstance().move(this.startPoint, false, (float) ((diagonal / 2.0f + 20.0f) - pierceOffsetMm));
 		SurfaceDemo.getInstance().moveAbove(this.startPoint, pierceOffsetMm, pierceTimeMs);
 		SurfaceDemo.instance.writeToGcodeFile("G93 (inverse time mode)");
 		this.followThePath(this.startPoint, this.alAlreadyAddedPoints, true);
-		SurfaceDemo.getInstance().move(this.startPoint, false, (float)((diagonal / 2.0f + 20.0f)-pierceOffsetMm));
-		
+		SurfaceDemo.getInstance().move(this.startPoint, false, (float) ((diagonal / 2.0f + 20.0f) - pierceOffsetMm));
+
 		SurfaceDemo.instance.writeToGcodeFile("M2");
 	}
 

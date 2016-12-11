@@ -5,23 +5,17 @@ import java.awt.PopupMenu;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.Locale;
-import java.util.concurrent.TimeoutException;
 
+import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities;
 
 import org.jzy3d.plot3d.rendering.view.modes.ViewBoundMode;
-import org.zeromq.ZMQ;
 
-import com.google.protobuf.InvalidProtocolBufferException;
 import com.kz.pipeCutter.CutThread;
 import com.kz.pipeCutter.MyPickablePoint;
 import com.kz.pipeCutter.SurfaceDemo;
-import com.kz.pipeCutter.BBB.BBBMachineTalkCommand;
 import com.kz.pipeCutter.BBB.BBBStatus;
 import com.kz.pipeCutter.BBB.commands.ExecuteMdi;
-
-import pb.Message.Container;
-import pb.Types.ContainerType;
 
 public class MyPopupMenu extends PopupMenu {
 
@@ -30,24 +24,36 @@ public class MyPopupMenu extends PopupMenu {
 		menuItem.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
-				CutThread th = new CutThread(true);
+				CutThread th = new CutThread(true,SurfaceDemo.instance.lastClickedPoint, false);
 				th.execute();
 			}
 		});
 		this.add(menuItem);
-		
+
 		MenuItem menuItem6 = new MenuItem("Cut edge from point");
 		menuItem6.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
 				if (SurfaceDemo.instance.lastClickedPoint.getClass().getName().equals("com.kz.pipeCutter.MyPickablePoint")) {
-					CutThread th = new CutThread(false, SurfaceDemo.instance.lastClickedPoint);
+					CutThread th = new CutThread(false, SurfaceDemo.instance.lastClickedPoint, false);
 					th.execute();
 				}
 			}
 		});
 		this.add(menuItem6);
-		
+
+		MenuItem menuItem16 = new MenuItem("Cut selected edges from point");
+		menuItem16.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+				if (SurfaceDemo.instance.lastClickedPoint.getClass().getName().equals("com.kz.pipeCutter.MyPickablePoint")) {
+					CutThread th = new CutThread(false, SurfaceDemo.instance.lastClickedPoint, true);
+					th.execute();
+				}
+			}
+		});
+		this.add(menuItem16);
+
 		this.addSeparator();
 
 		MenuItem menuItem7 = new MenuItem("Toggle edges");
@@ -82,8 +88,8 @@ public class MyPopupMenu extends PopupMenu {
 			public void actionPerformed(ActionEvent arg0) {
 				SurfaceDemo.ZOOM_PLASMA = false;
 				SurfaceDemo.ZOOM_POINT = true;
-				Settings.instance.setSetting("ui_zoom_plasma","False");
-				Settings.instance.setSetting("ui_zoom_point","True");
+				Settings.instance.setSetting("ui_zoom_plasma", "False");
+				Settings.instance.setSetting("ui_zoom_point", "True");
 				SurfaceDemo.instance.redrawPosition();
 			}
 		});
@@ -95,8 +101,8 @@ public class MyPopupMenu extends PopupMenu {
 			public void actionPerformed(ActionEvent arg0) {
 				SurfaceDemo.ZOOM_POINT = false;
 				SurfaceDemo.ZOOM_PLASMA = true;
-				Settings.instance.setSetting("ui_zoom_plasma","True");
-				Settings.instance.setSetting("ui_zoom_point","False");
+				Settings.instance.setSetting("ui_zoom_plasma", "True");
+				Settings.instance.setSetting("ui_zoom_point", "False");
 
 				SurfaceDemo.instance.redrawPosition();
 			}
@@ -138,20 +144,6 @@ public class MyPopupMenu extends PopupMenu {
 		});
 		this.add(menuItem3);
 
-		MenuItem menuItem5 = new MenuItem("SMOOTHIE - Move on edge");
-		menuItem5.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent arg0) {
-				if (SurfaceDemo.instance.lastClickedPoint.getClass().getName().equals("com.kz.pipeCutter.MyPickablePoint")) {
-					CutThread ct = new CutThread(false, SurfaceDemo.instance.lastClickedPoint);
-
-					ct.execute();
-				}
-
-			}
-		});
-		this.add(menuItem5);
-
 		MenuItem menuItem4 = new MenuItem("SMOOTHIE - move to HOME position");
 		menuItem4.addActionListener(new ActionListener() {
 			@Override
@@ -191,11 +183,11 @@ public class MyPopupMenu extends PopupMenu {
 					public void run() {
 						// @formatter:off
 						/*
-						 * Move to the Machine origin with G53 G0 X0 Y0 Z0 Clear any G92
-						 * offset with G92.1 Use the G54 coordinate system with G54 Set the
-						 * G54 coordinate system to be the same as the machine coordinate
-						 * system with G10 L2 P1 X0 Y0 Z0 Turn off tool offsets with G49
-						 * Turn on the Relative Coordinate Display from the menu
+						 * Move to the Machine origin with G53 G0 X0 Y0 Z0 Clear any G92 offset
+						 * with G92.1 Use the G54 coordinate system with G54 Set the G54
+						 * coordinate system to be the same as the machine coordinate system with
+						 * G10 L2 P1 X0 Y0 Z0 Turn off tool offsets with G49 Turn on the Relative
+						 * Coordinate Display from the menu
 						 */
 						// @formatter:on
 
@@ -232,8 +224,9 @@ public class MyPopupMenu extends PopupMenu {
 						// float z =
 						// Float.valueOf(Settings.getInstance().getSetting("position_z"));
 						// "G92 X%.3f Y%.3f Z%.3f\nG92.3"
-						String mdiCommand = String.format(Locale.US, "G92 X%.3f Y%.3f Z%.3f A0 B0", SurfaceDemo.instance.lastClickedPoint.xyz.x,
-								SurfaceDemo.instance.lastClickedPoint.xyz.y, SurfaceDemo.instance.lastClickedPoint.xyz.z);
+						String mdiCommand = String.format(Locale.US, "G92 X%.3f Y%.3f Z%.3f A0 B0",
+								SurfaceDemo.instance.lastClickedPoint.xyz.x, SurfaceDemo.instance.lastClickedPoint.xyz.y,
+								SurfaceDemo.instance.lastClickedPoint.xyz.z);
 						Settings.getInstance().log(mdiCommand);
 						new ExecuteMdi(mdiCommand).start();
 
@@ -246,12 +239,12 @@ public class MyPopupMenu extends PopupMenu {
 						// }
 						// }, 2500);
 
-//						new java.util.Timer().schedule(new java.util.TimerTask() {
-//							@Override
-//							public void run() {
-//								BBBStatus.getInstance().reSubscribeMotion();
-//							}
-//						}, 2000);
+						// new java.util.Timer().schedule(new java.util.TimerTask() {
+						// @Override
+						// public void run() {
+						// BBBStatus.getInstance().reSubscribeMotion();
+						// }
+						// }, 2000);
 
 					}
 				});
@@ -273,9 +266,9 @@ public class MyPopupMenu extends PopupMenu {
 						float z = Float.valueOf(Settings.getInstance().getSetting("position_z"));
 
 						String mdiCommand = String.format(Locale.US, "G91"); // relative as
-																																	// opposed to
-																																	// absolute
-																																	// G90
+						// opposed to
+						// absolute
+						// G90
 						Settings.getInstance().log(mdiCommand);
 						new ExecuteMdi(mdiCommand).start();
 						try {

@@ -99,6 +99,18 @@ public class OtherSettings extends JPanel {
 		zoomRadius.setParId("ui_zoom_radius");
 		zoomRadius.setNeedsSave(true);
 		this.add(zoomRadius);		
+
+		SavableCheckBox numberEdges = new SavableCheckBox();
+		numberEdges.setLabelTxt("Number edges");
+		numberEdges.setParId("ui_number_edges");
+		numberEdges.setNeedsSave(true);
+		this.add(numberEdges);				
+
+		SavableCheckBox numberPoints = new SavableCheckBox();
+		numberPoints.setLabelTxt("Number points");
+		numberPoints.setParId("ui_number_points");
+		numberPoints.setNeedsSave(true);
+		this.add(numberPoints);	
 		
 		SavableCheckBox pingBBBHalCmd = new SavableCheckBox() {
 			@Override

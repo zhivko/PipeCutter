@@ -69,6 +69,7 @@ public class Settings extends JFrame {
 
 	private JPanel contentPane;
 	public static String iniFullFileName = getIniPath();
+	public static String iniEdgeProperties = getEdgePropertiesPath();
 	public static Settings instance;
 	public static Discoverer discoverer;
 	public static BBBError error;
@@ -361,6 +362,29 @@ public class Settings extends JFrame {
 		}
 		return ret;
 	}
+	
+	public static String getEdgePropertiesPath() {
+		String ret = null;
+		String iniFileName = "edgeProperties.ini";
+		try {
+			String path = new File(".").getCanonicalPath();
+			ret = path + File.separator + iniFileName;
+			File f = new File(ret);
+			if (!f.exists()) {
+				System.out.println(ret + " does not exist. Creating in path:" + path);
+				File fout = new File(ret);
+				FileOutputStream fos = new FileOutputStream(fout);
+				BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(fos));
+				bw.write("# edge velocities ini file");
+				bw.close();
+			}
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return ret;
+	}
+	
 
 	public String getSetting(String parameterId) {
 		return controls.get(parameterId).getParValue();

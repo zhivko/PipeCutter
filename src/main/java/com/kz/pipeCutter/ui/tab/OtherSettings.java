@@ -98,7 +98,7 @@ public class OtherSettings extends JPanel {
 		zoomRadius.setLabelTxt("Zoom radius:");
 		zoomRadius.setParId("ui_zoom_radius");
 		zoomRadius.setNeedsSave(true);
-		this.add(zoomRadius);		
+		this.add(zoomRadius);
 
 		SavableCheckBox numberEdges = new SavableCheckBox();
 		numberEdges.setLabelTxt("Number edges");

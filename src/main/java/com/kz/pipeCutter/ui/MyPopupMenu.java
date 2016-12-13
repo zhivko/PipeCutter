@@ -4,14 +4,16 @@ import java.awt.MenuItem;
 import java.awt.PopupMenu;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.Iterator;
 import java.util.Locale;
 
-import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities;
 
-import org.jzy3d.plot3d.rendering.view.modes.ViewBoundMode;
+import org.jzy3d.colors.Color;
 
 import com.kz.pipeCutter.CutThread;
+import com.kz.pipeCutter.MyContinuousEdge;
+import com.kz.pipeCutter.MyEdge;
 import com.kz.pipeCutter.MyPickablePoint;
 import com.kz.pipeCutter.SurfaceDemo;
 import com.kz.pipeCutter.BBB.BBBStatus;
@@ -20,15 +22,15 @@ import com.kz.pipeCutter.BBB.commands.ExecuteMdi;
 public class MyPopupMenu extends PopupMenu {
 
 	public MyPopupMenu() {
-		MenuItem menuItem = new MenuItem("Cut whole pipe");
-		menuItem.addActionListener(new ActionListener() {
+		MenuItem MenuItem = new MenuItem("Cut whole pipe");
+		MenuItem.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
-				CutThread th = new CutThread(true,SurfaceDemo.instance.lastClickedPoint, false);
+				CutThread th = new CutThread(true, SurfaceDemo.instance.lastClickedPoint, false);
 				th.execute();
 			}
 		});
-		this.add(menuItem);
+		this.add(MenuItem);
 
 		MenuItem menuItem6 = new MenuItem("Cut edge from point");
 		menuItem6.addActionListener(new ActionListener() {
@@ -56,14 +58,47 @@ public class MyPopupMenu extends PopupMenu {
 
 		this.addSeparator();
 
+		MenuItem menuItem17 = new MenuItem("Add continuous edge to cut selection");
+		menuItem17.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+				MyContinuousEdge myCEdge = SurfaceDemo.instance.utils.continuousEdges.get(SurfaceDemo.instance.lastClickedPoint.continuousEdgeNo);
+				Iterator<Integer> it = myCEdge.points.iterator();
+				while (it.hasNext()) {
+					MyPickablePoint p = SurfaceDemo.instance.utils.getPointbyId(it.next());
+					MyEdge e = SurfaceDemo.instance.utils.getEdgeFromPoint(p, true);
+					e.markToCut(true);
+					e.txt.setColor(Color.RED);
+				}
+			}
+		});
+		this.add(menuItem17);
+
+		MenuItem menuItem18 = new MenuItem("Remove continuous edge from cut selection");
+		menuItem18.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+				MyContinuousEdge myCEdge = SurfaceDemo.instance.utils.continuousEdges.get(SurfaceDemo.instance.lastClickedPoint.continuousEdgeNo);
+				Iterator<Integer> it = myCEdge.points.iterator();
+				while (it.hasNext()) {
+					MyPickablePoint p = SurfaceDemo.instance.utils.getPointbyId(it.next());
+					MyEdge e = SurfaceDemo.instance.utils.getEdgeFromPoint(p, true);
+					e.markToCut(false);
+					e.txt.setColor(Color.BLUE);
+				}
+			}
+		});
+		this.add(menuItem18);
+
+		this.addSeparator();
+
 		MenuItem menuItem7 = new MenuItem("Toggle edges");
 		menuItem7.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
 				SurfaceDemo.NUMBER_EDGES = !SurfaceDemo.NUMBER_EDGES;
-				SurfaceDemo.instance.canvas.getView().setBoundMode(ViewBoundMode.AUTO_FIT);
-				SurfaceDemo.ZOOM_PLASMA = false;
-				SurfaceDemo.ZOOM_POINT = false;
+				Settings.instance.setSetting("ui_number_edges", String.valueOf(SurfaceDemo.NUMBER_EDGES));
+				// SurfaceDemo.instance.canvas.getView().setBoundMode(ViewBoundMode.AUTO_FIT);
 				SurfaceDemo.instance.initDraw();
 			}
 		});
@@ -74,9 +109,8 @@ public class MyPopupMenu extends PopupMenu {
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
 				SurfaceDemo.NUMBER_POINTS = !SurfaceDemo.NUMBER_POINTS;
-				SurfaceDemo.instance.canvas.getView().setBoundMode(ViewBoundMode.AUTO_FIT);
-				SurfaceDemo.ZOOM_PLASMA = false;
-				SurfaceDemo.ZOOM_POINT = false;
+				Settings.instance.setSetting("ui_number_points", String.valueOf(SurfaceDemo.NUMBER_POINTS));
+				// SurfaceDemo.instance.canvas.getView().setBoundMode(ViewBoundMode.AUTO_FIT);
 				SurfaceDemo.instance.initDraw();
 			}
 		});
@@ -183,11 +217,11 @@ public class MyPopupMenu extends PopupMenu {
 					public void run() {
 						// @formatter:off
 						/*
-						 * Move to the Machine origin with G53 G0 X0 Y0 Z0 Clear any G92 offset
-						 * with G92.1 Use the G54 coordinate system with G54 Set the G54
-						 * coordinate system to be the same as the machine coordinate system with
-						 * G10 L2 P1 X0 Y0 Z0 Turn off tool offsets with G49 Turn on the Relative
-						 * Coordinate Display from the menu
+						 * Move to the Machine origin with G53 G0 X0 Y0 Z0 Clear any G92
+						 * offset with G92.1 Use the G54 coordinate system with G54 Set the
+						 * G54 coordinate system to be the same as the machine coordinate
+						 * system with G10 L2 P1 X0 Y0 Z0 Turn off tool offsets with G49
+						 * Turn on the Relative Coordinate Display from the menu
 						 */
 						// @formatter:on
 
@@ -224,9 +258,8 @@ public class MyPopupMenu extends PopupMenu {
 						// float z =
 						// Float.valueOf(Settings.getInstance().getSetting("position_z"));
 						// "G92 X%.3f Y%.3f Z%.3f\nG92.3"
-						String mdiCommand = String.format(Locale.US, "G92 X%.3f Y%.3f Z%.3f A0 B0",
-								SurfaceDemo.instance.lastClickedPoint.xyz.x, SurfaceDemo.instance.lastClickedPoint.xyz.y,
-								SurfaceDemo.instance.lastClickedPoint.xyz.z);
+						String mdiCommand = String.format(Locale.US, "G92 X%.3f Y%.3f Z%.3f A0 B0", SurfaceDemo.instance.lastClickedPoint.xyz.x,
+								SurfaceDemo.instance.lastClickedPoint.xyz.y, SurfaceDemo.instance.lastClickedPoint.xyz.z);
 						Settings.getInstance().log(mdiCommand);
 						new ExecuteMdi(mdiCommand).start();
 
@@ -265,10 +298,9 @@ public class MyPopupMenu extends PopupMenu {
 						float y = Float.valueOf(Settings.getInstance().getSetting("position_y"));
 						float z = Float.valueOf(Settings.getInstance().getSetting("position_z"));
 
-						String mdiCommand = String.format(Locale.US, "G91"); // relative as
-						// opposed to
-						// absolute
-						// G90
+						String mdiCommand = String.format(Locale.US, "G90");
+						// relative G91
+						// absolute G90
 						Settings.getInstance().log(mdiCommand);
 						new ExecuteMdi(mdiCommand).start();
 						try {

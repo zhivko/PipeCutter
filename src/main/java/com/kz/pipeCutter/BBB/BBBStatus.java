@@ -172,12 +172,10 @@ public class BBBStatus implements Runnable {
 												zOffset = Float.valueOf(Settings.instance.getSetting("myini.offset-value"));
 											Coord3d coord = new Coord3d(BBBStatus.instance.x, BBBStatus.instance.y, BBBStatus.instance.z + zOffset);
 											SurfaceDemo.getInstance().utils.rotatePoints(BBBStatus.instance.a, false, false);
-
 											SurfaceDemo.getInstance().getPlasma().setPosition(coord);
-											SurfaceDemo.getInstance().redrawPosition();
 										}
 										
-										SurfaceDemo.getInstance().redrawPosition();
+										//SurfaceDemo.getInstance().redrawPosition();
 									}
 								}
 							} else if (contReturned.getType().equals(ContainerType.MT_PING)) {

@@ -94,6 +94,17 @@ public class CutThread extends SwingWorker<String, Object> {
 				this.cuttingPoints.add(p);
 			}
 		}
+
+		if (!wholePipe && !onlySelected) {
+			MyContinuousEdge myCEdge = SurfaceDemo.instance.utils.continuousEdges.get(point.continuousEdgeNo);
+			for (MyEdge e : myCEdge.connectedEdges) {
+				if (!this.cuttingPoints.contains(e.getPointByIndex(0)))
+					this.cuttingPoints.add(e.getPointByIndex(0));
+				if (!this.cuttingPoints.contains(e.getPointByIndex(1)))
+					this.cuttingPoints.add(e.getPointByIndex(1));
+			}
+		}
+
 		calculateTopZ();
 
 		this.startPoint = point;
@@ -135,8 +146,7 @@ public class CutThread extends SwingWorker<String, Object> {
 		MyPickablePoint firstOuterPoint = sortedList.get(0);
 
 		if (wholePipe)
-			firstPoints = SurfaceDemo.getInstance().utils.findAllConnectedPoints(firstOuterPoint,
-					new ArrayList<MyPickablePoint>());
+			firstPoints = SurfaceDemo.getInstance().utils.findAllConnectedPoints(firstOuterPoint, new ArrayList<MyPickablePoint>());
 		else
 			firstPoints = new ArrayList<MyPickablePoint>();
 
@@ -156,9 +166,8 @@ public class CutThread extends SwingWorker<String, Object> {
 		// 20.0f, Settings.getInstance().getSetting("gcode_feedrate_g0")));
 
 		double diagonal = (SurfaceDemo.getInstance().utils.maxEdge * Math.sqrt(2.0f));
-		SurfaceDemo.instance.writeToGcodeFile(String.format(Locale.US, "G00 X%.3f Y%.3f Z%.3f F%s",
-				SurfaceDemo.instance.utils.previousPoint.x, SurfaceDemo.instance.utils.previousPoint.y, diagonal / 2.0f + 20.0f,
-				Settings.getInstance().getSetting("gcode_feedrate_g0")));
+		SurfaceDemo.instance.writeToGcodeFile(String.format(Locale.US, "G00 X%.3f Y%.3f Z%.3f F%s", SurfaceDemo.instance.utils.previousPoint.x,
+				SurfaceDemo.instance.utils.previousPoint.y, diagonal / 2.0f + 20.0f, Settings.getInstance().getSetting("gcode_feedrate_g0")));
 
 		// double diagonal = (SurfaceDemo.getInstance().utils.maxEdge *
 		// Math.sqrt(2.0f));
@@ -171,7 +180,7 @@ public class CutThread extends SwingWorker<String, Object> {
 		// true);
 
 		// lets turn on path blending
-		SurfaceDemo.instance.writeToGcodeFile("G64 P.5 Q.5 (path blending - P away from point)");
+		SurfaceDemo.instance.writeToGcodeFile("G64 P.05 Q.05 (path blending - P away from point)");
 		SurfaceDemo.instance.writeToGcodeFile("G93 (inverse time mode)");
 
 		float currentY = (float) mmaxY;
@@ -211,7 +220,8 @@ public class CutThread extends SwingWorker<String, Object> {
 			System.out.println("TopZ=" + topZ);
 
 			ArrayList<MyPickablePoint> pointsToCut = new ArrayList<MyPickablePoint>();
-			// for (MyPickablePoint p : SurfaceDemo.getInstance().utils.points.values())
+			// for (MyPickablePoint p :
+			// SurfaceDemo.getInstance().utils.points.values())
 			// {
 			for (MyPickablePoint p : cuttingPoints) {
 
@@ -239,10 +249,12 @@ public class CutThread extends SwingWorker<String, Object> {
 				for (MyPickablePoint myPoint : pointsToCut) {
 					if (!listContainsPoint(myPoint, alAlreadyAddedPoints) && Math.abs(myPoint.getZ() - topZ) < 0.1) {
 						double diagonal = (SurfaceDemo.getInstance().utils.maxEdge * Math.sqrt(2.0f));
-						MyPickablePoint safeRetractPoint = new MyPickablePoint(-100000,
-								new Coord3d(myPoint.xyz.x, myPoint.xyz.y, diagonal / 2 + 20), Color.BLACK, 0.4f, -200000);
+						MyPickablePoint safeRetractPoint = new MyPickablePoint(-100000, new Coord3d(myPoint.xyz.x, myPoint.xyz.y, diagonal / 2 + 20), Color.BLACK,
+								0.4f, -200000);
 						SurfaceDemo.getInstance().move(safeRetractPoint, false, cutOffsetMm, true);
 						// SurfaceDemo.getInstance().moveAbove(safeRetractPoint, 0, 0);
+						// unenececssary pause
+						SurfaceDemo.getInstance().writeToGcodeFile(String.format(Locale.US, "G04 P%.3f", 3.0));
 						SurfaceDemo.getInstance().moveAbove(myPoint, pierceOffsetMm, pierceTimeMs);
 						double angle = followThePath(myPoint, this.alAlreadyAddedPoints, (rotationDirection == -1 ? true : false));
 						hasBeenCutting = true;
@@ -251,8 +263,9 @@ public class CutThread extends SwingWorker<String, Object> {
 			}
 			if (hasBeenCutting) {
 				double diagonal = (SurfaceDemo.getInstance().utils.maxEdge * Math.sqrt(2.0d));
-				MyPickablePoint newPoint = new MyPickablePoint(-100000, new Coord3d(SurfaceDemo.getInstance().cylinderPoint.xyz.x,
-						SurfaceDemo.getInstance().cylinderPoint.xyz.y, diagonal / 2.0f + 20), Color.BLACK, 0.4f, -200000);
+				MyPickablePoint newPoint = new MyPickablePoint(-100000,
+						new Coord3d(SurfaceDemo.getInstance().cylinderPoint.xyz.x, SurfaceDemo.getInstance().cylinderPoint.xyz.y, diagonal / 2.0f + 20),
+						Color.BLACK, 0.4f, -200000);
 				SurfaceDemo.getInstance().move(newPoint, false, cutOffsetMm, true);
 			}
 
@@ -281,7 +294,14 @@ public class CutThread extends SwingWorker<String, Object> {
 			tempPoint = SurfaceDemo.getInstance().utils.findConnectedPoint(tempPoint, alAlreadyAddedPoints, true);
 			if (tempPoint == null) {
 				shouldBreak = true;
-				tempPoint = myPoint;
+				// check if edge to first point exist
+				for (MyEdge e : SurfaceDemo.instance.utils.edges.values()) {
+					if ((e.getPointByIndex(0).id == prevPoint.id && e.getPointByIndex(1).id == myPoint.id)
+							|| (e.getPointByIndex(1).id == prevPoint.id && e.getPointByIndex(0).id == myPoint.id)) {
+						tempPoint = myPoint;
+						break;
+					}
+				}
 			}
 
 			double angleDelta = rotation(prevPoint, tempPoint);
@@ -289,7 +309,9 @@ public class CutThread extends SwingWorker<String, Object> {
 			// angleDelta);
 			prevPoint = tempPoint;
 		}
-		SurfaceDemo.getInstance().move(tempPoint, true, cutOffsetMm);
+		if (tempPoint != null)
+			SurfaceDemo.getInstance().move(tempPoint, true, cutOffsetMm);
+		tempPoint = myPoint;
 		prevPoint = tempPoint;
 		tempPoint = SurfaceDemo.getInstance().utils.findConnectedPoint(tempPoint, alAlreadyAddedPoints, true);
 		if (tempPoint != null) {
@@ -386,13 +408,14 @@ public class CutThread extends SwingWorker<String, Object> {
 
 		double diagonal = (SurfaceDemo.getInstance().utils.maxEdge * Math.sqrt(2.0f));
 		// lets turn on path blending
-		SurfaceDemo.instance.writeToGcodeFile("G64 P.5 Q.5 (path blending - P away from point)");
+		SurfaceDemo.instance.writeToGcodeFile("G64 P.05 Q.05 (path blending - P away from point)");
 
-		SurfaceDemo.getInstance().move(this.startPoint, false, (float) ((diagonal / 2.0f + 20.0f) - pierceOffsetMm));
+		float offsetZ = (float) ((diagonal / 2.0f + 20.0f) - this.startPoint.getZ() + pierceOffsetMm);
+		SurfaceDemo.getInstance().move(this.startPoint, false, offsetZ);
 		SurfaceDemo.getInstance().moveAbove(this.startPoint, pierceOffsetMm, pierceTimeMs);
 		SurfaceDemo.instance.writeToGcodeFile("G93 (inverse time mode)");
 		this.followThePath(this.startPoint, this.alAlreadyAddedPoints, true);
-		SurfaceDemo.getInstance().move(this.startPoint, false, (float) ((diagonal / 2.0f + 20.0f) - pierceOffsetMm));
+		SurfaceDemo.getInstance().move(this.startPoint, false, offsetZ);
 
 		SurfaceDemo.instance.writeToGcodeFile("M2");
 	}

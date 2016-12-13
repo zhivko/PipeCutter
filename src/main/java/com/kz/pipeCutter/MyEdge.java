@@ -21,10 +21,10 @@ public class MyEdge {
 	 * @param args
 	 */
 	Coord3d center = null;
-	ArrayList<Integer> points = null;
+	public ArrayList<Integer> points = null;
 	Integer edgeNo;
 	Integer surfaceNo;
-	ArrayList<MyEdge> connectedEdges = null;
+	public ArrayList<MyEdge> connectedEdges = null;
 	float length;
 	float cutVelocity;
 	boolean toCut = false;
@@ -39,6 +39,7 @@ public class MyEdge {
 	public static HashMap<Float, Integer> hmLengthDistrib = new HashMap<Float, Integer>();
 
 	LineStrip lineStrip;
+	public PickableDrawableTextBitmap txt;
 
 	public MyEdge(Integer edgeNo, Integer surfaceNo) {
 		this.edgeNo = edgeNo;
@@ -46,7 +47,8 @@ public class MyEdge {
 			FileInputStream in = new FileInputStream(Settings.iniEdgeProperties);
 			SortedProperties props = new SortedProperties();
 			props.load(in);
-			this.cutVelocity = Float.valueOf(props.getProperty(this.edgeNo + ".cutVelocity"));
+			if (props.getProperty(this.edgeNo + ".cutVelocity") != null)
+				this.cutVelocity = Float.valueOf(props.getProperty(this.edgeNo + ".cutVelocity"));
 			in.close();
 		} catch (Exception ex) {
 			ex.printStackTrace();
@@ -69,6 +71,10 @@ public class MyEdge {
 		this.lineStrip = ls;
 	}
 
+	public void setTxt(PickableDrawableTextBitmap tx) {
+		this.txt = tx;
+	}	
+	
 	public void addPoint(Integer pointNo) {
 		// boolean alreadyAdded = false;
 		// for (MyPickablePoint p1 : this.points) {
@@ -93,13 +99,13 @@ public class MyEdge {
 	private void calculateLength() {
 		// TODO Auto-generated method stub
 		// @formatter:off
-		length = (float) Math.sqrt(Math
-				.pow(SurfaceDemo.instance.utils.points.get(this.points.get(0)).getX()
-						- SurfaceDemo.instance.utils.points.get(this.points.get(1)).getX(), 2.0d)
-				+ Math.pow(SurfaceDemo.instance.utils.points.get(this.points.get(0)).getY()
-						- SurfaceDemo.instance.utils.points.get(this.points.get(1)).getY(), 2.0d)
-				+ Math.pow(SurfaceDemo.instance.utils.points.get(this.points.get(0)).getZ()
-						- SurfaceDemo.instance.utils.points.get(this.points.get(1)).getZ(), 2.0d));
+		length = (float) Math.sqrt(Math.pow(
+				SurfaceDemo.instance.utils.points.get(this.points.get(0)).getX() - SurfaceDemo.instance.utils.points.get(this.points.get(1)).getX(), 2.0d)
+				+ Math.pow(
+						SurfaceDemo.instance.utils.points.get(this.points.get(0)).getY() - SurfaceDemo.instance.utils.points.get(this.points.get(1)).getY(), 2.0d)
+				+ Math.pow(
+						SurfaceDemo.instance.utils.points.get(this.points.get(0)).getZ() - SurfaceDemo.instance.utils.points.get(this.points.get(1)).getZ(),
+						2.0d));
 		// @formatter:on
 	}
 
@@ -123,11 +129,11 @@ public class MyEdge {
 	 * points.
 	 * 
 	 * @param a
-	 *         A 3d point.
+	 *          A 3d point.
 	 * @param vertex
-	 *         The vertex point.
+	 *          The vertex point.
 	 * @param b
-	 *         A 3d point.
+	 *          A 3d point.
 	 * 
 	 * @return The angle, from 0 to 2 * PI, in radians.
 	 */

@@ -121,7 +121,7 @@ public class MakeXHorizontal implements Runnable {
 		Settings.instance.log(String.format("Rotating for angle: %5.3f", angleCorr));
 
 		Float maxRotSpeed = Float.valueOf(Settings.instance.getSetting("myini.maxvel_3"));
-		new ExecuteMdi(String.format("G91\nG01 A%5.3f B%5.3f F%5.3f\nG90", angleCorr, angleCorr, maxRotSpeed)).start();
+		new ExecuteMdi(String.format("G91\nG01 A%5.3f B%5.3f F%5.3f\nG90", angleCorr, angleCorr, (maxRotSpeed*60.0))).start();
 	}
 
 }

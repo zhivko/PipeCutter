@@ -117,7 +117,7 @@ public class GcodeViewer extends JPanel {
 					if (m.find()) {
 						//System.out.println(m.group(1));
 						SurfaceDemo.instance.lastClickedPoint = SurfaceDemo.instance.utils.getPointbyId(Integer.valueOf(m.group(1)));
-						SurfaceDemo.instance.selectedPointChanged(SurfaceDemo.instance.lastClickedPoint);
+						SurfaceDemo.instance.lastClickedPointChanged(SurfaceDemo.instance.lastClickedPoint);
 					}
 
 				} catch (Exception ex) {

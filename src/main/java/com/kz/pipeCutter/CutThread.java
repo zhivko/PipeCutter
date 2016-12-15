@@ -220,9 +220,7 @@ public class CutThread extends SwingWorker<String, Object> {
 			System.out.println("TopZ=" + topZ);
 
 			ArrayList<MyPickablePoint> pointsToCut = new ArrayList<MyPickablePoint>();
-			// for (MyPickablePoint p :
-			// SurfaceDemo.getInstance().utils.points.values())
-			// {
+
 			for (MyPickablePoint p : cuttingPoints) {
 				if (p.id == 280) {
 					System.out.println("");

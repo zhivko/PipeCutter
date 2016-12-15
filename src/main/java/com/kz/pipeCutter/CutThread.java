@@ -208,7 +208,7 @@ public class CutThread extends SwingWorker<String, Object> {
 		if (sumAngle >= 360.0)
 			rotationDirection = -1;
 
-		cutSegment(minY, maxY, false, rotationDirection);
+		cutSegment(0, maxY, false, rotationDirection);
 		SurfaceDemo.instance.writeToGcodeFile("G94");
 		SurfaceDemo.instance.writeToGcodeFile("M2");
 	}
@@ -224,7 +224,9 @@ public class CutThread extends SwingWorker<String, Object> {
 			// SurfaceDemo.getInstance().utils.points.values())
 			// {
 			for (MyPickablePoint p : cuttingPoints) {
-
+				if (p.id == 280) {
+					System.out.println("");
+				}
 				if (p.xyz.y > minY && p.xyz.y <= maxY && Math.abs(p.getZ() - topZ) < Utils.Math_E) {
 					{
 						if (withoutLastPoints) {
@@ -243,6 +245,7 @@ public class CutThread extends SwingWorker<String, Object> {
 					}
 				}
 			}
+
 			boolean hasBeenCutting = false;
 			Collections.sort(pointsToCut, new MyPickablePointMidXComparator());
 			if (pointsToCut.size() > 0) {
@@ -254,7 +257,8 @@ public class CutThread extends SwingWorker<String, Object> {
 						SurfaceDemo.getInstance().move(safeRetractPoint, false, cutOffsetMm, true);
 						// SurfaceDemo.getInstance().moveAbove(safeRetractPoint, 0, 0);
 						// unenececssary pause
-						SurfaceDemo.getInstance().writeToGcodeFile(String.format(Locale.US, "G04 P%.3f", 3.0));
+						// SurfaceDemo.getInstance().writeToGcodeFile(String.format(Locale.US,
+						// "G04 P%.3f", 3.0));
 						SurfaceDemo.getInstance().moveAbove(myPoint, pierceOffsetMm, pierceTimeMs);
 						double angle = followThePath(myPoint, this.alAlreadyAddedPoints, (rotationDirection == -1 ? true : false));
 						hasBeenCutting = true;
@@ -284,33 +288,49 @@ public class CutThread extends SwingWorker<String, Object> {
 		MyPickablePoint prevPoint = myPoint;
 		prevPoint = tempPoint;
 		boolean shouldBreak = false;
+		ArrayList<MyEdge> alreadyCuttedEdges = new ArrayList<MyEdge>();
+		SurfaceDemo.getInstance().move(tempPoint, true, cutOffsetMm);
 		while (!shouldBreak) {
-			SurfaceDemo.getInstance().move(tempPoint, true, cutOffsetMm);
-
 			if (tempPoint != null) {
 				tempPoint.setColor(Color.GREEN);
 				alAlreadyAddedPoints.add(tempPoint);
 			}
 			tempPoint = SurfaceDemo.getInstance().utils.findConnectedPoint(tempPoint, alAlreadyAddedPoints, true);
+
 			if (tempPoint == null) {
 				shouldBreak = true;
-				// check if edge to first point exist
-				for (MyEdge e : SurfaceDemo.instance.utils.edges.values()) {
-					if ((e.getPointByIndex(0).id == prevPoint.id && e.getPointByIndex(1).id == myPoint.id)
-							|| (e.getPointByIndex(1).id == prevPoint.id && e.getPointByIndex(0).id == myPoint.id)) {
-						tempPoint = myPoint;
-						break;
-					}
+				tempPoint = myPoint;
+				MyEdge edge = SurfaceDemo.instance.utils.getEdgeFromTwoPoints(prevPoint, tempPoint);
+				if (!alreadyCuttedEdges.contains(edge))
+					SurfaceDemo.getInstance().move(tempPoint, true, cutOffsetMm);
+			} else {
+				SurfaceDemo.getInstance().move(tempPoint, true, cutOffsetMm);
+				MyEdge edge = SurfaceDemo.instance.utils.getEdgeFromTwoPoints(prevPoint, tempPoint);
+				if (!alreadyCuttedEdges.contains(edge)) {
+					alreadyCuttedEdges.add(edge);
 				}
 			}
+			// if (tempPoint == null) {
+			// shouldBreak = true;
+			// // check if edge to first point exist
+			// for (MyEdge e : SurfaceDemo.instance.utils.edges.values()) {
+			// if ((e.getPointByIndex(0).id == prevPoint.id && e.getPointByIndex(1).id
+			// == myPoint.id)
+			// || (e.getPointByIndex(1).id == prevPoint.id && e.getPointByIndex(0).id
+			// == myPoint.id)) {
+			// tempPoint = myPoint;
+			// break;
+			// }
+			// }
+			// }
 
 			double angleDelta = rotation(prevPoint, tempPoint);
 			// System.out.println(prevPoint.id + " " + tempPoint.id + " " +
 			// angleDelta);
 			prevPoint = tempPoint;
 		}
-		if (tempPoint != null)
-			SurfaceDemo.getInstance().move(tempPoint, true, cutOffsetMm);
+		// if (tempPoint != null)
+		// SurfaceDemo.getInstance().move(tempPoint, true, cutOffsetMm);
 		tempPoint = myPoint;
 		prevPoint = tempPoint;
 		tempPoint = SurfaceDemo.getInstance().utils.findConnectedPoint(tempPoint, alAlreadyAddedPoints, true);

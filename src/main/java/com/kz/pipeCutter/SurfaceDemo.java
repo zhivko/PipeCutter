@@ -887,10 +887,6 @@ public class SurfaceDemo extends AbstractAnalysis {
 	}
 
 	private void splitLongEdges() {
-
-		// int pointId = SurfaceDemo.instance.utils.points.size() - 1;
-		// int edgeNo = SurfaceDemo.instance.utils.points.size();
-
 		// splitLongEdges
 		ArrayList<MyPickablePoint> sortedXList = new ArrayList(SurfaceDemo.instance.utils.points.values());
 		Collections.sort(sortedXList, new MyPickablePointXComparator());
@@ -912,7 +908,6 @@ public class SurfaceDemo extends AbstractAnalysis {
 		while (edgeIt.hasNext()) {
 			MyEdge edge = edgeIt.next();
 			if (edge.length >= (maxX - minX) * 0.5 || edge.length >= (maxZ - minZ) * 0.5) {
-				// need to split edge - create 2 edges instead one
 				MyPickablePoint p1 = SurfaceDemo.instance.utils.points.get(edge.points.get(0));
 				MyPickablePoint p2 = SurfaceDemo.instance.utils.points.get(edge.points.get(1));
 
@@ -933,7 +928,6 @@ public class SurfaceDemo extends AbstractAnalysis {
 					utils.surfaces.put(edge.surfaceNo, surface);
 				}
 				surface.addEdge(edge1);
-				// utils.edges.put(edgeNo, edge1);
 				edgesToAdd.add(edge1);
 				edgeNo++;
 
@@ -941,7 +935,6 @@ public class SurfaceDemo extends AbstractAnalysis {
 				edge2.addPoint(newP.id);
 				edge2.addPoint(p2.id);
 				surface.addEdge(edge2);
-				// utils.edges.put(edgeNo, edge2);
 				edgesToAdd.add(edge2);
 				edgeNo++;
 
@@ -962,49 +955,6 @@ public class SurfaceDemo extends AbstractAnalysis {
 			}
 		}
 	}
-	// private void enablePickingTexts(ArrayList<PickableDrawableTextBitmap>
-	// edgeTexts, Chart chart, int brushSize) {
-	// AWTMousePickingPan2dController<?, ?> mousePicker =
-	// (AWTMousePickingPan2dController) chart.getFactory()
-	// .newPickingController(chart);
-	// PickingSupport picking = mousePicker.getPickingSupport();
-	//
-	// for (PickableDrawableTextBitmap txt : edgeTexts) {
-	// picking.registerDrawableObject(txt, txt);
-	// }
-	//
-	// picking.addObjectPickedListener(new IObjectPickedListener() {
-	// @Override
-	// public void objectPicked(List<?> picked, final PickingSupport ps) {
-	// if (picked.size() > 0) // && (System.currentTimeMillis() -
-	// // camMouse.clickTimeMillis < 200)) {
-	// {
-	// // System.out.println("Size: " + picked.size());
-	// // for (int i = 0; i < picked.size(); i++) {
-	// if (picked.get(0) instanceof PickableDrawableTextBitmap) {
-	//
-	// final PickableDrawableTextBitmap txt = (PickableDrawableTextBitmap)
-	// picked.get(0);
-	//
-	// JPopupMenu edgeMenu = new JPopupMenu();
-	// JMenuItem menuItem = new JMenuItem("Delete edge " + txt.getText());
-	// menuItem.addActionListener(new ActionListener() {
-	// @Override
-	// public void actionPerformed(ActionEvent arg0) {
-	// SurfaceDemo.instance.utils.edges.remove(Integer.valueOf(txt.getText()));
-	// SurfaceDemo.instance.utils.edgeTexts.remove(txt);
-	// SurfaceDemo.instance.initDraw();
-	// ps.unRegisterPickableObject(txt);
-	// }
-	// });
-	// edgeMenu.add(menuItem);
-	// edgeMenu.show(SurfaceDemo.instance.canvas, 100, 100);
-	// }
-	// // }
-	// }
-	// }
-	// });
-	// }
 
 	public void initDraw() {
 
@@ -1099,13 +1049,17 @@ public class SurfaceDemo extends AbstractAnalysis {
 	}
 
 	public Sphere getPlasma() {
-		if (instance != null && plasma == null && BBBStatus.instance != null) {
+		if (instance != null && plasma == null ) {
 			Color color = Color.BLUE; // mapper.getColor(new Coord3d(0,0,height));
 			// color.a = 0.55f;
 			color.a = 1.0f;
 			plasma = new Sphere(new Coord3d(0, 0, 0), 2.0f, 4, color);
 			plasma.setWireframeColor(color);
-			plasma.setPosition(new Coord3d(BBBStatus.instance.x, BBBStatus.instance.y, BBBStatus.instance.z));
+			if(BBBStatus.instance != null)
+				plasma.setPosition(new Coord3d(BBBStatus.instance.x, BBBStatus.instance.y, BBBStatus.instance.z));
+			else
+				plasma.setPosition(new Coord3d(0, 0, 0));
+				
 			plasma.setDisplayed(true);
 			instance.myComposite.add(plasma);
 		}
@@ -1246,7 +1200,7 @@ public class SurfaceDemo extends AbstractAnalysis {
 		}
 		// }
 		getPlasma().setPosition(tempPoint.xyz);
-		SurfaceDemo.instance.redrawPosition();
+		//SurfaceDemo.instance.redrawPosition();
 
 		// cylinder.move(tempPoint);
 		if (cylinderPoint == null)
@@ -1345,16 +1299,11 @@ public class SurfaceDemo extends AbstractAnalysis {
 		return ret;
 	}
 
-	// public float getZoomBounds() {
-	// float ret = 0.0f;
-	// ret =
-	// Float.valueOf(Settings.getInstance().getSetting("ui_zoom_bounds")).floatValue();
-	// return ret;
-	// }
-
 	public void redrawPosition() {
 		if (instance.getChart().getView().getCanvas() != null) {
 			float currentViewRadius = Float.valueOf(Settings.instance.getSetting("ui_zoom_radius"));
+			if(currentViewRadius==0)
+				currentViewRadius=0.1f;
 			if (ZOOM_PLASMA && SurfaceDemo.instance.getPlasma().getPosition() != null) {
 				SurfaceDemo.instance.canvas.getView().setBoundMode(ViewBoundMode.MANUAL);
 				SurfaceDemo.instance.canvas.getView().setBoundManual(new BoundingBox3d(SurfaceDemo.instance.getPlasma().getPosition(), currentViewRadius));
@@ -1363,9 +1312,7 @@ public class SurfaceDemo extends AbstractAnalysis {
 				SurfaceDemo.instance.canvas.getView().setBoundManual(new BoundingBox3d(SurfaceDemo.instance.lastClickedPoint.getCoord(), currentViewRadius));
 			} else
 				SurfaceDemo.instance.canvas.getView().setBoundMode(ViewBoundMode.AUTO_FIT);
-
 			instance.getChart().render();
-
 		}
 	}
 
@@ -1373,16 +1320,6 @@ public class SurfaceDemo extends AbstractAnalysis {
 		PrintWriter out = null;
 		try {
 			out = new PrintWriter(new BufferedWriter(new FileWriter(CutThread.gcodeFile.getAbsolutePath(), true)));
-
-			// if (this.gCodeLineNo == 2 &&
-			// Settings.instance.getSetting("gcode_g93").equals("1")) {
-			// SurfaceDemo.instance.g93mode = true;
-			// out.println("G93");
-			// this.gCodeLineNo++;
-			// }
-
-			// System.out.println(txt);
-			// System.out.println(SurfaceDemo.instance.utils.previousPoint);
 
 			out.println(txt);
 			out.flush();

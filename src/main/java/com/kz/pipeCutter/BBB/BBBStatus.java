@@ -175,7 +175,7 @@ public class BBBStatus implements Runnable {
 											SurfaceDemo.getInstance().getPlasma().setPosition(coord);
 										}
 										
-										//SurfaceDemo.getInstance().redrawPosition();
+										SurfaceDemo.getInstance().redrawPosition();
 									}
 								}
 							} else if (contReturned.getType().equals(ContainerType.MT_PING)) {

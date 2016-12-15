@@ -14,8 +14,7 @@ import org.jzy3d.maths.Coord2d;
 
 import com.kz.pipeCutter.ui.Settings;
 
-public class MyAWTMousePickingController extends AWTMousePickingController implements MouseListener, MouseWheelListener,
-		MouseMotionListener {
+public class MyAWTMousePickingController extends AWTMousePickingController implements MouseListener, MouseWheelListener, MouseMotionListener {
 	public MyAWTMousePickingController() {
 	}
 
@@ -25,7 +24,7 @@ public class MyAWTMousePickingController extends AWTMousePickingController imple
 	}
 
 	public MyAWTMousePickingController(Chart chart, int brushSize) {
-		super(chart,brushSize);
+		super(chart, brushSize);
 		addSlaveThreadController(new CameraThreadController(chart));
 	}
 
@@ -82,8 +81,10 @@ public class MyAWTMousePickingController extends AWTMousePickingController imple
 
 		String center = chart.getView().getBounds().getCenter().toString();
 		String radius = String.valueOf(chart.getView().getBounds().getRadius());
-		
+
 		Settings.instance.setSetting("ui_zoom_center", center);
+		if (radius.equals("0"))
+			radius = "0.1";
 		Settings.instance.setSetting("ui_zoom_radius", radius);
 		zoomZ(factor);
 	}

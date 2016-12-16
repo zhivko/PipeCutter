@@ -84,7 +84,7 @@ public class CutThread extends SwingWorker<String, Object> {
 					if (!this.cuttingPoints.contains(e.getPointByIndex(0)))
 						this.cuttingPoints.add(e.getPointByIndex(0));
 					if (!this.cuttingPoints.contains(e.getPointByIndex(1)))
-						this.cuttingPoints.add(e.getPointByIndex(1));
+						this.cuttingPoints.add(e.getPointByIndex(1));	
 				}
 			}
 		}

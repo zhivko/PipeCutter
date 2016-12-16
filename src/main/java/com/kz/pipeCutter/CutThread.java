@@ -80,7 +80,7 @@ public class CutThread extends SwingWorker<String, Object> {
 
 		if (onlySelected) {
 			for (MyEdge e : SurfaceDemo.instance.utils.edges.values()) {
-				if (e.toCut) {
+				if (e.isToCut()) {
 					if (!this.cuttingPoints.contains(e.getPointByIndex(0)))
 						this.cuttingPoints.add(e.getPointByIndex(0));
 					if (!this.cuttingPoints.contains(e.getPointByIndex(1)))
@@ -208,7 +208,7 @@ public class CutThread extends SwingWorker<String, Object> {
 		if (sumAngle >= 360.0)
 			rotationDirection = -1;
 
-		cutSegment(0, maxY, false, rotationDirection);
+		cutSegment(minY, maxY, false, rotationDirection);
 		SurfaceDemo.instance.writeToGcodeFile("G94");
 		SurfaceDemo.instance.writeToGcodeFile("M2");
 	}

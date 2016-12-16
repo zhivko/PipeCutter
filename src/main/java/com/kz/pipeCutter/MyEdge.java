@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.TreeMap;
 
+import org.jzy3d.colors.Color;
 import org.jzy3d.maths.Coord3d;
 import org.jzy3d.plot3d.primitives.LineStrip;
 
@@ -27,7 +28,7 @@ public class MyEdge {
 	public ArrayList<MyEdge> connectedEdges = null;
 	float length;
 	float cutVelocity;
-	boolean toCut = false;
+	private boolean toCut = false;
 
 	EdgeType edgeType;
 
@@ -38,10 +39,15 @@ public class MyEdge {
 	// length distribution
 	public static HashMap<Float, Integer> hmLengthDistrib = new HashMap<Float, Integer>();
 
-	LineStrip lineStrip;
+	public LineStrip lineStrip;
 	public PickableDrawableTextBitmap txt;
 
 	public MyEdge(Integer edgeNo, Integer surfaceNo) {
+		LineStrip ls = new LineStrip();
+		ls.setWidth(2f);
+		this.setLineStrip(ls);
+		ls.setWireframeColor(Color.GRAY);
+		
 		this.edgeNo = edgeNo;
 		try {
 			FileInputStream in = new FileInputStream(Settings.iniEdgeProperties);
@@ -49,6 +55,11 @@ public class MyEdge {
 			props.load(in);
 			if (props.getProperty(this.edgeNo + ".cutVelocity") != null)
 				this.cutVelocity = Float.valueOf(props.getProperty(this.edgeNo + ".cutVelocity"));
+			if (props.getProperty(this.edgeNo + ".toCut") != null)
+			{
+				ls.setWireframeColor(Color.RED);
+				this.setToCut(true);
+			}
 			in.close();
 		} catch (Exception ex) {
 			ex.printStackTrace();
@@ -170,7 +181,7 @@ public class MyEdge {
 	}
 
 	public String toString() {
-		return this.edgeType + " " + String.valueOf(this.edgeNo);
+		return this.edgeType + " " + String.valueOf(this.edgeNo) + " cut=" + String.valueOf(isToCut());
 	}
 
 	public void setVelocity(float vel) {
@@ -194,7 +205,8 @@ public class MyEdge {
 	}
 
 	public void markAsRemoved() {
-
+		SurfaceDemo.instance.myComposite.remove(this.lineStrip);
+		
 		FileOutputStream out;
 		try {
 			FileInputStream in = new FileInputStream(Settings.iniEdgeProperties);
@@ -213,7 +225,7 @@ public class MyEdge {
 	}
 
 	public void markToCut(boolean yesNo) {
-		this.toCut = true;
+		this.setToCut(yesNo);
 
 		FileOutputStream out;
 		try {
@@ -235,6 +247,18 @@ public class MyEdge {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+	}
+
+	public boolean isToCut() {
+		return toCut;
+	}
+
+	public void setToCut(boolean toCut) {
+		this.toCut = toCut;
+		if(!this.toCut )
+			this.lineStrip.setWireframeColor(Color.BLUE);
+		else
+			this.lineStrip.setWireframeColor(Color.RED);
 	}
 
 	public boolean getIsRemoved() {

@@ -419,8 +419,8 @@ public class SurfaceDemo extends AbstractAnalysis {
 								public void actionPerformed(ActionEvent arg0) {
 									MyEdge edge = utils.edges.get(edgeNo);
 									edge.markAsRemoved();
-									myComposite.remove(edge.lineStrip);
 									myComposite.remove(e);
+
 									instance.getChart().render();
 									utils.edges.remove(edgeNo);
 								}
@@ -607,24 +607,6 @@ public class SurfaceDemo extends AbstractAnalysis {
 					if (key.endsWith(".isRemoved")) {
 						int edgeNo = Integer.valueOf(key.split("\\.")[0]);
 						utils.edges.remove(edgeNo);
-					}
-				}
-				in.close();
-			} catch (Exception ex) {
-				ex.printStackTrace();
-			}
-
-			// restore toCut selection
-			try {
-				FileInputStream in = new FileInputStream(Settings.iniEdgeProperties);
-				SortedProperties props = new SortedProperties();
-				props.load(in);
-				Enumeration<String> e = (Enumeration<String>) props.propertyNames();
-				while (e.hasMoreElements()) {
-					String key = e.nextElement();
-					if (key.endsWith(".toCut")) {
-						int edgeNo = Integer.valueOf(key.split("\\.")[0]);
-						utils.edges.get(edgeNo).toCut = true;
 					}
 				}
 				in.close();
@@ -975,10 +957,7 @@ public class SurfaceDemo extends AbstractAnalysis {
 				myComposite.add(new ArrayList<MyPickablePoint>(utils.points.values()));
 				ArrayList<Integer> alreadyAddedPointsText = new ArrayList<Integer>();
 				for (MyEdge edge : utils.edges.values()) {
-					LineStrip ls = new LineStrip();
-					ls.setWidth(2f);
-					ls.setWireframeColor(Color.GRAY);
-					edge.setLineStrip(ls);
+					LineStrip ls = edge.lineStrip;
 					if (NUMBER_EDGES) {
 						Coord3d cent = utils.continuousEdges.get(edge.getPointByIndex(0).continuousEdgeNo).center;
 						Coord3d delta = edge.center.sub(cent);
@@ -993,14 +972,13 @@ public class SurfaceDemo extends AbstractAnalysis {
 						r.transform(c);
 
 						PickableDrawableTextBitmap t5 = new PickableDrawableTextBitmap(String.valueOf(edge.edgeNo + " (" + edge.cutVelocity + ")"),
-								new Coord3d(c.x, c.y, c.z), edge.toCut ? Color.RED : Color.BLUE);
+								new Coord3d(c.x, c.y, c.z), edge.isToCut() ? Color.RED : Color.BLUE);
 						edge.setTxt(t5);
 						t5.setHalign(Halign.CENTER); // TODO: invert
 						t5.setValign(Valign.CENTER); // TODO: invert
 						// t5.setValign(Valign.BOTTOM); // TODO: invert
 						// left/right
 						t5.setPickingId(edge.edgeNo);
-
 						utils.edgeTexts.add(t5);
 					}
 					for (Integer pointNo : edge.points) {

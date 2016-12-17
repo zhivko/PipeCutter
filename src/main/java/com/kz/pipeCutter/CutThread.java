@@ -3,14 +3,21 @@ package com.kz.pipeCutter;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 import java.util.concurrent.ExecutionException;
 
 import javax.swing.SwingWorker;
 
+import org.apache.commons.math3.geometry.euclidean.threed.Vector3D;
+import org.apache.commons.math3.geometry.euclidean.threed.Vector3DFormat;
+import org.apache.commons.math3.geometry.euclidean.threed.Line;
+import org.apache.commons.math3.geometry.euclidean.threed.Rotation;
+import org.apache.commons.math3.geometry.euclidean.threed.SphericalCoordinates;
 import org.jzy3d.colors.Color;
 import org.jzy3d.maths.Coord3d;
+import org.jzy3d.plot3d.primitives.Point;
 
 import com.kz.pipeCutter.ui.Settings;
 import com.kz.pipeCutter.ui.tab.GcodeViewer;
@@ -84,7 +91,7 @@ public class CutThread extends SwingWorker<String, Object> {
 					if (!this.cuttingPoints.contains(e.getPointByIndex(0)))
 						this.cuttingPoints.add(e.getPointByIndex(0));
 					if (!this.cuttingPoints.contains(e.getPointByIndex(1)))
-						this.cuttingPoints.add(e.getPointByIndex(1));	
+						this.cuttingPoints.add(e.getPointByIndex(1));
 				}
 			}
 		}
@@ -257,7 +264,6 @@ public class CutThread extends SwingWorker<String, Object> {
 						// unenececssary pause
 						// SurfaceDemo.getInstance().writeToGcodeFile(String.format(Locale.US,
 						// "G04 P%.3f", 3.0));
-						SurfaceDemo.getInstance().moveAbove(myPoint, pierceOffsetMm, pierceTimeMs);
 						double angle = followThePath(myPoint, this.alAlreadyAddedPoints, (rotationDirection == -1 ? true : false));
 						hasBeenCutting = true;
 					}
@@ -287,6 +293,52 @@ public class CutThread extends SwingWorker<String, Object> {
 		prevPoint = tempPoint;
 		boolean shouldBreak = false;
 		ArrayList<MyEdge> alreadyCuttedEdges = new ArrayList<MyEdge>();
+
+		PointAndPlane offPointAndPlane = SurfaceDemo.instance.utils.calculateOffsetPointAndPlane(myPoint);
+		// create circular leadin only if this is closed edge (it means center is on
+		// edge)
+		MyContinuousEdge contEdge = SurfaceDemo.instance.utils.continuousEdges.get(tempPoint.continuousEdgeNo);
+		Vector3D contEdgCent = new Vector3D(contEdge.center.x, contEdge.center.y, contEdge.center.z);
+		Iterator<Integer> itPoints = contEdge.points.iterator();
+		boolean isOnEdge = false;
+		while (itPoints.hasNext()) {
+			MyPickablePoint p1 = SurfaceDemo.instance.utils.points.get(itPoints.next());
+			if (itPoints.hasNext()) {
+				MyPickablePoint p2 = SurfaceDemo.instance.utils.points.get(itPoints.next());
+				MyEdge edge = SurfaceDemo.instance.utils.getEdgeFromTwoPoints(p1, p2);
+				if (edge != null) {
+					Line l = new Line(new Vector3D(p1.getX(), p1.getY(), p1.getZ()), new Vector3D(p2.getX(), p2.getY(), p2.getZ()), 0.001f);
+					if (l.contains(contEdgCent)) {
+						isOnEdge = true;
+						break;
+					}
+				}
+			}
+		}
+		if (!isOnEdge) {
+			float radius = 3.0f;
+			Point offsetPoint = offPointAndPlane.point;
+			Vector3D vect3DoffPoint = new Vector3D(offsetPoint.getCoord().x, offsetPoint.getCoord().y, offsetPoint.getCoord().z);
+			Vector3D vect3DmyPoint = new Vector3D(myPoint.getCoord().x, myPoint.getCoord().y, myPoint.getCoord().z);
+			Vector3D delta = vect3DoffPoint.subtract(vect3DmyPoint).normalize().scalarMultiply(radius);
+			Vector3D vect3Dcent = vect3DmyPoint.add(delta);
+
+			Vector3D vect3Dcent1 = vect3Dcent.add(new Vector3D(0, 0, 1));
+			Vector3D axis = vect3Dcent1.subtract(vect3Dcent);
+			for (double angle = 3 * Math.PI / 2; angle > Math.PI; angle = angle - Math.PI / 20.0d) {
+				Rotation rotat = new Rotation(axis, angle);
+				Vector3D leadPoint = vect3Dcent.add(rotat.applyTo(delta));
+				Coord3d c = new Coord3d((float) leadPoint.getX(), (float) leadPoint.getY(), (float) leadPoint.getZ());
+				MyPickablePoint p = new MyPickablePoint(-1, c, Color.MAGENTA, .5f, -1);
+				if (angle == 0.0f)
+					SurfaceDemo.getInstance().moveAbove(p, pierceOffsetMm, pierceTimeMs);
+				else
+					SurfaceDemo.getInstance().move(p, true, cutOffsetMm);
+			}
+		} else {
+			SurfaceDemo.getInstance().moveAbove(myPoint, pierceOffsetMm, pierceTimeMs);
+		}
+
 		SurfaceDemo.getInstance().move(tempPoint, true, cutOffsetMm);
 		while (!shouldBreak) {
 			if (tempPoint != null) {

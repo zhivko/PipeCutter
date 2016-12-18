@@ -213,7 +213,7 @@ public class CutThread extends SwingWorker<String, Object> {
 		if (sumAngle >= 360.0)
 			rotationDirection = -1;
 
-		cutSegment(minY, maxY, false, rotationDirection);
+		cutSegment((float)mminY, maxY, false, rotationDirection);
 		SurfaceDemo.instance.writeToGcodeFile("G94");
 		SurfaceDemo.instance.writeToGcodeFile("M2");
 	}
@@ -327,7 +327,7 @@ public class CutThread extends SwingWorker<String, Object> {
 			else
 				axis = new Vector3D(0,0,-1);
 			double angleMax = -Math.PI/2;
-			double angleDelta = Math.PI / 40.0d;
+			double angleDelta = Math.PI / 20.0d;
 			for (double angle = 0 ; angle < Math.PI; angle = angle + angleDelta) {
 				System.out.println(angle*180/Math.PI);
 				Rotation rotat2 = new Rotation(axis,angle);

@@ -622,6 +622,7 @@ public class SurfaceDemo extends AbstractAnalysis {
 			utils.calculateContinuousEdges();
 			utils.markRadiusPoints();
 			utils.calculateMaxAndMins();
+			utils.establishRighMostAndLeftMostPoints();
 
 			utils.origPoints = new ConcurrentHashMap<Integer, MyPickablePoint>();
 			for (MyPickablePoint mp : utils.points.values()) {

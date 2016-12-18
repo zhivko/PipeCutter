@@ -54,6 +54,11 @@ public class PlasmaSettings extends JPanel {
 		plasmaKerfOffsetMm.setParId("plasma_kerf_offset_mm");
 		this.add(plasmaKerfOffsetMm);					
 
+		SavableText plasmaLeadInRadius = new SavableText();
+		plasmaLeadInRadius.setLabelTxt("Plasma lead in radius [mm]:");
+		plasmaLeadInRadius.setParId("plasma_leadin_radius");
+		this.add(plasmaLeadInRadius);						
+		
 		SavableText plasmaCutOffsetMm = new SavableText();
 		plasmaCutOffsetMm.setLabelTxt("Plasma above surface offset [mm]:");
 		plasmaCutOffsetMm.setParId("plasma_cut_offset_mm");

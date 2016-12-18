@@ -14,6 +14,12 @@ public class MyPickablePoint extends PickablePoint {
 	public int inventorEdge;
 	public Integer continuousEdgeNo;
 
+	FirstOrLast firstOrLast = FirstOrLast.MIDDLE;
+
+	public enum FirstOrLast {
+		FIRST, LAST, MIDDLE
+	}
+
 	public MyPickablePoint(int id, Coord3d xyz, Color rgb, float width, int inventorEdge) {
 		super(xyz, rgb, width);
 		this.id = id;
@@ -41,8 +47,8 @@ public class MyPickablePoint extends PickablePoint {
 	}
 
 	public String toString() {
-		return " Id:" + this.getId() + " inventorEdgeNo:" + this.inventorEdge + " continuousEdgeNo:"
-				+ this.continuousEdgeNo + " x:" + this.getX() + " y:" + this.getY() + " z:" + this.getZ();
+		return " Id:" + this.getId() + " inventorEdgeNo:" + this.inventorEdge + " continuousEdgeNo:" + this.continuousEdgeNo
+				+ " x:" + this.getX() + " y:" + this.getY() + " z:" + this.getZ();
 	}
 
 	public boolean isOnSurface(MySurface surf) {
@@ -62,29 +68,12 @@ public class MyPickablePoint extends PickablePoint {
 	}
 
 	public boolean laysOnLeftSurface() {
-		// TODO Auto-generated method stub
-
-		String key = SurfaceDemo.instance.utils.getMinYMaxYKeyFor(this);
-		Utils.MinYMaxY minmax = SurfaceDemo.instance.utils.minAndMaxY.get(key);
-
-		double distance = this.xyz.distance(new Coord3d(this.xyz.x, minmax.minY, this.xyz.z));
-
-		if (distance == 0)
-			return true;
-
-		return false;
+		return firstOrLast.equals(FirstOrLast.LAST);
 	}
 
 	public boolean laysOnRightSurface() {
 		// TODO Auto-generated method stub
-
-		String key = SurfaceDemo.instance.utils.getMinYMaxYKeyFor(this);
-		Utils.MinYMaxY minmax = SurfaceDemo.instance.utils.minAndMaxY.get(key);
-
-		if (this.xyz.y == minmax.maxY)
-			return true;
-
-		return false;
+		return firstOrLast.equals(FirstOrLast.FIRST);
 	}
 
 	public boolean equals(MyPickablePoint p2) {
@@ -93,11 +82,18 @@ public class MyPickablePoint extends PickablePoint {
 		return false;
 	}
 
+	public FirstOrLast getFirstOrLast() {
+		return firstOrLast;
+	}
+
+	public void setFirstOrLast(FirstOrLast firstOrLast) {
+		this.firstOrLast = firstOrLast;
+	}
+
 	@Override
 	public MyPickablePoint clone() {
 		Point p1 = super.clone();
-		MyPickablePoint p = new MyPickablePoint(this.id, p1.xyz, p1.rgb.clone(), this.width,
-				this.inventorEdge);
+		MyPickablePoint p = new MyPickablePoint(this.id, p1.xyz, p1.rgb.clone(), this.width, this.inventorEdge);
 		return p;
 
 	}

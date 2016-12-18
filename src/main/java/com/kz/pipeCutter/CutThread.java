@@ -10,11 +10,9 @@ import java.util.concurrent.ExecutionException;
 
 import javax.swing.SwingWorker;
 
-import org.apache.commons.math3.geometry.euclidean.threed.Vector3D;
-import org.apache.commons.math3.geometry.euclidean.threed.Vector3DFormat;
 import org.apache.commons.math3.geometry.euclidean.threed.Line;
 import org.apache.commons.math3.geometry.euclidean.threed.Rotation;
-import org.apache.commons.math3.geometry.euclidean.threed.SphericalCoordinates;
+import org.apache.commons.math3.geometry.euclidean.threed.Vector3D;
 import org.jzy3d.colors.Color;
 import org.jzy3d.maths.Coord3d;
 import org.jzy3d.plot3d.primitives.Point;
@@ -316,22 +314,33 @@ public class CutThread extends SwingWorker<String, Object> {
 			}
 		}
 		if (!isOnEdge) {
-			float radius = 3.0f;
+			float radius = Float.valueOf(Settings.instance.getSetting("plasma_leadin_radius"));
+			
 			Point offsetPoint = offPointAndPlane.point;
 			Vector3D vect3DoffPoint = new Vector3D(offsetPoint.getCoord().x, offsetPoint.getCoord().y, offsetPoint.getCoord().z);
 			Vector3D vect3DmyPoint = new Vector3D(myPoint.getCoord().x, myPoint.getCoord().y, myPoint.getCoord().z);
 			Vector3D delta = vect3DoffPoint.subtract(vect3DmyPoint).normalize().scalarMultiply(radius);
 			Vector3D vect3Dcent = vect3DmyPoint.add(delta);
-
-			Vector3D vect3Dcent1 = vect3Dcent.add(new Vector3D(0, 0, 1));
-			Vector3D axis = vect3Dcent1.subtract(vect3Dcent);
-			for (double angle = 3 * Math.PI / 2; angle > Math.PI; angle = angle - Math.PI / 20.0d) {
-				Rotation rotat = new Rotation(axis, angle);
-				Vector3D leadPoint = vect3Dcent.add(rotat.applyTo(delta));
+			Vector3D axis;
+			if(myPoint.laysOnRightSurface() || myPoint.getFirstOrLast() == MyPickablePoint.FirstOrLast.MIDDLE)
+				axis = new Vector3D(0,0,1);
+			else
+				axis = new Vector3D(0,0,-1);
+			double angleMax = -Math.PI/2;
+			double angleDelta = Math.PI / 40.0d;
+			for (double angle = 0 ; angle < Math.PI; angle = angle + angleDelta) {
+				System.out.println(angle*180/Math.PI);
+				Rotation rotat2 = new Rotation(axis,angle);
+				Vector3D rotatedVec = rotat2.applyTo(delta);
+				System.out.println(rotatedVec);
+				Vector3D leadPoint = vect3Dcent.add(rotatedVec);
 				Coord3d c = new Coord3d((float) leadPoint.getX(), (float) leadPoint.getY(), (float) leadPoint.getZ());
 				MyPickablePoint p = new MyPickablePoint(-1, c, Color.MAGENTA, .5f, -1);
-				if (angle == 0.0f)
+				if (angle == 0)
+				{
+					SurfaceDemo.instance.redrawPosition();
 					SurfaceDemo.getInstance().moveAbove(p, pierceOffsetMm, pierceTimeMs);
+				}
 				else
 					SurfaceDemo.getInstance().move(p, true, cutOffsetMm);
 			}

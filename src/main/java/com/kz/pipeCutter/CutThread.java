@@ -11,6 +11,7 @@ import java.util.concurrent.ExecutionException;
 import javax.swing.SwingWorker;
 
 import org.apache.commons.math3.geometry.euclidean.threed.Line;
+import org.apache.commons.math3.geometry.euclidean.threed.Plane;
 import org.apache.commons.math3.geometry.euclidean.threed.Rotation;
 import org.apache.commons.math3.geometry.euclidean.threed.Vector3D;
 import org.jzy3d.colors.Color;
@@ -201,7 +202,9 @@ public class CutThread extends SwingWorker<String, Object> {
 			// sumAngle = 0;
 			// SurfaceDemo.getInstance().utils.rotatePoints(sumAngle,true);
 			// SurfaceDemo.getInstance().angleTxt = "0.0";
-			cutSegment(minY, maxY, true, rotationDirection);
+			if (wholePipe)
+				cutSegment(minY, maxY, true, rotationDirection);
+
 			double angle = Double.valueOf(SurfaceDemo.getInstance().angleTxt).doubleValue();
 			if (angle > 0)
 				rotationDirection = -1;
@@ -213,7 +216,11 @@ public class CutThread extends SwingWorker<String, Object> {
 		if (sumAngle >= 360.0)
 			rotationDirection = -1;
 
-		cutSegment((float)mminY, maxY, false, rotationDirection);
+		if (wholePipe)
+			cutSegment((float) mminY, maxY, false, rotationDirection);
+		if (onlySelected)
+			cutSegment((float) mminY, maxY, false, rotationDirection);
+
 		SurfaceDemo.instance.writeToGcodeFile("G94");
 		SurfaceDemo.instance.writeToGcodeFile("M2");
 	}
@@ -227,10 +234,10 @@ public class CutThread extends SwingWorker<String, Object> {
 			ArrayList<MyPickablePoint> pointsToCut = new ArrayList<MyPickablePoint>();
 
 			for (MyPickablePoint p : cuttingPoints) {
-				if (p.id == 280) {
-					System.out.println("");
-				}
-				if (p.xyz.y > minY && p.xyz.y <= maxY && Math.abs(p.getZ() - topZ) < Utils.Math_E) {
+//				if (p.id == 279) {
+//					System.out.println("");
+//				}
+				if (p.xyz.y > minY && p.xyz.y <= maxY && Math.abs(p.getZ() - topZ) < 0.001) {
 					{
 						if (withoutLastPoints) {
 							if (!listContainsPoint(p, firstPoints)) {
@@ -248,25 +255,37 @@ public class CutThread extends SwingWorker<String, Object> {
 					}
 				}
 			}
+			
+			//get all continuous edges
+			ArrayList<MyContinuousEdge> edgesToCut = new ArrayList<MyContinuousEdge>();
+			for(MyPickablePoint p: pointsToCut)
+			{
+				edgesToCut.add(SurfaceDemo.getInstance().utils.continuousEdges.get(p.continuousEdgeNo));
+			}
 
 			boolean hasBeenCutting = false;
-			Collections.sort(pointsToCut, new MyPickablePointMidXComparator());
-			if (pointsToCut.size() > 0) {
-				for (MyPickablePoint myPoint : pointsToCut) {
-					if (!listContainsPoint(myPoint, alAlreadyAddedPoints) && Math.abs(myPoint.getZ() - topZ) < 0.1) {
-						double diagonal = (SurfaceDemo.getInstance().utils.maxEdge * Math.sqrt(2.0f));
-						MyPickablePoint safeRetractPoint = new MyPickablePoint(-100000, new Coord3d(myPoint.xyz.x, myPoint.xyz.y, diagonal / 2 + 20), Color.BLACK,
-								0.4f, -200000);
-						SurfaceDemo.getInstance().move(safeRetractPoint, false, cutOffsetMm, true);
-						// SurfaceDemo.getInstance().moveAbove(safeRetractPoint, 0, 0);
-						// unenececssary pause
-						// SurfaceDemo.getInstance().writeToGcodeFile(String.format(Locale.US,
-						// "G04 P%.3f", 3.0));
-						double angle = followThePath(myPoint, this.alAlreadyAddedPoints, (rotationDirection == -1 ? true : false));
-						hasBeenCutting = true;
+			for(MyContinuousEdge contEdge: edgesToCut)
+			{
+				pointsToCut = new ArrayList<MyPickablePoint>();
+				for(Integer pointId: contEdge.points)
+				{
+					pointsToCut.add(SurfaceDemo.getInstance().utils.points.get(pointId));
+				}
+				Collections.sort(pointsToCut, new MyPickablePointMidXToEdgeCenterComparator(contEdge.center));
+				if (pointsToCut.size() > 0) {
+					for (MyPickablePoint myPoint : pointsToCut) {
+						if (!listContainsPoint(myPoint, alAlreadyAddedPoints) && Math.abs(myPoint.getZ() - topZ) < 0.1) {
+							double diagonal = (SurfaceDemo.getInstance().utils.maxEdge * Math.sqrt(2.0f));
+							MyPickablePoint safeRetractPoint = new MyPickablePoint(-100000, new Coord3d(myPoint.xyz.x, myPoint.xyz.y, diagonal / 2 + 20), Color.BLACK,
+									0.4f, -200000);
+							SurfaceDemo.getInstance().move(safeRetractPoint, false, cutOffsetMm, true);
+							double angle = followThePath(myPoint, this.alAlreadyAddedPoints, (rotationDirection == -1 ? true : false));
+							hasBeenCutting = true;
+						}
 					}
 				}
 			}
+			
 			if (hasBeenCutting) {
 				double diagonal = (SurfaceDemo.getInstance().utils.maxEdge * Math.sqrt(2.0d));
 				MyPickablePoint newPoint = new MyPickablePoint(-100000,
@@ -315,40 +334,44 @@ public class CutThread extends SwingWorker<String, Object> {
 		}
 		if (!isOnEdge) {
 			float radius = Float.valueOf(Settings.instance.getSetting("plasma_leadin_radius"));
-			
+
 			Point offsetPoint = offPointAndPlane.point;
 			Vector3D vect3DoffPoint = new Vector3D(offsetPoint.getCoord().x, offsetPoint.getCoord().y, offsetPoint.getCoord().z);
 			Vector3D vect3DmyPoint = new Vector3D(myPoint.getCoord().x, myPoint.getCoord().y, myPoint.getCoord().z);
 			Vector3D delta = vect3DoffPoint.subtract(vect3DmyPoint).normalize().scalarMultiply(radius);
 			Vector3D vect3Dcent = vect3DmyPoint.add(delta);
 			Vector3D axis;
-			if(myPoint.laysOnRightSurface() || myPoint.getFirstOrLast() == MyPickablePoint.FirstOrLast.MIDDLE)
-				axis = new Vector3D(0,0,1);
-			else
-				axis = new Vector3D(0,0,-1);
-			double angleMax = -Math.PI/2;
+			Plane pl = new Plane(new Vector3D(myPoint.getX(), myPoint.getY(), myPoint.getZ()),
+					new Vector3D(offPointAndPlane.nextPoint.xyz.x, offPointAndPlane.nextPoint.xyz.y, offPointAndPlane.nextPoint.xyz.z),
+					new Vector3D(offPointAndPlane.point.xyz.x, offPointAndPlane.point.xyz.y, offPointAndPlane.point.xyz.z), 0.001);
+
+			axis = pl.getNormal();
+			// if (myPoint.laysOnRightSurface() || myPoint.getFirstOrLast() ==
+			// MyPickablePoint.FirstOrLast.MIDDLE)
+			// axis = new Vector3D(0, 0, 1);
+			// else
+			// axis = new Vector3D(0, 0, -1);
+			// double angleMax = -Math.PI / 2;
 			double angleDelta = Math.PI / 20.0d;
-			for (double angle = 0 ; angle < Math.PI; angle = angle + angleDelta) {
-				System.out.println(angle*180/Math.PI);
-				Rotation rotat2 = new Rotation(axis,angle);
+			for (double angle = 0; angle < Math.PI; angle = angle + angleDelta) {
+				System.out.println(angle * 180 / Math.PI);
+				Rotation rotat2 = new Rotation(axis, angle);
 				Vector3D rotatedVec = rotat2.applyTo(delta);
 				System.out.println(rotatedVec);
 				Vector3D leadPoint = vect3Dcent.add(rotatedVec);
 				Coord3d c = new Coord3d((float) leadPoint.getX(), (float) leadPoint.getY(), (float) leadPoint.getZ());
 				MyPickablePoint p = new MyPickablePoint(-1, c, Color.MAGENTA, .5f, -1);
-				if (angle == 0)
-				{
+				if (angle == 0) {
 					SurfaceDemo.instance.redrawPosition();
 					SurfaceDemo.getInstance().moveAbove(p, pierceOffsetMm, pierceTimeMs);
-				}
-				else
+				} else
 					SurfaceDemo.getInstance().move(p, true, cutOffsetMm);
 			}
 		} else {
 			SurfaceDemo.getInstance().moveAbove(myPoint, pierceOffsetMm, pierceTimeMs);
 		}
 
-		SurfaceDemo.getInstance().move(tempPoint, true, cutOffsetMm);
+		// SurfaceDemo.getInstance().move(tempPoint, true, cutOffsetMm);
 		while (!shouldBreak) {
 			if (tempPoint != null) {
 				tempPoint.setColor(Color.GREEN);
@@ -369,23 +392,7 @@ public class CutThread extends SwingWorker<String, Object> {
 					alreadyCuttedEdges.add(edge);
 				}
 			}
-			// if (tempPoint == null) {
-			// shouldBreak = true;
-			// // check if edge to first point exist
-			// for (MyEdge e : SurfaceDemo.instance.utils.edges.values()) {
-			// if ((e.getPointByIndex(0).id == prevPoint.id && e.getPointByIndex(1).id
-			// == myPoint.id)
-			// || (e.getPointByIndex(1).id == prevPoint.id && e.getPointByIndex(0).id
-			// == myPoint.id)) {
-			// tempPoint = myPoint;
-			// break;
-			// }
-			// }
-			// }
-
 			double angleDelta = rotation(prevPoint, tempPoint);
-			// System.out.println(prevPoint.id + " " + tempPoint.id + " " +
-			// angleDelta);
 			prevPoint = tempPoint;
 		}
 		// if (tempPoint != null)
@@ -490,8 +497,9 @@ public class CutThread extends SwingWorker<String, Object> {
 		SurfaceDemo.instance.writeToGcodeFile("G64 P.05 Q.05 (path blending - P away from point)");
 
 		float offsetZ = (float) ((diagonal / 2.0f + 20.0f) - this.startPoint.getZ() + pierceOffsetMm);
-		SurfaceDemo.getInstance().move(this.startPoint, false, offsetZ);
-		SurfaceDemo.getInstance().moveAbove(this.startPoint, pierceOffsetMm, pierceTimeMs);
+		// SurfaceDemo.getInstance().move(this.startPoint, false, offsetZ);
+		// SurfaceDemo.getInstance().moveAbove(this.startPoint, pierceOffsetMm,
+		// pierceTimeMs);
 		SurfaceDemo.instance.writeToGcodeFile("G93 (inverse time mode)");
 		this.followThePath(this.startPoint, this.alAlreadyAddedPoints, true);
 		SurfaceDemo.getInstance().move(this.startPoint, false, offsetZ);

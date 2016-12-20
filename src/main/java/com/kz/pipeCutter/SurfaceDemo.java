@@ -593,6 +593,7 @@ public class SurfaceDemo extends AbstractAnalysis {
 
 			}
 
+			utils.markRadiusEdges();
 			splitLongEdges();
 			splitNearRadiusEdge();
 
@@ -620,7 +621,6 @@ public class SurfaceDemo extends AbstractAnalysis {
 
 			utils.establishNeighbourPoints();
 			utils.calculateContinuousEdges();
-			utils.markRadiusPoints();
 			utils.calculateMaxAndMins();
 			utils.establishRighMostAndLeftMostPoints();
 
@@ -887,10 +887,21 @@ public class SurfaceDemo extends AbstractAnalysis {
 		ArrayList<MyEdge> edgesToRemove = new ArrayList<MyEdge>();
 		ArrayList<MyEdge> edgesToAdd = new ArrayList<MyEdge>();
 
+		// get longest nonradius edge
 		Iterator<MyEdge> edgeIt = utils.edges.values().iterator();
+		double minLength = Double.MAX_VALUE;
 		while (edgeIt.hasNext()) {
 			MyEdge edge = edgeIt.next();
-			if (edge.length >= (maxX - minX) * 0.5 || edge.length >= (maxZ - minZ) * 0.5) {
+			if (edge.edgeType == MyEdge.EdgeType.NORMAL) {
+				if (edge.length < minLength)
+					minLength = edge.length;
+			}
+		}
+
+		edgeIt = utils.edges.values().iterator();
+		while (edgeIt.hasNext()) {
+			MyEdge edge = edgeIt.next();
+			if (edge.length >= minLength * 0.5) {
 				MyPickablePoint p1 = SurfaceDemo.instance.utils.points.get(edge.points.get(0));
 				MyPickablePoint p2 = SurfaceDemo.instance.utils.points.get(edge.points.get(1));
 
@@ -1028,17 +1039,17 @@ public class SurfaceDemo extends AbstractAnalysis {
 	}
 
 	public Sphere getPlasma() {
-		if (instance != null && plasma == null ) {
+		if (instance != null && plasma == null) {
 			Color color = Color.BLUE; // mapper.getColor(new Coord3d(0,0,height));
 			// color.a = 0.55f;
 			color.a = 1.0f;
 			plasma = new Sphere(new Coord3d(0, 0, 0), 2.0f, 4, color);
 			plasma.setWireframeColor(color);
-			if(BBBStatus.instance != null)
+			if (BBBStatus.instance != null)
 				plasma.setPosition(new Coord3d(BBBStatus.instance.x, BBBStatus.instance.y, BBBStatus.instance.z));
 			else
 				plasma.setPosition(new Coord3d(0, 0, 0));
-				
+
 			plasma.setDisplayed(true);
 			instance.myComposite.add(plasma);
 		}
@@ -1179,7 +1190,7 @@ public class SurfaceDemo extends AbstractAnalysis {
 		}
 		// }
 		getPlasma().setPosition(tempPoint.xyz);
-		//SurfaceDemo.instance.redrawPosition();
+		// SurfaceDemo.instance.redrawPosition();
 
 		// cylinder.move(tempPoint);
 		if (cylinderPoint == null)
@@ -1281,8 +1292,8 @@ public class SurfaceDemo extends AbstractAnalysis {
 	public void redrawPosition() {
 		if (instance.getChart().getView().getCanvas() != null) {
 			float currentViewRadius = Float.valueOf(Settings.instance.getSetting("ui_zoom_radius"));
-			if(currentViewRadius==0)
-				currentViewRadius=0.1f;
+			if (currentViewRadius == 0)
+				currentViewRadius = 0.1f;
 			if (ZOOM_PLASMA && SurfaceDemo.instance.getPlasma().getPosition() != null) {
 				SurfaceDemo.instance.canvas.getView().setBoundMode(ViewBoundMode.MANUAL);
 				SurfaceDemo.instance.canvas.getView().setBoundManual(new BoundingBox3d(SurfaceDemo.instance.getPlasma().getPosition(), currentViewRadius));

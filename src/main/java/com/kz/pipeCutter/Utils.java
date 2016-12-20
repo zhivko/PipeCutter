@@ -718,7 +718,7 @@ public class Utils {
 		}
 	}
 
-	public void markRadiusPoints() {
+	public void markRadiusEdges() {
 		float radius = Float.valueOf(Settings.instance.getSetting("pipe_radius"));
 
 		float rx_min = -this.maxX + radius;

@@ -13,9 +13,13 @@ public class MyPickablePointMidXComparator implements Comparator<MyPickablePoint
 		if (Math.abs(p1.xyz.x) < Math.abs(p2.xyz.x))
 			return -1;
 		else if (Math.abs(p1.xyz.x) == Math.abs(p2.xyz.x))
-			return 0;
+			if (p1.xyz.y > p2.xyz.y)
+				return -1;
+			else if (p1.xyz.y < p2.xyz.y)
+				return 1;
+			else
+				return 0;
 		else
 			return 1;
 	}
 }
-

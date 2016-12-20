@@ -68,7 +68,8 @@ public class MyPopupMenu extends PopupMenu {
 					MyPickablePoint p = SurfaceDemo.instance.utils.getPointbyId(it.next());
 					MyEdge e = SurfaceDemo.instance.utils.getEdgeFromPoint(p, true);
 					e.markToCut(true);
-					e.txt.setColor(Color.RED);
+					if (e.txt != null)
+						e.txt.setColor(Color.RED);
 				}
 			}
 		});
@@ -84,7 +85,8 @@ public class MyPopupMenu extends PopupMenu {
 					MyPickablePoint p = SurfaceDemo.instance.utils.getPointbyId(it.next());
 					MyEdge e = SurfaceDemo.instance.utils.getEdgeFromPoint(p, true);
 					e.markToCut(false);
-					e.txt.setColor(Color.BLUE);
+					if (e.txt != null)
+						e.txt.setColor(Color.BLUE);
 				}
 			}
 		});

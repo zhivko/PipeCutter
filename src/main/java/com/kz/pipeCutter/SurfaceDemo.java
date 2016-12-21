@@ -614,6 +614,9 @@ public class SurfaceDemo extends AbstractAnalysis {
 			} catch (Exception ex) {
 				ex.printStackTrace();
 			}
+			
+			// remove points that do not belong to either edge
+			utils.removeNotUsedPoints();
 
 			System.out.println("Points: " + utils.points.size());
 			System.out.println("Edges: " + utils.edges.size());
@@ -732,6 +735,7 @@ public class SurfaceDemo extends AbstractAnalysis {
 			ex.printStackTrace();
 		}
 	}
+
 
 	private MyPickablePoint findSelectedPoint() {
 		MyPickablePoint ret = null;

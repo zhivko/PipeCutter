@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -924,4 +925,18 @@ public class Utils {
 		return ret;
 	}
 
+	void removeNotUsedPoints() {
+		ArrayList<Integer> usedPoints = new ArrayList<Integer>();	
+		for (MyEdge e : edges.values()) {
+			usedPoints.addAll(e.points);
+		}
+		Enumeration<Integer> it = points.keys();
+		while (it.hasMoreElements()) {
+			Integer pointId = it.nextElement();
+			if (!usedPoints.contains(pointId)) {
+				points.remove(pointId);
+			}
+		}
+	}	
+	
 }

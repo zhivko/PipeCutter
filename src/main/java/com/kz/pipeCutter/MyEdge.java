@@ -218,6 +218,8 @@ public class MyEdge {
 			props.setProperty(this.edgeNo + ".isRemoved", "True");
 			props.store(out, null);
 			out.close();
+			
+			SurfaceDemo.instance.utils.removeNotUsedPoints();
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

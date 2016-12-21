@@ -341,11 +341,17 @@ public class CutThread extends SwingWorker<String, Object> {
 			Vector3D delta = vect3DoffPoint.subtract(vect3DmyPoint).normalize().scalarMultiply(radius);
 			Vector3D vect3Dcent = vect3DmyPoint.add(delta);
 			Vector3D axis;
-			Plane pl = new Plane(new Vector3D(myPoint.getX(), myPoint.getY(), myPoint.getZ()),
-					new Vector3D(offPointAndPlane.nextPoint.xyz.x, offPointAndPlane.nextPoint.xyz.y, offPointAndPlane.nextPoint.xyz.z),
-					new Vector3D(offPointAndPlane.point.xyz.x, offPointAndPlane.point.xyz.y, offPointAndPlane.point.xyz.z), 0.001);
+//			Plane pl = new Plane(new Vector3D(myPoint.getX(), myPoint.getY(), myPoint.getZ()),
+//					new Vector3D(offPointAndPlane.nextPoint.xyz.x, offPointAndPlane.nextPoint.xyz.y, offPointAndPlane.nextPoint.xyz.z),
+//					new Vector3D(offPointAndPlane.point.xyz.x, offPointAndPlane.point.xyz.y, offPointAndPlane.point.xyz.z), 0.001);
+			
 
-			axis = pl.getNormal();
+			if(offPointAndPlane.plane==null)
+			{
+				System.out.println();
+				offPointAndPlane = SurfaceDemo.instance.utils.calculateOffsetPointAndPlane(myPoint);
+			}
+			axis = offPointAndPlane.plane.getNormal().scalarMultiply(-1);
 			// if (myPoint.laysOnRightSurface() || myPoint.getFirstOrLast() ==
 			// MyPickablePoint.FirstOrLast.MIDDLE)
 			// axis = new Vector3D(0, 0, 1);
@@ -371,7 +377,7 @@ public class CutThread extends SwingWorker<String, Object> {
 			SurfaceDemo.getInstance().moveAbove(tempPoint, pierceOffsetMm, pierceTimeMs);
 		}
 
-		SurfaceDemo.getInstance().move(tempPoint, true, cutOffsetMm);
+		//SurfaceDemo.getInstance().move(tempPoint, true, cutOffsetMm);
 		while (!shouldBreak) {
 			if (tempPoint != null) {
 				tempPoint.setColor(Color.GREEN);

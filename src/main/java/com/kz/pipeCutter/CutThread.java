@@ -202,7 +202,7 @@ public class CutThread extends SwingWorker<String, Object> {
 			// sumAngle = 0;
 			// SurfaceDemo.getInstance().utils.rotatePoints(sumAngle,true);
 			// SurfaceDemo.getInstance().angleTxt = "0.0";
-			if (wholePipe)
+			if (wholePipe || onlySelected)
 				cutSegment(minY, maxY, true, rotationDirection);
 
 			double angle = Double.valueOf(SurfaceDemo.getInstance().angleTxt).doubleValue();
@@ -217,9 +217,9 @@ public class CutThread extends SwingWorker<String, Object> {
 			rotationDirection = -1;
 
 		if (wholePipe)
-			cutSegment((float) mminY, maxY, false, rotationDirection);
+			cutSegment((float) mminY, mmaxY, false, rotationDirection);
 		if (onlySelected)
-			cutSegment((float) mminY, maxY, false, rotationDirection);
+			cutSegment((float) mminY, mmaxY, false, rotationDirection);
 
 		SurfaceDemo.instance.writeToGcodeFile("G94");
 		SurfaceDemo.instance.writeToGcodeFile("M2");
@@ -368,10 +368,10 @@ public class CutThread extends SwingWorker<String, Object> {
 					SurfaceDemo.getInstance().move(p, true, cutOffsetMm);
 			}
 		} else {
-			SurfaceDemo.getInstance().moveAbove(myPoint, pierceOffsetMm, pierceTimeMs);
+			SurfaceDemo.getInstance().moveAbove(tempPoint, pierceOffsetMm, pierceTimeMs);
 		}
 
-		// SurfaceDemo.getInstance().move(tempPoint, true, cutOffsetMm);
+		SurfaceDemo.getInstance().move(tempPoint, true, cutOffsetMm);
 		while (!shouldBreak) {
 			if (tempPoint != null) {
 				tempPoint.setColor(Color.GREEN);

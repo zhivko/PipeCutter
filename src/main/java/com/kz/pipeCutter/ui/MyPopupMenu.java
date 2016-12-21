@@ -63,10 +63,8 @@ public class MyPopupMenu extends PopupMenu {
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
 				MyContinuousEdge myCEdge = SurfaceDemo.instance.utils.continuousEdges.get(SurfaceDemo.instance.lastClickedPoint.continuousEdgeNo);
-				Iterator<Integer> it = myCEdge.points.iterator();
-				while (it.hasNext()) {
-					MyPickablePoint p = SurfaceDemo.instance.utils.getPointbyId(it.next());
-					MyEdge e = SurfaceDemo.instance.utils.getEdgeFromPoint(p, true);
+				System.out.println(myCEdge.connectedEdges.size());
+				for (MyEdge e : myCEdge.connectedEdges) {
 					e.markToCut(true);
 					if (e.txt != null)
 						e.txt.setColor(Color.RED);
@@ -80,10 +78,8 @@ public class MyPopupMenu extends PopupMenu {
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
 				MyContinuousEdge myCEdge = SurfaceDemo.instance.utils.continuousEdges.get(SurfaceDemo.instance.lastClickedPoint.continuousEdgeNo);
-				Iterator<Integer> it = myCEdge.points.iterator();
-				while (it.hasNext()) {
-					MyPickablePoint p = SurfaceDemo.instance.utils.getPointbyId(it.next());
-					MyEdge e = SurfaceDemo.instance.utils.getEdgeFromPoint(p, true);
+				System.out.println(myCEdge.connectedEdges.size());
+				for (MyEdge e : myCEdge.connectedEdges) {
 					e.markToCut(false);
 					if (e.txt != null)
 						e.txt.setColor(Color.BLUE);

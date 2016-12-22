@@ -110,12 +110,12 @@ public class GcodeViewer extends JPanel {
 					offset = Utilities.getRowStart(textArea, caretPos) - 1;
 					offsetEnd = Utilities.getRowEnd(textArea, caretPos + 1) - 1;
 					String lineStr = editArea.getDocument().getText(offset + 1, offsetEnd - offset);
-					//System.out.println("Row: " + rowNum + ": " + lineStr.toString());
+					// System.out.println("Row: " + rowNum + ": " + lineStr.toString());
 
 					Pattern p = Pattern.compile("p:(.*?),");
 					Matcher m = p.matcher(lineStr);
 					if (m.find()) {
-						//System.out.println(m.group(1));
+						// System.out.println(m.group(1));
 						SurfaceDemo.instance.lastClickedPoint = SurfaceDemo.instance.utils.getPointbyId(Integer.valueOf(m.group(1)));
 						SurfaceDemo.instance.lastClickedPointChanged(SurfaceDemo.instance.lastClickedPoint);
 					}
@@ -183,33 +183,44 @@ public class GcodeViewer extends JPanel {
 
 			@Override
 			public void insertUpdate(DocumentEvent e) {
-				try {
-					if (textArea.getDocument().getLength() > 1) {
-						int lineNumber = Integer.valueOf(currentLine.getParValue());
+				SwingUtilities.invokeLater(new Runnable() {
 
-						if (lineNumber > 0) {
-							int startIndex = textArea.getDocument().getDefaultRootElement().getElement(lineNumber - 1).getStartOffset();
-							int endIndex = textArea.getDocument().getDefaultRootElement().getElement(lineNumber).getStartOffset();
+					@Override
+					public void run() {
+						// TODO Auto-generated method stub
+						try {
+							if (textArea.getDocument().getLength() > 1) {
+								int lineNumber = Integer.valueOf(currentLine.getParValue());
 
-							DefaultHighlightPainter painterWhite = new DefaultHighlighter.DefaultHighlightPainter(Color.WHITE);
-							DefaultHighlightPainter painterGray = new DefaultHighlighter.DefaultHighlightPainter(Color.GRAY);
+								if (lineNumber > 0) {
+									int startIndex = textArea.getDocument().getDefaultRootElement().getElement(lineNumber - 1).getStartOffset();
+									int endIndex = textArea.getDocument().getDefaultRootElement().getElement(lineNumber).getStartOffset();
 
-							textArea.getHighlighter().removeAllHighlights();
+									DefaultHighlightPainter painterWhite = new DefaultHighlighter.DefaultHighlightPainter(Color.WHITE);
+									DefaultHighlightPainter painterGray = new DefaultHighlighter.DefaultHighlightPainter(Color.GRAY);
 
-							textArea.getHighlighter().addHighlight(0, startIndex, painterWhite);
-							textArea.getHighlighter().addHighlight(startIndex, endIndex, painterGray);
+									GcodeViewer.this.textArea.getHighlighter().removeAllHighlights();
 
-							textArea.getHighlighter().addHighlight(endIndex + 1, textArea.getDocument().getLength() - 1, painterWhite);
+									GcodeViewer.this.textArea.getHighlighter().addHighlight(0, startIndex, painterWhite);
+									GcodeViewer.this.textArea.getHighlighter().addHighlight(startIndex, endIndex, painterGray);
 
-							Rectangle rect = textArea.modelToView(startIndex);
-							textArea.scrollRectToVisible(rect);
+									GcodeViewer.this.textArea.getHighlighter().addHighlight(endIndex + 1, textArea.getDocument().getLength() - 1,
+											painterWhite);
+
+									Rectangle rect = textArea.modelToView(startIndex);
+									textArea.scrollRectToVisible(rect);
+								}
+							}
+
+						} catch (Exception e1) {
+							// TODO Auto-generated catch block
+							e1.printStackTrace();
+						} finally {
+
 						}
 					}
+				});
 
-				} catch (Exception e1) {
-					// TODO Auto-generated catch block
-					e1.printStackTrace();
-				}
 			}
 
 			@Override
@@ -419,18 +430,18 @@ public class GcodeViewer extends JPanel {
 		}
 	}
 
-//	public void setLineNumber(int lineNo) {
-//		if (this.lineNo != lineNo) {
-//			this.lineNo = lineNo;
-//			SwingUtilities.invokeLater(new Runnable() {
-//				@Override
-//				public void run() {
-//					// TODO Auto-generated method stub
-//					GcodeViewer.instance.currentLine.setParValue(String.valueOf(GcodeViewer.this.lineNo));
-//				}
-//			});
-//		}
-//	}
+	// public void setLineNumber(int lineNo) {
+	// if (this.lineNo != lineNo) {
+	// this.lineNo = lineNo;
+	// SwingUtilities.invokeLater(new Runnable() {
+	// @Override
+	// public void run() {
+	// // TODO Auto-generated method stub
+	// GcodeViewer.instance.currentLine.setParValue(String.valueOf(GcodeViewer.this.lineNo));
+	// }
+	// });
+	// }
+	// }
 
 	public void setPlasmaOn(boolean on) {
 		if (this.plasmaOn != on) {

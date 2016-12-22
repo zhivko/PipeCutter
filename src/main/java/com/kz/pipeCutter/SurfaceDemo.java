@@ -1306,7 +1306,7 @@ public class SurfaceDemo extends AbstractAnalysis {
 				SurfaceDemo.instance.canvas.getView().setBoundManual(new BoundingBox3d(SurfaceDemo.instance.lastClickedPoint.getCoord(), currentViewRadius));
 			} else
 				SurfaceDemo.instance.canvas.getView().setBoundMode(ViewBoundMode.AUTO_FIT);
-			instance.getChart().render();
+			//instance.getChart().render();
 		}
 	}
 

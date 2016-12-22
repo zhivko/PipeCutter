@@ -352,12 +352,7 @@ public class CutThread extends SwingWorker<String, Object> {
 				offPointAndPlane = SurfaceDemo.instance.utils.calculateOffsetPointAndPlane(myPoint);
 			}
 			axis = offPointAndPlane.plane.getNormal().scalarMultiply(-1);
-			// if (myPoint.laysOnRightSurface() || myPoint.getFirstOrLast() ==
-			// MyPickablePoint.FirstOrLast.MIDDLE)
-			// axis = new Vector3D(0, 0, 1);
-			// else
-			// axis = new Vector3D(0, 0, -1);
-			// double angleMax = -Math.PI / 2;
+
 			double angleDelta = Math.PI / 20.0d;
 			for (double angle = 0; angle < Math.PI; angle = angle + angleDelta) {
 				System.out.println(angle * 180 / Math.PI);
@@ -377,7 +372,7 @@ public class CutThread extends SwingWorker<String, Object> {
 			SurfaceDemo.getInstance().moveAbove(tempPoint, pierceOffsetMm, pierceTimeMs);
 		}
 
-		//SurfaceDemo.getInstance().move(tempPoint, true, cutOffsetMm);
+		SurfaceDemo.getInstance().move(tempPoint, true, cutOffsetMm);
 		while (!shouldBreak) {
 			if (tempPoint != null) {
 				tempPoint.setColor(Color.GREEN);
@@ -389,7 +384,7 @@ public class CutThread extends SwingWorker<String, Object> {
 				shouldBreak = true;
 				tempPoint = myPoint;
 				MyEdge edge = SurfaceDemo.instance.utils.getEdgeFromTwoPoints(prevPoint, tempPoint);
-				if (!alreadyCuttedEdges.contains(edge))
+				if (edge!=null && !alreadyCuttedEdges.contains(edge))
 					SurfaceDemo.getInstance().move(tempPoint, true, cutOffsetMm);
 			} else {
 				SurfaceDemo.getInstance().move(tempPoint, true, cutOffsetMm);

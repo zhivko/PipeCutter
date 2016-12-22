@@ -26,7 +26,8 @@ G01 X19.6 Y223.3 Z61.5 A0.0 B0.0 F4460.9 (move length: 0.2 speed:700.0 p:-1, e:)
 G01 X19.5 Y223.4 Z61.5 A0.0 B0.0 F4461.0 (move length: 0.2 speed:700.0 p:-1, e:)
 G01 X19.3 Y223.4 Z61.5 A0.0 B0.0 F4461.0 (move length: 0.2 speed:700.0 p:-1, e:)
 G01 X19.2 Y223.5 Z61.5 A0.0 B0.0 F4460.9 (move length: 0.2 speed:700.0 p:-1, e:)
-G01 X18.7 Y223.5 Z61.5 A0.0 B0.0 F1674.0 (move length: 0.4 speed:700.0 p:277, e:)
+G01 X19.0 Y223.5 Z61.5 A0.0 B0.0 F4460.9 (move length: 0.2 speed:700.0 p:1126, e:)
+G01 X18.7 Y223.5 Z61.5 A0.0 B0.0 F2676.3 (move length: 0.3 speed:700.0 p:277, e:null no:1317)
 G01 X18.5 Y223.5 Z61.5 A0.0 B0.0 F2676.3 (move length: 0.3 speed:700.0 p:1125, e:null no:1316)
 G01 X18.2 Y223.4 Z61.5 A0.0 B0.0 F2676.3 (move length: 0.3 speed:700.0 p:276, e:null no:1315)
 G01 X18.0 Y223.3 Z61.5 A0.0 B0.0 F2676.3 (move length: 0.3 speed:700.0 p:1124, e:null no:1314)
@@ -115,26 +116,26 @@ G00 X9.0 Y245.0 Z106.4 A0.0 B0.0 (move length: 50.7 speed:1000.0) (pointId: -100
 G00 X9.0 Y245.0 Z70.0 A0.0 B0.0 (move length: 36.4 speed:1000.0)
 M3 S400
 G04 P0.400
+G01 X9.0 Y245.0 Z61.5 A0.0 B0.0 F82.4 (move length: 8.5 speed:700.0 p:481, e:)
 G01 X9.0 Y237.5 Z61.5 A0.0 B0.0 F93.3 (move length: 7.5 speed:700.0 p:1309, e:null no:1683)
 G01 X9.0 Y230.0 Z61.5 A0.0 B0.0 F93.3 (move length: 7.5 speed:700.0 p:482, e:null no:1684)
-G01 X9.0 Y245.0 Z61.5 A0.0 B0.0 F46.7 (move length: 15.0 speed:700.0 p:481, e:)
 M5
-G00 X19.0 Y245.0 Z106.4 A0.0 B0.0 (move length: 46.0 speed:1000.0) (pointId: -100000)
+G00 X19.0 Y245.0 Z106.4 A0.0 B0.0 (move length: 48.3 speed:1000.0) (pointId: -100000)
 G00 X19.0 Y245.0 Z70.0 A0.0 B0.0 (move length: 36.4 speed:1000.0)
 M3 S400
 G04 P0.400
+G01 X19.0 Y245.0 Z61.5 A0.0 B0.0 F82.4 (move length: 8.5 speed:700.0 p:489, e:)
 G01 X19.0 Y237.5 Z61.5 A0.0 B0.0 F93.3 (move length: 7.5 speed:700.0 p:1313, e:null no:1691)
 G01 X19.0 Y230.0 Z61.5 A0.0 B0.0 F93.3 (move length: 7.5 speed:700.0 p:490, e:null no:1692)
-G01 X19.0 Y245.0 Z61.5 A0.0 B0.0 F46.7 (move length: 15.0 speed:700.0 p:489, e:)
 M5
-G00 X14.0 Y245.0 Z106.4 A0.0 B0.0 (move length: 45.1 speed:1000.0) (pointId: -100000)
+G00 X14.0 Y245.0 Z106.4 A0.0 B0.0 (move length: 47.6 speed:1000.0) (pointId: -100000)
 G00 X14.0 Y245.0 Z70.0 A0.0 B0.0 (move length: 36.4 speed:1000.0)
 M3 S400
 G04 P0.400
+G01 X14.0 Y245.0 Z61.5 A0.0 B0.0 F82.4 (move length: 8.5 speed:700.0 p:494, e:)
 G01 X14.0 Y237.5 Z61.5 A0.0 B0.0 F93.3 (move length: 7.5 speed:700.0 p:1315, e:null no:1696)
 G01 X14.0 Y230.0 Z61.5 A0.0 B0.0 F93.3 (move length: 7.5 speed:700.0 p:492, e:null no:1695)
-G01 X14.0 Y245.0 Z61.5 A0.0 B0.0 F46.7 (move length: 15.0 speed:700.0 p:494, e:)
 M5
-G00 X14.0 Y245.0 Z106.4 A0.0 B0.0 (move length: 44.9 speed:1000.0) (pointId: -100000)
+G00 X14.0 Y230.0 Z106.4 A0.0 B0.0 (move length: 44.9 speed:1000.0) (pointId: -100000)
 G94
 M2

@@ -117,6 +117,7 @@ public class BBBError implements Runnable {
 			while (readThread.isAlive()) {
 				try {
 					TimeUnit.MILLISECONDS.sleep(500);
+					readThread.interrupt();
 				} catch (InterruptedException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();

@@ -48,7 +48,7 @@ public class MachineKitStart extends SSH_Command {
 			session.setServerAliveCountMax(Integer.MAX_VALUE);
 
 			session.setOutputStream(System.out);
-			session.connect(15000); // making a connection with timeout.
+			session.connect(25000); // making a connection with timeout.
 
 			ChannelShell channelShell = (ChannelShell) session.openChannel("shell");
 			OutputStream ops = channelShell.getOutputStream();
@@ -60,8 +60,8 @@ public class MachineKitStart extends SSH_Command {
 
 			// String command = "source ~/git/machinekit/scripts/rip-environment";
 			// ps.println(command);
-			String command = "machinekit ~/git/machinekit/myini/CRAMPS.ini &";
-			//String command = "machinekit  ~/git/ArcEye/machinekit-multicore/myini/CRAMPS.ini &";
+			//String command = "machinekit ~/git/machinekit/myini/CRAMPS.ini &";
+			String command = "DEBUG=5 machinekit  ~/git/machinekit-multicore/myini/CRAMPS.ini &";
 			ps.println(command);
 			readOutput(channelShell);
 

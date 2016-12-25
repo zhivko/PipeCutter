@@ -506,6 +506,8 @@ public class Utils {
 
 	public void rotatePoints(double angle, boolean slow, boolean angleInDelta) {
 		double value;
+		if (SurfaceDemo.instance.utils.origPoints == null)
+			return;
 		if (!slow) {
 			if (angleInDelta)
 				value = Double.valueOf(SurfaceDemo.instance.angleTxt) + angle;

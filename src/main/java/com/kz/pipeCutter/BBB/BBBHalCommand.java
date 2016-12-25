@@ -9,6 +9,7 @@ import java.util.concurrent.TimeUnit;
 
 import javax.jmdns.ServiceInfo;
 
+import org.apache.log4j.Logger;
 import org.zeromq.ZContext;
 import org.zeromq.ZFrame;
 import org.zeromq.ZMQ;
@@ -118,67 +119,69 @@ public class BBBHalCommand implements Runnable {
 		// Tick once per second, pulling in arriving messages
 		// for (int centitick = 0; centitick < 4; centitick++) {
 		shouldRead = true;
-		PollItem[] pollItems = new PollItem[] { new PollItem(socket, Poller.POLLIN) };
 		while (shouldRead) {
+			if (socket != null) {
+				PollItem[] pollItems = new PollItem[] { new PollItem(socket, Poller.POLLIN) };
+				int rc = ZMQ.poll(pollItems, 1, 100);
+				// System.out.println("loop: " + i);
+				for (int l = 0; l < rc; l++) {
+					ZMsg msg = ZMsg.recvMsg(socket);
+					try {
+						ZFrame frame = null;
+						while (pollItems[0].isReadable() && (frame = msg.poll()) != null) {
 
-			int rc = ZMQ.poll(pollItems,1, 100);
-			// System.out.println("loop: " + i);
-			for (int l = 0; l < rc; l++) {
-				ZMsg msg = ZMsg.recvMsg(socket);
-				try {
-					ZFrame frame = null;
-					while (pollItems[0].isReadable() && (frame = msg.poll()) != null) {
-
-						byte[] returnedBytes = frame.getData();
-						Container contReturned = Message.Container.parseFrom(returnedBytes);
-						if (contReturned.getType().equals(ContainerType.MT_HALRCOMMAND_DESCRIPTION)) {
-							for (int i = 0; i < contReturned.getCompCount(); i++) {
-								for (int j = 0; j < contReturned.getComp(i).getPinCount(); j++) {
-									String value = null;
-									if (contReturned.getComp(i).getPin(j).getType() == ValueType.HAL_FLOAT) {
-										value = Double.valueOf(contReturned.getComp(i).getPin(j).getHalfloat()).toString();
-									} else if (contReturned.getComp(i).getPin(j).getType() == ValueType.HAL_S32) {
-										value = Integer.valueOf(contReturned.getComp(i).getPin(j).getHals32()).toString();
-									} else if (contReturned.getComp(i).getPin(j).getType() == ValueType.HAL_U32) {
-										value = Integer.valueOf(contReturned.getComp(i).getPin(j).getHalu32()).toString();
-									} else if (contReturned.getComp(i).getPin(j).getType() == ValueType.HAL_BIT) {
-										value = Boolean.valueOf(contReturned.getComp(i).getPin(j).getHalbit()).toString();
+							byte[] returnedBytes = frame.getData();
+							Container contReturned = Message.Container.parseFrom(returnedBytes);
+							if (contReturned.getType().equals(ContainerType.MT_HALRCOMMAND_DESCRIPTION)) {
+								for (int i = 0; i < contReturned.getCompCount(); i++) {
+									for (int j = 0; j < contReturned.getComp(i).getPinCount(); j++) {
+										String value = null;
+										if (contReturned.getComp(i).getPin(j).getType() == ValueType.HAL_FLOAT) {
+											value = Double.valueOf(contReturned.getComp(i).getPin(j).getHalfloat()).toString();
+										} else if (contReturned.getComp(i).getPin(j).getType() == ValueType.HAL_S32) {
+											value = Integer.valueOf(contReturned.getComp(i).getPin(j).getHals32()).toString();
+										} else if (contReturned.getComp(i).getPin(j).getType() == ValueType.HAL_U32) {
+											value = Integer.valueOf(contReturned.getComp(i).getPin(j).getHalu32()).toString();
+										} else if (contReturned.getComp(i).getPin(j).getType() == ValueType.HAL_BIT) {
+											value = Boolean.valueOf(contReturned.getComp(i).getPin(j).getHalbit()).toString();
+										}
+										halPin.put(contReturned.getComp(i).getPin(j).getName(), value);
 									}
-									halPin.put(contReturned.getComp(i).getPin(j).getName(), value);
 								}
-							}
-						} else if (contReturned.getType().equals(ContainerType.MT_PING_ACKNOWLEDGE)) {
-							this.lastPingMs = System.currentTimeMillis();
-							MachinekitSettings.instance.pingHalCommand();
-							if (BBBStatus.getInstance().isAlive() && !BBBHalRComp.getInstance().isBinded && !BBBHalRComp.getInstance().isTryingToBind) {
-								// if (BBBHalRComp.getInstance().isAlive())
-								BBBHalRComp.getInstance().startBind();
-							}
-						} else if (contReturned.getType().equals(ContainerType.MT_HALRCOMP_BIND_CONFIRM)) {
-							Settings.instance.log("MT_HALRCOMP_BIND_CONFIRM");
-							BBBHalRComp.getInstance().isBinded = true;
-							BBBHalRComp.getInstance().isTryingToBind = false;
-							BBBHalRComp.getInstance().subcribe();
+							} else if (contReturned.getType().equals(ContainerType.MT_PING_ACKNOWLEDGE)) {
+								this.lastPingMs = System.currentTimeMillis();
+								MachinekitSettings.instance.pingHalCommand();
+								if (BBBStatus.getInstance().isAlive() && !BBBHalRComp.getInstance().isBinded && !BBBHalRComp.getInstance().isTryingToBind) {
+									// if (BBBHalRComp.getInstance().isAlive())
+									BBBHalRComp.getInstance().startBind();
+								}
+							} else if (contReturned.getType().equals(ContainerType.MT_HALRCOMP_BIND_CONFIRM)) {
+								Settings.instance.log("MT_HALRCOMP_BIND_CONFIRM");
+								BBBHalRComp.getInstance().isBinded = true;
+								BBBHalRComp.getInstance().isTryingToBind = false;
+								BBBHalRComp.getInstance().subcribe();
 
-							for (int i = 0; i < contReturned.getCompCount(); i++) {
-								for (int j = 0; j < contReturned.getComp(i).getPinCount(); j++) {
-									BBBHalRComp.instance.pinsByHandle.put(contReturned.getComp(i).getPin(j).getHandle(),
-											BBBHalRComp.instance.pinsByName.get(contReturned.getComp(i).getPin(j).getName()));
+								for (int i = 0; i < contReturned.getCompCount(); i++) {
+									for (int j = 0; j < contReturned.getComp(i).getPinCount(); j++) {
+										BBBHalRComp.instance.pinsByHandle.put(contReturned.getComp(i).getPin(j).getHandle(),
+												BBBHalRComp.instance.pinsByName.get(contReturned.getComp(i).getPin(j).getName()));
+									}
 								}
+								new MachinekitRunPostgui().start();
+								Settings.instance.updateHalValues();
+								Settings.instance.setLaser1IP();
+							} else {
+								Settings.getInstance().log("Unknown message: " + contReturned.getType());
 							}
-							new MachinekitRunPostgui().start();
-							Settings.instance.updateHalValues();
-							Settings.instance.setLaser1IP();
-						} else {
-							Settings.getInstance().log("Unknown message: " + contReturned.getType());
 						}
+					} catch (Exception ex) {
+						ex.printStackTrace();
 					}
-				} catch (Exception ex) {
-					ex.printStackTrace();
+					msg.destroy();
 				}
-				msg.destroy();
 			}
 		}
+		Settings.instance.log("BBBHalCommand END.");
 
 	}
 
@@ -187,7 +190,8 @@ public class BBBHalCommand implements Runnable {
 			shouldRead = false;
 			while (readThread.isAlive()) {
 				try {
-					TimeUnit.MILLISECONDS.sleep(500);
+					Thread.sleep(500);
+					readThread.interrupt();
 				} catch (InterruptedException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
@@ -199,6 +203,7 @@ public class BBBHalCommand implements Runnable {
 			while (pingThread.isAlive()) {
 				try {
 					TimeUnit.MILLISECONDS.sleep(500);
+					pingThread.interrupt();
 				} catch (InterruptedException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();

@@ -449,7 +449,7 @@ public class Utils {
 				if (edge.edgeType == MyEdge.EdgeType.ONRADIUS) {
 					float radius_of_edge = Float.valueOf(Settings.instance.getSetting("pipe_radius"));
 					float maxRadius = (float) Math.sqrt(this.maxX * this.maxX + this.maxZ * this.maxZ);
-					float s = (float) (maxRadius * Math.PI) * 1.0f;
+					float s = (float) (maxRadius * Math.PI) * 1.5f;
 					float arc_length = (float) (radius_of_edge * Math.PI / 2);
 					float v = SurfaceDemo.instance.g1Speed * s / arc_length * 1.0f;
 					float dv = v - SurfaceDemo.instance.g1Speed;

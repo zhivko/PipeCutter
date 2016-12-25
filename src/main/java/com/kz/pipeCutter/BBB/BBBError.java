@@ -112,7 +112,7 @@ public class BBBError implements Runnable {
 	}
 
 	public void initSocket() {
-		if (readThread != null && readThread.isAlive()) {
+		if (readThread != null) {
 			shouldRead = false;
 			while (readThread.isAlive()) {
 				try {

@@ -198,7 +198,7 @@ public class BBBHalCommand implements Runnable {
 				}
 			}
 		}
-		if (pingThread != null && pingThread.isAlive()) {
+		if (pingThread != null) {
 			pingThreadShouldEnd = true;
 			while (pingThread.isAlive()) {
 				try {

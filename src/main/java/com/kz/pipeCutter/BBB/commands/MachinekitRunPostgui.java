@@ -51,7 +51,8 @@ public class MachinekitRunPostgui {
 			// String command = "source ~/git/machinekit/scripts/rip-environment";
 			// ps.println(command);
 			Settings.instance.log("Running postgui hal....");
-			String command = "halcmd -f /home/machinekit/git/machinekit-multicore/myini/3D.postgui.hal || echo 'hal completed'\n";
+			//String command = "halcmd -f /home/machinekit/git/machinekit-multicore/myini/3D.postgui.hal || echo 'hal completed'\n";
+			String command = "halcmd -f /home/machinekit/git/machinekit/myini/3D.postgui.hal || echo 'hal completed'\n";
 			ps.println(command);
 			readOutput(channelShell);
 		} catch (Exception ex) {

@@ -12,7 +12,6 @@ import java.util.concurrent.TimeUnit;
 import javax.jmdns.ServiceInfo;
 import javax.jmdns.ServiceListener;
 
-import org.omg.CORBA.ShortSeqHolder;
 import org.zeromq.ZContext;
 import org.zeromq.ZFrame;
 import org.zeromq.ZMQ;

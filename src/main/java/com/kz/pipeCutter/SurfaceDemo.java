@@ -133,17 +133,20 @@ public class SurfaceDemo extends AbstractAnalysis {
 							e2.printStackTrace();
 						}
 						Logger.getLogger(this.getClass()).info("Is daemon: " + Thread.currentThread().isDaemon());
-						Logger.getLogger(this.getClass()).info("Is eventdispatched thread? " + javax.swing.SwingUtilities.isEventDispatchThread());
+						Logger.getLogger(this.getClass()).info(
+								"Is eventdispatched thread? " + javax.swing.SwingUtilities.isEventDispatchThread());
 
 						instance.canvas = (CanvasAWT) instance.getChart().getCanvas();
 
-						// instance.canvas.getAnimator().setUpdateFPSFrames(20, System.out);
+						// instance.canvas.getAnimator().setUpdateFPSFrames(20,
+						// System.out);
 						// instance.canvas.setSize(600, 600);
 
 						// Iterator<AbstractCameraController> itController =
 						// instance.getChart().getControllers().iterator();
 						// while (itController.hasNext()) {
-						// AbstractCameraController controller = itController.next();
+						// AbstractCameraController controller =
+						// itController.next();
 						// if (controller instanceof ICameraKeyController) {
 						// controller.dispose();
 						// itController.remove();
@@ -254,7 +257,8 @@ public class SurfaceDemo extends AbstractAnalysis {
 									String[] splittedSize = size.split("x");
 									Integer x = Integer.valueOf(splittedSize[0]);
 									Integer y = Integer.valueOf(splittedSize[1]);
-									((Frame) (SurfaceDemo.instance.canvas.getParent())).setLocation(new java.awt.Point(x, y));
+									((Frame) (SurfaceDemo.instance.canvas.getParent()))
+											.setLocation(new java.awt.Point(x, y));
 								} catch (Exception ex) {
 									ex.printStackTrace();
 								}
@@ -270,7 +274,9 @@ public class SurfaceDemo extends AbstractAnalysis {
 							@Override
 							public void componentShown(ComponentEvent e) {
 								// TODO Auto-generated method stub
-								float radiusOfPlasma = Double.valueOf(SurfaceDemo.instance.canvas.getView().getBounds().getRadius()).floatValue() / 20.0f;
+								float radiusOfPlasma = Double
+										.valueOf(SurfaceDemo.instance.canvas.getView().getBounds().getRadius())
+										.floatValue() / 20.0f;
 								plasma.setVolume(radiusOfPlasma);
 
 								Component c = (Component) e.getSource();
@@ -289,7 +295,9 @@ public class SurfaceDemo extends AbstractAnalysis {
 												instance.canvas.validate();
 												instance.canvas.repaint();
 												instance.canvas.getParent()
-														.setSize(new Dimension(Double.valueOf(splittedSize[0]).intValue(), Double.valueOf(splittedSize[1]).intValue()));
+														.setSize(new Dimension(
+																Double.valueOf(splittedSize[0]).intValue(),
+																Double.valueOf(splittedSize[1]).intValue()));
 											} catch (Exception ex) {
 												ex.printStackTrace();
 											}
@@ -306,7 +314,8 @@ public class SurfaceDemo extends AbstractAnalysis {
 							public void componentResized(ComponentEvent evt) {
 
 								Component c = (Component) evt.getSource();
-								// System.out.println(c.getName() + " resized: " +
+								// System.out.println(c.getName() + " resized: "
+								// +
 								// c.getSize().toString());
 								if (c.getParent().getName().equals("frame1")) {
 									try {
@@ -316,7 +325,8 @@ public class SurfaceDemo extends AbstractAnalysis {
 										in.close();
 
 										FileOutputStream out = new FileOutputStream(Settings.iniFullFileName);
-										props.setProperty("surfaceDemo_size", instance.canvas.getSize().getWidth() + "x" + instance.canvas.getSize().getHeight());
+										props.setProperty("surfaceDemo_size", instance.canvas.getSize().getWidth() + "x"
+												+ instance.canvas.getSize().getHeight());
 										props.store(out, null);
 										out.close();
 
@@ -330,7 +340,8 @@ public class SurfaceDemo extends AbstractAnalysis {
 							public void componentMoved(ComponentEvent evt) {
 								// TODO Auto-generated method stub
 								Component c = (Component) evt.getSource();
-								// System.out.println(c.getName() + " resized: " +
+								// System.out.println(c.getName() + " resized: "
+								// +
 								// c.getSize().toString());
 								if (c.getName().equals("frame1")) {
 									try {
@@ -340,7 +351,8 @@ public class SurfaceDemo extends AbstractAnalysis {
 										in.close();
 
 										FileOutputStream out = new FileOutputStream(Settings.iniFullFileName);
-										props.setProperty("surfaceDemo_position", (int) c.getLocationOnScreen().getX() + "x" + (int) c.getLocationOnScreen().getY());
+										props.setProperty("surfaceDemo_position", (int) c.getLocationOnScreen().getX()
+												+ "x" + (int) c.getLocationOnScreen().getY());
 										props.store(out, null);
 										out.close();
 
@@ -363,11 +375,14 @@ public class SurfaceDemo extends AbstractAnalysis {
 						// TODO Auto-generated method stub
 
 						System.out.println("Thread name:" + Thread.currentThread().getName());
-						// if (OSValidator.isWindows)
-						// on linux the rotation of chart is freezing if I add this line
-						// if I comment it - rotation works but I get no picking events
-						// as said same code works OK on windows on same java 8 jvm
-						new MyAWTMousePickingController(instance.chart);
+						// on linux the rotation of chart is freezing if I add
+						// this line
+						// if I comment it - rotation works but I get no picking
+						// events
+						// as said same code works OK on windows on same java 8
+						// jvm
+						if (OSValidator.isWindows())
+							new MyAWTMousePickingController(instance.chart);
 
 					}
 
@@ -454,7 +469,8 @@ public class SurfaceDemo extends AbstractAnalysis {
 								@Override
 								public void actionPerformed(ActionEvent arg0) {
 									MyEdge edge = utils.edges.get(edgeNo);
-									Object input = JOptionPane.showInputDialog(null, "Speed [mm/min]:", "Edge cutting speed", JOptionPane.QUESTION_MESSAGE, null, null,
+									Object input = JOptionPane.showInputDialog(null, "Speed [mm/min]:",
+											"Edge cutting speed", JOptionPane.QUESTION_MESSAGE, null, null,
 											edge.cutVelocity);
 									if (input != null) {
 										edge.setVelocity(Float.valueOf(input.toString()));
@@ -506,7 +522,8 @@ public class SurfaceDemo extends AbstractAnalysis {
 			// Create a chart
 			chart = AWTChartComponentFactory.chart(Quality.Advanced, getCanvasType());
 			canvas = (CanvasAWT) chart.getCanvas();
-			Logger.getLogger(this.getClass()).info("Creating chart! Thread: " + Thread.currentThread().getName() + "... DONE.");
+			Logger.getLogger(this.getClass())
+					.info("Creating chart! Thread: " + Thread.currentThread().getName() + "... DONE.");
 
 			// chart = newt SwingChartComponentFactory.chart(Quality.Advanced);
 			// chart.getView().setMaximized(true);
@@ -567,8 +584,10 @@ public class SurfaceDemo extends AbstractAnalysis {
 							// try to find edge with this two points
 							boolean found = false;
 							for (MyEdge e : utils.edges.values()) {
-								if ((e.getPointByIndex(0).distance(mp1) == 0 && (e.getPointByIndex(1).distance(mp2) == 0)
-										|| (e.getPointByIndex(1).distance(mp1) == 0 && (e.getPointByIndex(0).distance(mp2) == 0)))) {
+								if ((e.getPointByIndex(0).distance(mp1) == 0
+										&& (e.getPointByIndex(1).distance(mp2) == 0)
+										|| (e.getPointByIndex(1).distance(mp1) == 0
+												&& (e.getPointByIndex(0).distance(mp2) == 0)))) {
 									found = true;
 									break;
 								}
@@ -614,7 +633,7 @@ public class SurfaceDemo extends AbstractAnalysis {
 			} catch (Exception ex) {
 				ex.printStackTrace();
 			}
-			
+
 			// remove points that do not belong to either edge
 			utils.removeNotUsedPoints();
 
@@ -671,7 +690,8 @@ public class SurfaceDemo extends AbstractAnalysis {
 							float y = Float.valueOf(center_str.split("\\s")[1].split("=")[1]);
 							float z = Float.valueOf(center_str.split("\\s")[2].split("=")[1]);
 
-							instance.chart.getView().setBoundManual(new BoundingBox3d(new Coord3d(x, y, z), Float.valueOf(radius)));
+							instance.chart.getView()
+									.setBoundManual(new BoundingBox3d(new Coord3d(x, y, z), Float.valueOf(radius)));
 							instance.canvas.getAnimator().start();
 
 							MyPickablePoint lastClicked = findSelectedPoint();
@@ -735,7 +755,6 @@ public class SurfaceDemo extends AbstractAnalysis {
 			ex.printStackTrace();
 		}
 	}
-
 
 	private MyPickablePoint findSelectedPoint() {
 		MyPickablePoint ret = null;
@@ -851,7 +870,8 @@ public class SurfaceDemo extends AbstractAnalysis {
 						}
 					}
 				} else {
-					// System.out.println(edge.edgeNo + " points: " + edge.points.get(0) +
+					// System.out.println(edge.edgeNo + " points: " +
+					// edge.points.get(0) +
 					// " "
 					// + edge.points.get(1));
 				}
@@ -983,12 +1003,14 @@ public class SurfaceDemo extends AbstractAnalysis {
 						Coord3d textPoint = edge.center.sub(delta.getNormalizedTo(0.2f));
 						if (edge.edgeType == MyEdge.EdgeType.ONRADIUS)
 							radius = "R";
-						Rotation r = new Rotation(0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f, -1.0f * Float.valueOf(SurfaceDemo.instance.angleTxt) * Math.PI / 180);
+						Rotation r = new Rotation(0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f,
+								-1.0f * Float.valueOf(SurfaceDemo.instance.angleTxt) * Math.PI / 180);
 						Coordinates c = new Coordinates(textPoint.x, textPoint.y, textPoint.z);
 						r.transform(c);
 
-						PickableDrawableTextBitmap t5 = new PickableDrawableTextBitmap(String.valueOf(edge.edgeNo + " (" + edge.cutVelocity + ")"),
-								new Coord3d(c.x, c.y, c.z), edge.isToCut() ? Color.RED : Color.BLUE);
+						PickableDrawableTextBitmap t5 = new PickableDrawableTextBitmap(
+								String.valueOf(edge.edgeNo + " (" + edge.cutVelocity + ")"), new Coord3d(c.x, c.y, c.z),
+								edge.isToCut() ? Color.RED : Color.BLUE);
 						edge.setTxt(t5);
 						t5.setHalign(Halign.CENTER); // TODO: invert
 						t5.setValign(Valign.CENTER); // TODO: invert
@@ -1002,7 +1024,8 @@ public class SurfaceDemo extends AbstractAnalysis {
 						ls.add(utils.points.get(point.id));
 						if (SurfaceDemo.NUMBER_POINTS) {
 							if (!alreadyAddedPointsText.contains(pointNo)) {
-								Coord3d cent = utils.continuousEdges.get(edge.getPointByIndex(0).continuousEdgeNo).center;
+								Coord3d cent = utils.continuousEdges
+										.get(edge.getPointByIndex(0).continuousEdgeNo).center;
 								Coord3d delta = point.xyz.sub(cent);
 								Coord3d textPoint = point.xyz.sub(delta.getNormalizedTo(0.2f));
 								PickableDrawableTextBitmap t4 = new PickableDrawableTextBitmap(String.valueOf(point.id),
@@ -1044,7 +1067,8 @@ public class SurfaceDemo extends AbstractAnalysis {
 
 	public Sphere getPlasma() {
 		if (instance != null && plasma == null) {
-			Color color = Color.BLUE; // mapper.getColor(new Coord3d(0,0,height));
+			Color color = Color.BLUE; // mapper.getColor(new
+										// Coord3d(0,0,height));
 			// color.a = 0.55f;
 			color.a = 1.0f;
 			plasma = new Sphere(new Coord3d(0, 0, 0), 2.0f, 4, color);
@@ -1088,7 +1112,8 @@ public class SurfaceDemo extends AbstractAnalysis {
 							MyPickablePoint mp = ((MyPickablePoint) picked.get(0));
 							Settings.instance.log(mp.toString());
 							SurfaceDemo.this.lastClickedPointChanged(mp);
-						} else if (picked.get(0).getClass().getName().equals("org.jzy3d.plot3d.primitives.pickable.PickablePolygon")) {
+						} else if (picked.get(0).getClass().getName()
+								.equals("org.jzy3d.plot3d.primitives.pickable.PickablePolygon")) {
 						} else {
 						}
 
@@ -1300,13 +1325,15 @@ public class SurfaceDemo extends AbstractAnalysis {
 				currentViewRadius = 0.1f;
 			if (ZOOM_PLASMA && SurfaceDemo.instance.getPlasma().getPosition() != null) {
 				SurfaceDemo.instance.canvas.getView().setBoundMode(ViewBoundMode.MANUAL);
-				SurfaceDemo.instance.canvas.getView().setBoundManual(new BoundingBox3d(SurfaceDemo.instance.getPlasma().getPosition(), currentViewRadius));
+				SurfaceDemo.instance.canvas.getView().setBoundManual(
+						new BoundingBox3d(SurfaceDemo.instance.getPlasma().getPosition(), currentViewRadius));
 			} else if (ZOOM_POINT && SurfaceDemo.instance.lastClickedPoint != null) {
 				SurfaceDemo.instance.canvas.getView().setBoundMode(ViewBoundMode.MANUAL);
-				SurfaceDemo.instance.canvas.getView().setBoundManual(new BoundingBox3d(SurfaceDemo.instance.lastClickedPoint.getCoord(), currentViewRadius));
+				SurfaceDemo.instance.canvas.getView().setBoundManual(
+						new BoundingBox3d(SurfaceDemo.instance.lastClickedPoint.getCoord(), currentViewRadius));
 			} else
 				SurfaceDemo.instance.canvas.getView().setBoundMode(ViewBoundMode.AUTO_FIT);
-			//instance.getChart().render();
+			// instance.getChart().render();
 		}
 	}
 

@@ -128,7 +128,7 @@ journalctl -xe
 ```
 change domain name in /etc/avahi/avahi-daemon.conf to
 ```
-domain-name=alocal
+domain-name=local
 ```
 reload avahi daemon with
 ```

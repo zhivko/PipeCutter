@@ -186,7 +186,7 @@ public class CutThread extends SwingWorker<String, Object> {
 		// true);
 
 		// lets turn on path blending
-		SurfaceDemo.instance.writeToGcodeFile("G64 P.05 Q.05 (path blending - P away from point)");
+		SurfaceDemo.instance.writeToGcodeFile("G64 P.5 Q.5 (path blending - P away from point)");
 		SurfaceDemo.instance.writeToGcodeFile("G93 (inverse time mode)");
 
 		float currentY = (float) mmaxY;
@@ -495,7 +495,7 @@ public class CutThread extends SwingWorker<String, Object> {
 
 		double diagonal = (SurfaceDemo.getInstance().utils.maxEdge * Math.sqrt(2.0f));
 		// lets turn on path blending
-		SurfaceDemo.instance.writeToGcodeFile("G64 P.05 Q.05 (path blending - P away from point)");
+		SurfaceDemo.instance.writeToGcodeFile("G64 P.5 Q.5 (path blending - P away from point)");
 
 		float offsetZ = (float) ((diagonal / 2.0f + 20.0f) - this.startPoint.getZ() + pierceOffsetMm);
 		// SurfaceDemo.getInstance().move(this.startPoint, false, offsetZ);

@@ -92,7 +92,8 @@ public class MachineKitStart extends SSH_Command {
 					Matcher m = p.matcher(line);
 					if (m.find()) {
 						Settings.instance.log("Service '" + m.group(2) + "' on port: " + m.group(1) + " on BBB is on.");
-						ServiceInfo serviceInfo = ServiceInfoImpl.create(m.group(2), m.group(2), Integer.valueOf(m.group(1)), "beaglebone.local");
+						String hostName = Settings.instance.getSetting("machinekit_host");
+						ServiceInfo serviceInfo = ServiceInfoImpl.create(m.group(2), m.group(2), Integer.valueOf(m.group(1)), hostName);
 						NamedList.getCommandServiceUrl(serviceInfo);
 						NamedList.getErrorServiceUrl(serviceInfo);
 						NamedList.getStatusServiceUrl(serviceInfo);

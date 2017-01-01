@@ -37,7 +37,7 @@ public class RotatorSettings extends JPanel {
 	
 	public RotatorSettings() {
 		super();
-		Dimension panelPreferedDimension = new Dimension(220, 580);
+		Dimension panelPreferedDimension = new Dimension(320, 580);
 
 		this.setPreferredSize(new Dimension(420, 600));
 		FlowLayout flowLayout = (FlowLayout) this.getLayout();

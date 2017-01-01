@@ -615,7 +615,7 @@ public class SurfaceDemo extends AbstractAnalysis {
 			utils.markRadiusEdges();
 			splitLongEdges();
 			splitNearRadiusEdge();
-
+			
 			// remove edges marked to be removed
 			try {
 				FileInputStream in = new FileInputStream(Settings.iniEdgeProperties);
@@ -633,6 +633,7 @@ public class SurfaceDemo extends AbstractAnalysis {
 			} catch (Exception ex) {
 				ex.printStackTrace();
 			}
+			utils.markRadiusEdges();
 
 			// remove points that do not belong to either edge
 			utils.removeNotUsedPoints();
@@ -1197,7 +1198,7 @@ public class SurfaceDemo extends AbstractAnalysis {
 		float x = axisLength * 1.5f * (float) Math.sin(Math.toRadians(angle));
 		float z = axisLength * 1.5f * (float) Math.cos(Math.toRadians(angle));
 		rotationPoint.set(x, 0, z);
-		currentRotTxt.setText(String.format("%.2f", angle));
+		currentRotTxt.setText(String.format("%.4f", angle));
 	}
 
 	public void pauseAnimator() {

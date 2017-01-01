@@ -28,7 +28,7 @@ public class XYZSettings extends JPanel {
 	
 	public XYZSettings() {
 		super();
-		Dimension panelPreferedDimension = new Dimension(220, 480);
+		Dimension panelPreferedDimension = new Dimension(320, 480);
 
 		this.setPreferredSize(new Dimension(420, 450));
 		FlowLayout flowLayout = (FlowLayout) this.getLayout();

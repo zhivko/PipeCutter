@@ -23,6 +23,7 @@ import pb.Message.Container;
 import pb.Types.ContainerType;
 
 public class BBBStatus implements Runnable {
+	private final static int REQUEST_TIMEOUT = 2500; 
 	public static BBBStatus instance;
 	private org.zeromq.ZMQ.Socket socket = null;
 	ByteArrayInputStream is;
@@ -101,14 +102,16 @@ public class BBBStatus implements Runnable {
 
 		shouldRead = true;
 		Container contReturned;
-		PollItem[] pollItems = new PollItem[] { new PollItem(socket, Poller.POLLIN) };
 		while (shouldRead) {
+			PollItem[] pollItems = new PollItem[] { new PollItem(socket, Poller.POLLIN) };
 			int rc = ZMQ.poll(pollItems, 1, 100);
+            if (rc == -1)
+                break;          //  Interrupted
 			for (int l = 0; l < rc; l++) {
-				ZMsg msg = ZMsg.recvMsg(socket, ZMQ.DONTWAIT);
+				ZMsg msg = ZMsg.recvMsg(socket, REQUEST_TIMEOUT);
 				ZFrame frame = null;
 				while (pollItems[0].isReadable() && (frame = msg.poll()) != null) {
-					byte[] returnedBytes = frame.getData();
+					byte[] returnedBytes = frame.getData(); // frame.getData();
 					String messageType = new String(returnedBytes);
 					if (!messageType.equals("motion") && !messageType.equals("task") && !messageType.equals("io")
 							&& !messageType.equals("interp")) {

@@ -13,6 +13,7 @@ import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
 
+import javax.vecmath.Point3d;
 import javax.vecmath.Vector3d;
 
 import org.apache.commons.math3.geometry.euclidean.threed.Line;
@@ -22,14 +23,9 @@ import org.apache.commons.math3.geometry.euclidean.threed.Vector3D;
 import org.apache.log4j.Logger;
 import org.jzy3d.colors.Color;
 import org.jzy3d.maths.Coord3d;
-import org.jzy3d.plot3d.builder.Mapper;
-import org.jzy3d.maths.Range;
-import org.jzy3d.plot3d.builder.Builder;
-import org.jzy3d.plot3d.builder.concrete.OrthonormalGrid;
 import org.jzy3d.plot3d.primitives.AbstractGeometry.PolygonMode;
 import org.jzy3d.plot3d.primitives.Point;
 import org.jzy3d.plot3d.primitives.Polygon;
-import org.jzy3d.plot3d.primitives.Shape;
 //import org.jzy3d.plot3d.primitives.Point;
 //import org.jzy3d.plot3d.primitives.Point;
 import org.jzy3d.plot3d.text.drawable.DrawableTextBitmap;
@@ -47,14 +43,14 @@ public class Utils {
 	ArrayList<PickableDrawableTextBitmap> edgeTexts = null;
 	ArrayList<DrawableTextBitmap> pointTexts = null;
 
-	public float maxX = 0;
-	public float minX = 0;
-	public float maxY = 0;
-	public float minY = 0;
-	public float maxZ = 0;
-	public float minZ = 0;
+	public double maxX = 0;
+	public double minX = 0;
+	public double maxY = 0;
+	public double minY = 0;
+	public double maxZ = 0;
+	public double minZ = 0;
 
-	public float maxEdge = 0;
+	public double maxEdge = 0;
 	public Coord3d previousPoint;
 	float previousAngle;
 	// public MyEdge previousEdge;
@@ -63,34 +59,34 @@ public class Utils {
 	static double Math_E = 0.0001;
 	static double rotationAngleMin = 0.0001;
 
-	public MyPickablePoint createOrFindMyPickablePoint(int id, Coord3d coord, int inventorEdge) {
+	public MyPickablePoint createOrFindMyPickablePoint(int id, Point3d p, int inventorEdge) {
 		MyPickablePoint mp = null;
 		if (points == null)
 			init();
 
-		for (MyPickablePoint p : points.values()) {
-			if (p.xyz.distance(coord) < Math_E) {
-				mp = p;
+		for (MyPickablePoint p1 : points.values()) {
+			if (p1.distance(p) < Math_E) {
+				mp = p1;
 				break;
 			}
 		}
 		if (mp == null) {
-			mp = new MyPickablePoint(id, coord, Color.BLACK, 4.0f, inventorEdge);
+			mp = new MyPickablePoint(id, p, Color.BLACK, 4.0f, inventorEdge);
 			points.put(id, mp);
 		}
 
-		if (maxX < coord.x)
-			maxX = coord.x;
-		if (maxY < coord.y)
-			maxY = coord.y;
-		if (maxZ < coord.z)
-			maxZ = coord.z;
-		if (minX > coord.x)
-			minX = coord.x;
-		if (minY > coord.y)
-			minY = coord.y;
-		if (minZ > coord.z)
-			minZ = coord.z;
+		if (maxX < p.x)
+			maxX = p.x;
+		if (maxY < p.y)
+			maxY = p.y;
+		if (maxZ < p.z)
+			maxZ = p.z;
+		if (minX > p.x)
+			minX = p.x;
+		if (minY > p.y)
+			minY = p.y;
+		if (minZ > p.z)
+			minZ = p.z;
 
 		return mp;
 	}
@@ -99,7 +95,8 @@ public class Utils {
 		points = new ConcurrentHashMap<Integer, MyPickablePoint>();
 	}
 
-	public ArrayList<Integer> calculateCutPoints(MyPickablePoint clickedPoint, ArrayList<MyPickablePoint> alAlreadyAddedPoints, boolean verticals) {
+	public ArrayList<Integer> calculateCutPoints(MyPickablePoint clickedPoint,
+			ArrayList<MyPickablePoint> alAlreadyAddedPoints, boolean verticals) {
 		// TODO Auto-generated method stub
 		MyEdge edge = new MyEdge(-1, -1);
 
@@ -142,7 +139,8 @@ public class Utils {
 			MyPickablePoint point = it.next();
 			point.setFirstOrLast(MyPickablePoint.FirstOrLast.FIRST);
 		}
-		ArrayList<MyPickablePoint> lastPoints = SurfaceDemo.getInstance().utils.findAllConnectedPoints(lastOuterPoint, new ArrayList<MyPickablePoint>());
+		ArrayList<MyPickablePoint> lastPoints = SurfaceDemo.getInstance().utils.findAllConnectedPoints(lastOuterPoint,
+				new ArrayList<MyPickablePoint>());
 		it = lastPoints.iterator();
 		while (it.hasNext()) {
 			MyPickablePoint point = it.next();
@@ -151,7 +149,8 @@ public class Utils {
 
 	}
 
-	public MyPickablePoint findConnectedPoint(MyPickablePoint point, ArrayList<MyPickablePoint> alreadyAdded, boolean direction) {
+	public MyPickablePoint findConnectedPoint(MyPickablePoint point, ArrayList<MyPickablePoint> alreadyAdded,
+			boolean direction) {
 		MyPickablePoint ret = null;
 		MyPickablePoint ret1 = null;
 		MyPickablePoint ret2 = null;
@@ -204,11 +203,11 @@ public class Utils {
 	public ArrayList<MyPickablePoint> findConnectedPoints(MyPickablePoint point, ArrayList<MyPickablePoint> alreadyAdded) {
 		ArrayList<MyPickablePoint> ret = new ArrayList<MyPickablePoint>();
 		for (MyEdge edge : edges.values()) {
-			if (edge.getPointByIndex(0).distance(point) < Math_E) {
+			if (edge.getPointByIndex(0).distance(point.point) < Math_E) {
 				if (!alreadyAdded.contains(edge.points.get(1))) {
 					ret.add(edge.getPointByIndex(1));
 				}
-			} else if (edge.getPointByIndex(1).distance(point) < Math_E) {
+			} else if (edge.getPointByIndex(1).distance(point.point) < Math_E) {
 				if (!alreadyAdded.contains(edge.points.get(0))) {
 					ret.add(edge.getPointByIndex(0));
 				}
@@ -224,7 +223,8 @@ public class Utils {
 		edges.put(edge.edgeNo, edge);
 	}
 
-	public static ArrayList<Coord3d> CalculateLineLineIntersection(Coord3d line1Point1, Coord3d line1Point2, Coord3d line2Point1, Coord3d line2Point2) {
+	public static ArrayList<Coord3d> CalculateLineLineIntersection(Coord3d line1Point1, Coord3d line1Point2,
+			Coord3d line2Point1, Coord3d line2Point2) {
 		// Algorithm is ported from the C algorithm of
 		// Paul Bourke at
 		// http://local.wasp.uwa.edu.au/~pbourke/geometry/lineline3d/
@@ -481,11 +481,12 @@ public class Utils {
 			edgeDescription = edge.edgeType + " no:" + edge.edgeNo; // + " length=" +
 		// edge.length ;
 		if (cut)
-			ret = String.format(java.util.Locale.US, "X%.2f Y%.2f Z%.1f A%.4f B%.4f F%.1f (move length: %.1f speed:%.1f p:%d, e:%s)", x, y, z, angle, angle,
-					feed, length, calcSpeed, p.id, edgeDescription);
+			ret = String.format(java.util.Locale.US,
+					"X%.2f Y%.2f Z%.1f A%.4f B%.4f F%.1f (move length: %.1f speed:%.1f p:%d, e:%s)", x, y, z, angle, angle, feed,
+					length, calcSpeed, p.id, edgeDescription);
 		else
-			ret = String.format(java.util.Locale.US, "X%.2f Y%.2f Z%.1f A%.4f B%.4f F%.1f (move length: %.1f speed:%.1f, e:%s)", x, y, z, angle, angle, feed, length,
-					calcSpeed, edgeDescription);
+			ret = String.format(java.util.Locale.US, "X%.2f Y%.2f Z%.1f A%.4f B%.4f F%.1f (move length: %.1f speed:%.1f, e:%s)",
+					x, y, z, angle, angle, feed, length, calcSpeed, edgeDescription);
 
 		this.previousPoint = p1;
 		this.previousPointId = p.id;
@@ -500,19 +501,19 @@ public class Utils {
 		return new Coord3d(rotated.getX(), rotated.getY(), rotated.getZ());
 	}
 
-	public void rotatePoints(double angle, boolean slow) {
-		rotatePoints(angle, slow, true);
+	public void rotatePoints(double angleDeg, boolean slow) {
+		rotatePoints(angleDeg, slow, true);
 	}
 
-	public void rotatePoints(double angle, boolean slow, boolean angleInDelta) {
+	public void rotatePoints(double angleDeg, boolean slow, boolean angleInDelta) {
 		double value;
 		if (SurfaceDemo.instance.utils.origPoints == null)
 			return;
 		if (!slow) {
 			if (angleInDelta)
-				value = Double.valueOf(SurfaceDemo.instance.angleTxt) + angle;
+				value = Double.valueOf(SurfaceDemo.instance.angleTxt) + angleDeg;
 			else
-				value = angle;
+				value = angleDeg;
 
 			double[] zAxisDouble = { 0.0d, 1.0d, 0.0d };
 			Vector3D zAxis = new Vector3D(zAxisDouble);
@@ -521,20 +522,19 @@ public class Utils {
 				double[] myPointDouble = { point.getX(), point.getY(), point.getZ() };
 				Vector3D myPoint = new Vector3D(myPointDouble);
 				Vector3D result = rotZ.applyTo(myPoint);
-				points.get(point.id).xyz.set(Double.valueOf(result.getX()).floatValue(), Double.valueOf(result.getY()).floatValue(),
-						Double.valueOf(result.getZ()).floatValue());
+				points.get(point.id).setCoord(result.getX(), result.getY(), result.getZ());
 			}
 			for (MyEdge edge : continuousEdges.values()) {
 				edge.calculateCenter();
 			}
 		} else {
 
-			int noSteps = 5;
+			int noSteps = 10;
 			for (int i = 0; i <= noSteps; i++) {
 				if (angleInDelta)
-					value = Double.valueOf(SurfaceDemo.instance.angleTxt) + angle * i / noSteps;
+					value = Double.valueOf(SurfaceDemo.instance.angleTxt) + angleDeg * i / noSteps;
 				else
-					value = angle * i / noSteps;
+					value = angleDeg * i / noSteps;
 
 				double[] zAxisDouble = { 0.0d, 1.0d, 0.0d };
 				Vector3D zAxis = new Vector3D(zAxisDouble);
@@ -543,8 +543,7 @@ public class Utils {
 					double[] myPointDouble = { point.getX(), point.getY(), point.getZ() };
 					Vector3D myPoint = new Vector3D(myPointDouble);
 					Vector3D result = rotZ.applyTo(myPoint);
-					points.get(point.id).xyz.set(Double.valueOf(result.getX()).floatValue(), Double.valueOf(result.getY()).floatValue(),
-							Double.valueOf(result.getZ()).floatValue());
+					points.get(point.id).setCoord(result.getX(),result.getY(),result.getZ());
 				}
 				for (MyEdge edge : continuousEdges.values()) {
 					edge.calculateCenter();
@@ -570,10 +569,10 @@ public class Utils {
 		// }
 		if (angleInDelta) {
 			value = Double.valueOf(SurfaceDemo.instance.angleTxt);
-			double newValue = value + angle;
+			double newValue = value + angleDeg;
 			SurfaceDemo.instance.angleTxt = Double.valueOf(newValue).toString();
 		} else
-			SurfaceDemo.instance.angleTxt = Double.valueOf(angle).toString();
+			SurfaceDemo.instance.angleTxt = Double.valueOf(angleDeg).toString();
 
 		float val = Float.valueOf(SurfaceDemo.instance.angleTxt);
 		SurfaceDemo.instance.calculateRotationPoint(val);
@@ -618,7 +617,8 @@ public class Utils {
 
 	}
 
-	public Plane getPlaneForPoint(MyPickablePoint point) throws org.apache.commons.math3.exception.MathArithmeticException {
+	public Plane getPlaneForPoint(MyPickablePoint point)
+			throws org.apache.commons.math3.exception.MathArithmeticException {
 		Plane plane = null;
 		MyEdge continuousEdge = continuousEdges.get(point.continuousEdgeNo);
 
@@ -656,7 +656,8 @@ public class Utils {
 
 	}
 
-	public Plane getPlaneForMiddlePoint(MyPickablePoint point) throws org.apache.commons.math3.exception.MathArithmeticException {
+	public Plane getPlaneForMiddlePoint(MyPickablePoint point)
+			throws org.apache.commons.math3.exception.MathArithmeticException {
 		Plane plane = null;
 		MyPickablePoint prevPoint = null;
 		MyPickablePoint nextPoint = null;
@@ -697,13 +698,13 @@ public class Utils {
 	}
 
 	public void calculateMaxAndMins() {
-		minX = Float.MAX_VALUE;
-		minY = Float.MAX_VALUE;
-		minZ = Float.MAX_VALUE;
+		minX = Double.MAX_VALUE;
+		minY = Double.MAX_VALUE;
+		minZ = Double.MAX_VALUE;
 
-		maxX = Float.MIN_VALUE;
-		maxY = Float.MIN_VALUE;
-		maxZ = Float.MIN_VALUE;
+		maxX = Double.MIN_VALUE;
+		maxY = Double.MIN_VALUE;
+		maxZ = Double.MIN_VALUE;
 
 		for (MyPickablePoint point : this.points.values()) {
 			if (point.getX() < this.minX)
@@ -735,12 +736,12 @@ public class Utils {
 	}
 
 	public void markRadiusEdges() {
-		float radius = Float.valueOf(Settings.instance.getSetting("pipe_radius"));
+		double radius = Double.valueOf(Settings.instance.getSetting("pipe_radius"));
 
-		float rx_min = -this.maxX + radius;
-		float rx_max = this.maxX - radius;
-		float rz_min = -this.maxZ + radius;
-		float rz_max = this.maxZ - radius;
+		double rx_min = -this.maxX + radius;
+		double rx_max = this.maxX - radius;
+		double rz_min = -this.maxZ + radius;
+		double rz_max = this.maxZ - radius;
 
 		for (MyEdge edg : this.edges.values()) {
 			if (edg.center.x < rx_min && edg.center.z > rz_max) {
@@ -955,7 +956,8 @@ public class Utils {
 			} catch (Exception ex) {
 				// if we are not at surface of four planes then we are on edge lets move
 				// kerf toward center of edge
-				Vector3D vecOffset = new Vector3D(0, Math.signum(continuousEdge.center.y - point.xyz.y) * SurfaceDemo.instance.getKerfOffset(), 0);
+				Vector3D vecOffset = new Vector3D(0,
+						Math.signum(continuousEdge.center.y - point.xyz.y) * SurfaceDemo.instance.getKerfOffset(), 0);
 				result = vecPoint.add(vecOffset);
 				ret.point.xyz.x = (float) result.getX();
 				ret.point.xyz.y = (float) result.getY();

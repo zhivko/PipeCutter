@@ -39,6 +39,7 @@ import javax.swing.JOptionPane;
 import javax.swing.JPopupMenu;
 import javax.swing.SwingUtilities;
 import javax.swing.SwingWorker;
+import javax.vecmath.Point3d;
 
 import org.apache.commons.math3.geometry.euclidean.threed.Line;
 import org.apache.commons.math3.geometry.euclidean.threed.Vector3D;
@@ -574,10 +575,10 @@ public class SurfaceDemo extends AbstractAnalysis {
 					MyPickablePoint mp2 = null;
 					MyPickablePoint mp1 = null;
 					for (int i = 1; i < splitted.length; i = i + 3) {
-						Float x = Float.valueOf(splitted[i].replace(",", "."));
-						Float y = Float.valueOf(splitted[i + 1].replace(",", "."));
-						Float z = Float.valueOf(splitted[i + 2].replace(",", "."));
-						Coord3d p = new Coord3d(x.floatValue(), y.floatValue(), z.floatValue());
+						Double x = Double.valueOf(splitted[i].replace(",", "."));
+						Double y = Double.valueOf(splitted[i + 1].replace(",", "."));
+						Double z = Double.valueOf(splitted[i + 2].replace(",", "."));
+						Point3d p = new Point3d(x.floatValue(), y.floatValue(), z.floatValue());
 						pointId++;
 						mp2 = utils.createOrFindMyPickablePoint(pointId, p, inventorEdgeNo);
 						if (mp1 != null && mp2.distance(mp1) > 0) {
@@ -841,7 +842,7 @@ public class SurfaceDemo extends AbstractAnalysis {
 							MyPickablePoint p1 = SurfaceDemo.instance.utils.points.get(edge.points.get(0));
 							MyPickablePoint p2 = SurfaceDemo.instance.utils.points.get(edge.points.get(1));
 
-							Coord3d p = new Coord3d(inters.getX(), inters.getY(), inters.getZ());
+							Point3d p = new Point3d(inters.getX(), inters.getY(), inters.getZ());
 							int id = pointId++;
 							MyPickablePoint newP = utils.createOrFindMyPickablePoint(id, p, -1);
 							newP.continuousEdgeNo = p1.continuousEdgeNo;
@@ -901,10 +902,10 @@ public class SurfaceDemo extends AbstractAnalysis {
 		ArrayList<MyPickablePoint> sortedZList = new ArrayList(SurfaceDemo.instance.utils.points.values());
 		Collections.sort(sortedZList, new MyPickablePointZComparator());
 
-		float minX = sortedXList.get(0).getX();
-		float maxX = sortedXList.get(sortedXList.size() - 1).getX();
-		float minZ = sortedZList.get(0).getZ();
-		float maxZ = sortedZList.get(sortedZList.size() - 1).getZ();
+		double minX = sortedXList.get(0).getX();
+		double maxX = sortedXList.get(sortedXList.size() - 1).getX();
+		double minZ = sortedZList.get(0).getZ();
+		double maxZ = sortedZList.get(sortedZList.size() - 1).getZ();
 
 		Settings.instance.setSetting("pipe_dim_x", Double.valueOf(maxX - minX));
 		Settings.instance.setSetting("pipe_dim_z", Double.valueOf(maxZ - minZ));
@@ -930,11 +931,11 @@ public class SurfaceDemo extends AbstractAnalysis {
 				MyPickablePoint p1 = SurfaceDemo.instance.utils.points.get(edge.points.get(0));
 				MyPickablePoint p2 = SurfaceDemo.instance.utils.points.get(edge.points.get(1));
 
-				float x = (p1.getX() + p2.getX()) / 2;
-				float y = (p1.getY() + p2.getY()) / 2;
-				float z = (p1.getZ() + p2.getZ()) / 2;
+				double x = (p1.getX() + p2.getX()) / 2;
+				double y = (p1.getY() + p2.getY()) / 2;
+				double z = (p1.getZ() + p2.getZ()) / 2;
 
-				Coord3d p = new Coord3d(x, y, z);
+				Point3d p = new Point3d(x, y, z);
 				int id = pointId++;
 				MyPickablePoint newP = utils.createOrFindMyPickablePoint(id, p, -1);
 
@@ -1220,7 +1221,7 @@ public class SurfaceDemo extends AbstractAnalysis {
 		}
 		// }
 		getPlasma().setPosition(tempPoint.xyz);
-		// SurfaceDemo.instance.redrawPosition();
+		SurfaceDemo.instance.redrawPosition();
 
 		// cylinder.move(tempPoint);
 		if (cylinderPoint == null)
@@ -1258,8 +1259,8 @@ public class SurfaceDemo extends AbstractAnalysis {
 			System.out.println("OOPS");
 		}
 
-		if (instance.getChart().getView().getCanvas() != null)
-			instance.getChart().render();
+		//if (instance.getChart().getView().getCanvas() != null)
+			//instance.getChart().render();
 	}
 
 	public void moveAbove(MyPickablePoint tempPoint, float offset, long pierceTimeMs) {

@@ -1,10 +1,8 @@
 package com.kz.pipeCutter;
 
-import java.io.BufferedWriter;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.io.PrintWriter;
 import java.util.List;
+
+import javax.vecmath.Point3d;
 
 import org.jzy3d.colors.Color;
 import org.jzy3d.maths.Coord2d;
@@ -16,7 +14,7 @@ import org.jzy3d.plot3d.primitives.Polygon;
 import org.jzy3d.plot3d.primitives.Quad;
 
 public class Cylinder extends AbstractComposite {
-	Coord3d position;
+	Point3d position;
 	public static double diameter = 0.2;
 	public static float trueHoleDiameter = 0.4f;
 	public static long sleep = 100;
@@ -27,11 +25,11 @@ public class Cylinder extends AbstractComposite {
 
 	double height = 0.7;
 
-	public Cylinder(Point point) {
-		this.move(point.getCoord());
+	public Cylinder(Point3d point) {
+		this.move(point);
 	}
 
-	public void setData(Coord3d position, float height, int slices, int rings, Color color) {
+	public void setData(Point3d position, float height, int slices, int rings, Color color) {
 		// Create sides
 		top = new Polygon();
 		low = new Polygon();
@@ -71,7 +69,7 @@ public class Cylinder extends AbstractComposite {
 
 		setWireframeDisplayed(true);
 		setWireframeColor(Color.BLACK);
-		position = new Coord3d(position.x, position.y, position.z);
+		position = new Point3d(position.x, position.y, position.z);
 
 	}
 
@@ -91,7 +89,7 @@ public class Cylinder extends AbstractComposite {
 
 	}
 
-	public void move(Coord3d newCoord) {
+	public void move(Point3d newCoord) {
 		clean();
 		this.setData(newCoord, (float) height, 15, 5, Color.BLUE);
 		SurfaceDemo.instance.myComposite.add(this);
@@ -105,9 +103,7 @@ public class Cylinder extends AbstractComposite {
 		// position.set(newCoord.x, newCoord.y, newCoord.z);
 	}
 
-	public void move(Point p) {
-		this.move(p.xyz);
-	}
+
 
 	private Polygon top;
 	private Polygon low;

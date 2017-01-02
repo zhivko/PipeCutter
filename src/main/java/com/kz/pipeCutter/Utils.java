@@ -96,23 +96,23 @@ public class Utils {
 	}
 
 	public ArrayList<Integer> calculateCutPoints(MyPickablePoint clickedPoint,
-			ArrayList<MyPickablePoint> alAlreadyAddedPoints, boolean verticals) {
+			ArrayList<Integer> alAlreadyAddedPoints, boolean verticals) {
 		// TODO Auto-generated method stub
 		MyEdge edge = new MyEdge(-1, -1);
 
 		MyPickablePoint tempPoint = findConnectedPoint(clickedPoint, alAlreadyAddedPoints, true);
 		System.out.println("Point id: " + tempPoint.id);
 		edge.addPoint(tempPoint.id);
-		alAlreadyAddedPoints.add(tempPoint);
+		alAlreadyAddedPoints.add(tempPoint.id);
 		while (tempPoint != clickedPoint && tempPoint != null) {
 			tempPoint = findConnectedPoint(tempPoint, alAlreadyAddedPoints, true);
 			if (tempPoint != null) {
 				edge.addPoint(tempPoint.id);
-				alAlreadyAddedPoints.add(tempPoint);
+				alAlreadyAddedPoints.add(tempPoint.id);
 			}
 		}
 		edge.addPoint(clickedPoint.id);
-		alAlreadyAddedPoints.add(clickedPoint);
+		alAlreadyAddedPoints.add(clickedPoint.id);
 
 		return edge.points;
 
@@ -132,24 +132,26 @@ public class Utils {
 		MyPickablePoint firstOuterPoint = sortedList.get(0);
 		MyPickablePoint lastOuterPoint = sortedList.get(sortedList.size() - 1);
 
-		ArrayList<MyPickablePoint> firstPoints = SurfaceDemo.getInstance().utils.findAllConnectedPoints(firstOuterPoint,
-				new ArrayList<MyPickablePoint>());
-		Iterator<MyPickablePoint> it = firstPoints.iterator();
+		ArrayList<Integer> firstPoints = SurfaceDemo.getInstance().utils.findAllConnectedPoints(firstOuterPoint,
+				new ArrayList<Integer>());
+		Iterator<Integer> it = firstPoints.iterator();
 		while (it.hasNext()) {
-			MyPickablePoint point = it.next();
+			Integer pointId = it.next();
+			MyPickablePoint point = points.get(pointId);
 			point.setFirstOrLast(MyPickablePoint.FirstOrLast.FIRST);
 		}
-		ArrayList<MyPickablePoint> lastPoints = SurfaceDemo.getInstance().utils.findAllConnectedPoints(lastOuterPoint,
-				new ArrayList<MyPickablePoint>());
+		ArrayList<Integer> lastPoints = SurfaceDemo.getInstance().utils.findAllConnectedPoints(lastOuterPoint,
+				new ArrayList<Integer>());
 		it = lastPoints.iterator();
 		while (it.hasNext()) {
-			MyPickablePoint point = it.next();
+			Integer pointId = it.next();
+			MyPickablePoint point = points.get(pointId);
 			point.setFirstOrLast(MyPickablePoint.FirstOrLast.LAST);
 		}
 
 	}
 
-	public MyPickablePoint findConnectedPoint(MyPickablePoint point, ArrayList<MyPickablePoint> alreadyAdded,
+	public MyPickablePoint findConnectedPoint(MyPickablePoint point, ArrayList<Integer> alreadyAdded,
 			boolean direction) {
 		MyPickablePoint ret = null;
 		MyPickablePoint ret1 = null;
@@ -166,12 +168,12 @@ public class Utils {
 			}
 
 			if (edge.getPointByIndex(startInd).equals(point)) {
-				if (!alreadyAdded.contains(edge.getPointByIndex(endInd))) {
+				if (!alreadyAdded.contains(edge.getPointByIndex(endInd).id)) {
 					ret1 = edge.getPointByIndex(endInd);
 					// break;
 				}
 			} else if (edge.getPointByIndex(endInd).equals(point)) {
-				if (!alreadyAdded.contains(edge.getPointByIndex(startInd))) {
+				if (!alreadyAdded.contains(edge.getPointByIndex(startInd).id)) {
 					ret2 = edge.getPointByIndex(startInd);
 					// break;
 				}
@@ -395,10 +397,10 @@ public class Utils {
 		return null;
 	}
 
-	public ArrayList<MyPickablePoint> findAllConnectedPoints(MyPickablePoint p, ArrayList<MyPickablePoint> points) {
+	public ArrayList<Integer> findAllConnectedPoints(MyPickablePoint p, ArrayList<Integer> points) {
 		for (MyPickablePoint p1 : p.neighbourPoints) {
-			if (!points.contains(p1)) {
-				points.add(p1);
+			if (!points.contains(p1.id)) {
+				points.add(p1.id);
 				findAllConnectedPoints(p1, points);
 			}
 		}
@@ -543,7 +545,7 @@ public class Utils {
 					double[] myPointDouble = { point.getX(), point.getY(), point.getZ() };
 					Vector3D myPoint = new Vector3D(myPointDouble);
 					Vector3D result = rotZ.applyTo(myPoint);
-					points.get(point.id).setCoord(result.getX(),result.getY(),result.getZ());
+					points.get(point.id).setCoord(result.getX(), result.getY(), result.getZ());
 				}
 				for (MyEdge edge : continuousEdges.values()) {
 					edge.calculateCenter();
@@ -583,17 +585,17 @@ public class Utils {
 		continuousEdges = new ConcurrentHashMap<Integer, MyContinuousEdge>();
 		for (MyPickablePoint point : points.values()) {
 			if (point.continuousEdgeNo == -1) {
-				ArrayList<MyPickablePoint> pointsOfEdgeAl = findAllConnectedPoints(point, new ArrayList<MyPickablePoint>());
+				ArrayList<Integer> pointsOfEdgeAl = findAllConnectedPoints(point, new ArrayList<Integer>());
 
 				MyContinuousEdge contEdge = new MyContinuousEdge(edgeNo, -1);
 				int i = 0;
 				int j = 0;
 				while (i < pointsOfEdgeAl.size()) {
-					MyPickablePoint edgePoint1 = pointsOfEdgeAl.get(i);
+					MyPickablePoint edgePoint1 = points.get(pointsOfEdgeAl.get(i));
 					j = i + 1;
 					if (i == pointsOfEdgeAl.size() - 1)
 						j = 0;
-					MyPickablePoint edgePoint2 = pointsOfEdgeAl.get(j);
+					MyPickablePoint edgePoint2 = points.get(pointsOfEdgeAl.get(j));
 					points.get(edgePoint1.id).continuousEdgeNo = edgeNo;
 					points.get(edgePoint2.id).continuousEdgeNo = edgeNo;
 					contEdge.addPoint(edgePoint1.id);

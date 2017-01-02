@@ -1221,7 +1221,7 @@ public class SurfaceDemo extends AbstractAnalysis {
 		}
 		// }
 		getPlasma().setPosition(tempPoint.xyz);
-		SurfaceDemo.instance.redrawPosition();
+		//SurfaceDemo.instance.redrawPosition();
 
 		// cylinder.move(tempPoint);
 		if (cylinderPoint == null)

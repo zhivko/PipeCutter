@@ -37,8 +37,8 @@ public class CutThread extends SwingWorker<String, Object> {
 
 	static CutThread instance;
 
-	ArrayList<MyPickablePoint> firstPoints;
-	ArrayList<MyPickablePoint> alAlreadyAddedPoints;
+	ArrayList<Integer> firstPoints;
+	ArrayList<Integer> alAlreadyAddedPoints;
 
 	private boolean wholePipe = false;
 	private boolean onlySelected = false;
@@ -80,7 +80,7 @@ public class CutThread extends SwingWorker<String, Object> {
 
 		this.wholePipe = wholePipe;
 		this.startPoint = point;
-		this.alAlreadyAddedPoints = new ArrayList<MyPickablePoint>();
+		this.alAlreadyAddedPoints = new ArrayList<Integer>();
 
 		this.onlySelected = onlySelected;
 
@@ -153,9 +153,9 @@ public class CutThread extends SwingWorker<String, Object> {
 
 		if (wholePipe)
 			firstPoints = SurfaceDemo.getInstance().utils.findAllConnectedPoints(firstOuterPoint,
-					new ArrayList<MyPickablePoint>());
+					new ArrayList<Integer>());
 		else
-			firstPoints = new ArrayList<MyPickablePoint>();
+			firstPoints = new ArrayList<Integer>();
 
 		double mminY = sortedList.get(0).xyz.y;
 		double mmaxY = sortedList.get(sortedList.size() - 1).xyz.y;
@@ -192,7 +192,7 @@ public class CutThread extends SwingWorker<String, Object> {
 		SurfaceDemo.instance.writeToGcodeFile("G93 (inverse time mode)");
 
 		float currentY = (float) mmaxY;
-		alAlreadyAddedPoints = new ArrayList<MyPickablePoint>();
+		alAlreadyAddedPoints = new ArrayList<Integer>();
 		float minY = 0;
 		float maxY = 0;
 		int rotationDirection = 1;
@@ -301,7 +301,42 @@ public class CutThread extends SwingWorker<String, Object> {
 		}
 	}
 
-	public double followThePath(MyPickablePoint myPoint, ArrayList<MyPickablePoint> alAlreadyAddedPoints, Boolean order) {
+	public double followThePath1(MyPickablePoint myPoint, ArrayList<Integer> alAlreadyAddedPoints, Boolean order) {
+
+		MyPickablePoint tempPoint = myPoint;
+		MyPickablePoint prevPoint = myPoint;
+		prevPoint = tempPoint;
+		boolean shouldBreak = false;
+		while (!shouldBreak) {
+			SurfaceDemo.getInstance().move(tempPoint, true, cutOffsetMm);
+
+			if (tempPoint != null) {
+				tempPoint.setColor(Color.GREEN);
+				alAlreadyAddedPoints.add(tempPoint.id);
+			}
+			tempPoint = SurfaceDemo.getInstance().utils.findConnectedPoint(tempPoint, alAlreadyAddedPoints, true);
+			if (tempPoint == null) {
+				shouldBreak = true;
+				tempPoint = myPoint;
+			}
+
+			double angleDelta = rotation(prevPoint, tempPoint);
+			// System.out.println(prevPoint.id + " " + tempPoint.id + " " +
+			// angleDelta);
+			prevPoint = tempPoint;
+		}
+		SurfaceDemo.getInstance().move(tempPoint, true, cutOffsetMm);
+		prevPoint = tempPoint;
+		tempPoint = SurfaceDemo.getInstance().utils.findConnectedPoint(tempPoint, alAlreadyAddedPoints, true);
+		if (tempPoint != null) {
+			double angle = rotation(prevPoint, tempPoint);
+			return angle;
+		}
+		return 0.0d;
+
+	}	
+	
+	public double followThePath(MyPickablePoint myPoint, ArrayList<Integer> alAlreadyAddedPoints, Boolean order) {
 
 		MyPickablePoint tempPoint = myPoint;
 		MyPickablePoint prevPoint = myPoint;
@@ -372,11 +407,14 @@ public class CutThread extends SwingWorker<String, Object> {
 			SurfaceDemo.getInstance().moveAbove(tempPoint, pierceOffsetMm, pierceTimeMs);
 		}
 
+		SurfaceDemo.getInstance().move(tempPoint, true, cutOffsetMm);
+		alAlreadyAddedPoints.add(tempPoint.id);
 		while (!shouldBreak) {
 			tempPoint = SurfaceDemo.getInstance().utils.findConnectedPoint(tempPoint, alAlreadyAddedPoints, true);
 			if (tempPoint != null) {
 				tempPoint.setColor(Color.GREEN);
-				alAlreadyAddedPoints.add(tempPoint);
+				alAlreadyAddedPoints.add(tempPoint.id);
+				System.out.println(tempPoint.id);
 			}
 
 			if (tempPoint == null) {
@@ -439,11 +477,10 @@ public class CutThread extends SwingWorker<String, Object> {
 		return angleDeltaDeg;
 	}
 
-	public boolean listContainsPoint(MyPickablePoint p, List<MyPickablePoint> list) {
-		for (MyPickablePoint myPickablePoint : list) {
-			if (myPickablePoint.id == p.id)
+	public boolean listContainsPoint(MyPickablePoint p, List<Integer> list) {
+		for (Integer pId : list) {
+			if (p.id == pId)
 				return true;
-
 		}
 		return false;
 	}

@@ -23,7 +23,7 @@ import pb.Message.Container;
 import pb.Types.ContainerType;
 
 public class BBBStatus implements Runnable {
-	private final static int REQUEST_TIMEOUT = 2500; 
+	private final static int REQUEST_TIMEOUT = 2500;
 	public static BBBStatus instance;
 	private org.zeromq.ZMQ.Socket socket = null;
 	ByteArrayInputStream is;
@@ -105,8 +105,8 @@ public class BBBStatus implements Runnable {
 		while (shouldRead) {
 			PollItem[] pollItems = new PollItem[] { new PollItem(socket, Poller.POLLIN) };
 			int rc = ZMQ.poll(pollItems, 1, 100);
-            if (rc == -1)
-                break;          //  Interrupted
+			if (rc == -1)
+				break; // Interrupted
 			for (int l = 0; l < rc; l++) {
 				ZMsg msg = ZMsg.recvMsg(socket, REQUEST_TIMEOUT);
 				ZFrame frame = null;
@@ -177,8 +177,12 @@ public class BBBStatus implements Runnable {
 											SurfaceDemo.getInstance().utils.rotatePoints(BBBStatus.instance.a, false, false);
 											SurfaceDemo.getInstance().getPlasma().setPosition(coord);
 										}
-										
-										SurfaceDemo.getInstance().redrawPosition();
+
+										try {
+											SurfaceDemo.getInstance().redrawPosition();
+										} catch (Exception ex) {
+											ex.getSuppressed();
+										}
 									}
 								}
 							} else if (contReturned.getType().equals(ContainerType.MT_PING)) {

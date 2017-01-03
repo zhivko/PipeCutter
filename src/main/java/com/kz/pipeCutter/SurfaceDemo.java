@@ -927,7 +927,7 @@ public class SurfaceDemo extends AbstractAnalysis {
 		edgeIt = utils.edges.values().iterator();
 		while (edgeIt.hasNext()) {
 			MyEdge edge = edgeIt.next();
-			if (edge.length >= minLength * 0.5) {
+			if (edge.length >= minLength * 0.5 && edge.edgeType ==  MyEdge.EdgeType.NORMAL) {
 				MyPickablePoint p1 = SurfaceDemo.instance.utils.points.get(edge.points.get(0));
 				MyPickablePoint p2 = SurfaceDemo.instance.utils.points.get(edge.points.get(1));
 

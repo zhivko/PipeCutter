@@ -258,7 +258,7 @@ public class MyEdge {
 	public void setToCut(boolean toCut) {
 		this.toCut = toCut;
 		if(!this.toCut )
-			this.lineStrip.setWireframeColor(Color.BLUE);
+			this.lineStrip.setWireframeColor(Color.GRAY);
 		else
 			this.lineStrip.setWireframeColor(Color.RED);
 	}

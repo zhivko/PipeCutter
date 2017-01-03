@@ -239,7 +239,7 @@ public class CutThread extends SwingWorker<String, Object> {
 				// if (p.id == 279) {
 				// System.out.println("");
 				// }
-				if (p.xyz.y > minY && p.xyz.y <= maxY && Math.abs(p.getZ() - topZ) < 0.001) {
+				if (p.xyz.y >= minY && p.xyz.y <= maxY && Math.abs(p.getZ() - topZ) < 0.001) {
 					{
 						if (withoutLastPoints) {
 							if (!listContainsPoint(p, firstPoints)) {
@@ -296,7 +296,7 @@ public class CutThread extends SwingWorker<String, Object> {
 			if (sumAngle >= 360.0)
 				rotationDirection = -1;
 			double angle = rotationDirection * 90.0d;
-			SurfaceDemo.getInstance().utils.rotatePoints(angle, true);
+			SurfaceDemo.getInstance().utils.rotatePoints(angle, false);
 
 		}
 	}

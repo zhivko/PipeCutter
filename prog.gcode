@@ -101,45 +101,5 @@ G01 X29.58 Y250.00 Z63.3 A356.7857 B356.7857 F400.0 (move length: 1.0 speed:400.
 G01 X0.00 Y250.00 Z61.5 A360.0000 B360.0000 F12.1 (move length: 33.0 speed:400.0 p:1263, e:NORMAL no:2027)
 M5
 G00 X0.00 Y250.00 Z106.4 A360.0000 B360.0000 F26.8 (move length: 44.9 speed:1200.0, e:) (pointId: -100000)
-G00 X-38.76 Y82.58 Z106.4 A-90.0000 B-90.0000 F7.0 (move length: 171.8 speed:1200.0, e:) (pointId: -100000)
-G00 X-38.76 Y82.58 Z50.0 A-90.0000 B-90.0000 F21.3 (move length: 56.4 speed:1200.0, e:)
-M3 S400
-G04 P0.400
-G01 X-38.76 Y82.58 Z41.5 A-90.0000 B-90.0000 F47.1 (move length: 8.5 speed:400.0 p:1309, e:)
-G01 X-39.28 Y82.23 Z41.5 A-90.0000 B-90.0000 F636.7 (move length: 0.6 speed:400.0 p:592, e:NORMAL no:1684)
-M5
-G00 X-38.24 Y82.94 Z106.4 A-90.0000 B-90.0000 F18.5 (move length: 64.9 speed:1200.0, e:) (pointId: -100000)
-G00 X-38.24 Y82.94 Z50.0 A-90.0000 B-90.0000 F21.3 (move length: 56.4 speed:1200.0, e:)
-M3 S400
-G04 P0.400
-G01 X-38.24 Y82.94 Z41.5 A-90.0000 B-90.0000 F47.1 (move length: 8.5 speed:400.0 p:591, e:)
-M5
-G00 X-43.23 Y80.31 Z106.4 A-90.0000 B-90.0000 F18.4 (move length: 65.1 speed:1200.0, e:) (pointId: -100000)
-G00 X-43.23 Y80.31 Z50.0 A-90.0000 B-90.0000 F21.3 (move length: 56.4 speed:1200.0, e:)
-M3 S400
-G04 P0.400
-G01 X-43.23 Y80.31 Z41.5 A-90.0000 B-90.0000 F47.1 (move length: 8.5 speed:400.0 p:1313, e:)
-G01 X-43.82 Y80.10 Z41.5 A-90.0000 B-90.0000 F636.7 (move length: 0.6 speed:400.0 p:596, e:NORMAL no:1692)
-M5
-G00 X-42.64 Y80.52 Z106.4 A-90.0000 B-90.0000 F18.5 (move length: 64.9 speed:1200.0, e:) (pointId: -100000)
-G00 X-42.64 Y80.52 Z50.0 A-90.0000 B-90.0000 F21.3 (move length: 56.4 speed:1200.0, e:)
-M3 S400
-G04 P0.400
-G01 X-42.64 Y80.52 Z41.5 A-90.0000 B-90.0000 F47.1 (move length: 8.5 speed:400.0 p:595, e:)
-M5
-G00 X-45.64 Y79.61 Z106.4 A-90.0000 B-90.0000 F18.5 (move length: 64.9 speed:1200.0, e:) (pointId: -100000)
-G00 X-45.64 Y79.61 Z50.0 A-90.0000 B-90.0000 F21.3 (move length: 56.4 speed:1200.0, e:)
-M3 S400
-G04 P0.400
-G01 X-45.64 Y79.61 Z41.5 A-90.0000 B-90.0000 F47.1 (move length: 8.5 speed:400.0 p:1315, e:)
-G01 X-46.25 Y79.47 Z41.5 A-90.0000 B-90.0000 F636.7 (move length: 0.6 speed:400.0 p:598, e:NORMAL no:1696)
-M5
-G00 X-45.03 Y79.75 Z106.4 A-90.0000 B-90.0000 F18.5 (move length: 64.9 speed:1200.0, e:) (pointId: -100000)
-G00 X-45.03 Y79.75 Z50.0 A-90.0000 B-90.0000 F21.3 (move length: 56.4 speed:1200.0, e:)
-M3 S400
-G04 P0.400
-G01 X-45.03 Y79.75 Z41.5 A-90.0000 B-90.0000 F47.1 (move length: 8.5 speed:400.0 p:597, e:)
-M5
-G00 X-45.03 Y79.75 Z106.4 A-90.0000 B-90.0000 F18.5 (move length: 64.9 speed:1200.0, e:) (pointId: -100000)
 G94
 M2

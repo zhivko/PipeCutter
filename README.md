@@ -139,6 +139,10 @@ change to use only ipv4
 sudo nano /etc/avahi/avahi-daemon.conf
 use-ipv6=no
 ```
+***Enable lingering for long running processes started with machinekit user***
+```
+loginctl enable-linger machinekit
+```
 
 ##flashing eMMC from uSD card
 

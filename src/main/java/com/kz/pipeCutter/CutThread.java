@@ -301,41 +301,6 @@ public class CutThread extends SwingWorker<String, Object> {
 		}
 	}
 
-	public double followThePath1(MyPickablePoint myPoint, ArrayList<Integer> alAlreadyAddedPoints, Boolean order) {
-
-		MyPickablePoint tempPoint = myPoint;
-		MyPickablePoint prevPoint = myPoint;
-		prevPoint = tempPoint;
-		boolean shouldBreak = false;
-		while (!shouldBreak) {
-			SurfaceDemo.getInstance().move(tempPoint, true, cutOffsetMm);
-
-			if (tempPoint != null) {
-				tempPoint.setColor(Color.GREEN);
-				alAlreadyAddedPoints.add(tempPoint.id);
-			}
-			tempPoint = SurfaceDemo.getInstance().utils.findConnectedPoint(tempPoint, alAlreadyAddedPoints, true);
-			if (tempPoint == null) {
-				shouldBreak = true;
-				tempPoint = myPoint;
-			}
-
-			double angleDelta = rotation(prevPoint, tempPoint);
-			// System.out.println(prevPoint.id + " " + tempPoint.id + " " +
-			// angleDelta);
-			prevPoint = tempPoint;
-		}
-		SurfaceDemo.getInstance().move(tempPoint, true, cutOffsetMm);
-		prevPoint = tempPoint;
-		tempPoint = SurfaceDemo.getInstance().utils.findConnectedPoint(tempPoint, alAlreadyAddedPoints, true);
-		if (tempPoint != null) {
-			double angle = rotation(prevPoint, tempPoint);
-			return angle;
-		}
-		return 0.0d;
-
-	}	
-	
 	public double followThePath(MyPickablePoint myPoint, ArrayList<Integer> alAlreadyAddedPoints, Boolean order) {
 
 		MyPickablePoint tempPoint = myPoint;

@@ -84,31 +84,31 @@ public class BBBHalCommand implements Runnable {
 
 	public static void main(String[] args) {
 		String halCmdUri = "";
-		Discoverer disc = new Discoverer();
-		disc.discover();
-		ArrayList<ServiceInfo> al = disc.getDiscoveredServices();
-
-		long time = System.currentTimeMillis();
-
-		while (halCmdUri.equals("")) {
-			for (ServiceInfo si : al) {
-				if (si.getName().matches("HAL Rcommand.*")) {
-					halCmdUri = "tcp://" + si.getServer() + ":" + si.getPort() + "/";
-					break;
-				}
-			}
-			if (!halCmdUri.equals(""))
-				break;
-			try {
-				System.out.println("Still looking for halcmd service.");
-				Thread.currentThread().sleep(1000);
-				if (System.currentTimeMillis() - time > 5000)
-					break;
-			} catch (InterruptedException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-		}
+//		Discoverer disc = new Discoverer();
+//		disc.discover();
+//		ArrayList<ServiceInfo> al = disc.getDiscoveredServices();
+//
+//		long time = System.currentTimeMillis();
+//
+//		while (halCmdUri.equals("")) {
+//			for (ServiceInfo si : al) {
+//				if (si.getName().matches("HAL Rcommand.*")) {
+//					halCmdUri = "tcp://" + si.getServer() + ":" + si.getPort() + "/";
+//					break;
+//				}
+//			}
+//			if (!halCmdUri.equals(""))
+//				break;
+//			try {
+//				System.out.println("Still looking for halcmd service.");
+//				Thread.currentThread().sleep(1000);
+//				if (System.currentTimeMillis() - time > 5000)
+//					break;
+//			} catch (InterruptedException e) {
+//				// TODO Auto-generated catch block
+//				e.printStackTrace();
+//			}
+//		}
 
 		if (halCmdUri.equalsIgnoreCase(""))
 			halCmdUri = "tcp://beaglebone.local:6202";

@@ -158,7 +158,7 @@ public class BBBError implements Runnable {
 
 	public boolean isAlive() {
 		if (this.lastPingMs != 0)
-			return (System.currentTimeMillis() - this.lastPingMs > 1000);
+			return (System.currentTimeMillis() - this.lastPingMs < 3000);
 		else
 			return false;
 	}

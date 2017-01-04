@@ -58,9 +58,10 @@ public class MachineKitStart extends SSH_Command {
 			// channelShell.setXForwarding(true);
 			channelShell.connect(3 * 1000);
 
-			//String command = "source ~/git/machinekit/scripts/rip-environment";
-			//ps.println(command);
-			String command = "machinekit ~/git/machinekit/myini/CRAMPS.ini &";
+			String command = "source ~/git/machinekitMulticore/scripts/rip-environment";
+			ps.println(command);
+			command = "machinekit ~/git/machinekit/myini/CRAMPS.ini &";
+			//String command = "machinekit ~/git/machinekit/myini/CRAMPS.ini &";
 			//String command = "DEBUG=5 machinekit  ~/git/machinekit-multicore/myini/CRAMPS.ini &";
 			ps.println(command);
 			readOutput(channelShell);

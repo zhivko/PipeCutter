@@ -322,6 +322,26 @@
 
 				<executions>
 					<execution>
+						<id>make-BBBHalCommand MT_PING</id>
+						<!-- bind to the packaging phase -->
+						<phase>package</phase>
+						<goals>
+							<goal>single</goal>
+						</goals>
+						<configuration>
+							<finalName>test_BBBHalCommand_MT_PING</finalName>
+							<descriptorRefs>
+								<descriptorRef>jar-with-dependencies</descriptorRef>
+							</descriptorRefs>
+							<!-- MainClass in mainfest make a executable jar -->
+							<archive>
+								<manifest>
+									<mainClass>com.kz.pipeCutter.BBB.BBBHalCommand</mainClass>
+								</manifest>
+							</archive>
+						</configuration>
+					</execution>
+										<execution>
 						<id>make-Test_MT_HALRCOMMAND_DESCRIBE</id>
 						<!-- bind to the packaging phase -->
 						<phase>package</phase>

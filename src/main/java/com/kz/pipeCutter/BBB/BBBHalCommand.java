@@ -87,6 +87,9 @@ public class BBBHalCommand implements Runnable {
 		Discoverer disc = new Discoverer();
 		disc.discover();
 		ArrayList<ServiceInfo> al = disc.getDiscoveredServices();
+
+		long time = System.currentTimeMillis();
+
 		while (halCmdUri.equals("")) {
 			for (ServiceInfo si : al) {
 				if (si.getName().matches("HAL Rcommand.*")) {
@@ -99,18 +102,25 @@ public class BBBHalCommand implements Runnable {
 			try {
 				System.out.println("Still looking for halcmd service.");
 				Thread.currentThread().sleep(1000);
+				if (System.currentTimeMillis() - time > 5000)
+					break;
 			} catch (InterruptedException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 		}
 
-		// String halCmdUri = "tcp://beaglebone.local.:49155/";
+		if (halCmdUri.equalsIgnoreCase(""))
+			halCmdUri = "tcp://beaglebone.local:6202";
+		// // String halCmdUri = "tcp://beaglebone.local.:49155/";
+		System.out.println("Expecting halcmd uri at: " + halCmdUri);
 		BBBHalCommand halCmd = new BBBHalCommand(halCmdUri);
-		halCmd.socketUri = halCmdUri;
-		halCmd.getSocket();
-		Thread myThread = new Thread(halCmd);
-		myThread.start();
+		halCmd.initSocket();
+
+		halCmd.ping();
+		System.out.println("MT_PING sent");
+
+		System.exit(0);
 
 	}
 
@@ -151,7 +161,8 @@ public class BBBHalCommand implements Runnable {
 							} else if (contReturned.getType().equals(ContainerType.MT_PING_ACKNOWLEDGE)) {
 								this.lastPingMs = System.currentTimeMillis();
 								MachinekitSettings.instance.pingHalCommand();
-								if (BBBStatus.getInstance().isAlive() && !BBBHalRComp.getInstance().isBinded && !BBBHalRComp.getInstance().isTryingToBind) {
+								if (BBBStatus.getInstance().isAlive() && !BBBHalRComp.getInstance().isBinded
+										&& !BBBHalRComp.getInstance().isTryingToBind) {
 									// if (BBBHalRComp.getInstance().isAlive())
 									BBBHalRComp.getInstance().startBind();
 								}
@@ -239,16 +250,7 @@ public class BBBHalCommand implements Runnable {
 			public void run() {
 				while (!pingThreadShouldEnd) {
 					if (BBBHalCommand.this.shouldPing) {
-						pb.Message.Container.Builder builder = Container.newBuilder();
-						builder.setType(ContainerType.MT_PING);
-						Container container = builder.build();
-						byte[] buff = container.toByteArray();
-
-						// String hexOutput =
-						// javax.xml.bind.DatatypeConverter.printHexBinary(buff);
-						// System.out.println("PING Message: " + hexOutput);
-
-						socket.send(buff, 0);
+						ping();
 					}
 					try {
 						Thread.sleep(pingDelay);
@@ -261,6 +263,19 @@ public class BBBHalCommand implements Runnable {
 			}
 		});
 		pingThread.start();
+	}
+
+	public void ping() {
+		pb.Message.Container.Builder builder = Container.newBuilder();
+		builder.setType(ContainerType.MT_PING);
+		Container container = builder.build();
+		byte[] buff = container.toByteArray();
+
+		// String hexOutput =
+		// javax.xml.bind.DatatypeConverter.printHexBinary(buff);
+		// System.out.println("PING Message: " + hexOutput);
+
+		socket.send(buff, 0);
 	}
 
 	public Socket getSocket() {

@@ -58,16 +58,20 @@ public class MachineKitStart extends SSH_Command {
 			// channelShell.setXForwarding(true);
 			channelShell.connect(3 * 1000);
 
-			String command = "source ~/git/machinekitMulticore/scripts/rip-environment";
-			ps.println(command);
+			String command;
+
+			int config = 1;
+			if (config == 0) {
+				command = "source ~/git/machinekit/scripts/rip-environment";
+				ps.println(command);
+			} else if (config == 1) {
+				command = "source ~/git/machinekitMulticore/scripts/rip-environment";
+				ps.println(command);
+			}
 			command = "machinekit ~/git/machinekit/myini/CRAMPS.ini &";
-			//String command = "machinekit ~/git/machinekit/myini/CRAMPS.ini &";
-			//String command = "DEBUG=5 machinekit  ~/git/machinekit-multicore/myini/CRAMPS.ini &";
 			ps.println(command);
 			readOutput(channelShell);
-
 		}
-
 	}
 
 	private void readOutput(ChannelShell channelShell) throws IOException, InterruptedException {
@@ -106,10 +110,10 @@ public class MachineKitStart extends SSH_Command {
 				}
 
 				if (noOfserviceStarted == 5) {
-					//if all 5 services are started from mkwrapper
-					//start also halcmd and halrcomp
-					//Settings.instance.log("Starting discoverer...");
-					//Discoverer.getInstance().discover();
+					// if all 5 services are started from mkwrapper
+					// start also halcmd and halrcomp
+					// Settings.instance.log("Starting discoverer...");
+					// Discoverer.getInstance().discover();
 					Settings.instance.log("Init HalCmd dealer");
 					Settings.instance.initHalCmdService();
 					Settings.instance.log("Init HalRComp XSUB subscriber");
@@ -118,6 +122,5 @@ public class MachineKitStart extends SSH_Command {
 			}
 		}
 	}
-
 
 }

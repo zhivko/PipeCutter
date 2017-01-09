@@ -302,13 +302,14 @@ public class Settings extends JFrame {
 						@Override
 						public void run() {
 							// TODO Auto-generated method stub
+							Settings.instance.pingBBB();
+
 							initErrorService();
 							initStatusService();
 							initHalCmdService();
 							initHalRcompService();
 							// initPreviewStatusService();
 
-							Settings.instance.pingBBB();
 						}
 					});
 

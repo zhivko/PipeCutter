@@ -478,8 +478,16 @@ public class Utils {
 			edgeDescription = edge.edgeType + " no:" + edge.edgeNo; // + " length=" +
 		// edge.length ;
 		if (cut)
+		{
+//			Point point = calculateOffsetPoint(p);
+//			float x1=point.xyz.x;
+//			float y1=point.xyz.y;
+//			float z1=point.xyz.z;
+
 			ret = String.format(java.util.Locale.US, "X%.2f Y%.2f Z%.1f A%.4f B%.4f F%.1f (move length: %.1f speed:%.1f p:%d, e:%s)", x, y, z, angle, angle,
 					feed, length, calcSpeed, p.id, edgeDescription);
+			
+		}
 		else
 			ret = String.format(java.util.Locale.US, "X%.2f Y%.2f Z%.1f A%.4f B%.4f F%.1f (move length: %.1f speed:%.1f, e:%s)", x, y, z, angle, angle,
 					feed, length, calcSpeed, edgeDescription);

@@ -363,6 +363,10 @@ CRAMPS_P503_2 MISO P929 ...  for thc voltage from mesa thc 10v - needs to go to 
 CRAMPS_P503_6 MOSI P930 ...  arc OK - transfer start CNC machine motion
 CRAMPS_P503_4 SCK  P931 ...  plasma start physically connected to 3.3V relay
 ```
+Fritzing connections below:
+![Fritzing pipecuter setup](https://raw.githubusercontent.com/zhivko/PipeCutter/master/screenshots/PipeCutter_bb.png)
+
+
 ##THCAD
 [THCAD 10V manual](./screenshots/THCAD_10v.pdf)
 <br>
@@ -371,6 +375,9 @@ OUTPUT FREQUENCY switch: use F/32: 1000000Hz/32 = 31250Hz
 UNIPOLAR (0V to +10V)/ BIPOLAR MODE (-5V to +5V) switch: use unipolar (0V to +10V)
 <br>
 ![THCAD_10V](https://raw.githubusercontent.com/zhivko/PipeCutter/master/screenshots/THCAD_10V.png)
+Thcad calibration:
+![THCAD_10V](https://raw.githubusercontent.com/zhivko/PipeCutter/master/screenshots/thcad10_calibration.ods)
+
 ##Linuxcnc thc − Torch Height Control component
 [Linuxcnc THC comp](http://linuxcnc.org/docs/html/man/man9/thc.9.html)
 

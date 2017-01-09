@@ -1,15 +1,9 @@
 package com.kz.pipeCutter.BBB;
 
-import java.nio.charset.Charset;
-import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Random;
 import java.util.concurrent.TimeUnit;
 
-import javax.jmdns.ServiceInfo;
-
-import org.apache.log4j.Logger;
 import org.zeromq.ZContext;
 import org.zeromq.ZFrame;
 import org.zeromq.ZMQ;
@@ -84,34 +78,34 @@ public class BBBHalCommand implements Runnable {
 
 	public static void main(String[] args) {
 		String halCmdUri = "";
-//		Discoverer disc = new Discoverer();
-//		disc.discover();
-//		ArrayList<ServiceInfo> al = disc.getDiscoveredServices();
-//
-//		long time = System.currentTimeMillis();
-//
-//		while (halCmdUri.equals("")) {
-//			for (ServiceInfo si : al) {
-//				if (si.getName().matches("HAL Rcommand.*")) {
-//					halCmdUri = "tcp://" + si.getServer() + ":" + si.getPort() + "/";
-//					break;
-//				}
-//			}
-//			if (!halCmdUri.equals(""))
-//				break;
-//			try {
-//				System.out.println("Still looking for halcmd service.");
-//				Thread.currentThread().sleep(1000);
-//				if (System.currentTimeMillis() - time > 5000)
-//					break;
-//			} catch (InterruptedException e) {
-//				// TODO Auto-generated catch block
-//				e.printStackTrace();
-//			}
-//		}
+		// Discoverer disc = new Discoverer();
+		// disc.discover();
+		// ArrayList<ServiceInfo> al = disc.getDiscoveredServices();
+		//
+		// long time = System.currentTimeMillis();
+		//
+		// while (halCmdUri.equals("")) {
+		// for (ServiceInfo si : al) {
+		// if (si.getName().matches("HAL Rcommand.*")) {
+		// halCmdUri = "tcp://" + si.getServer() + ":" + si.getPort() + "/";
+		// break;
+		// }
+		// }
+		// if (!halCmdUri.equals(""))
+		// break;
+		// try {
+		// System.out.println("Still looking for halcmd service.");
+		// Thread.currentThread().sleep(1000);
+		// if (System.currentTimeMillis() - time > 5000)
+		// break;
+		// } catch (InterruptedException e) {
+		// // TODO Auto-generated catch block
+		// e.printStackTrace();
+		// }
+		// }
 
 		if (halCmdUri.equalsIgnoreCase(""))
-			halCmdUri = "tcp://beaglebone.local:6202";
+			halCmdUri = "tcp://machinekit.local:6202";
 		// // String halCmdUri = "tcp://beaglebone.local.:49155/";
 		System.out.println("Expecting halcmd uri at: " + halCmdUri);
 		BBBHalCommand halCmd = new BBBHalCommand(halCmdUri);
@@ -161,8 +155,7 @@ public class BBBHalCommand implements Runnable {
 							} else if (contReturned.getType().equals(ContainerType.MT_PING_ACKNOWLEDGE)) {
 								this.lastPingMs = System.currentTimeMillis();
 								MachinekitSettings.instance.pingHalCommand();
-								if (BBBStatus.getInstance().isAlive() && !BBBHalRComp.getInstance().isBinded
-										&& !BBBHalRComp.getInstance().isTryingToBind) {
+								if (BBBStatus.getInstance().isAlive() && !BBBHalRComp.getInstance().isBinded && !BBBHalRComp.getInstance().isTryingToBind) {
 									// if (BBBHalRComp.getInstance().isAlive())
 									BBBHalRComp.getInstance().startBind();
 								}
@@ -231,8 +224,8 @@ public class BBBHalCommand implements Runnable {
 		// Set random identity to make tracing easier
 		socket = ctx.createSocket(ZMQ.DEALER);
 		socket.setIdentity(identity.getBytes());
-		socket.setReceiveTimeOut(15);
-		socket.setSendTimeOut(1000);
+		socket.setReceiveTimeOut(0);
+		socket.setSendTimeOut(0);
 		socket.connect(this.socketUri);
 
 		readThread = new Thread(this);
@@ -274,8 +267,18 @@ public class BBBHalCommand implements Runnable {
 		// String hexOutput =
 		// javax.xml.bind.DatatypeConverter.printHexBinary(buff);
 		// System.out.println("PING Message: " + hexOutput);
-
-		socket.send(buff, 0);
+		socket.send(buff);
+//		final ZMsg request = ZMsg.newStringMsg();
+//
+//		request.addFirst(new ZFrame(buff));
+//		//request.addFirst(new ZFrame(socket.getIdentity()));
+//		
+//		request.send(socket);
+//		final ZMsg reply = ZMsg.recvMsg(socket);
+//		if (reply != null) {
+//			String reply1 = new String(reply.getFirst().getData());
+//			System.out.println(reply1);
+//		}
 	}
 
 	public Socket getSocket() {

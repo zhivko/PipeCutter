@@ -352,7 +352,7 @@ public class CutThread extends SwingWorker<String, Object> {
 			axis = offPointAndPlane.plane.getNormal().scalarMultiply(-1);
 
 			double angleDelta = Math.PI / 20.0d;
-			for (double angle = 0; angle < Math.PI; angle = angle + angleDelta) {
+			for (double angle = (Math.PI/2.0d); angle < Math.PI; angle = angle + angleDelta) {
 				System.out.println(angle * 180 / Math.PI);
 				Rotation rotat2 = new Rotation(axis, angle);
 				Vector3D rotatedVec = rotat2.applyTo(delta);

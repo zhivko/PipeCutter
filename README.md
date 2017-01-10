@@ -376,6 +376,7 @@ UNIPOLAR (0V to +10V)/ BIPOLAR MODE (-5V to +5V) switch: use unipolar (0V to +10
 <br>
 ![THCAD_10V](https://raw.githubusercontent.com/zhivko/PipeCutter/master/screenshots/THCAD_10V.png)
 Thcad calibration:
+<br>
 ![THCAD_10V](https://raw.githubusercontent.com/zhivko/PipeCutter/master/screenshots/thcad10_calibration.ods)
 
 ##Linuxcnc thc − Torch Height Control component

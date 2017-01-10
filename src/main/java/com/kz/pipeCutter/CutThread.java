@@ -360,7 +360,7 @@ public class CutThread extends SwingWorker<String, Object> {
 				Vector3D leadPoint = vect3Dcent.add(rotatedVec);
 				Point3d c = new Point3d((float) leadPoint.getX(), (float) leadPoint.getY(), (float) leadPoint.getZ());
 				MyPickablePoint p = new MyPickablePoint(-1, c, Color.MAGENTA, .5f, -1);
-				if (angle == 0) {
+				if (angle == (Math.PI/2.0d)) {
 					SurfaceDemo.instance.redrawPosition();
 					SurfaceDemo.getInstance().moveAbove(p, pierceOffsetMm, pierceTimeMs);
 				} else

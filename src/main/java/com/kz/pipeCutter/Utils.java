@@ -858,7 +858,7 @@ public class Utils {
 
 		System.out.println(continuousEdge.edgeType);
 		Vector3D result = null;
-		if (continuousEdge.edgeType == MyContinuousEdge.EdgeType.ONPIPE) {
+//		if (continuousEdge.edgeType == MyContinuousEdge.EdgeType.ONPIPE) {
 
 			Vector3D p1 = new Vector3D(-this.maxX, this.maxY, this.maxZ);
 			Vector3D p2 = new Vector3D(this.maxX, this.maxY, this.maxZ);
@@ -983,15 +983,15 @@ public class Utils {
 				ret.point.xyz.y = (float) result.getY();
 				ret.point.xyz.z = (float) result.getZ();
 			}
-		} else {
-			Vector3D vecOffset = new Vector3D(0, Math.signum(point.xyz.y) * SurfaceDemo.instance.getKerfOffset(), 0);
-			result = vecPoint.add(vecOffset);
-			ret.point.xyz.x = (float) result.getX();
-			ret.point.xyz.y = (float) result.getY();
-			ret.point.xyz.z = (float) result.getZ();
-			Plane p = new Plane(vecPoint, vecOffset, vecPrevPoint, Math_E);
-			ret.plane = p;
-		}
+//		} else {
+//			Vector3D vecOffset = new Vector3D(0, Math.signum(point.xyz.y) * SurfaceDemo.instance.getKerfOffset(), 0);
+//			result = vecPoint.add(vecOffset);
+//			ret.point.xyz.x = (float) result.getX();
+//			ret.point.xyz.y = (float) result.getY();
+//			ret.point.xyz.z = (float) result.getZ();
+//			Plane p = new Plane(vecPoint, vecOffset, vecPrevPoint, Math_E);
+//			ret.plane = p;
+//		}
 
 		MyEdge edg1 = getEdgeFromTwoPoints(point, nextPoint);
 		MyEdge edg2 = getEdgeFromTwoPoints(point, prevPoint);

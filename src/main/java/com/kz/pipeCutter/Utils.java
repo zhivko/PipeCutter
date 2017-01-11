@@ -416,7 +416,7 @@ public class Utils {
 		return coordinateToGcode(p, 0, false);
 	}
 
-	public String coordinateToGcode(MyPickablePoint p, float zOffset, boolean cut) {
+	public String coordinateToGcode(MyPickablePoint p, float zOffset, boolean fast) {
 		// G93.1
 		// http://www.eng-tips.com/viewthread.cfm?qid=200454
 
@@ -433,7 +433,7 @@ public class Utils {
 
 		MyEdge edge = null;
 		float calcSpeed = 0;
-		if (cut) {
+		if (fast) {
 			calcSpeed = SurfaceDemo.instance.g1Speed;
 		} else
 			calcSpeed = SurfaceDemo.instance.g0Speed;
@@ -477,7 +477,7 @@ public class Utils {
 		if (edge != null)
 			edgeDescription = edge.edgeType + " no:" + edge.edgeNo; // + " length=" +
 		// edge.length ;
-		if (cut)
+		if (fast)
 		{
 //			Point point = calculateOffsetPoint(p);
 //			float x1=point.xyz.x;

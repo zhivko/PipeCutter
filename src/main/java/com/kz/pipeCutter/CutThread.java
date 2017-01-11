@@ -16,6 +16,7 @@ import org.apache.commons.math3.geometry.euclidean.threed.Line;
 import org.apache.commons.math3.geometry.euclidean.threed.Rotation;
 import org.apache.commons.math3.geometry.euclidean.threed.Vector3D;
 import org.jzy3d.colors.Color;
+import org.jzy3d.maths.Coord3d;
 import org.jzy3d.plot3d.primitives.Point;
 
 import com.kz.pipeCutter.ui.Settings;
@@ -172,8 +173,9 @@ public class CutThread extends SwingWorker<String, Object> {
 		// 20.0f, Settings.getInstance().getSetting("gcode_feedrate_g0")));
 
 		double diagonal = (SurfaceDemo.getInstance().utils.maxEdge * Math.sqrt(2.0f));
-		SurfaceDemo.instance.writeToGcodeFile(String.format(Locale.US, "G00 X%.3f Y%.3f Z%.3f F%s", SurfaceDemo.instance.utils.previousPoint.x,
-				SurfaceDemo.instance.utils.previousPoint.y, diagonal / 2.0f + 20.0f, Settings.getInstance().getSetting("gcode_feedrate_g0")));
+		SurfaceDemo.instance.writeToGcodeFile(String.format(Locale.US, "G00 X%.3f Y%.3f Z%.3f F%s",
+				SurfaceDemo.instance.utils.previousPoint.x, SurfaceDemo.instance.utils.previousPoint.y, diagonal / 2.0f + 20.0f,
+				Settings.getInstance().getSetting("gcode_feedrate_g0")));
 
 		// double diagonal = (SurfaceDemo.getInstance().utils.maxEdge *
 		// Math.sqrt(2.0f));
@@ -273,8 +275,8 @@ public class CutThread extends SwingWorker<String, Object> {
 					for (MyPickablePoint myPoint : pointsToCut) {
 						if (!listContainsPoint(myPoint, alAlreadyAddedPoints) && Math.abs(myPoint.getZ() - topZ) < 0.1) {
 							double diagonal = (SurfaceDemo.getInstance().utils.maxEdge * Math.sqrt(2.0f));
-							MyPickablePoint safeRetractPoint = new MyPickablePoint(-100000, new Point3d(myPoint.xyz.x, myPoint.xyz.y, diagonal / 2 + 20),
-									Color.BLACK, 0.4f, -200000);
+							MyPickablePoint safeRetractPoint = new MyPickablePoint(-100000,
+									new Point3d(myPoint.xyz.x, myPoint.xyz.y, diagonal / 2 + 20), Color.BLACK, 0.4f, -200000);
 							SurfaceDemo.getInstance().move(safeRetractPoint, false, cutOffsetMm, true);
 							double angle = followThePath(myPoint, this.alAlreadyAddedPoints, (rotationDirection == -1 ? true : false));
 							hasBeenCutting = true;
@@ -285,9 +287,8 @@ public class CutThread extends SwingWorker<String, Object> {
 
 			if (hasBeenCutting) {
 				double diagonal = (SurfaceDemo.getInstance().utils.maxEdge * Math.sqrt(2.0d));
-				MyPickablePoint newPoint = new MyPickablePoint(-100000,
-						new Point3d(SurfaceDemo.getInstance().cylinderPoint.xyz.x, SurfaceDemo.getInstance().cylinderPoint.xyz.y, diagonal / 2.0f + 20),
-						Color.BLACK, 0.4f, -200000);
+				MyPickablePoint newPoint = new MyPickablePoint(-100000, new Point3d(SurfaceDemo.getInstance().cylinderPoint.xyz.x,
+						SurfaceDemo.getInstance().cylinderPoint.xyz.y, diagonal / 2.0f + 20), Color.BLACK, 0.4f, -200000);
 				SurfaceDemo.getInstance().move(newPoint, false, cutOffsetMm, true);
 			}
 
@@ -302,6 +303,7 @@ public class CutThread extends SwingWorker<String, Object> {
 
 	public double followThePath(MyPickablePoint myPoint, ArrayList<Integer> alAlreadyAddedPoints, Boolean order) {
 
+		SurfaceDemo.getInstance().myTrail.clear();
 		MyPickablePoint tempPoint = myPoint;
 		MyPickablePoint prevPoint = myPoint;
 		prevPoint = tempPoint;
@@ -333,9 +335,10 @@ public class CutThread extends SwingWorker<String, Object> {
 			float radius = Float.valueOf(Settings.instance.getSetting("plasma_leadin_radius"));
 
 			Point offsetPoint = offPointAndPlane.point;
+			Vector3D vecMyPoint = new Vector3D(myPoint.point.x, myPoint.point.y, myPoint.point.z);
 			Vector3D vect3DoffPoint = new Vector3D(offsetPoint.getCoord().x, offsetPoint.getCoord().y, offsetPoint.getCoord().z);
 			Vector3D vect3DmyPoint = new Vector3D(myPoint.getCoord().x, myPoint.getCoord().y, myPoint.getCoord().z);
-			Vector3D delta = vect3DoffPoint.subtract(vect3DmyPoint).normalize().scalarMultiply(radius);
+			Vector3D delta = vect3DoffPoint.subtract(vecMyPoint).normalize().scalarMultiply(radius);
 			Vector3D vect3Dcent = vect3DmyPoint.add(delta);
 			Vector3D axis;
 			// Plane pl = new Plane(new Vector3D(myPoint.getX(), myPoint.getY(),
@@ -361,27 +364,41 @@ public class CutThread extends SwingWorker<String, Object> {
 				Point3d c = new Point3d((float) leadPoint.getX(), (float) leadPoint.getY(), (float) leadPoint.getZ());
 				if (angle == (Math.PI / 2.0d)) {
 					SurfaceDemo.instance.redrawPosition();
-					c.add(new Vector3d(0, 0, pierceOffsetMm));
+					//c.add(new Vector3d(0, 0, pierceOffsetMm));
 					MyPickablePoint p = new MyPickablePoint(-1, c, Color.MAGENTA, .5f, -1);
-					SurfaceDemo.getInstance().moveAbove(p, 0, pierceTimeMs);
+					c.add(new Vector3d(0,0,pierceOffsetMm));
+					Point p1 = new Point(new Coord3d(p.getX(), p.getY(), p.getZ() + pierceOffsetMm));
+					p1.setColor(Color.BLUE);
+					p1.setWidth(4f);
+					SurfaceDemo.getInstance().myTrail.add(p1);
+					SurfaceDemo.getInstance().moveAbove(p, pierceOffsetMm, pierceTimeMs);
+					Point p2 = new Point(new Coord3d(p.getX(), p.getY(), p.getZ() + cutOffsetMm));
+					p2.setColor(Color.BLUE);
+					p2.setWidth(4f);
+					SurfaceDemo.getInstance().myTrail.add(p2);
+					SurfaceDemo.getInstance().move(p, false, cutOffsetMm);
 				} else {
 					c.add(new Vector3d(0, 0, cutOffsetMm));
 					MyPickablePoint p = new MyPickablePoint(-1, c, Color.MAGENTA, .5f, -1);
-					SurfaceDemo.getInstance().move(p, true, 0);
+					Point p1 = new Point(new Coord3d(p.getX(), p.getY(), p.getZ() + cutOffsetMm));
+					p1.setColor(Color.BLUE);
+					p1.setWidth(4f);
+					SurfaceDemo.getInstance().myTrail.add(p1);
+					SurfaceDemo.getInstance().move(p, true, cutOffsetMm);
 				}
 			}
 		} else {
 			SurfaceDemo.getInstance().moveAbove(tempPoint, pierceOffsetMm, pierceTimeMs);
 		}
 
-		SurfaceDemo.getInstance().move(tempPoint, true, cutOffsetMm);
+		SurfaceDemo.getInstance().move(tempPoint, false, cutOffsetMm);
 		while (!shouldBreak) {
 			if (tempPoint != null) {
 				tempPoint.setColor(Color.GREEN);
 				alAlreadyAddedPoints.add(Integer.valueOf(tempPoint.id));
 			}
 			tempPoint = SurfaceDemo.getInstance().utils.findConnectedPoint(tempPoint, alAlreadyAddedPoints, true);
-
+			
 			if (tempPoint == null) {
 				shouldBreak = true;
 				tempPoint = myPoint;

@@ -86,6 +86,7 @@ public class SurfaceDemo extends AbstractAnalysis {
 	String angleTxt = "0";
 	public static SurfaceDemo instance;
 	public MyComposite myComposite;
+	public MyComposite myTrail;
 	public static boolean NUMBER_EDGES = false;
 	public static boolean NUMBER_POINTS = false;
 	public static boolean ZOOM_POINT = false;
@@ -974,7 +975,7 @@ public class SurfaceDemo extends AbstractAnalysis {
 				plasma = null;
 				instance.getChart().getScene().getGraph().remove(instance.myComposite);
 				myComposite = new MyComposite();
-				myComposite.clear();
+				myTrail = new MyComposite();
 				addAxis();
 				addCurrentRotation();
 				utils.edgeTexts = new ArrayList<PickableDrawableTextBitmap>();
@@ -1040,6 +1041,7 @@ public class SurfaceDemo extends AbstractAnalysis {
 					myComposite.add(utils.pointTexts);
 				}
 				instance.getChart().getScene().getGraph().add(instance.myComposite);
+				instance.getChart().getScene().getGraph().add(instance.myTrail);
 				// instance.canvas.getAnimator().start();
 				System.out.println("Composite element size: " + myComposite.getDrawables().size());
 				getPlasma();
@@ -1196,11 +1198,11 @@ public class SurfaceDemo extends AbstractAnalysis {
 		instance.getChart().resumeAnimator();
 	}
 
-	public void move(MyPickablePoint mp, boolean cut, float zOffset) {
-		move(mp, cut, zOffset, true);
+	public void move(MyPickablePoint mp, boolean slow, float zOffset) {
+		move(mp, slow, zOffset, true);
 	}
 
-	public void move(MyPickablePoint tempPoint, boolean cut, float zOffset, boolean writeToGCode) {
+	public void move(MyPickablePoint tempPoint, boolean slow, float zOffset, boolean writeToGCode) {
 		if (plasma == null) {
 			// cylinder = new Cylinder(tempPoint);
 			getPlasma();
@@ -1213,7 +1215,7 @@ public class SurfaceDemo extends AbstractAnalysis {
 		if (cylinderPoint == null)
 			cylinderPoint = new Point();
 
-		if (cut) {
+		if (slow) {
 			Color color = Color.RED;
 			color.a = 0.55f;
 			plasma.setColor(color);
@@ -1230,8 +1232,8 @@ public class SurfaceDemo extends AbstractAnalysis {
 		plasma.setPosition(offsetedPoint);
 
 		if (writeToGCode) {
-			String gcode = SurfaceDemo.instance.utils.coordinateToGcode(tempPoint, zOffset, cut);
-			if (cut) {
+			String gcode = SurfaceDemo.instance.utils.coordinateToGcode(tempPoint, zOffset, slow);
+			if (slow) {
 				writeToGcodeFile(String.format(java.util.Locale.US, "G01 %s", gcode));
 				alreadyCutting = true;
 			} else {

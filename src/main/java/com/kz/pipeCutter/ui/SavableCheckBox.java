@@ -47,7 +47,10 @@ public class SavableCheckBox extends SavableControl {
 		else
 			val = "False";
 
-		this.jCheckBox.setSelected(Boolean.valueOf(val));
+		if (val == "True" && !this.jCheckBox.isSelected())
+			this.jCheckBox.setSelected(Boolean.valueOf(val));
+		if (val == "False" && this.jCheckBox.isSelected())
+			this.jCheckBox.setSelected(Boolean.valueOf(val));
 	}
 
 	@Override

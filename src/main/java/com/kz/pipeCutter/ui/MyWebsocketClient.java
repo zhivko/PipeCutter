@@ -1,6 +1,7 @@
 package com.kz.pipeCutter.ui;
 
 import java.io.IOException;
+import java.net.URI;
 
 import javax.websocket.ClientEndpoint;
 import javax.websocket.OnClose;
@@ -12,6 +13,7 @@ import javax.websocket.Session;
 @ClientEndpoint
 public class MyWebsocketClient {
 	public Positioner positioner;
+	private URI uri;
 
 	public MyWebsocketClient(Positioner positioner) {
 		// TODO Auto-generated constructor stub
@@ -20,8 +22,9 @@ public class MyWebsocketClient {
 
 	@OnOpen
 	public void onOpen(Session session) {
+		this.uri = session.getRequestURI();
 		if(Settings.instance!=null)
-			Settings.instance.log("\tConnected to: " + session.getRequestURI());
+			Settings.instance.log("\tConnected to: " + uri);
 		this.positioner.isConnected = true;
 		
 		String reassignString = Settings.instance.getSetting("rotator_" + this.positioner.id + "_reassign");
@@ -45,12 +48,12 @@ public class MyWebsocketClient {
 			if (res[4].endsWith("1"))
 			{
 				positioner.m = true;
-				positioner.linkedJogEnableCheckBox.setParValue("1");
+				positioner.linkedJogEnableCheckBox.setParValue("True");
 			}
 			else
 			{
 				positioner.m = false;
-				positioner.linkedJogEnableCheckBox.setParValue("0");
+				positioner.linkedJogEnableCheckBox.setParValue("False");
 			}
 			positioner.initToolTips();
 		}
@@ -63,6 +66,8 @@ public class MyWebsocketClient {
 
 	@OnClose
 	public void onClose() {
+		if(Settings.instance!=null)
+			Settings.instance.log("\tDisconnected from: " + uri);
 		positioner.isConnected = false;
 	}
 

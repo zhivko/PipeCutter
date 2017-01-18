@@ -331,7 +331,7 @@ public class Positioner extends JPanel {
 	}
 
 	public void socketSend(String message) {
-		if (isConnected)
+		if (this.isConnected && wsSession!=null)
 			try {
 				wsSession.getBasicRemote().sendText(message);
 			} catch (IOException e1) {

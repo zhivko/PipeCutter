@@ -23,12 +23,15 @@ import org.apache.commons.math3.geometry.euclidean.threed.Vector3D;
 import org.apache.log4j.Logger;
 import org.jzy3d.colors.Color;
 import org.jzy3d.maths.Coord3d;
+import org.jzy3d.plot3d.primitives.AbstractDrawable;
 import org.jzy3d.plot3d.primitives.AbstractGeometry.PolygonMode;
 import org.jzy3d.plot3d.primitives.Point;
 import org.jzy3d.plot3d.primitives.Polygon;
 //import org.jzy3d.plot3d.primitives.Point;
 //import org.jzy3d.plot3d.primitives.Point;
 import org.jzy3d.plot3d.text.drawable.DrawableTextBitmap;
+import org.jzy3d.plot3d.transform.Rotate;
+import org.jzy3d.plot3d.transform.Transform;
 
 import com.kz.pipeCutter.ui.Settings;
 
@@ -40,8 +43,10 @@ public class Utils {
 	HashMap<String, MinYMaxY> minAndMaxY;
 	ConcurrentHashMap<Integer, MyPickablePoint> origPoints = null;
 
-	ArrayList<PickableDrawableTextBitmap> edgeTexts = null;
-	ArrayList<DrawableTextBitmap> pointTexts = null;
+	// ArrayList<PickableDrawableTextBitmap> edgeTexts = null;
+	// ArrayList<DrawableTextBitmap> pointTexts = null;
+	MyComposite edgeTexts = null;
+	MyComposite pointTexts = null;
 
 	public double maxX = 0;
 	public double minX = 0;
@@ -416,7 +421,7 @@ public class Utils {
 		return coordinateToGcode(p, 0, false);
 	}
 
-	public String coordinateToGcode(MyPickablePoint p, float zOffset, boolean fast) {
+	public String coordinateToGcode(MyPickablePoint p, float zOffset, boolean slow) {
 		// G93.1
 		// http://www.eng-tips.com/viewthread.cfm?qid=200454
 
@@ -433,7 +438,7 @@ public class Utils {
 
 		MyEdge edge = null;
 		float calcSpeed = 0;
-		if (fast) {
+		if (slow) {
 			calcSpeed = SurfaceDemo.instance.g1Speed;
 		} else
 			calcSpeed = SurfaceDemo.instance.g0Speed;
@@ -477,20 +482,18 @@ public class Utils {
 		if (edge != null)
 			edgeDescription = edge.edgeType + " no:" + edge.edgeNo; // + " length=" +
 		// edge.length ;
-		if (fast)
-		{
-//			Point point = calculateOffsetPoint(p);
-//			float x1=point.xyz.x;
-//			float y1=point.xyz.y;
-//			float z1=point.xyz.z;
+		if (slow) {
+			// Point point = calculateOffsetPoint(p);
+			// float x1=point.xyz.x;
+			// float y1=point.xyz.y;
+			// float z1=point.xyz.z;
 
-			ret = String.format(java.util.Locale.US, "X%.2f Y%.2f Z%.1f A%.4f B%.4f F%.1f (move length: %.1f speed:%.1f p:%d, e:%s)", x, y, z, angle, angle,
-					feed, length, calcSpeed, p.id, edgeDescription);
-			
-		}
-		else
-			ret = String.format(java.util.Locale.US, "X%.2f Y%.2f Z%.1f A%.4f B%.4f F%.1f (move length: %.1f speed:%.1f, e:%s)", x, y, z, angle, angle,
-					feed, length, calcSpeed, edgeDescription);
+			ret = String.format(java.util.Locale.US, "%s X%.2f Y%.2f Z%.1f A%.4f B%.4f F%.1f (move length: %.1f speed:%.1f p:%d, e:%s)",
+					(slow == true ? "G01" : "G00"), x, y, z, angle, angle, feed, length, calcSpeed, p.id, edgeDescription);
+
+		} else
+			ret = String.format(java.util.Locale.US, "%s X%.2f Y%.2f Z%.1f A%.4f B%.4f F%.1f (move length: %.1f speed:%.1f, e:%s)",
+					(slow == true ? "G01" : "G00"), x, y, z, angle, angle, feed, length, calcSpeed, edgeDescription);
 
 		this.previousPoint = p1;
 		this.previousPointId = p.id;
@@ -522,33 +525,74 @@ public class Utils {
 			double[] zAxisDouble = { 0.0d, 1.0d, 0.0d };
 			Vector3D zAxis = new Vector3D(zAxisDouble);
 			Rotation rotZ = new Rotation(zAxis, Math.toRadians(value));
+			// Rotation rotZ1 = new Rotation(zAxis, Math.toRadians(angleDeg));
 			for (MyPickablePoint point : SurfaceDemo.instance.utils.origPoints.values()) {
 				double[] myPointDouble = { point.getX(), point.getY(), point.getZ() };
 				Vector3D myPoint = new Vector3D(myPointDouble);
 				Vector3D result = rotZ.applyTo(myPoint);
 				points.get(point.id).setCoord(result.getX(), result.getY(), result.getZ());
 			}
+
+			// for (int j = 0; j < SurfaceDemo.instance.myTrail.size(); j++) {
+			// Point p = (Point) SurfaceDemo.instance.myTrail.get(j);
+			// Vector3D myPoint = new Vector3D(p.getCoord().x, p.getCoord().y,
+			// p.getCoord().z);
+			// Vector3D result = rotZ1.applyTo(myPoint);
+			// p.setCoord(new Coord3d(result.getX(), result.getY(), result.getZ()));
+			// }
+			Transform myRot = new Transform(new Rotate(angleDeg, new Coord3d(0f, 1f, 0f)));
+			SurfaceDemo.instance.myTrail.applyGeometryTransform(myRot);
+			if (SurfaceDemo.instance.NUMBER_EDGES) {
+				edgeTexts.applyGeometryTransform(myRot);
+			}
+			if (SurfaceDemo.instance.NUMBER_POINTS) {
+				pointTexts.applyGeometryTransform(myRot);
+			}
+
 			for (MyEdge edge : continuousEdges.values()) {
 				edge.calculateCenter();
 			}
+			System.out.println("Done");
 		} else {
 
 			int noSteps = 10;
+			Transform transf = new Transform(new Rotate(angleDeg / noSteps, new Coord3d(0, 1, 0)));
 			for (int i = 0; i <= noSteps; i++) {
 				if (angleInDelta)
 					value = Double.valueOf(SurfaceDemo.instance.angleTxt) + angleDeg * i / noSteps;
 				else
 					value = angleDeg * i / noSteps;
 
+				SurfaceDemo.instance.myTrail.applyGeometryTransform(transf);
+
 				double[] zAxisDouble = { 0.0d, 1.0d, 0.0d };
 				Vector3D zAxis = new Vector3D(zAxisDouble);
 				Rotation rotZ = new Rotation(zAxis, Math.toRadians(value));
+				Rotation rotZ1 = new Rotation(zAxis, Math.toRadians(angleDeg / noSteps));
+
+				for (int j = 0; j < SurfaceDemo.instance.myTrail.size(); j++) {
+					Point p = (Point) SurfaceDemo.instance.myTrail.get(j);
+					Vector3D myPoint = new Vector3D(p.getCoord().x, p.getCoord().y, p.getCoord().z);
+					Vector3D result = rotZ1.applyTo(myPoint);
+					p.setCoord(new Coord3d(result.getX(), result.getY(), result.getZ()));
+				}
+
 				for (MyPickablePoint point : SurfaceDemo.instance.utils.origPoints.values()) {
 					double[] myPointDouble = { point.getX(), point.getY(), point.getZ() };
 					Vector3D myPoint = new Vector3D(myPointDouble);
 					Vector3D result = rotZ.applyTo(myPoint);
 					points.get(point.id).setCoord(result.getX(), result.getY(), result.getZ());
 				}
+
+				Transform myRot = new Transform(new Rotate(angleDeg, new Coord3d(0f, 1f, 0f)));
+				SurfaceDemo.instance.myTrail.applyGeometryTransform(myRot);
+				if (SurfaceDemo.instance.NUMBER_EDGES) {
+					edgeTexts.applyGeometryTransform(myRot);
+				}
+				if (SurfaceDemo.instance.NUMBER_POINTS) {
+					pointTexts.applyGeometryTransform(myRot);
+				}
+
 				for (MyEdge edge : continuousEdges.values()) {
 					edge.calculateCenter();
 				}
@@ -562,10 +606,9 @@ public class Utils {
 				}
 			}
 		}
-		if (SurfaceDemo.instance.NUMBER_EDGES)
-			for (MyEdge edge : SurfaceDemo.instance.utils.edges.values()) {
-				edge.calculateCenter();
-			}
+		for (MyEdge edge : SurfaceDemo.instance.utils.edges.values()) {
+			edge.calculateCenter();
+		}
 
 		// if((float)newValue == 360.0f)
 		// {
@@ -616,21 +659,20 @@ public class Utils {
 			}
 		}
 
-//		for (Integer id : continuousEdges.get(1).points) {
-//			System.out.println(points.get(id));
-//		}
-//		for(MyPickablePoint p: points.values())
-//		{
-//			System.out.println(p);
-//		}
-		
-		
+		// for (Integer id : continuousEdges.get(1).points) {
+		// System.out.println(points.get(id));
+		// }
+		// for(MyPickablePoint p: points.values())
+		// {
+		// System.out.println(p);
+		// }
+
 		// calculate type of Edge START MIDDLE or END
 		ArrayList<MyContinuousEdge> sortedContinuousEdgeList = new ArrayList(continuousEdges.values());
 		Collections.sort(sortedContinuousEdgeList, new MyEdgeYComparator());
 
-		sortedContinuousEdgeList.get(0).edgeType = MyContinuousEdge.EdgeType.START;
-		sortedContinuousEdgeList.get(sortedContinuousEdgeList.size() - 1).edgeType = MyContinuousEdge.EdgeType.END;
+		sortedContinuousEdgeList.get(0).edgeType = MyContinuousEdge.EdgeType.END;
+		sortedContinuousEdgeList.get(sortedContinuousEdgeList.size() - 1).edgeType = MyContinuousEdge.EdgeType.START;
 
 	}
 
@@ -858,7 +900,7 @@ public class Utils {
 
 		System.out.println(continuousEdge.edgeType);
 		Vector3D result = null;
-//		if (continuousEdge.edgeType == MyContinuousEdge.EdgeType.ONPIPE) {
+		if (continuousEdge.edgeType != MyContinuousEdge.EdgeType.END) {
 
 			Vector3D p1 = new Vector3D(-this.maxX, this.maxY, this.maxZ);
 			Vector3D p2 = new Vector3D(this.maxX, this.maxY, this.maxZ);
@@ -957,7 +999,7 @@ public class Utils {
 				} else {
 					// point is on radius edge
 					Logger.getLogger(this.getClass()).info("Plane is perpendicular to X or Z.");
-					plane = new Plane(vecPrevPoint,vecNextPoint,0.001);
+					plane = new Plane(vecPrevPoint, vecNextPoint, 0.001);
 					Rotation rotationP = new Rotation(plane.getNormal(), Math.PI / 2);
 					Rotation rotationN = new Rotation(plane.getNormal(), -Math.PI / 2);
 					Vector3D rotatedA = rotationP.applyTo(vecA).normalize();
@@ -970,9 +1012,8 @@ public class Utils {
 					ret.point.xyz.x = (float) intersect.getX();
 					ret.point.xyz.y = (float) intersect.getY();
 					ret.point.xyz.z = (float) intersect.getZ();
-					
-					ret.plane = new Plane(plane.getNormal(), vecNextPoint, 0.001);
 
+					ret.plane = new Plane(plane.getNormal(), vecNextPoint, 0.001);
 				}
 			} catch (Exception ex) {
 				// if we are not at surface of four planes then we are on edge lets move
@@ -983,15 +1024,15 @@ public class Utils {
 				ret.point.xyz.y = (float) result.getY();
 				ret.point.xyz.z = (float) result.getZ();
 			}
-//		} else {
-//			Vector3D vecOffset = new Vector3D(0, Math.signum(point.xyz.y) * SurfaceDemo.instance.getKerfOffset(), 0);
-//			result = vecPoint.add(vecOffset);
-//			ret.point.xyz.x = (float) result.getX();
-//			ret.point.xyz.y = (float) result.getY();
-//			ret.point.xyz.z = (float) result.getZ();
-//			Plane p = new Plane(vecPoint, vecOffset, vecPrevPoint, Math_E);
-//			ret.plane = p;
-//		}
+		} else {
+			Vector3D vecOffset = new Vector3D(0, Math.signum(point.xyz.y) * SurfaceDemo.instance.getKerfOffset(), 0);
+			result = vecPoint.add(vecOffset);
+			ret.point.xyz.x = (float) result.getX();
+			ret.point.xyz.y = (float) result.getY();
+			ret.point.xyz.z = (float) result.getZ();
+			Plane p = new Plane(vecPoint, vecOffset, vecPrevPoint, Math_E);
+			ret.plane = p;
+		}
 
 		MyEdge edg1 = getEdgeFromTwoPoints(point, nextPoint);
 		MyEdge edg2 = getEdgeFromTwoPoints(point, prevPoint);

@@ -40,6 +40,7 @@ import javax.swing.JPopupMenu;
 import javax.swing.SwingUtilities;
 import javax.swing.SwingWorker;
 import javax.vecmath.Point3d;
+import javax.vecmath.Vector3d;
 
 import org.apache.commons.math3.geometry.euclidean.threed.Line;
 import org.apache.commons.math3.geometry.euclidean.threed.Vector3D;
@@ -83,7 +84,7 @@ public class SurfaceDemo extends AbstractAnalysis {
 	Sphere plasma = null;
 	Point offsetPoint = null;
 	public MyPickablePoint lastClickedPoint;
-	String angleTxt = "0";
+	public String angleTxt = "0";
 	public static SurfaceDemo instance;
 	public MyComposite myComposite;
 	public MyComposite myTrail;
@@ -400,9 +401,10 @@ public class SurfaceDemo extends AbstractAnalysis {
 
 	}
 
-	private void enablePickingTexts(ArrayList<PickableDrawableTextBitmap> edgeTexts, Chart chart, int i) {
+	private void enablePickingTexts(MyComposite edgeTexts, Chart chart, int i) {
 		if (getPickingSupport() != null) {
-			for (PickableDrawableTextBitmap t : edgeTexts) {
+			for (int j = 0; j < edgeTexts.size(); j++) {
+				PickableDrawableTextBitmap t = (PickableDrawableTextBitmap) edgeTexts.get(j);
 				getPickingSupport().registerPickableObject(t, t);
 			}
 
@@ -655,7 +657,7 @@ public class SurfaceDemo extends AbstractAnalysis {
 
 			// pauseAnimator();
 			// resumeAnimator();
-			// SurfaceDemo.instance.canvas.getAnimator().start();
+			SurfaceDemo.instance.canvas.getAnimator().getThread().setName("ANIMATOR_TREAD");
 			if (Settings.instance.getSetting("ui_zoom_plasma").equals("True"))
 				SurfaceDemo.ZOOM_PLASMA = true;
 			if (Settings.instance.getSetting("ui_zoom_point").equals("True"))
@@ -978,8 +980,8 @@ public class SurfaceDemo extends AbstractAnalysis {
 				myTrail = new MyComposite();
 				addAxis();
 				addCurrentRotation();
-				utils.edgeTexts = new ArrayList<PickableDrawableTextBitmap>();
-				utils.pointTexts = new ArrayList<DrawableTextBitmap>();
+				utils.edgeTexts = new MyComposite();
+				utils.pointTexts = new MyComposite();
 				myComposite.add(new ArrayList<MyPickablePoint>(utils.points.values()));
 				ArrayList<Integer> alreadyAddedPointsText = new ArrayList<Integer>();
 				for (MyEdge edge : utils.edges.values()) {
@@ -1041,15 +1043,14 @@ public class SurfaceDemo extends AbstractAnalysis {
 					myComposite.add(utils.pointTexts);
 				}
 				instance.getChart().getScene().getGraph().add(instance.myComposite);
-				instance.getChart().getScene().getGraph().add(instance.myTrail);
-				// instance.canvas.getAnimator().start();
 				System.out.println("Composite element size: " + myComposite.getDrawables().size());
 				getPlasma();
 				redrawPosition();
+				instance.canvas.getAnimator().start();
 				instance.enablePicking(instance.utils.points.values(), instance.chart, 10);
 			}
 		});
-		t.run();
+		t.start();
 
 	}
 
@@ -1198,49 +1199,51 @@ public class SurfaceDemo extends AbstractAnalysis {
 		instance.getChart().resumeAnimator();
 	}
 
-	public void move(MyPickablePoint mp, boolean slow, float zOffset) {
-		move(mp, slow, zOffset, true);
+	public void move(MyPickablePoint mp, boolean slow, boolean cut, float zOffset) {
+		move(mp, slow, cut, zOffset, true);
 	}
 
-	public void move(MyPickablePoint tempPoint, boolean slow, float zOffset, boolean writeToGCode) {
+	public void move(MyPickablePoint tempPoint, boolean slow, boolean cut, float zOffset, boolean writeToGCode) {
 		if (plasma == null) {
 			// cylinder = new Cylinder(tempPoint);
 			getPlasma();
 		}
 		// }
-		getPlasma().setPosition(tempPoint.xyz);
-		// SurfaceDemo.instance.redrawPosition();
+		Point p = new Point();
+		p.xyz.set(tempPoint.xyz.x, tempPoint.xyz.y, tempPoint.xyz.z);
+		Coord3d offsetedPoint = p.xyz.add(new Coord3d(0, 0, zOffset));
+		plasma.setPosition(offsetedPoint);
 
-		// cylinder.move(tempPoint);
-		if (cylinderPoint == null)
-			cylinderPoint = new Point();
+		Point p1 = new Point(plasma.getPosition());
+		p1.setWidth(4f);
+		SurfaceDemo.getInstance().myTrail.add(p1);
 
-		if (slow) {
-			Color color = Color.RED;
+		Color color;
+		if (cut) {
+			color = Color.RED;
 			color.a = 0.55f;
 			plasma.setColor(color);
 			plasma.setWireframeColor(Color.RED);
 		} else {
-			Color color = Color.BLUE;
+			color = Color.BLUE;
+			p1.setColor(Color.BLUE);
 			color.a = 0.55f;
 			plasma.setColor(color);
 			plasma.setWireframeColor(Color.BLUE);
 		}
-		cylinderPoint.setCoord(tempPoint.xyz);
-
-		Coord3d offsetedPoint = cylinderPoint.xyz.add(new Coord3d(0, 0, zOffset));
-		plasma.setPosition(offsetedPoint);
+		p1.setColor(color);
+		p.setCoord(tempPoint.xyz);
 
 		if (writeToGCode) {
 			String gcode = SurfaceDemo.instance.utils.coordinateToGcode(tempPoint, zOffset, slow);
-			if (slow) {
-				writeToGcodeFile(String.format(java.util.Locale.US, "G01 %s", gcode));
+			if (cut) {
+				writeToGcodeFile(String.format(java.util.Locale.US, "%s", gcode));
 				alreadyCutting = true;
 			} else {
 				if (alreadyCutting) {
 					writeToGcodeFile("M5");
 				}
-				writeToGcodeFile(String.format(java.util.Locale.US, "G00 %s (pointId: %d)", gcode, tempPoint.id));
+				writeToGcodeFile(String.format(java.util.Locale.US, "%s (pointId: %d)", gcode, tempPoint.id));
 				alreadyCutting = false;
 			}
 		} else {
@@ -1254,7 +1257,11 @@ public class SurfaceDemo extends AbstractAnalysis {
 	public void moveAbove(MyPickablePoint tempPoint, float offset, long pierceTimeMs) {
 		Coord3d abovePoint = tempPoint.xyz.add(0f, 0f, offset);
 		plasma.setPosition(abovePoint);
-		// SurfaceDemo.instance.redrawPosition();
+
+		Point p1 = new Point(plasma.getPosition());
+		p1.setColor(Color.BLUE);
+		p1.setWidth(4f);
+		SurfaceDemo.getInstance().myTrail.add(p1);
 
 		String gcode = SurfaceDemo.instance.utils.coordinateToGcode(tempPoint, offset, false);
 		plasma.setColor(Color.BLUE);
@@ -1267,7 +1274,7 @@ public class SurfaceDemo extends AbstractAnalysis {
 				ex.printStackTrace();
 			}
 
-			writeToGcodeFile("G00 " + gcode);
+			writeToGcodeFile(gcode);
 			if (!alreadyCutting) {
 				// SurfaceDemo.instance.utils.previousEdge = null;
 				writeToGcodeFile("M3 S400");
@@ -1329,7 +1336,8 @@ public class SurfaceDemo extends AbstractAnalysis {
 		PrintWriter out = null;
 		try {
 			out = new PrintWriter(new BufferedWriter(new FileWriter(CutThread.gcodeFile.getAbsolutePath(), true)));
-
+			if(txt.startsWith("G01 X0.00 Y250.00 Z61.5 A360.0000 B360.0000 F36.4"))
+				System.out.println(txt);
 			out.println(txt);
 			out.flush();
 			this.gCodeLineNo++;

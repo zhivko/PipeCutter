@@ -125,6 +125,7 @@ public class BBBPreviewStatus implements Runnable {
 
 										if (BBBPreviewStatus.instance != null) {
 											Coord3d coord = new Coord3d(BBBPreviewStatus.instance.x, BBBPreviewStatus.instance.y, BBBPreviewStatus.instance.z);
+											//double angleDelta = BBBPreviewStatus.instance.a - Double.valueOf(SurfaceDemo.instance.angleTxt);
 											SurfaceDemo.getInstance().utils.rotatePoints(BBBPreviewStatus.instance.a, false, false);
 
 											SurfaceDemo.getInstance().getPlasma().setPosition(coord);

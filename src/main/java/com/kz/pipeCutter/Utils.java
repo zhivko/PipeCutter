@@ -453,7 +453,7 @@ public class Utils {
 					float maxRadius = (float) Math.sqrt(this.maxX * this.maxX + this.maxZ * this.maxZ);
 					float s = (float) (maxRadius * Math.PI) * 1.5f;
 					float arc_length = (float) (radius_of_edge * Math.PI / 2);
-					float v = SurfaceDemo.instance.g1Speed * s / arc_length * 1.5f;
+					float v = SurfaceDemo.instance.g1Speed * s / arc_length * 1f;
 					float dv = v - SurfaceDemo.instance.g1Speed;
 					float t = s / SurfaceDemo.instance.g1Speed;
 					float a = 2 * dv / t;
@@ -489,11 +489,11 @@ public class Utils {
 			// float z1=point.xyz.z;
 
 			ret = String.format(java.util.Locale.US, "%s X%.2f Y%.2f Z%.1f A%.4f B%.4f F%.1f (move length: %.1f speed:%.1f p:%d, e:%s)",
-					(slow == true ? "G01" : "G00"), x, y, z, angle, angle, feed, length, calcSpeed, p.id, edgeDescription);
+					(slow == true ? "G01" : "G01"), x, y, z, angle, angle, feed, length, calcSpeed, p.id, edgeDescription);
 
 		} else
 			ret = String.format(java.util.Locale.US, "%s X%.2f Y%.2f Z%.1f A%.4f B%.4f F%.1f (move length: %.1f speed:%.1f, e:%s)",
-					(slow == true ? "G01" : "G00"), x, y, z, angle, angle, feed, length, calcSpeed, edgeDescription);
+					(slow == true ? "G01" : "G01"), x, y, z, angle, angle, feed, length, calcSpeed, edgeDescription);
 
 		this.previousPoint = p1;
 		this.previousPointId = p.id;

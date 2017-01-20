@@ -160,13 +160,13 @@ public class OtherSettings extends JPanel {
 		this.add(laser1IP);		
 
 		SavableText positioner1reassign = new SavableText();
-		positioner1reassign.setLabelTxt("Positioner 1 reassign: ");
+		positioner1reassign.setLabelTxt("Rotator 1 reassign: ");
 		positioner1reassign.setParId("rotator_1_reassign");
 		positioner1reassign.setNeedsSave(true);
 		this.add(positioner1reassign);		
 		
 		SavableText positioner2reassign = new SavableText();
-		positioner2reassign.setLabelTxt("Positioner 2 reassign: ");
+		positioner2reassign.setLabelTxt("Rotator 2 reassign: ");
 		positioner2reassign.setParId("rotator_2_reassign");
 		positioner2reassign.setNeedsSave(true);
 		this.add(positioner2reassign);		

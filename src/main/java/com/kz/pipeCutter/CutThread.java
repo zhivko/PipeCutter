@@ -385,19 +385,19 @@ public class CutThread extends SwingWorker<String, Object> {
 				axis = offPointAndPlane.plane.getNormal();
 			else
 				axis = offPointAndPlane.plane.getNormal().scalarMultiply(-1.0d);
-				
-			
-			double angleDelta = Math.PI / 20.0d;
-			double startAngle, endAngle;
-//			if (contEdge.edgeType != MyContinuousEdge.EdgeType.END) {
+
+			double angleDelta=0, startAngle = 0, endAngle=0;
+			if (contEdge.edgeType == MyContinuousEdge.EdgeType.START || contEdge.edgeType == MyContinuousEdge.EdgeType.END) {
 				startAngle = Math.PI / 2.0d;
 				endAngle = Math.PI;
-//			} else {
-//				startAngle = 3.0d * Math.PI / 2.0d;
-//				endAngle = 2*Math.PI;
-//			}
+				angleDelta = Math.PI / 20.0d;
+			} else if (contEdge.edgeType == MyContinuousEdge.EdgeType.ONPIPE) {
+				startAngle = 3.0d * Math.PI / 2.0d;
+				endAngle = Math.PI;
+				angleDelta = -Math.PI / 20.0d;
+			}
 
-			for (double angle = startAngle; angle < endAngle; angle = angle + angleDelta) {
+			for (double angle = startAngle; angle != endAngle; angle = angle + angleDelta) {
 				System.out.println(angle * 180 / Math.PI);
 				Rotation rotat2 = new Rotation(axis, angle);
 				Vector3D rotatedVec = rotat2.applyTo(delta);

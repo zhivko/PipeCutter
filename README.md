@@ -382,4 +382,21 @@ Thcad calibration:
 ##Linuxcnc thc − Torch Height Control component
 [Linuxcnc THC comp](http://linuxcnc.org/docs/html/man/man9/thc.9.html)
 
+#Next steps
+stmbl servo controler that uses "cascaded pid with feed forward, and clamping"
+https://github.com/rene-dev/stmbl/blob/newstuff/src/comps/ypid.comp
+
+Stmbl servo driver:
+https://github.com/rene-dev/stmbl/blob/master/hw/kicad/v4.0/doc/stmbl_4.0.pdf
+
+Interface to cdsteinkuhler de0 nano soc hat:
+https://github.com/rene-dev/stmbl/tree/bob/hw/kicad/bob/db25_bob
+bottom board
+https://seafile.ist-wunderbar.com/f/4a41a8bc28/
+
+CdSteinkuhler de0 nano soc altera Cyclone 5 hat:
+http://blog.machinekit.io/2016/11/you-will-recall-that-while-back-charles.html
+https://oshpark.com/shared_projects/ZSjsiCUd
+
+
 

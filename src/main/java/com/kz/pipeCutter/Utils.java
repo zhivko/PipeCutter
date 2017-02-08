@@ -14,7 +14,6 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
 
 import javax.vecmath.Point3d;
-import javax.vecmath.Vector3d;
 
 import org.apache.commons.math3.geometry.euclidean.threed.Line;
 import org.apache.commons.math3.geometry.euclidean.threed.Plane;
@@ -23,13 +22,9 @@ import org.apache.commons.math3.geometry.euclidean.threed.Vector3D;
 import org.apache.log4j.Logger;
 import org.jzy3d.colors.Color;
 import org.jzy3d.maths.Coord3d;
-import org.jzy3d.plot3d.primitives.AbstractDrawable;
 import org.jzy3d.plot3d.primitives.AbstractGeometry.PolygonMode;
 import org.jzy3d.plot3d.primitives.Point;
 import org.jzy3d.plot3d.primitives.Polygon;
-//import org.jzy3d.plot3d.primitives.Point;
-//import org.jzy3d.plot3d.primitives.Point;
-import org.jzy3d.plot3d.text.drawable.DrawableTextBitmap;
 import org.jzy3d.plot3d.transform.Rotate;
 import org.jzy3d.plot3d.transform.Transform;
 
@@ -276,43 +271,6 @@ public class Utils {
 		alRet.add(resultSegmentPoint2);
 
 		return alRet;
-	}
-
-	static boolean isBetween2(Coord3d a, Coord3d b, Coord3d c) {
-		// if c is between a and b ?
-		// http://stackoverflow.com/questions/328107/how-can-you-determine-a-point-is-between-two-other-points-on-a-line-segment
-		// double crossproduct = (c.y - a.y) * (b.x - a.x) - (c.x - a.x) * (b.y
-		// -
-		// a.y);
-		double ac_d[] = { c.x - a.x, c.y - a.y, c.z - a.z };
-		Vector3d ac = new Vector3d(ac_d);
-		double ab_d[] = { b.x - a.x, b.y - a.y, b.z - a.z };
-		Vector3d ab = new Vector3d(ab_d);
-
-		Vector3d product = new Vector3d();
-		product.cross(ac, ab);
-
-		if (product.length() > Math_E)
-			return false;
-
-		double kac = ab.dot(ac);
-		double kab = ab.dot(ab);
-
-		if (kac < 0)
-			// KAC<0 the point is not between A and B.
-			return false;
-		else if (kac > kab)
-			// KAC>KAB the point is not between A and B.
-			return false;
-		else if (kac < Math_E && kac > 0)
-			// KAC=0 : the points C and A coincide.
-			return true;
-		else if (kac == kab)
-			// KAC=KAB : the points C and B coincide.
-			return true;
-
-		// 0<KAC<KAB : the point C belongs on the line segment S.
-		return true;
 	}
 
 	public void markOuterPoints() {
@@ -1023,6 +981,11 @@ public class Utils {
 				ret.point.xyz.x = (float) result.getX();
 				ret.point.xyz.y = (float) result.getY();
 				ret.point.xyz.z = (float) result.getZ();
+
+				Vector3D vec1 = new Vector3D(point.getX(), point.getY(), point.getZ());
+				Vector3D vec2 = new Vector3D(ret.nextPoint.getX(), ret.nextPoint.getY(), ret.nextPoint.getZ());
+
+				ret.plane = new Plane(vec1,vec2, vecOffset, Math_E);
 			}
 		} else {
 			Vector3D vecOffset = new Vector3D(0, Math.signum(point.xyz.y) * SurfaceDemo.instance.getKerfOffset(), 0);
@@ -1040,6 +1003,14 @@ public class Utils {
 			ret.nextPoint = null;
 		if (edg2 == null)
 			ret.prevPoint = null;
+
+		// define follow the path direction clockwise/anticlockwise depending on
+		// plane pointing up or down
+		double angle = Vector3D.angle(ret.plane.getNormal(), new Vector3D(0.0d, 0.0d, 1.0d));
+		if (angle < Math.PI)
+			ret.direction = false;
+		else
+			ret.direction = true;
 
 		return ret;
 	}

@@ -10,7 +10,7 @@ import java.util.concurrent.ExecutionException;
 
 import javax.swing.SwingWorker;
 import javax.vecmath.Point3d;
-import javax.vecmath.Vector3d;
+import javax.vecmath.Tuple3d;
 
 import org.apache.commons.math3.geometry.euclidean.threed.Line;
 import org.apache.commons.math3.geometry.euclidean.threed.Rotation;
@@ -19,7 +19,9 @@ import org.jzy3d.chart.controllers.camera.AbstractCameraController;
 import org.jzy3d.chart.controllers.mouse.camera.AWTCameraMouseController;
 import org.jzy3d.colors.Color;
 import org.jzy3d.maths.Coord3d;
+import org.jzy3d.plot3d.primitives.LineStrip;
 import org.jzy3d.plot3d.primitives.Point;
+import org.jzy3d.plot3d.primitives.Sphere;
 
 import com.kz.pipeCutter.ui.Settings;
 import com.kz.pipeCutter.ui.tab.GcodeViewer;
@@ -149,6 +151,7 @@ public class CutThread extends SwingWorker<String, Object> {
 	public void cut() throws InterruptedException {
 		SurfaceDemo.instance.myTrail.clear();
 		SurfaceDemo.instance.getChart().getScene().getGraph().remove(SurfaceDemo.instance.myTrail);
+
 
 		SurfaceDemo.instance.gCodeLineNo = 0;
 		SurfaceDemo.instance.g93mode = false;
@@ -338,10 +341,27 @@ public class CutThread extends SwingWorker<String, Object> {
 		boolean shouldBreak = false;
 		ArrayList<MyEdge> alreadyCuttedEdges = new ArrayList<MyEdge>();
 
+		MyContinuousEdge contEdge = SurfaceDemo.instance.utils.continuousEdges.get(tempPoint.continuousEdgeNo);
+		
+		if(contEdge.edgeNo==10)
+		{
+			System.out.println("");
+		}
+
 		PointAndPlane offPointAndPlane = SurfaceDemo.instance.utils.calculateOffsetPointAndPlane(myPoint);
+		Vector3D delt = offPointAndPlane.plane.getNormal().normalize().scalarMultiply(5);
+
+		Point endPoint = toPoint(toVector3D(tempPoint.point).add(delt));
+		LineStrip ls = new LineStrip(myPoint.clone(), endPoint);
+		ls.setWireframeColor(Color.CYAN);
+		Sphere sph = new Sphere(endPoint.xyz.clone(), 1, 10, Color.CYAN);
+		sph.setColor(Color.CYAN);
+		sph.setWireframeColor(Color.CYAN);
+		SurfaceDemo.getInstance().myTrail.add(ls);
+		SurfaceDemo.getInstance().myTrail.add(sph);
 		// create circular leadin only if this is closed edge (it means center is on
 		// edge)
-		MyContinuousEdge contEdge = SurfaceDemo.instance.utils.continuousEdges.get(tempPoint.continuousEdgeNo);
+		
 		Vector3D contEdgCent = new Vector3D(contEdge.center.x, contEdge.center.y, contEdge.center.z);
 		Iterator<Integer> itPoints = contEdge.points.iterator();
 		boolean isOnEdge = false;
@@ -386,15 +406,24 @@ public class CutThread extends SwingWorker<String, Object> {
 			else
 				axis = offPointAndPlane.plane.getNormal().scalarMultiply(-1.0d);
 
-			double angleDelta=0, startAngle = 0, endAngle=0;
+			double angleDelta = 0, startAngle = 0, endAngle = 0;
+			if (contEdge.edgeNo == 1)
+				System.out.println("");
+
 			if (contEdge.edgeType == MyContinuousEdge.EdgeType.START || contEdge.edgeType == MyContinuousEdge.EdgeType.END) {
 				startAngle = Math.PI / 2.0d;
 				endAngle = Math.PI;
 				angleDelta = Math.PI / 20.0d;
 			} else if (contEdge.edgeType == MyContinuousEdge.EdgeType.ONPIPE) {
-				startAngle = 3.0d * Math.PI / 2.0d;
-				endAngle = Math.PI;
-				angleDelta = -Math.PI / 20.0d;
+				if (offPointAndPlane.direction == false) {
+					startAngle = Math.PI / 2.0d;
+					endAngle = Math.PI;
+					angleDelta = Math.PI / 20.0d;
+				} else {
+					startAngle = 3.0d * Math.PI / 2.0d;
+					endAngle = Math.PI;
+					angleDelta = -Math.PI / 20.0d;
+				}
 			}
 
 			for (double angle = startAngle; angle != endAngle; angle = angle + angleDelta) {
@@ -425,7 +454,7 @@ public class CutThread extends SwingWorker<String, Object> {
 				tempPoint.setColor(Color.GREEN);
 				alAlreadyAddedPoints.add(Integer.valueOf(tempPoint.id));
 			}
-			tempPoint = SurfaceDemo.getInstance().utils.findConnectedPoint(tempPoint, alAlreadyAddedPoints, true);
+			tempPoint = SurfaceDemo.getInstance().utils.findConnectedPoint(tempPoint, alAlreadyAddedPoints, offPointAndPlane.direction);
 
 			if (tempPoint == null) {
 				shouldBreak = true;
@@ -436,6 +465,7 @@ public class CutThread extends SwingWorker<String, Object> {
 					SurfaceDemo.getInstance().move(tempPoint, true, true, cutOffsetMm);
 				}
 			} else {
+
 				SurfaceDemo.getInstance().move(tempPoint, true, true, cutOffsetMm);
 				MyEdge edge = SurfaceDemo.instance.utils.getEdgeFromTwoPoints(prevPoint, tempPoint);
 				if (!alreadyCuttedEdges.contains(edge)) {
@@ -456,6 +486,16 @@ public class CutThread extends SwingWorker<String, Object> {
 		}
 		return 0.0d;
 
+	}
+
+	private Point toPoint(Vector3D origin) {
+		// TODO Auto-generated method stub
+		return new Point(new Coord3d(origin.getX(), origin.getY(), origin.getZ()));
+	}
+
+	private Vector3D toVector3D(Point3d origin) {
+		// TODO Auto-generated method stub
+		return new Vector3D(origin.x, origin.y, origin.z);
 	}
 
 	private double rotation(MyPickablePoint prevPoint, MyPickablePoint tempPoint) {

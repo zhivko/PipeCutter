@@ -23,6 +23,10 @@ public class MyPickablePoint extends PickablePoint {
 		FIRST, LAST, MIDDLE
 	}
 
+	public MyPickablePoint() {
+		super(new Coord3d((float) 0, (float) 0, (float) 0));
+	}	
+	
 	public MyPickablePoint(int id, Point3d xyz, Color rgb, float width, int inventorEdge) {
 		super(new Coord3d((float) xyz.x, (float) xyz.y, (float) xyz.z), rgb, width);
 		this.id = id;

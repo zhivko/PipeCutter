@@ -345,7 +345,7 @@ public class CutThread extends SwingWorker<String, Object> {
 		
 		if(contEdge.edgeNo==10)
 		{
-			System.out.println("");
+			System.out.println(" ");
 		}
 
 		PointAndPlane offPointAndPlane = SurfaceDemo.instance.utils.calculateOffsetPointAndPlane(myPoint);

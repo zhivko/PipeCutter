@@ -19,7 +19,6 @@ import org.apache.commons.math3.geometry.euclidean.threed.Line;
 import org.apache.commons.math3.geometry.euclidean.threed.Plane;
 import org.apache.commons.math3.geometry.euclidean.threed.Rotation;
 import org.apache.commons.math3.geometry.euclidean.threed.Vector3D;
-import org.apache.log4j.Logger;
 import org.jzy3d.colors.Color;
 import org.jzy3d.maths.Coord3d;
 import org.jzy3d.plot3d.primitives.AbstractGeometry.PolygonMode;
@@ -617,20 +616,49 @@ public class Utils {
 			}
 		}
 
-		// for (Integer id : continuousEdges.get(1).points) {
-		// System.out.println(points.get(id));
-		// }
-		// for(MyPickablePoint p: points.values())
-		// {
-		// System.out.println(p);
-		// }
-
 		// calculate type of Edge START MIDDLE or END
 		ArrayList<MyContinuousEdge> sortedContinuousEdgeList = new ArrayList(continuousEdges.values());
 		Collections.sort(sortedContinuousEdgeList, new MyEdgeYComparator());
 
 		sortedContinuousEdgeList.get(0).edgeType = MyContinuousEdge.EdgeType.END;
 		sortedContinuousEdgeList.get(sortedContinuousEdgeList.size() - 1).edgeType = MyContinuousEdge.EdgeType.START;
+
+		// correctly orient points of continuous edge
+		Iterator<Integer> it = continuousEdges.keySet().iterator();
+		while (it.hasNext()) {
+			edgeNo = it.next();
+			MyContinuousEdge edge = continuousEdges.get(edgeNo);
+
+			if (edge.edgeType != MyContinuousEdge.EdgeType.END && edge.edgeType != MyContinuousEdge.EdgeType.START) {
+				MyPickablePoint p1 = edge.getPointByIndex(0);
+				MyPickablePoint p2 = edge.getPointByIndex(1);
+				Vector3D vec1 = new Vector3D(p1.getX(), p1.getY(), p1.getZ());
+				Vector3D vec2 = new Vector3D(p2.getX(), p2.getY(), p2.getZ());
+				Vector3D vecC = new Vector3D(edge.center.x, edge.center.y, edge.center.z);
+
+				Vector3D vecC1 = vec1.subtract(vecC);
+				Vector3D vecC2 = vec2.subtract(vecC);
+				Vector3D vecN = vecC1.crossProduct(vecC2);
+
+				Vector3D vecCenOrigin = new Vector3D(0, vecC.getY(), 0);
+				Vector3D vecCen = vecC.subtract(vecCenOrigin);
+
+				if (edge.edgeNo == 13) {
+					System.out.println(edge.edgeNo);
+				}
+				try {
+					double angle = Vector3D.angle(vecCen, vecN);
+					System.out.println(angle);
+					if (angle  > Math.PI) {
+						// points of continuous edge is not ordered in positive direction
+						Collections.reverse(edge.points);
+					}
+				} catch (ArithmeticException ex) {
+					System.out.println(ex.getMessage() + " for edge: " + edge.edgeNo);
+				}
+			}
+
+		}
 
 	}
 
@@ -895,30 +923,30 @@ public class Utils {
 			int i = -1;
 			for (final Plane pl : planes) {
 				i++;
-				Polygon polygon = null;
-				if (plotPlanes) {
-					polygon = new Polygon();
-					if (i == 0) {
-						polygon.add(new Point(new Coord3d(p2.getX(), p2.getY(), p2.getZ())));
-						polygon.add(new Point(new Coord3d(p3.getX(), p3.getY(), p3.getZ())));
-						polygon.add(new Point(new Coord3d(p3_.getX(), p3_.getY(), p3_.getZ())));
-					} else if (i == 1) {
-						polygon.add(new Point(new Coord3d(p1.getX(), p1.getY(), p1.getZ())));
-						polygon.add(new Point(new Coord3d(p2.getX(), p2.getY(), p2.getZ())));
-						polygon.add(new Point(new Coord3d(p2_.getX(), p2_.getY(), p2_.getZ())));
-					} else if (i == 2) {
-						polygon.add(new Point(new Coord3d(p4.getX(), p4.getY(), p4.getZ())));
-						polygon.add(new Point(new Coord3d(p1.getX(), p1.getY(), p1.getZ())));
-						polygon.add(new Point(new Coord3d(p1_.getX(), p1_.getY(), p1_.getZ())));
-					} else if (i == 3) {
-						polygon.add(new Point(new Coord3d(p4.getX(), p4.getY(), p4.getZ())));
-						polygon.add(new Point(new Coord3d(p3.getX(), p3.getY(), p3.getZ())));
-						polygon.add(new Point(new Coord3d(p3_.getX(), p3_.getY(), p3_.getZ())));
-					}
-					polygon.setPolygonMode(PolygonMode.FRONT);
-					polygon.setColor(Color.GREEN);
-					SurfaceDemo.instance.myComposite.add(polygon);
-				}
+//				Polygon polygon = null;
+//				if (plotPlanes) {
+//					polygon = new Polygon();
+//					if (i == 0) {
+//						polygon.add(new Point(new Coord3d(p2.getX(), p2.getY(), p2.getZ())));
+//						polygon.add(new Point(new Coord3d(p3.getX(), p3.getY(), p3.getZ())));
+//						polygon.add(new Point(new Coord3d(p3_.getX(), p3_.getY(), p3_.getZ())));
+//					} else if (i == 1) {
+//						polygon.add(new Point(new Coord3d(p1.getX(), p1.getY(), p1.getZ())));
+//						polygon.add(new Point(new Coord3d(p2.getX(), p2.getY(), p2.getZ())));
+//						polygon.add(new Point(new Coord3d(p2_.getX(), p2_.getY(), p2_.getZ())));
+//					} else if (i == 2) {
+//						polygon.add(new Point(new Coord3d(p4.getX(), p4.getY(), p4.getZ())));
+//						polygon.add(new Point(new Coord3d(p1.getX(), p1.getY(), p1.getZ())));
+//						polygon.add(new Point(new Coord3d(p1_.getX(), p1_.getY(), p1_.getZ())));
+//					} else if (i == 3) {
+//						polygon.add(new Point(new Coord3d(p4.getX(), p4.getY(), p4.getZ())));
+//						polygon.add(new Point(new Coord3d(p3.getX(), p3.getY(), p3.getZ())));
+//						polygon.add(new Point(new Coord3d(p3_.getX(), p3_.getY(), p3_.getZ())));
+//					}
+//					polygon.setPolygonMode(PolygonMode.FRONT);
+//					polygon.setColor(Color.GREEN);
+//					SurfaceDemo.instance.myComposite.add(polygon);
+//				}
 
 				double distance = pl.getOffset(vecPoint);
 				System.out.println(distance);
@@ -927,16 +955,17 @@ public class Utils {
 					ret.plane = pl;
 					break;
 				}
-				SurfaceDemo.instance.getChart().render();
-				if (polygon != null)
-					SurfaceDemo.instance.myComposite.remove(polygon);
+//				SurfaceDemo.instance.getChart().render();
+//				if (polygon != null)
+//					SurfaceDemo.instance.myComposite.remove(polygon);
 			}
 
 			try {
 				Vector3D vecA = vecPrevPoint.subtract(vecPoint);
 				Vector3D vecB = vecNextPoint.subtract(vecPoint);
 
-				if (vecA.crossProduct(vecB).getNorm() < 0.001) {
+				Line l = new Line(vecPrevPoint, vecNextPoint, 0.0001);
+				if (l.contains(vecPoint)) {
 					// all 3 points are collinear
 					// point is NOT on radius edge
 					// try first with 90degree and with -90 degree and take the angle that
@@ -955,11 +984,9 @@ public class Utils {
 						ret.point.xyz.set((float) newPoint2.getX(), (float) newPoint2.getY(), (float) newPoint2.getZ());
 
 				} else {
-					// point is on radius edge
-					Logger.getLogger(this.getClass()).info("Plane is perpendicular to X or Z.");
-					plane = new Plane(vecPrevPoint, vecNextPoint, 0.001);
-					Rotation rotationP = new Rotation(plane.getNormal(), Math.PI / 2);
-					Rotation rotationN = new Rotation(plane.getNormal(), -Math.PI / 2);
+					// points are not colinear
+					Rotation rotationP = new Rotation(ret.plane.getNormal(), Math.PI / 2);
+					Rotation rotationN = new Rotation(ret.plane.getNormal(), -Math.PI / 2);
 					Vector3D rotatedA = rotationP.applyTo(vecA).normalize();
 					Vector3D rotatedB = rotationN.applyTo(vecB).normalize();
 					Vector3D vecAoffset = vecA.add(rotatedA.scalarMultiply(SurfaceDemo.getInstance().getKerfOffset()));
@@ -971,7 +998,7 @@ public class Utils {
 					ret.point.xyz.y = (float) intersect.getY();
 					ret.point.xyz.z = (float) intersect.getZ();
 
-					ret.plane = new Plane(plane.getNormal(), vecNextPoint, 0.001);
+					// ret.plane = new Plane(plane.getNormal(), vecNextPoint, 0.001);
 				}
 			} catch (Exception ex) {
 				// if we are not at surface of four planes then we are on edge lets move
@@ -985,7 +1012,7 @@ public class Utils {
 				Vector3D vec1 = new Vector3D(point.getX(), point.getY(), point.getZ());
 				Vector3D vec2 = new Vector3D(ret.nextPoint.getX(), ret.nextPoint.getY(), ret.nextPoint.getZ());
 
-				ret.plane = new Plane(vec1,vec2, vecOffset, Math_E);
+				ret.plane = new Plane(vec1, vec2, vecOffset, Math_E);
 			}
 		} else {
 			Vector3D vecOffset = new Vector3D(0, Math.signum(point.xyz.y) * SurfaceDemo.instance.getKerfOffset(), 0);

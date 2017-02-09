@@ -152,7 +152,6 @@ public class CutThread extends SwingWorker<String, Object> {
 		SurfaceDemo.instance.myTrail.clear();
 		SurfaceDemo.instance.getChart().getScene().getGraph().remove(SurfaceDemo.instance.myTrail);
 
-
 		SurfaceDemo.instance.gCodeLineNo = 0;
 		SurfaceDemo.instance.g93mode = false;
 		ArrayList<MyPickablePoint> sortedList = new ArrayList<MyPickablePoint>(cuttingPoints);
@@ -342,11 +341,8 @@ public class CutThread extends SwingWorker<String, Object> {
 		ArrayList<MyEdge> alreadyCuttedEdges = new ArrayList<MyEdge>();
 
 		MyContinuousEdge contEdge = SurfaceDemo.instance.utils.continuousEdges.get(tempPoint.continuousEdgeNo);
-		
-		if(contEdge.edgeNo==10)
-		{
-			System.out.println(" ");
-		}
+
+		System.out.println("ContEdge= " + contEdge.edgeNo);
 
 		PointAndPlane offPointAndPlane = SurfaceDemo.instance.utils.calculateOffsetPointAndPlane(myPoint);
 		Vector3D delt = offPointAndPlane.plane.getNormal().normalize().scalarMultiply(5);
@@ -361,7 +357,7 @@ public class CutThread extends SwingWorker<String, Object> {
 		SurfaceDemo.getInstance().myTrail.add(sph);
 		// create circular leadin only if this is closed edge (it means center is on
 		// edge)
-		
+
 		Vector3D contEdgCent = new Vector3D(contEdge.center.x, contEdge.center.y, contEdge.center.z);
 		Iterator<Integer> itPoints = contEdge.points.iterator();
 		boolean isOnEdge = false;
@@ -415,7 +411,7 @@ public class CutThread extends SwingWorker<String, Object> {
 				endAngle = Math.PI;
 				angleDelta = Math.PI / 20.0d;
 			} else if (contEdge.edgeType == MyContinuousEdge.EdgeType.ONPIPE) {
-				if (offPointAndPlane.direction == false) {
+				if (offPointAndPlane.direction == true) {
 					startAngle = Math.PI / 2.0d;
 					endAngle = Math.PI;
 					angleDelta = Math.PI / 20.0d;
@@ -454,7 +450,7 @@ public class CutThread extends SwingWorker<String, Object> {
 				tempPoint.setColor(Color.GREEN);
 				alAlreadyAddedPoints.add(Integer.valueOf(tempPoint.id));
 			}
-			tempPoint = SurfaceDemo.getInstance().utils.findConnectedPoint(tempPoint, alAlreadyAddedPoints, offPointAndPlane.direction);
+			tempPoint = SurfaceDemo.getInstance().utils.findConnectedPoint(tempPoint, alAlreadyAddedPoints, !offPointAndPlane.direction);
 
 			if (tempPoint == null) {
 				shouldBreak = true;

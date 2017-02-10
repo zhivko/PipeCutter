@@ -1123,6 +1123,12 @@ public class SurfaceDemo extends AbstractAnalysis {
 			offsetPoint.setColor(Color.GREEN);
 			offsetPoint.setWidth(6.0f);
 			myComposite.add(offsetPoint);
+
+			if (!SurfaceDemo.ZOOM_POINT) {
+				SurfaceDemo.ZOOM_POINT = true;
+				SurfaceDemo.ZOOM_PLASMA = false;
+			}
+			this.redrawPosition();
 		} catch (Exception ex) {
 			ex.printStackTrace();
 		}
@@ -1199,11 +1205,12 @@ public class SurfaceDemo extends AbstractAnalysis {
 		instance.getChart().resumeAnimator();
 	}
 
-	public void move(MyPickablePoint mp, boolean slow, boolean cut, float zOffset) {
-		move(mp, slow, cut, zOffset, true);
+	public void move(MyPickablePoint mp, boolean slow, boolean cut, float zOffset, Vector3D kerOffsetVec) {
+		move(mp, slow, cut, zOffset, true, kerOffsetVec);
 	}
 
-	public void move(MyPickablePoint tempPoint, boolean slow, boolean cut, float zOffset, boolean writeToGCode) {
+	public void move(MyPickablePoint tempPoint, boolean slow, boolean cut, float zOffset, boolean writeToGCode, Vector3D kerOffsetVec) {
+
 		if (plasma == null) {
 			// cylinder = new Cylinder(tempPoint);
 			getPlasma();
@@ -1211,6 +1218,9 @@ public class SurfaceDemo extends AbstractAnalysis {
 		// }
 		Point p = new Point();
 		p.xyz.set(tempPoint.xyz.x, tempPoint.xyz.y, tempPoint.xyz.z);
+		if (kerOffsetVec != null) {
+			p.xyz = p.xyz.add((float) -kerOffsetVec.getX(), (float) -kerOffsetVec.getY(), (float) -kerOffsetVec.getZ());
+		}
 		Coord3d offsetedPoint = p.xyz.add(new Coord3d(0, 0, zOffset));
 		plasma.setPosition(offsetedPoint);
 
@@ -1254,7 +1264,12 @@ public class SurfaceDemo extends AbstractAnalysis {
 		// instance.getChart().render();
 	}
 
-	public void moveAbove(MyPickablePoint tempPoint, float offset, long pierceTimeMs) {
+	public void moveAbove(MyPickablePoint tempPoint, float offset, long pierceTimeMs, Vector3D kerOffsetVec) {
+
+		if (kerOffsetVec != null) {
+			tempPoint.xyz.add((float) kerOffsetVec.getX(), (float) kerOffsetVec.getY(), (float) kerOffsetVec.getZ());
+		}
+
 		Coord3d abovePoint = tempPoint.xyz.add(0f, 0f, offset);
 		plasma.setPosition(abovePoint);
 
@@ -1336,7 +1351,7 @@ public class SurfaceDemo extends AbstractAnalysis {
 		PrintWriter out = null;
 		try {
 			out = new PrintWriter(new BufferedWriter(new FileWriter(CutThread.gcodeFile.getAbsolutePath(), true)));
-			if(txt.startsWith("G01 X0.00 Y250.00 Z61.5 A360.0000 B360.0000 F36.4"))
+			if (txt.startsWith("G01 X0.00 Y250.00 Z61.5 A360.0000 B360.0000 F36.4"))
 				System.out.println(txt);
 			out.println(txt);
 			out.flush();

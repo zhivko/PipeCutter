@@ -26,52 +26,52 @@ public class Cylinder extends AbstractComposite {
 	double height = 0.7;
 
 	public Cylinder(Point3d point) {
-		this.move(point);
+		//this.move(point);
 	}
 
-	public void setData(Point3d position, float height, int slices, int rings, Color color) {
-		// Create sides
-		top = new Polygon();
-		low = new Polygon();
-		this.position = position;
-
-		MyPickablePoint newPoint = new MyPickablePoint(-100000, position,Color.BLACK,0.4f,-200000);
-
-		String gcode = SurfaceDemo.instance.utils.coordinateToGcode(newPoint);
-		SurfaceDemo.instance.writeToGcodeFile(gcode);
-
-		for (int i = 0; i < slices; i++) {
-			float angleBorder1 = (float) i * 2 * (float) Math.PI / (float) slices;
-			float angleBorder2 = (float) (i + 1) * 2 * (float) Math.PI / (float) slices;
-
-			Coord2d border1 = new Coord2d(angleBorder1, diameter / 2).cartesian();
-			Coord2d border2 = new Coord2d(angleBorder2, diameter / 2).cartesian();
-
-			Quad face = new Quad();
-			face.add(new Point(new Coord3d(position.x + border1.x, position.y + border1.y, position.z)));
- 			face.add(new Point(new Coord3d(position.x + border1.x, position.y + border1.y, position.z + height)));
-			face.add(new Point(new Coord3d(position.x + border2.x, position.y + border2.y, position.z + height)));
-			face.add(new Point(new Coord3d(position.x + border2.x, position.y + border2.y, position.z)));
-			face.setColor(color);
-			face.setWireframeDisplayed(false);
-
-			// add the polygon to the cylinder
-			add(face);
-
-			// compute top and low faces
-			low.add(new Point(new Coord3d(position.x + border1.x, position.y + border1.y, position.z)));
-			top.add(new Point(new Coord3d(position.x + border1.x, position.y + border1.y, position.z + height)));
-		}
-		low.setColor(color);
-		top.setColor(color);
-		add(top);
-		add(low);
-
-		setWireframeDisplayed(true);
-		setWireframeColor(Color.BLACK);
-		position = new Point3d(position.x, position.y, position.z);
-
-	}
+//	public void setData(Point3d position, float height, int slices, int rings, Color color) {
+//		// Create sides
+//		top = new Polygon();
+//		low = new Polygon();
+//		this.position = position;
+//
+//		MyPickablePoint newPoint = new MyPickablePoint(-100000, position,Color.BLACK,0.4f,-200000);
+//
+//		String gcode = SurfaceDemo.instance.utils.coordinateToGcode(newPoint);
+//		SurfaceDemo.instance.writeToGcodeFile(gcode);
+//
+//		for (int i = 0; i < slices; i++) {
+//			float angleBorder1 = (float) i * 2 * (float) Math.PI / (float) slices;
+//			float angleBorder2 = (float) (i + 1) * 2 * (float) Math.PI / (float) slices;
+//
+//			Coord2d border1 = new Coord2d(angleBorder1, diameter / 2).cartesian();
+//			Coord2d border2 = new Coord2d(angleBorder2, diameter / 2).cartesian();
+//
+//			Quad face = new Quad();
+//			face.add(new Point(new Coord3d(position.x + border1.x, position.y + border1.y, position.z)));
+// 			face.add(new Point(new Coord3d(position.x + border1.x, position.y + border1.y, position.z + height)));
+//			face.add(new Point(new Coord3d(position.x + border2.x, position.y + border2.y, position.z + height)));
+//			face.add(new Point(new Coord3d(position.x + border2.x, position.y + border2.y, position.z)));
+//			face.setColor(color);
+//			face.setWireframeDisplayed(false);
+//
+//			// add the polygon to the cylinder
+//			add(face);
+//
+//			// compute top and low faces
+//			low.add(new Point(new Coord3d(position.x + border1.x, position.y + border1.y, position.z)));
+//			top.add(new Point(new Coord3d(position.x + border1.x, position.y + border1.y, position.z + height)));
+//		}
+//		low.setColor(color);
+//		top.setColor(color);
+//		add(top);
+//		add(low);
+//
+//		setWireframeDisplayed(true);
+//		setWireframeColor(Color.BLACK);
+//		position = new Point3d(position.x, position.y, position.z);
+//
+//	}
 
 	public void clean() {
 		this.dispose();
@@ -89,19 +89,19 @@ public class Cylinder extends AbstractComposite {
 
 	}
 
-	public void move(Point3d newCoord) {
-		clean();
-		this.setData(newCoord, (float) height, 15, 5, Color.BLUE);
-		SurfaceDemo.instance.myComposite.add(this);
-		//SurfaceDemo.instance.getChart().render();
-
-		// Rotate rotate = new Rotate(angleDelta / 10, new Coord3d(0, 1, 0));
-		// Translate translate = new Translate(newCoord.sub(position));
-		// Transform t = new Transform();
-		// t.add(translate);
-		// this.applyGeometryTransform(t);
-		// position.set(newCoord.x, newCoord.y, newCoord.z);
-	}
+//	public void move(Point3d newCoord) {
+//		clean();
+//		this.setData(newCoord, (float) height, 15, 5, Color.BLUE);
+//		SurfaceDemo.instance.myComposite.add(this);
+//		//SurfaceDemo.instance.getChart().render();
+//
+//		// Rotate rotate = new Rotate(angleDelta / 10, new Coord3d(0, 1, 0));
+//		// Translate translate = new Translate(newCoord.sub(position));
+//		// Transform t = new Transform();
+//		// t.add(translate);
+//		// this.applyGeometryTransform(t);
+//		// position.set(newCoord.x, newCoord.y, newCoord.z);
+//	}
 
 
 

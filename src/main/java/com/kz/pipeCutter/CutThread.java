@@ -398,9 +398,9 @@ public class CutThread extends SwingWorker<String, Object> {
 			if (contEdge.edgeType != MyContinuousEdge.EdgeType.START)
 				axis = offPointAndPlane.plane.getNormal().scalarMultiply(-1.0d);
 			else if (contEdge.edgeType != MyContinuousEdge.EdgeType.END) {
-				axis = offPointAndPlane.plane.getNormal().scalarMultiply(-1.0d);
+				axis = offPointAndPlane.plane.getNormal().scalarMultiply(1.0d);
 			} else if (contEdge.edgeType != MyContinuousEdge.EdgeType.ONPIPE) {
-				axis = offPointAndPlane.plane.getNormal().scalarMultiply(-1.0d);
+				axis = offPointAndPlane.plane.getNormal().scalarMultiply(1.0d);
 			} else {
 				System.out.println("");
 			}
@@ -412,11 +412,11 @@ public class CutThread extends SwingWorker<String, Object> {
 				endAngle = Math.PI;
 				angleDelta = -Math.PI / 20.0d;
 			} else if (contEdge.edgeType == MyContinuousEdge.EdgeType.END) {
-				startAngle = 3.0d * Math.PI / 2.0d;
+				startAngle = Math.PI / 2.0d;
 				endAngle = Math.PI;
-				angleDelta = -Math.PI / 20.0d;
+				angleDelta = Math.PI / 20.0d;
 			} else if (contEdge.edgeType == MyContinuousEdge.EdgeType.ONPIPE) {
-				if (offPointAndPlane.direction == true) {
+				if (offPointAndPlane.direction == false) {
 					startAngle = Math.PI / 2.0d;
 					endAngle = Math.PI;
 					angleDelta = Math.PI / 20.0d;
@@ -457,7 +457,7 @@ public class CutThread extends SwingWorker<String, Object> {
 				alAlreadyAddedPoints.add(Integer.valueOf(tempPoint.id));
 			}
 			if (contEdge.edgeType == MyContinuousEdge.EdgeType.START)
-				tempPoint = SurfaceDemo.getInstance().utils.findConnectedPoint(tempPoint, alAlreadyAddedPoints, false);
+				tempPoint = SurfaceDemo.getInstance().utils.findConnectedPoint(tempPoint, alAlreadyAddedPoints, true);
 			else if (contEdge.edgeType == MyContinuousEdge.EdgeType.END)
 				tempPoint = SurfaceDemo.getInstance().utils.findConnectedPoint(tempPoint, alAlreadyAddedPoints, true);
 			else

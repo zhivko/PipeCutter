@@ -17,21 +17,21 @@
 	</properties>
 
 	<repositories>
-		<repository>
-			<id>jzy3d-releases</id>
-			<name>Jzy3d Snapshots</name>
-			<url>http://maven.jzy3d.org/releases</url>
-		</repository>
+<!-- 		<repository> -->
+<!-- 			<id>jzy3d-releases</id> -->
+<!-- 			<name>Jzy3d Snapshots</name> -->
+<!-- 			<url>http://maven.jzy3d.org/releases</url> -->
+<!-- 		</repository> -->
 
-		<repository>
-			<id>jzy3d-snapshots</id>
-			<name>Jzy3d Snapshots</name>
-			<url>http://maven.jzy3d.org/snapshots</url>
-			<snapshots>
-				<enabled>true</enabled>
-				<updatePolicy>always</updatePolicy>
-			</snapshots>
-		</repository>
+<!-- 		<repository> -->
+<!-- 			<id>jzy3d-snapshots</id> -->
+<!-- 			<name>Jzy3d Snapshots</name> -->
+<!-- 			<url>http://maven.jzy3d.org/snapshots</url> -->
+<!-- 			<snapshots> -->
+<!-- 				<enabled>true</enabled> -->
+<!-- 				<updatePolicy>always</updatePolicy> -->
+<!-- 			</snapshots> -->
+<!-- 		</repository> -->
 		<repository>
 			<id>jzy3d-zhivko</id>
 			<url>https://raw.githubusercontent.com/zhivko/jzy3d-api/mvn-repo/</url>

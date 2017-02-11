@@ -1219,7 +1219,7 @@ public class SurfaceDemo extends AbstractAnalysis {
 		Point p = new Point();
 		p.xyz.set(tempPoint.xyz.x, tempPoint.xyz.y, tempPoint.xyz.z);
 		if (kerOffsetVec != null) {
-			p.xyz = p.xyz.add((float) -kerOffsetVec.getX(), (float) -kerOffsetVec.getY(), (float) -kerOffsetVec.getZ());
+			p.xyz = p.xyz.add((float) -kerOffsetVec.getX()/2, (float) -kerOffsetVec.getY()/2, (float) -kerOffsetVec.getZ()/2);
 		}
 		Coord3d offsetedPoint = p.xyz.add(new Coord3d(0, 0, zOffset));
 		plasma.setPosition(offsetedPoint);
@@ -1245,7 +1245,7 @@ public class SurfaceDemo extends AbstractAnalysis {
 		p.setCoord(tempPoint.xyz);
 
 		if (writeToGCode) {
-			String gcode = SurfaceDemo.instance.utils.coordinateToGcode(tempPoint, zOffset, slow);
+			String gcode = SurfaceDemo.instance.utils.coordinateToGcode(tempPoint, zOffset, slow,kerOffsetVec);
 			if (cut) {
 				writeToGcodeFile(String.format(java.util.Locale.US, "%s", gcode));
 				alreadyCutting = true;
@@ -1267,7 +1267,7 @@ public class SurfaceDemo extends AbstractAnalysis {
 	public void moveAbove(MyPickablePoint tempPoint, float offset, long pierceTimeMs, Vector3D kerOffsetVec) {
 
 		if (kerOffsetVec != null) {
-			tempPoint.xyz.add((float) kerOffsetVec.getX(), (float) kerOffsetVec.getY(), (float) kerOffsetVec.getZ());
+			tempPoint.xyz.add((float) -kerOffsetVec.getX()/2, (float) -kerOffsetVec.getY()/2, (float) -kerOffsetVec.getZ()/2);
 		}
 
 		Coord3d abovePoint = tempPoint.xyz.add(0f, 0f, offset);
@@ -1278,7 +1278,7 @@ public class SurfaceDemo extends AbstractAnalysis {
 		p1.setWidth(4f);
 		SurfaceDemo.getInstance().myTrail.add(p1);
 
-		String gcode = SurfaceDemo.instance.utils.coordinateToGcode(tempPoint, offset, false);
+		String gcode = SurfaceDemo.instance.utils.coordinateToGcode(tempPoint, offset, false,kerOffsetVec);
 		plasma.setColor(Color.BLUE);
 		plasma.setWireframeColor(Color.BLUE);
 

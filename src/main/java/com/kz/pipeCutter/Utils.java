@@ -92,7 +92,8 @@ public class Utils {
 		points = new ConcurrentHashMap<Integer, MyPickablePoint>();
 	}
 
-	public ArrayList<Integer> calculateCutPoints(MyPickablePoint clickedPoint, ArrayList<Integer> alAlreadyAddedPoints, boolean verticals) {
+	public ArrayList<Integer> calculateCutPoints(MyPickablePoint clickedPoint, ArrayList<Integer> alAlreadyAddedPoints,
+			boolean verticals) {
 		// TODO Auto-generated method stub
 		MyEdge edge = new MyEdge(-1, -1);
 
@@ -128,14 +129,16 @@ public class Utils {
 		MyPickablePoint firstOuterPoint = sortedList.get(0);
 		MyPickablePoint lastOuterPoint = sortedList.get(sortedList.size() - 1);
 
-		ArrayList<Integer> firstPoints = SurfaceDemo.getInstance().utils.findAllConnectedPoints(firstOuterPoint, new ArrayList<Integer>());
+		ArrayList<Integer> firstPoints = SurfaceDemo.getInstance().utils.findAllConnectedPoints(firstOuterPoint,
+				new ArrayList<Integer>());
 		Iterator<Integer> it = firstPoints.iterator();
 		while (it.hasNext()) {
 			Integer pointId = it.next();
 			MyPickablePoint point = points.get(pointId);
 			point.setFirstOrLast(MyPickablePoint.FirstOrLast.FIRST);
 		}
-		ArrayList<Integer> lastPoints = SurfaceDemo.getInstance().utils.findAllConnectedPoints(lastOuterPoint, new ArrayList<Integer>());
+		ArrayList<Integer> lastPoints = SurfaceDemo.getInstance().utils.findAllConnectedPoints(lastOuterPoint,
+				new ArrayList<Integer>());
 		it = lastPoints.iterator();
 		while (it.hasNext()) {
 			Integer pointId = it.next();
@@ -150,25 +153,34 @@ public class Utils {
 		MyContinuousEdge contEdge = continuousEdges.get(point.continuousEdgeNo);
 		int index = contEdge.points.indexOf(point.id);
 
+		int increment = 0;
+		if (direction)
+			increment = 1;
+		else
+			increment = -1;
+
 		int i = index;
-		i++;
+		i = i + increment;
 		if (i == contEdge.points.size())
 			i = 0;
-		while (i != index) {
-			if (!alreadyAdded.contains(contEdge.points.get(i))) {
-				// go through edges and see if any of them is connecting those 2 points
-				for (MyEdge edge : contEdge.connectedEdges) {
-					if (edge.points.contains(point.id) && edge.points.contains(contEdge.points.get(i))) {
-						// yes there is an edge connecting those 2 points
-						return points.get(contEdge.points.get(i));
-					}
-				}
-			}
-			i++;
-			if (i == contEdge.points.size())
-				i = 0;
-		}
+		if (i == -1)
+			i = contEdge.points.size() - 1;
+
+		if (!alreadyAdded.contains(contEdge.points.get(i)))
+			return points.get(contEdge.points.get(i));
+
 		return null;
+
+		/*
+		 * while (i != index) { if (!alreadyAdded.contains(contEdge.points.get(i))) {
+		 * // go through edges and see if any of them is connecting those 2 points for
+		 * (MyEdge edge : contEdge.connectedEdges) { if (direction) if
+		 * (edge.points.get(0) == point.id && edge.points.get(1) ==
+		 * (contEdge.points.get(i))) { // yes there is an edge connecting those 2
+		 * points return points.get(contEdge.points.get(i)); } } } i = i + increment;
+		 * if (i == contEdge.points.size()) i = 0; if (i == -1) i =
+		 * contEdge.points.size() - 1; } return null;
+		 */
 	}
 
 	public ArrayList<MyPickablePoint> findConnectedPoints(MyPickablePoint point, ArrayList<MyPickablePoint> alreadyAdded) {
@@ -194,7 +206,8 @@ public class Utils {
 		edges.put(edge.edgeNo, edge);
 	}
 
-	public static ArrayList<Coord3d> CalculateLineLineIntersection(Coord3d line1Point1, Coord3d line1Point2, Coord3d line2Point1, Coord3d line2Point2) {
+	public static ArrayList<Coord3d> CalculateLineLineIntersection(Coord3d line1Point1, Coord3d line1Point2,
+			Coord3d line2Point1, Coord3d line2Point2) {
 		// Algorithm is ported from the C algorithm of
 		// Paul Bourke at
 		// http://local.wasp.uwa.edu.au/~pbourke/geometry/lineline3d/
@@ -348,20 +361,24 @@ public class Utils {
 
 	}
 
-	public String coordinateToGcode(MyPickablePoint p) {
-		return coordinateToGcode(p, 0, false);
+	public String coordinateToGcode(MyPickablePoint p, Vector3D kerfOffset) {
+		return coordinateToGcode(p, 0, false, kerfOffset);
 	}
 
-	public String coordinateToGcode(MyPickablePoint p, float zOffset, boolean slow) {
+	public String coordinateToGcode(MyPickablePoint p, float zOffset, boolean slow, Vector3D kerfOffset) {
 		// G93.1
 		// http://www.eng-tips.com/viewthread.cfm?qid=200454
 
 		Double x, y, z;
 		String ret;
-		
-		x = p.getX();
-		y = p.getY();
-		z = p.getZ() + zOffset;
+
+		if (kerfOffset == null) {
+			kerfOffset = new Vector3D(0, 0, 0);
+		}
+
+		x = p.getX() - kerfOffset.getX() / 2;
+		y = p.getY() - kerfOffset.getY() / 2;
+		z = p.getZ() - kerfOffset.getZ() / 2 + zOffset;
 
 		float angle = Float.valueOf(SurfaceDemo.instance.angleTxt);
 
@@ -417,12 +434,14 @@ public class Utils {
 			// float y1=point.xyz.y;
 			// float z1=point.xyz.z;
 
-			ret = String.format(java.util.Locale.US, "%s X%.2f Y%.2f Z%.1f A%.4f B%.4f F%.1f (move length: %.1f speed:%.1f p:%d, e:%s)",
-					(slow == true ? "G01" : "G01"), x, y, z, angle, angle, feed, length, calcSpeed, p.id, edgeDescription);
+			ret = String.format(java.util.Locale.US,
+					"%s X%.2f Y%.2f Z%.1f A%.4f B%.4f F%.1f (move length: %.1f speed:%.1f p:%d, e:%s)", (slow == true ? "G01" : "G01"),
+					x, y, z, angle, angle, feed, length, calcSpeed, p.id, edgeDescription);
 
 		} else
-			ret = String.format(java.util.Locale.US, "%s X%.2f Y%.2f Z%.1f A%.4f B%.4f F%.1f (move length: %.1f speed:%.1f, e:%s)",
-					(slow == true ? "G01" : "G01"), x, y, z, angle, angle, feed, length, calcSpeed, edgeDescription);
+			ret = String.format(java.util.Locale.US,
+					"%s X%.2f Y%.2f Z%.1f A%.4f B%.4f F%.1f (move length: %.1f speed:%.1f, e:%s)", (slow == true ? "G01" : "G01"), x,
+					y, z, angle, angle, feed, length, calcSpeed, edgeDescription);
 
 		this.previousPoint = p1;
 		this.previousPointId = p.id;
@@ -634,7 +653,8 @@ public class Utils {
 
 	}
 
-	public Plane getPlaneForPoint(MyPickablePoint point) throws org.apache.commons.math3.exception.MathArithmeticException {
+	public Plane getPlaneForPoint(MyPickablePoint point)
+			throws org.apache.commons.math3.exception.MathArithmeticException {
 		Plane plane = null;
 		MyEdge continuousEdge = continuousEdges.get(point.continuousEdgeNo);
 
@@ -672,7 +692,8 @@ public class Utils {
 
 	}
 
-	public Plane getPlaneForMiddlePoint(MyPickablePoint point) throws org.apache.commons.math3.exception.MathArithmeticException {
+	public Plane getPlaneForMiddlePoint(MyPickablePoint point)
+			throws org.apache.commons.math3.exception.MathArithmeticException {
 		Plane plane = null;
 		MyPickablePoint prevPoint = null;
 		MyPickablePoint nextPoint = null;
@@ -811,8 +832,6 @@ public class Utils {
 		}
 		return ret;
 	}
-
-
 
 	public MyPickablePoint getPointbyId(Integer id) {
 		return points.get(id);
@@ -975,7 +994,8 @@ public class Utils {
 		} catch (Exception ex) {
 			// if we are not at surface of four planes then we are on edge lets move
 			// kerf toward center of edge
-			Vector3D vecOffset = new Vector3D(0, Math.signum(continuousEdge.center.y - point.xyz.y) * SurfaceDemo.instance.getKerfOffset(), 0);
+			Vector3D vecOffset = new Vector3D(0,
+					Math.signum(continuousEdge.center.y - point.xyz.y) * SurfaceDemo.instance.getKerfOffset(), 0);
 			result = vecPoint.add(vecOffset);
 			ret.point.xyz.x = (float) result.getX();
 			ret.point.xyz.y = (float) result.getY();
@@ -997,7 +1017,8 @@ public class Utils {
 		// ret.plane = p;
 		// }
 
-		if (continuousEdge.edgeType == MyContinuousEdge.EdgeType.END || continuousEdge.edgeType == MyContinuousEdge.EdgeType.START) {
+		if (continuousEdge.edgeType == MyContinuousEdge.EdgeType.END
+				|| continuousEdge.edgeType == MyContinuousEdge.EdgeType.START) {
 			Vector3D vecOffset = new Vector3D(0, Math.signum(point.xyz.y) * SurfaceDemo.instance.getKerfOffset(), 0);
 			result = vecPoint.add(vecOffset);
 			ret.point.xyz.x = (float) result.getX();

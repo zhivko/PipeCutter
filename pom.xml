@@ -16,6 +16,7 @@
 		<jogl.version>2.3.2</jogl.version>
 	</properties>
 
+
 	<repositories>
 <!-- 		<repository> -->
 <!-- 			<id>jzy3d-releases</id> -->

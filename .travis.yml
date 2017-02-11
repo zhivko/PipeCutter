@@ -9,5 +9,8 @@ B3mFVsQUDSTtpBdLAGm12jSq8QykDzMB+yavta8x0sfYNLR54oTfmZFtio4QMauDxkv1TkHdoQDBN+0x
 Cn3SyKlOcEqENivfN4rvbOKjgdAeSHvPwR5xDygyWRF/2pzbYqdpWSeKwiU1PGwHjFhZS/lY7b3eQZoAD5Bremfvs5dIDO89qzca2O2zBYJKhByJUgyoY8CbYEd/LkaLzBThgyOwiVRAyVH5DXeKti/iRyi5E2yDySfM+bCfhyw7g1QvqBmu1QN6d4+F+/SbqD/+JPZe
 +w0sq0B+o/8ipb4+T2Mu1uaGPDT2rFeXpVCyb0lQkgZM2NnMSlj+i5Txr3GyQL7qdWYSpMpOlQCshnajGYDL3kqDPEjY24="
   
+before_install:
+  - sed -i.bak -e 's|https://nexus.codehaus.org/snapshots/|https://oss.sonatype.org/content/repositories/codehaus-snapshots/|g' ~/.m2/settings.xml
+  
 after_success:
   mvn clean compile package

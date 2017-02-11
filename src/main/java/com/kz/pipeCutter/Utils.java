@@ -901,7 +901,7 @@ public class Utils {
 		Plane pl1 = new Plane(p2, p3, p3_, 0.1);
 		Plane pl2 = new Plane(p1, p2, p2_, 0.1);
 		Plane pl3 = new Plane(p4, p1, p1_, 0.1);
-		Plane pl4 = new Plane(p4, p3, p3_, 0.1);
+		Plane pl4 = new Plane(p4, p3_, p3, 0.1);
 
 		Plane[] planes = new Plane[] { pl1, pl2, pl3, pl4 };
 

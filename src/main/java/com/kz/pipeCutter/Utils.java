@@ -92,8 +92,7 @@ public class Utils {
 		points = new ConcurrentHashMap<Integer, MyPickablePoint>();
 	}
 
-	public ArrayList<Integer> calculateCutPoints(MyPickablePoint clickedPoint, ArrayList<Integer> alAlreadyAddedPoints,
-			boolean verticals) {
+	public ArrayList<Integer> calculateCutPoints(MyPickablePoint clickedPoint, ArrayList<Integer> alAlreadyAddedPoints, boolean verticals) {
 		// TODO Auto-generated method stub
 		MyEdge edge = new MyEdge(-1, -1);
 
@@ -119,6 +118,7 @@ public class Utils {
 		for (MyPickablePoint p : points.values()) {
 			p.neighbourPoints = findConnectedPoints(p, new ArrayList<MyPickablePoint>());
 		}
+
 	}
 
 	public void establishRighMostAndLeftMostPoints() {
@@ -129,16 +129,14 @@ public class Utils {
 		MyPickablePoint firstOuterPoint = sortedList.get(0);
 		MyPickablePoint lastOuterPoint = sortedList.get(sortedList.size() - 1);
 
-		ArrayList<Integer> firstPoints = SurfaceDemo.getInstance().utils.findAllConnectedPoints(firstOuterPoint,
-				new ArrayList<Integer>());
+		ArrayList<Integer> firstPoints = SurfaceDemo.getInstance().utils.findAllConnectedPoints(firstOuterPoint, new ArrayList<Integer>());
 		Iterator<Integer> it = firstPoints.iterator();
 		while (it.hasNext()) {
 			Integer pointId = it.next();
 			MyPickablePoint point = points.get(pointId);
 			point.setFirstOrLast(MyPickablePoint.FirstOrLast.FIRST);
 		}
-		ArrayList<Integer> lastPoints = SurfaceDemo.getInstance().utils.findAllConnectedPoints(lastOuterPoint,
-				new ArrayList<Integer>());
+		ArrayList<Integer> lastPoints = SurfaceDemo.getInstance().utils.findAllConnectedPoints(lastOuterPoint, new ArrayList<Integer>());
 		it = lastPoints.iterator();
 		while (it.hasNext()) {
 			Integer pointId = it.next();
@@ -172,13 +170,13 @@ public class Utils {
 		return null;
 
 		/*
-		 * while (i != index) { if (!alreadyAdded.contains(contEdge.points.get(i))) {
-		 * // go through edges and see if any of them is connecting those 2 points for
-		 * (MyEdge edge : contEdge.connectedEdges) { if (direction) if
+		 * while (i != index) { if (!alreadyAdded.contains(contEdge.points.get(i)))
+		 * { // go through edges and see if any of them is connecting those 2 points
+		 * for (MyEdge edge : contEdge.connectedEdges) { if (direction) if
 		 * (edge.points.get(0) == point.id && edge.points.get(1) ==
 		 * (contEdge.points.get(i))) { // yes there is an edge connecting those 2
-		 * points return points.get(contEdge.points.get(i)); } } } i = i + increment;
-		 * if (i == contEdge.points.size()) i = 0; if (i == -1) i =
+		 * points return points.get(contEdge.points.get(i)); } } } i = i +
+		 * increment; if (i == contEdge.points.size()) i = 0; if (i == -1) i =
 		 * contEdge.points.size() - 1; } return null;
 		 */
 	}
@@ -206,8 +204,7 @@ public class Utils {
 		edges.put(edge.edgeNo, edge);
 	}
 
-	public static ArrayList<Coord3d> CalculateLineLineIntersection(Coord3d line1Point1, Coord3d line1Point2,
-			Coord3d line2Point1, Coord3d line2Point2) {
+	public static ArrayList<Coord3d> CalculateLineLineIntersection(Coord3d line1Point1, Coord3d line1Point2, Coord3d line2Point1, Coord3d line2Point2) {
 		// Algorithm is ported from the C algorithm of
 		// Paul Bourke at
 		// http://local.wasp.uwa.edu.au/~pbourke/geometry/lineline3d/
@@ -397,7 +394,7 @@ public class Utils {
 				if (edge.edgeType == MyEdge.EdgeType.ONRADIUS) {
 					float radius_of_edge = Float.valueOf(Settings.instance.getSetting("pipe_radius"));
 					float maxRadius = (float) Math.sqrt(this.maxX * this.maxX + this.maxZ * this.maxZ);
-					float s = (float) (maxRadius * Math.PI) * 1.5f;
+					float s = (float) (maxRadius * Math.PI) * 1f;
 					float arc_length = (float) (radius_of_edge * Math.PI / 2);
 					float v = SurfaceDemo.instance.g1Speed * s / arc_length * 1f;
 					float dv = v - SurfaceDemo.instance.g1Speed;
@@ -434,14 +431,12 @@ public class Utils {
 			// float y1=point.xyz.y;
 			// float z1=point.xyz.z;
 
-			ret = String.format(java.util.Locale.US,
-					"%s X%.2f Y%.2f Z%.1f A%.4f B%.4f F%.1f (move length: %.1f speed:%.1f p:%d, e:%s)", (slow == true ? "G01" : "G01"),
-					x, y, z, angle, angle, feed, length, calcSpeed, p.id, edgeDescription);
+			ret = String.format(java.util.Locale.US, "%s X%.2f Y%.2f Z%.1f A%.4f B%.4f F%.1f (move length: %.1f speed:%.1f p:%d, e:%s)",
+					(slow == true ? "G01" : "G01"), x, y, z, angle, angle, feed, length, calcSpeed, p.id, edgeDescription);
 
 		} else
-			ret = String.format(java.util.Locale.US,
-					"%s X%.2f Y%.2f Z%.1f A%.4f B%.4f F%.1f (move length: %.1f speed:%.1f, e:%s)", (slow == true ? "G01" : "G01"), x,
-					y, z, angle, angle, feed, length, calcSpeed, edgeDescription);
+			ret = String.format(java.util.Locale.US, "%s X%.2f Y%.2f Z%.1f A%.4f B%.4f F%.1f (move length: %.1f speed:%.1f, e:%s)",
+					(slow == true ? "G01" : "G01"), x, y, z, angle, angle, feed, length, calcSpeed, edgeDescription);
 
 		this.previousPoint = p1;
 		this.previousPointId = p.id;
@@ -496,13 +491,10 @@ public class Utils {
 			if (SurfaceDemo.instance.NUMBER_POINTS) {
 				pointTexts.applyGeometryTransform(myRot);
 			}
-
 			for (MyEdge edge : continuousEdges.values()) {
 				edge.calculateCenter();
 			}
-			System.out.println("Done");
 		} else {
-
 			int noSteps = 10;
 			Transform transf = new Transform(new Rotate(angleDeg / noSteps, new Coord3d(0, 1, 0)));
 			for (int i = 0; i <= noSteps; i++) {
@@ -578,9 +570,9 @@ public class Utils {
 		continuousEdges = new ConcurrentHashMap<Integer, MyContinuousEdge>();
 		for (MyPickablePoint point : points.values()) {
 			if (point.continuousEdgeNo == -1) {
+				MyContinuousEdge contEdge = new MyContinuousEdge(edgeNo, -1);
 				ArrayList<Integer> pointsOfEdgeAl = findAllConnectedPoints(point, new ArrayList<Integer>());
 
-				MyContinuousEdge contEdge = new MyContinuousEdge(edgeNo, -1);
 				int i = 0;
 				int j = 0;
 				while (i < pointsOfEdgeAl.size()) {
@@ -634,9 +626,6 @@ public class Utils {
 				Vector3D vecCenOrigin = new Vector3D(0, vecC.getY(), 0);
 				Vector3D vecCen = vecC.subtract(vecCenOrigin);
 
-				if (edge.edgeNo == 13) {
-					System.out.println(edge.edgeNo);
-				}
 				try {
 					double angle = Vector3D.angle(vecCen, vecN);
 					System.out.println(angle);
@@ -646,6 +635,21 @@ public class Utils {
 					}
 				} catch (ArithmeticException ex) {
 					System.out.println(ex.getMessage() + " for edge: " + edge.edgeNo);
+					
+					if(edge.edgeNo>=13 && edge.edgeNo<=16)
+					{
+						System.out.println("14");
+					}
+					Collections.sort(edge.points, new RoundPointComparator());
+					if(edge.edgeNo>=13 && edge.edgeNo<=16)
+					{
+						System.out.println(edge.points);
+						System.out.println("");
+					}
+					
+					
+					
+
 				}
 			}
 
@@ -653,8 +657,7 @@ public class Utils {
 
 	}
 
-	public Plane getPlaneForPoint(MyPickablePoint point)
-			throws org.apache.commons.math3.exception.MathArithmeticException {
+	public Plane getPlaneForPoint(MyPickablePoint point) throws org.apache.commons.math3.exception.MathArithmeticException {
 		Plane plane = null;
 		MyEdge continuousEdge = continuousEdges.get(point.continuousEdgeNo);
 
@@ -692,8 +695,7 @@ public class Utils {
 
 	}
 
-	public Plane getPlaneForMiddlePoint(MyPickablePoint point)
-			throws org.apache.commons.math3.exception.MathArithmeticException {
+	public Plane getPlaneForMiddlePoint(MyPickablePoint point) throws org.apache.commons.math3.exception.MathArithmeticException {
 		Plane plane = null;
 		MyPickablePoint prevPoint = null;
 		MyPickablePoint nextPoint = null;
@@ -994,8 +996,7 @@ public class Utils {
 		} catch (Exception ex) {
 			// if we are not at surface of four planes then we are on edge lets move
 			// kerf toward center of edge
-			Vector3D vecOffset = new Vector3D(0,
-					Math.signum(continuousEdge.center.y - point.xyz.y) * SurfaceDemo.instance.getKerfOffset(), 0);
+			Vector3D vecOffset = new Vector3D(0, Math.signum(continuousEdge.center.y - point.xyz.y) * SurfaceDemo.instance.getKerfOffset(), 0);
 			result = vecPoint.add(vecOffset);
 			ret.point.xyz.x = (float) result.getX();
 			ret.point.xyz.y = (float) result.getY();
@@ -1017,8 +1018,7 @@ public class Utils {
 		// ret.plane = p;
 		// }
 
-		if (continuousEdge.edgeType == MyContinuousEdge.EdgeType.END
-				|| continuousEdge.edgeType == MyContinuousEdge.EdgeType.START) {
+		if (continuousEdge.edgeType == MyContinuousEdge.EdgeType.END || continuousEdge.edgeType == MyContinuousEdge.EdgeType.START) {
 			Vector3D vecOffset = new Vector3D(0, Math.signum(point.xyz.y) * SurfaceDemo.instance.getKerfOffset(), 0);
 			result = vecPoint.add(vecOffset);
 			ret.point.xyz.x = (float) result.getX();

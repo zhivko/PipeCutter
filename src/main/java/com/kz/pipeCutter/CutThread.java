@@ -12,9 +12,14 @@ import javax.swing.SwingWorker;
 import javax.vecmath.Point3d;
 import javax.vecmath.Tuple3d;
 
+import org.apache.commons.math3.exception.MathArithmeticException;
+import org.apache.commons.math3.exception.util.LocalizedFormats;
 import org.apache.commons.math3.geometry.euclidean.threed.Line;
 import org.apache.commons.math3.geometry.euclidean.threed.Rotation;
 import org.apache.commons.math3.geometry.euclidean.threed.Vector3D;
+import org.apache.commons.math3.geometry.euclidean.twod.Vector2D;
+import org.apache.commons.math3.util.FastMath;
+import org.apache.commons.math3.util.MathArrays;
 import org.jzy3d.chart.controllers.camera.AbstractCameraController;
 import org.jzy3d.chart.controllers.mouse.camera.AWTCameraMouseController;
 import org.jzy3d.colors.Color;
@@ -346,6 +351,10 @@ public class CutThread extends SwingWorker<String, Object> {
 
 		MyContinuousEdge contEdge = SurfaceDemo.instance.utils.continuousEdges.get(tempPoint.continuousEdgeNo);
 
+		if (contEdge.edgeNo == 1) {
+			System.out.println("");
+		}
+
 		PointAndPlane offPointAndPlane = SurfaceDemo.instance.utils.calculateOffsetPointAndPlane(myPoint);
 		Vector3D delt = offPointAndPlane.plane.getNormal().normalize().scalarMultiply(5);
 
@@ -476,6 +485,9 @@ public class CutThread extends SwingWorker<String, Object> {
 								myPoint.xyz.z - offPointAndPlane.point.xyz.z);
 					}
 					SurfaceDemo.getInstance().move(tempPoint, true, true, cutOffsetMm, kerfOffVec);
+					if (contEdge.edgeNo == 1) {
+						System.out.println("");
+					}
 				}
 			} else {
 				MyEdge edge = SurfaceDemo.instance.utils.getEdgeFromTwoPoints(prevPoint, tempPoint);
@@ -486,8 +498,14 @@ public class CutThread extends SwingWorker<String, Object> {
 								tempPoint.xyz.z - offPointAndPlane.point.xyz.z);
 					}
 					SurfaceDemo.getInstance().move(tempPoint, true, true, cutOffsetMm, kerfOffVec);
+					if (contEdge.edgeNo == 1) {
+						System.out.println("TempPoint id: " + tempPoint.id);
+					}
 					alreadyCuttedEdges.add(edge);
 				}
+			}
+			if (tempPoint.id == 150) {
+				System.out.println("");
 			}
 			double angleDelta = rotation(prevPoint, tempPoint);
 			prevPoint = tempPoint;
@@ -516,11 +534,35 @@ public class CutThread extends SwingWorker<String, Object> {
 	private double rotation(MyPickablePoint prevPoint, MyPickablePoint tempPoint) {
 		double angleDeltaDeg = 0;
 		if (tempPoint != null && !tempPoint.equals(prevPoint)) {
-			double angleDelta = Math.atan2(tempPoint.getZ() - prevPoint.getZ(), prevPoint.getX() - tempPoint.getX());
+
+			Vector2D vecA = new Vector2D(prevPoint.getX() - tempPoint.getX(), prevPoint.getZ() - tempPoint.getZ());
+			Vector2D vecB = new Vector2D(1, 0);
+			// double angleDelta = Vector2D.angle(vecB, vecA);
+			// lets check origpoints if this are same points only y coordinates
+			// differs.
+
+			MyPickablePoint prevPoint_ = SurfaceDemo.instance.utils.origPoints.get(prevPoint.id);
+			MyPickablePoint tempPoint_ = SurfaceDemo.instance.utils.origPoints.get(tempPoint.id);
+
+			if (Math.abs(prevPoint_.getX() - tempPoint_.getX())<0.00000001 && Math.abs(prevPoint_.getZ() - tempPoint_.getZ())<0.00000001) {
+				System.out.println("Same point");
+				return 0.0d;
+			}
+
+			double angleDelta = FastMath.atan2(tempPoint.getZ() - prevPoint.getZ(), prevPoint.getX() - tempPoint.getX());
+
+			double angleDelta2 = Math.atan2(tempPoint.getZ() - prevPoint.getZ(), prevPoint.getX() - tempPoint.getX());
+
+			if (Math.abs(angleDelta - angleDelta2) > 0.001) {
+				System.out.println(angleDelta * 180 / Math.PI + " " + angleDelta2 * 180 / Math.PI);
+			}
+
 			if (Math.abs(angleDelta - Math.PI) < Utils.Math_E)
 				angleDelta = 0;
 			if (Math.abs(angleDelta + Math.PI) < Utils.Math_E)
 				angleDelta = 0;
+			// if (Math.abs(angleDelta) < Utils.Math_E)
+			// angleDelta = 0;
 
 			angleDeltaDeg = Math.toDegrees(angleDelta);
 

@@ -600,12 +600,25 @@ public class Utils {
 		}
 
 		// calculate type of Edge START MIDDLE or END
-		ArrayList<MyContinuousEdge> sortedContinuousEdgeList = new ArrayList(continuousEdges.values());
-		Collections.sort(sortedContinuousEdgeList, new MyEdgeYComparator());
+//		ArrayList<MyContinuousEdge> sortedContinuousEdgeList = new ArrayList(continuousEdges.values());
+//		Collections.sort(sortedContinuousEdgeList, new MyEdgeYComparator());
+//
+//		sortedContinuousEdgeList.get(0).edgeType = MyContinuousEdge.EdgeType.END;
+//		sortedContinuousEdgeList.get(sortedContinuousEdgeList.size() - 1).edgeType = MyContinuousEdge.EdgeType.START;
 
-		sortedContinuousEdgeList.get(0).edgeType = MyContinuousEdge.EdgeType.END;
-		sortedContinuousEdgeList.get(sortedContinuousEdgeList.size() - 1).edgeType = MyContinuousEdge.EdgeType.START;
-
+		int minYPointInd = 0;
+		int maxYPointInd = 0;
+		for (MyPickablePoint p : points.values()) {
+			if(p.getY()<points.get(minYPointInd).getY())
+				minYPointInd = p.id;
+			if(p.getY()>points.get(minYPointInd).getY())
+				maxYPointInd = p.id;
+		}
+		
+		continuousEdges.get(points.get(minYPointInd).continuousEdgeNo).edgeType = MyContinuousEdge.EdgeType.END;
+		continuousEdges.get(points.get(maxYPointInd).continuousEdgeNo).edgeType = MyContinuousEdge.EdgeType.START;
+		
+		
 		// correctly orient points of continuous edge
 		Iterator<Integer> it = continuousEdges.keySet().iterator();
 		while (it.hasNext()) {
@@ -641,20 +654,10 @@ public class Utils {
 						System.out.println("14");
 					}
 					Collections.sort(edge.points, new RoundPointComparator());
-					if(edge.edgeNo>=13 && edge.edgeNo<=16)
-					{
-						System.out.println(edge.points);
-						System.out.println("");
-					}
-					
-					
-					
 
 				}
 			}
-
 		}
-
 	}
 
 	public Plane getPlaneForPoint(MyPickablePoint point) throws org.apache.commons.math3.exception.MathArithmeticException {

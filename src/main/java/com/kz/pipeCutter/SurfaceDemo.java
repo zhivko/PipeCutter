@@ -1284,7 +1284,7 @@ public class SurfaceDemo extends AbstractAnalysis {
 
 		if (pierceTimeMs > 0) {
 			try {
-				Thread.sleep(Long.valueOf(500));
+				Thread.sleep(Long.valueOf(10));
 			} catch (Exception ex) {
 				ex.printStackTrace();
 			}

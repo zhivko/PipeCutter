@@ -68,6 +68,12 @@ public class OtherSettings extends JPanel {
 		radius.setParId("pipe_radius");
 		this.add(radius);
 		
+		SavableCheckBox cutKerfOffset = new SavableCheckBox();
+		cutKerfOffset.setLabelTxt("Kerf offset edge wile cuttting");
+		cutKerfOffset.setParId("cut_kerf_offset");
+		cutKerfOffset.setNeedsSave(true);
+		this.add(cutKerfOffset);				
+
 		SavableText pipeDimX = new SavableText();
 		pipeDimX.setNeedsSave(true);
 		pipeDimX.setLabelTxt("Pipe X dimension:");

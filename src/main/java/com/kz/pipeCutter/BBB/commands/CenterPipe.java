@@ -9,7 +9,7 @@ public class CenterPipe implements Runnable {
 
 	@Override
 	public void run() {
-		String speed = " F1000";
+		String speed = " F4000";
 
 		int angle = 0;
 		new ExecuteMdi("G01 A" + angle + " B" + angle + speed).start();
@@ -93,18 +93,18 @@ public class CenterPipe implements Runnable {
 		double middleVert = (z - e) / 2.0;
 		int stepsVert = (int) Math.round(middleVert * 100.0);
 
-		String signZ = ((stepsVert >= 0) ? "+" : "-");
-		String signE = ((stepsVert >= 0) ? "-" : "+");
+		String signZ = ((stepsVert >= 0) ? "-" : "+");
+		String signE = ((stepsVert >= 0) ? "+" : "-");
 		String commToSendVer = "Z" + signE + Math.abs(stepsVert) + " E" + signZ + Math.abs(stepsVert);
 		
 		double middleHort = (x - y) / 2.000;
 		int stepsHort = (int) Math.round(middleHort * 100.0);
 
-		String signX = ((stepsHort >= 0) ? "-" : "+");
-		String signY = ((stepsHort >= 0) ? "+" : "-");
+		String signX = ((stepsHort >= 0) ? "+" : "-");
+		String signY = ((stepsHort >= 0) ? "-" : "+");
 		String commToSendHor = "X" + signX + Math.abs(stepsHort) + " Y" + signY + Math.abs(stepsHort);
 		
-		Logger.getLogger(this.getClass()).info(String.format("x:%4.2f y:%4.2f z:%4.2f e:%4.2f", x,y,z,e));
+		Settings.instance.log(String.format("x:%4.2f y:%4.2f z:%4.2f e:%4.2f", x,y,z,e));
 		Logger.getLogger(this.getClass()).info(commToSendVer + " " + commToSendHor);
 		String centerComm = commToSendVer + " " + commToSendHor;
 		Settings.instance.log(centerComm);

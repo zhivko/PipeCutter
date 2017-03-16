@@ -389,26 +389,39 @@ public class Utils {
 		double length = 0;
 		if (this.previousPointId > 0 && (p.id != this.previousPointId)) {
 			edge = getEdgeFromTwoPoints(p, SurfaceDemo.instance.utils.points.get(this.previousPointId));
+
 			if (edge != null) {
+				
+				if(edge.edgeNo==359)
+				{
+					System.out.println("OOPs");
+				}
+				
 				length = edge.length;
+				
+				/*
+				
 				if (edge.edgeType == MyEdge.EdgeType.ONRADIUS) {
 					float radius_of_edge = Float.valueOf(Settings.instance.getSetting("pipe_radius"));
 					float maxRadius = (float) Math.sqrt(this.maxX * this.maxX + this.maxZ * this.maxZ);
 					float s = (float) (maxRadius * Math.PI) * 1f;
 					float arc_length = (float) (radius_of_edge * Math.PI / 2);
 					float v = SurfaceDemo.instance.g1Speed * s / arc_length * 1f;
-					float dv = v - SurfaceDemo.instance.g1Speed;
-					float t = s / SurfaceDemo.instance.g1Speed;
-					float a = 2 * dv / t;
-					double currAngle = Math.atan2(p.getCoord().z, p.getCoord().x) * 180.0 / Math.PI;
-					double maxAngle = Math.atan2(this.maxZ, (this.maxX - radius_of_edge)) * 180.0 / Math.PI;
+//					float dv = v - SurfaceDemo.instance.g1Speed;
+//					float t = s / SurfaceDemo.instance.g1Speed;
+//					float a = 2 * dv / t;
+//					double currAngle = Math.atan2(p.getCoord().z, p.getCoord().x) * 180.0 / Math.PI;
+//					double maxAngle = Math.atan2(this.maxZ, (this.maxX - radius_of_edge)) * 180.0 / Math.PI;
 					CutThread.instance.filletSpeed = Double.valueOf(v).floatValue();
 					calcSpeed = CutThread.instance.filletSpeed;
 				}
+				
+				*/
 				if (edge.cutVelocity != 0)
 					calcSpeed = edge.cutVelocity;
 			}
 		}
+		
 		double feed = 1;
 		Coord3d p1 = new Coord3d(x, y, z);
 
@@ -600,25 +613,26 @@ public class Utils {
 		}
 
 		// calculate type of Edge START MIDDLE or END
-//		ArrayList<MyContinuousEdge> sortedContinuousEdgeList = new ArrayList(continuousEdges.values());
-//		Collections.sort(sortedContinuousEdgeList, new MyEdgeYComparator());
-//
-//		sortedContinuousEdgeList.get(0).edgeType = MyContinuousEdge.EdgeType.END;
-//		sortedContinuousEdgeList.get(sortedContinuousEdgeList.size() - 1).edgeType = MyContinuousEdge.EdgeType.START;
+		// ArrayList<MyContinuousEdge> sortedContinuousEdgeList = new
+		// ArrayList(continuousEdges.values());
+		// Collections.sort(sortedContinuousEdgeList, new MyEdgeYComparator());
+		//
+		// sortedContinuousEdgeList.get(0).edgeType = MyContinuousEdge.EdgeType.END;
+		// sortedContinuousEdgeList.get(sortedContinuousEdgeList.size() -
+		// 1).edgeType = MyContinuousEdge.EdgeType.START;
 
 		int minYPointInd = 0;
 		int maxYPointInd = 0;
 		for (MyPickablePoint p : points.values()) {
-			if(p.getY()<points.get(minYPointInd).getY())
+			if (p.getY() < points.get(minYPointInd).getY())
 				minYPointInd = p.id;
-			if(p.getY()>points.get(minYPointInd).getY())
+			if (p.getY() > points.get(minYPointInd).getY())
 				maxYPointInd = p.id;
 		}
-		
+
 		continuousEdges.get(points.get(minYPointInd).continuousEdgeNo).edgeType = MyContinuousEdge.EdgeType.END;
 		continuousEdges.get(points.get(maxYPointInd).continuousEdgeNo).edgeType = MyContinuousEdge.EdgeType.START;
-		
-		
+
 		// correctly orient points of continuous edge
 		Iterator<Integer> it = continuousEdges.keySet().iterator();
 		while (it.hasNext()) {
@@ -648,9 +662,8 @@ public class Utils {
 					}
 				} catch (ArithmeticException ex) {
 					System.out.println(ex.getMessage() + " for edge: " + edge.edgeNo);
-					
-					if(edge.edgeNo>=13 && edge.edgeNo<=16)
-					{
+
+					if (edge.edgeNo >= 13 && edge.edgeNo <= 16) {
 						System.out.println("14");
 					}
 					Collections.sort(edge.points, new RoundPointComparator());
@@ -910,7 +923,9 @@ public class Utils {
 
 		Plane[] planes = new Plane[] { pl1, pl2, pl3, pl4 };
 
-		Vector3D contEdgCenter = new Vector3D(continuousEdge.center.x, continuousEdge.center.y, continuousEdge.center.z);
+		// Vector3D contEdgOpositePoint = getOpositePoint(continuousEdge, point);
+		Vector3D contEdgOpositePoint = new Vector3D(continuousEdge.center.x, continuousEdge.center.y, continuousEdge.center.z);
+
 		Plane plane = null;
 		int i = -1;
 		for (final Plane pl : planes) {
@@ -974,7 +989,7 @@ public class Utils {
 				Vector3D rotatedB = rotation2.applyTo(vecA).normalize();
 				Vector3D newPoint2 = vecPoint.add(rotatedB.scalarMultiply(SurfaceDemo.getInstance().getKerfOffset()));
 
-				if (newPoint1.distance(contEdgCenter) < newPoint2.distance(contEdgCenter))
+				if (newPoint1.distance(contEdgOpositePoint) < newPoint2.distance(contEdgOpositePoint))
 					ret.point.xyz.set((float) newPoint1.getX(), (float) newPoint1.getY(), (float) newPoint1.getZ());
 				else
 					ret.point.xyz.set((float) newPoint2.getX(), (float) newPoint2.getY(), (float) newPoint2.getZ());
@@ -1042,6 +1057,34 @@ public class Utils {
 			ret.direction = false;
 		else
 			ret.direction = true;
+
+		return ret;
+	}
+
+	private Vector3D getOpositePoint(MyContinuousEdge continuousEdge, MyPickablePoint point) {
+		Vector3D ret = null;
+
+		double distance = 50000;
+
+		for (MyEdge edg : continuousEdge.connectedEdges) {
+			MyPickablePoint p1 = points.get(edg.points.get(0));
+			MyPickablePoint p2 = points.get(edg.points.get(1));
+
+			Vector3D start = new Vector3D(p1.getX(), p1.getY(), p1.getZ());
+			Vector3D end = new Vector3D(p2.getX(), p2.getY(), p2.getZ());
+			Line lin1 = new Line(start, end, 0.0001);
+
+			Vector3D start_ = new Vector3D(point.getX(), point.getY(), point.getZ());
+			Vector3D end_ = new Vector3D(point.getX(), point.getY() + 2, point.getZ());
+			Line lin2 = new Line(start_, end_, 0.0001);
+
+			Vector3D intersect = lin1.intersection(lin2);
+			if (intersect != null) {
+				if (start_.distance(intersect) < distance) {
+					ret = intersect;
+				}
+			}
+		}
 
 		return ret;
 	}

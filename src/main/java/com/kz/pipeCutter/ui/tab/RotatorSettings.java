@@ -4,6 +4,8 @@ import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.FocusEvent;
+import java.awt.event.FocusListener;
 
 import javax.swing.JButton;
 import javax.swing.JLabel;
@@ -121,6 +123,19 @@ public class RotatorSettings extends JPanel {
 		laserDistance0.setNeedsSave(false);
 		laserDistance0.setPin(new PinDef("mymotion.laserHeight0", HalPinDirection.HAL_IN, ValueType.HAL_FLOAT));
 		panelRotator1.add(laserDistance0);
+		laserDistance0.addFocusListener(new FocusListener() {
+			
+			@Override
+			public void focusLost(FocusEvent e) {
+				// TODO Auto-generated method stub
+				
+			}
+			
+			@Override
+			public void focusGained(FocusEvent e) {
+				
+			}
+		});
 
 		// ----------ROTATOR 2---------------------------
 		JPanel panelRotator2 = new JPanel();
@@ -198,6 +213,21 @@ public class RotatorSettings extends JPanel {
 		laserDistance1.setNeedsSave(false);
 		laserDistance1.setPin(new PinDef("mymotion.laserHeight1", HalPinDirection.HAL_IN, ValueType.HAL_FLOAT));
 		panelRotator2.add(laserDistance1);
+		
+		laserDistance1.addFocusListener(new FocusListener() {
+			
+			@Override
+			public void focusLost(FocusEvent e) {
+				// TODO Auto-generated method stub
+				
+			}
+			
+			@Override
+			public void focusGained(FocusEvent e) {
+				Settings.instance.setLaser1IP();
+			}
+		});		
+		
 
 		// ----------ROTATOR 3---------------------------
 		/*

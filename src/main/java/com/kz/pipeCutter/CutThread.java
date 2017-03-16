@@ -52,6 +52,7 @@ public class CutThread extends SwingWorker<String, Object> {
 
 	private boolean wholePipe = false;
 	private boolean onlySelected = false;
+	private boolean useKerfOffset = false;
 	private MyPickablePoint startPoint = null;
 
 	public float filletSpeed = 0.0f;
@@ -151,6 +152,8 @@ public class CutThread extends SwingWorker<String, Object> {
 
 		SurfaceDemo.instance.g1Speed = Float.valueOf(Settings.getInstance().getSetting("gcode_feedrate_g1"));
 		SurfaceDemo.instance.g0Speed = Float.valueOf(Settings.getInstance().getSetting("gcode_feedrate_g0"));
+
+		this.useKerfOffset = Settings.instance.getSetting("cut_kerf_offset").equals("True");
 	}
 
 	public void cut() throws InterruptedException {
@@ -391,7 +394,8 @@ public class CutThread extends SwingWorker<String, Object> {
 			float radius = Float.valueOf(Settings.instance.getSetting("plasma_leadin_radius"));
 
 			Point offsetPoint = offPointAndPlane.point;
-			kerfOffVec = new Vector3D(myPoint.xyz.x - offsetPoint.xyz.x, myPoint.xyz.y - offsetPoint.xyz.y, myPoint.xyz.z - offsetPoint.xyz.z);
+			if (this.useKerfOffset)
+				kerfOffVec = new Vector3D(myPoint.xyz.x - offsetPoint.xyz.x, myPoint.xyz.y - offsetPoint.xyz.y, myPoint.xyz.z - offsetPoint.xyz.z);
 
 			Vector3D vecMyPoint = new Vector3D(myPoint.point.x, myPoint.point.y, myPoint.point.z);
 			Vector3D vect3DoffPoint = new Vector3D(offsetPoint.getCoord().x, offsetPoint.getCoord().y, offsetPoint.getCoord().z);
@@ -479,7 +483,7 @@ public class CutThread extends SwingWorker<String, Object> {
 				tempPoint = myPoint;
 				MyEdge edge = SurfaceDemo.instance.utils.getEdgeFromTwoPoints(prevPoint, tempPoint);
 				if (edge != null && !alreadyCuttedEdges.contains(edge)) {
-					if (contEdge.points.size() == contEdge.connectedEdges.size()) {
+					if (contEdge.points.size() == contEdge.connectedEdges.size() && this.useKerfOffset) {
 						offPointAndPlane = SurfaceDemo.instance.utils.calculateOffsetPointAndPlane(myPoint);
 						kerfOffVec = new Vector3D(myPoint.xyz.x - offPointAndPlane.point.xyz.x, myPoint.xyz.y - offPointAndPlane.point.xyz.y,
 								myPoint.xyz.z - offPointAndPlane.point.xyz.z);
@@ -492,7 +496,7 @@ public class CutThread extends SwingWorker<String, Object> {
 			} else {
 				MyEdge edge = SurfaceDemo.instance.utils.getEdgeFromTwoPoints(prevPoint, tempPoint);
 				if (edge != null && !alreadyCuttedEdges.contains(edge)) {
-					if (contEdge.points.size() == contEdge.connectedEdges.size()) {
+					if (contEdge.points.size() == contEdge.connectedEdges.size() && this.useKerfOffset) {
 						offPointAndPlane = SurfaceDemo.instance.utils.calculateOffsetPointAndPlane(tempPoint);
 						kerfOffVec = new Vector3D(tempPoint.xyz.x - offPointAndPlane.point.xyz.x, tempPoint.xyz.y - offPointAndPlane.point.xyz.y,
 								tempPoint.xyz.z - offPointAndPlane.point.xyz.z);
@@ -544,7 +548,7 @@ public class CutThread extends SwingWorker<String, Object> {
 			MyPickablePoint prevPoint_ = SurfaceDemo.instance.utils.origPoints.get(prevPoint.id);
 			MyPickablePoint tempPoint_ = SurfaceDemo.instance.utils.origPoints.get(tempPoint.id);
 
-			if (Math.abs(prevPoint_.getX() - tempPoint_.getX())<0.00000001 && Math.abs(prevPoint_.getZ() - tempPoint_.getZ())<0.00000001) {
+			if (Math.abs(prevPoint_.getX() - tempPoint_.getX()) < 0.00000001 && Math.abs(prevPoint_.getZ() - tempPoint_.getZ()) < 0.00000001) {
 				System.out.println("Same point");
 				return 0.0d;
 			}

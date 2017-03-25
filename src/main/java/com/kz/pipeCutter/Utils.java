@@ -15,6 +15,7 @@ import java.util.concurrent.TimeUnit;
 
 import javax.vecmath.Point3d;
 
+import org.apache.commons.math3.geometry.euclidean.threed.Euclidean3D;
 import org.apache.commons.math3.geometry.euclidean.threed.Line;
 import org.apache.commons.math3.geometry.euclidean.threed.Plane;
 import org.apache.commons.math3.geometry.euclidean.threed.Rotation;
@@ -391,37 +392,35 @@ public class Utils {
 			edge = getEdgeFromTwoPoints(p, SurfaceDemo.instance.utils.points.get(this.previousPointId));
 
 			if (edge != null) {
-				
-				if(edge.edgeNo==359)
-				{
+
+				if (edge.edgeNo == 359) {
 					System.out.println("OOPs");
 				}
-				
+
 				length = edge.length;
-				
+
 				/*
-				
-				if (edge.edgeType == MyEdge.EdgeType.ONRADIUS) {
-					float radius_of_edge = Float.valueOf(Settings.instance.getSetting("pipe_radius"));
-					float maxRadius = (float) Math.sqrt(this.maxX * this.maxX + this.maxZ * this.maxZ);
-					float s = (float) (maxRadius * Math.PI) * 1f;
-					float arc_length = (float) (radius_of_edge * Math.PI / 2);
-					float v = SurfaceDemo.instance.g1Speed * s / arc_length * 1f;
-//					float dv = v - SurfaceDemo.instance.g1Speed;
-//					float t = s / SurfaceDemo.instance.g1Speed;
-//					float a = 2 * dv / t;
-//					double currAngle = Math.atan2(p.getCoord().z, p.getCoord().x) * 180.0 / Math.PI;
-//					double maxAngle = Math.atan2(this.maxZ, (this.maxX - radius_of_edge)) * 180.0 / Math.PI;
-					CutThread.instance.filletSpeed = Double.valueOf(v).floatValue();
-					calcSpeed = CutThread.instance.filletSpeed;
-				}
-				
-				*/
+				 * 
+				 * if (edge.edgeType == MyEdge.EdgeType.ONRADIUS) { float radius_of_edge
+				 * = Float.valueOf(Settings.instance.getSetting("pipe_radius")); float
+				 * maxRadius = (float) Math.sqrt(this.maxX * this.maxX + this.maxZ *
+				 * this.maxZ); float s = (float) (maxRadius * Math.PI) * 1f; float
+				 * arc_length = (float) (radius_of_edge * Math.PI / 2); float v =
+				 * SurfaceDemo.instance.g1Speed * s / arc_length * 1f; // float dv = v -
+				 * SurfaceDemo.instance.g1Speed; // float t = s /
+				 * SurfaceDemo.instance.g1Speed; // float a = 2 * dv / t; // double
+				 * currAngle = Math.atan2(p.getCoord().z, p.getCoord().x) * 180.0 /
+				 * Math.PI; // double maxAngle = Math.atan2(this.maxZ, (this.maxX -
+				 * radius_of_edge)) * 180.0 / Math.PI; CutThread.instance.filletSpeed =
+				 * Double.valueOf(v).floatValue(); calcSpeed =
+				 * CutThread.instance.filletSpeed; }
+				 * 
+				 */
 				if (edge.cutVelocity != 0)
 					calcSpeed = edge.cutVelocity;
 			}
 		}
-		
+
 		double feed = 1;
 		Coord3d p1 = new Coord3d(x, y, z);
 
@@ -971,9 +970,43 @@ public class Utils {
 			// SurfaceDemo.instance.myComposite.remove(polygon);
 		}
 
+		if (ret.plane == null) {
+			// seems that point is on radius
+			// equation of tangent of radius
+			// build a plane from plane normal and point on that plane
+			// get start of normal - center of radius
+			// gt angle to see what quadrant it is in
+			double angle1 = Math.atan2(point.getZ(), point.getX());
+			double dimX = Double.valueOf(Settings.instance.getSetting("pipe_dim_x"));
+			double dimZ = Double.valueOf(Settings.instance.getSetting("pipe_dim_z"));
+			double dimR = Double.valueOf(Settings.instance.getSetting("pipe_radius"));
+			Vector3D normalStart = null;
+			if(angle1<0)
+				angle1 = (2*Math.PI) + angle1;
+			if (angle1 > 0 && angle1 < Math.PI / 2) {
+				normalStart = new Vector3D(dimX / 2 - dimR, point.getY(), dimZ / 2 - dimR);
+			} else if (angle1 > Math.PI / 2 && angle1 < Math.PI) {
+				normalStart = new Vector3D(-dimX / 2 - dimR, point.getY(), dimZ / 2 - dimR);
+			} else if (angle1 > Math.PI && angle1 < (3 * Math.PI / 2)) {
+				normalStart = new Vector3D(-dimX / 2 - dimR, point.getY(), -dimZ / 2 - dimR);
+			} else if (angle1 > (3 * Math.PI / 2) && angle1 < (2 * Math.PI)) {
+				normalStart = new Vector3D(dimX / 2 - dimR, point.getY(), -dimZ / 2 - dimR);
+			}
+			Vector3D normalEnd = new Vector3D(point.getX(), point.getY(), point.getZ());
+			Vector3D planeNormal = normalEnd.subtract(normalStart);
+			ret.plane = new Plane(planeNormal, normalEnd, 0.0001);
+		}		
+		
 		try {
-			Vector3D vecA = vecPrevPoint.subtract(vecPoint);
+/*
+			Vector3D vecA = vecPoint.subtract(vecPrevPoint);
 			Vector3D vecB = vecNextPoint.subtract(vecPoint);
+*/
+			Vector3D vecA = vecPoint.subtract(vecPrevPoint);
+			Vector3D vecB = vecNextPoint.subtract(vecPoint);
+
+			Vector3D vecPointProj = pointToVec(ret.plane.project(vecPoint)));
+			
 
 			Line l = new Line(vecPrevPoint, vecNextPoint, 0.0001);
 			if (l.contains(vecPoint)) {
@@ -997,9 +1030,15 @@ public class Utils {
 			} else {
 				// points are not colinear
 				Rotation rotationP = new Rotation(ret.plane.getNormal(), Math.PI / 2);
-				Rotation rotationN = new Rotation(ret.plane.getNormal(), -Math.PI / 2);
+				// Rotation rotationN = new Rotation(ret.plane.getNormal(), -Math.PI /
+				// 2);
+				
+				
+				
+				
+				
 				Vector3D rotatedA = rotationP.applyTo(vecA).normalize();
-				Vector3D rotatedB = rotationN.applyTo(vecB).normalize();
+				Vector3D rotatedB = rotationP.applyTo(vecB).normalize();
 				Vector3D vecAoffset = vecA.add(rotatedA.scalarMultiply(SurfaceDemo.getInstance().getKerfOffset()));
 				Vector3D vecBoffset = vecB.add(rotatedB.scalarMultiply(SurfaceDemo.getInstance().getKerfOffset()));
 				Line lineA = new Line(vecPrevPoint.add(vecAoffset), vecPoint.add(vecAoffset), Math_E);
@@ -1059,6 +1098,11 @@ public class Utils {
 			ret.direction = true;
 
 		return ret;
+	}
+
+	private Vector3D pointToVec(org.apache.commons.math3.geometry.Point<Euclidean3D> project) {
+		// TODO Auto-generated method stub
+		return new Vector3D(project.getSpace().)
 	}
 
 	private Vector3D getOpositePoint(MyContinuousEdge continuousEdge, MyPickablePoint point) {

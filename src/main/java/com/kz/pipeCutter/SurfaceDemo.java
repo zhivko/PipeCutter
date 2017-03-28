@@ -1114,6 +1114,15 @@ public class SurfaceDemo extends AbstractAnalysis {
 
 	public void lastClickedPointChanged(MyPickablePoint mp) {
 		try {
+			
+			if(lastClickedPoint!=null)
+			{
+				lastClickedPoint.setWidth(6f);
+				lastClickedPoint.setColor(Color.GRAY);
+			}
+			mp.setWidth(8f);
+			mp.setColor(Color.BLUE);
+			
 			lastClickedPoint = mp;
 
 			if (offsetPoint != null)

@@ -14,14 +14,16 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
 
 import javax.vecmath.Point3d;
+import javax.vecmath.Vector2d;
 
-import org.apache.commons.math3.geometry.euclidean.threed.Euclidean3D;
 import org.apache.commons.math3.geometry.euclidean.threed.Line;
 import org.apache.commons.math3.geometry.euclidean.threed.Plane;
 import org.apache.commons.math3.geometry.euclidean.threed.Rotation;
 import org.apache.commons.math3.geometry.euclidean.threed.Vector3D;
+import org.apache.commons.math3.geometry.euclidean.twod.Vector2D;
 import org.jzy3d.colors.Color;
 import org.jzy3d.maths.Coord3d;
+import org.jzy3d.plot3d.primitives.LineStrip;
 import org.jzy3d.plot3d.primitives.Point;
 import org.jzy3d.plot3d.transform.Rotate;
 import org.jzy3d.plot3d.transform.Transform;
@@ -981,106 +983,119 @@ public class Utils {
 			double dimZ = Double.valueOf(Settings.instance.getSetting("pipe_dim_z"));
 			double dimR = Double.valueOf(Settings.instance.getSetting("pipe_radius"));
 			Vector3D normalStart = null;
-			if(angle1<0)
-				angle1 = (2*Math.PI) + angle1;
+			if (angle1 < 0)
+				angle1 = (2 * Math.PI) + angle1;
 			if (angle1 > 0 && angle1 < Math.PI / 2) {
 				normalStart = new Vector3D(dimX / 2 - dimR, point.getY(), dimZ / 2 - dimR);
 			} else if (angle1 > Math.PI / 2 && angle1 < Math.PI) {
-				normalStart = new Vector3D(-dimX / 2 - dimR, point.getY(), dimZ / 2 - dimR);
+				normalStart = new Vector3D(-dimX / 2 + dimR, point.getY(), dimZ / 2 - dimR);
 			} else if (angle1 > Math.PI && angle1 < (3 * Math.PI / 2)) {
-				normalStart = new Vector3D(-dimX / 2 - dimR, point.getY(), -dimZ / 2 - dimR);
+				normalStart = new Vector3D(-dimX / 2 + dimR, point.getY(), -dimZ / 2 + dimR);
 			} else if (angle1 > (3 * Math.PI / 2) && angle1 < (2 * Math.PI)) {
-				normalStart = new Vector3D(dimX / 2 - dimR, point.getY(), -dimZ / 2 - dimR);
+				normalStart = new Vector3D(dimX / 2 - dimR, point.getY(), -dimZ / 2 + dimR);
 			}
 			Vector3D normalEnd = new Vector3D(point.getX(), point.getY(), point.getZ());
-			Vector3D planeNormal = normalEnd.subtract(normalStart);
-			ret.plane = new Plane(planeNormal, normalEnd, 0.0001);
-		}		
-		
-		try {
-/*
-			Vector3D vecA = vecPoint.subtract(vecPrevPoint);
-			Vector3D vecB = vecNextPoint.subtract(vecPoint);
-*/
-			Vector3D vecA = vecPoint.subtract(vecPrevPoint);
-			Vector3D vecB = vecNextPoint.subtract(vecPoint);
+			Vector3D planeNormal = normalStart.subtract(normalEnd);
+			ret.plane = new Plane(normalEnd, planeNormal, 0.0001);
 
-			Vector3D vecPointProj = pointToVec(ret.plane.project(vecPoint)));
+			for (int k = -10; k < 10; k++) {
+				for (int l = -10; l < 10; l++) {
+					Vector2D vect2d = new Vector2D(k * 0.1d, l * 0.1d);
+					Vector3D inPlanePoint = ret.plane.getPointAt(vect2d, 0);
+					Point planePoint = new Point(new Coord3d(inPlanePoint.getX(), inPlanePoint.getY(), inPlanePoint.getZ()));
+					planePoint.setColor(Color.RED);
+					planePoint.setWidth(0.3f);
+					SurfaceDemo.instance.myComposite.add(planePoint);
+				}
+			}
+
+			// show normal
+
+		}
+
+		// try {
+		/*
+		 * Vector3D vecA = vecPoint.subtract(vecPrevPoint); Vector3D vecB =
+		 * vecNextPoint.subtract(vecPoint);
+		 */
+
+		Vector3D vecPointPrevProj = projectPoint(vecPrevPoint, ret.plane);
+		Point projPrev = new Point(new Coord3d(vecPointPrevProj.getX(), vecPointPrevProj.getY(), vecPointPrevProj.getZ()));
+		projPrev.setColor(Color.RED);
+		Vector3D vecPointNextProj = projectPoint(vecNextPoint, ret.plane);
+		Point projNext = new Point(new Coord3d(vecPointPrevProj.getX(), vecPointPrevProj.getY(), vecPointPrevProj.getZ()));
+		projPrev.setColor(Color.RED);
+		projPrev.setWidth(0.5f);
+		projNext.setWidth(0.5f);
+
+		Vector3D vecA = vecPoint.subtract(vecPointPrevProj);
+		Vector3D vecB = vecPointNextProj.subtract(vecPoint);
+
+		Line l = new Line(vecPointPrevProj, vecPointNextProj, 0.00000001);
+		if (l.contains(vecPoint)) {
+			// all 3 points are collinear
+			// point is NOT on radius edge
+			// try first with 90degree and with -90 degree and take the angle that
+			// produces point nearest to center of edge
+
+			Rotation rotation1 = new Rotation(ret.plane.getNormal(), -Math.PI / 2);
+			Vector3D rotatedA = rotation1.applyTo(vecA).normalize();
+			Vector3D newPoint = vecPoint.add(rotatedA.scalarMultiply(SurfaceDemo.getInstance().getKerfOffset()));
+
+			ret.point.xyz.set((float) newPoint.getX(), (float) newPoint.getY(), (float) newPoint.getZ());
+
+		} else {
+
+			double angl = Vector3D.angle(vecA, vecB);
+			System.out.println("Angle of vect=" + (angl * 180 / Math.PI));
+
+			// points are not colinear
+			Rotation rotationP = new Rotation(ret.plane.getNormal(), -Math.PI / 2);
+			// Rotation rotationN = new Rotation(ret.plane.getNormal(), -Math.PI /
+			// 2);
+
+			Vector3D rotatedA = rotationP.applyTo(vecA).normalize();
+			Vector3D rotatedB = rotationP.applyTo(vecB).normalize();
+
+			Vector3D pointA1 = vecPointPrevProj.add(rotatedA.scalarMultiply(SurfaceDemo.getInstance().getKerfOffset()));
+			Vector3D pointB1 = vecPoint.add(rotatedA.scalarMultiply(SurfaceDemo.getInstance().getKerfOffset()));
+			LineStrip ls1 = new LineStrip(new Point(new Coord3d(pointA1.getX(), pointA1.getY(), pointA1.getZ())),
+					new Point(new Coord3d(pointB1.getX(), pointB1.getY(), pointB1.getZ())));
+			ls1.setWireframeColor(Color.RED);
+			SurfaceDemo.instance.myComposite.add(ls1);
+			SurfaceDemo.instance.getChart().render();
+
+			Vector3D pointA2 = vecPoint.add(rotatedB.scalarMultiply(SurfaceDemo.getInstance().getKerfOffset()));
+			Vector3D pointB2 = vecPointNextProj.add(rotatedB.scalarMultiply(SurfaceDemo.getInstance().getKerfOffset()));
+			LineStrip ls2 = new LineStrip(new Point(new Coord3d(pointA2.getX(), pointA2.getY(), pointA2.getZ())),
+					new Point(new Coord3d(pointB2.getX(), pointB2.getY(), pointB2.getZ())));
+
+			ls2.setWireframeColor(Color.RED);
+			SurfaceDemo.instance.myComposite.add(ls2);
+			SurfaceDemo.instance.getChart().render();
+
+			//SurfaceDemo.instance.myComposite.remove(ls1);
+			//SurfaceDemo.instance.myComposite.remove(ls2);
+
+			SurfaceDemo.instance.myComposite.add(projNext);
+			SurfaceDemo.instance.myComposite.add(projPrev);
+
+			Line lineA = new Line(pointA1, pointB1, Math_E);
+			Line lineB = new Line(pointA2, pointB2, Math_E);
+			Vector3D intersect = lineA.intersection(lineB);
+			ret.point.xyz.x = (float) intersect.getX();
+			ret.point.xyz.y = (float) intersect.getY();
+			ret.point.xyz.z = (float) intersect.getZ();
 			
 
-			Line l = new Line(vecPrevPoint, vecNextPoint, 0.0001);
-			if (l.contains(vecPoint)) {
-				// all 3 points are collinear
-				// point is NOT on radius edge
-				// try first with 90degree and with -90 degree and take the angle that
-				// produces point nearest to center of edge
-
-				Rotation rotation1 = new Rotation(plane.getNormal(), Math.PI / 2);
-				Vector3D rotatedA = rotation1.applyTo(vecA).normalize();
-				Vector3D newPoint1 = vecPoint.add(rotatedA.scalarMultiply(SurfaceDemo.getInstance().getKerfOffset()));
-				Rotation rotation2 = new Rotation(plane.getNormal(), -Math.PI / 2);
-				Vector3D rotatedB = rotation2.applyTo(vecA).normalize();
-				Vector3D newPoint2 = vecPoint.add(rotatedB.scalarMultiply(SurfaceDemo.getInstance().getKerfOffset()));
-
-				if (newPoint1.distance(contEdgOpositePoint) < newPoint2.distance(contEdgOpositePoint))
-					ret.point.xyz.set((float) newPoint1.getX(), (float) newPoint1.getY(), (float) newPoint1.getZ());
-				else
-					ret.point.xyz.set((float) newPoint2.getX(), (float) newPoint2.getY(), (float) newPoint2.getZ());
-
-			} else {
-				// points are not colinear
-				Rotation rotationP = new Rotation(ret.plane.getNormal(), Math.PI / 2);
-				// Rotation rotationN = new Rotation(ret.plane.getNormal(), -Math.PI /
-				// 2);
-				
-				
-				
-				
-				
-				Vector3D rotatedA = rotationP.applyTo(vecA).normalize();
-				Vector3D rotatedB = rotationP.applyTo(vecB).normalize();
-				Vector3D vecAoffset = vecA.add(rotatedA.scalarMultiply(SurfaceDemo.getInstance().getKerfOffset()));
-				Vector3D vecBoffset = vecB.add(rotatedB.scalarMultiply(SurfaceDemo.getInstance().getKerfOffset()));
-				Line lineA = new Line(vecPrevPoint.add(vecAoffset), vecPoint.add(vecAoffset), Math_E);
-				Line lineB = new Line(vecNextPoint.add(vecBoffset), vecPoint.add(vecBoffset), Math_E);
-				Vector3D intersect = lineA.intersection(lineB);
-				ret.point.xyz.x = (float) intersect.getX();
-				ret.point.xyz.y = (float) intersect.getY();
-				ret.point.xyz.z = (float) intersect.getZ();
-
-				// ret.plane = new Plane(plane.getNormal(), vecNextPoint, 0.001);
-			}
-		} catch (Exception ex) {
-			// if we are not at surface of four planes then we are on edge lets move
-			// kerf toward center of edge
-			Vector3D vecOffset = new Vector3D(0, Math.signum(continuousEdge.center.y - point.xyz.y) * SurfaceDemo.instance.getKerfOffset(), 0);
-			result = vecPoint.add(vecOffset);
-			ret.point.xyz.x = (float) result.getX();
-			ret.point.xyz.y = (float) result.getY();
-			ret.point.xyz.z = (float) result.getZ();
-
-			Vector3D vec1 = new Vector3D(point.getX(), point.getY(), point.getZ());
-			Vector3D vec2 = new Vector3D(ret.nextPoint.getX(), ret.nextPoint.getY(), ret.nextPoint.getZ());
-
-			ret.plane = new Plane(vec1, vec2, vecOffset, Math_E);
 		}
-		// } else {
-		// Vector3D vecOffset = new Vector3D(0, Math.signum(point.xyz.y) *
-		// SurfaceDemo.instance.getKerfOffset(), 0);
-		// result = vecPoint.add(vecOffset);
-		// ret.point.xyz.x = (float) result.getX();
-		// ret.point.xyz.y = (float) result.getY();
-		// ret.point.xyz.z = (float) result.getZ();
-		// Plane p = new Plane(vecPoint, vecOffset, vecPrevPoint, Math_E);
-		// ret.plane = p;
-		// }
+		// ret.plane = new Plane(plane.getNormal(), vecNextPoint, 0.001);
+		Point cross = new Point(new Coord3d(ret.point.xyz.x, ret.point.xyz.y, ret.point.xyz.z));
+		cross.setColor(Color.GREEN);
+		cross.setWidth(11);
+		SurfaceDemo.instance.myComposite.add(cross);
+		SurfaceDemo.instance.getChart().render();
 
-		if (continuousEdge.edgeType == MyContinuousEdge.EdgeType.END || continuousEdge.edgeType == MyContinuousEdge.EdgeType.START) {
-			Vector3D vecOffset = new Vector3D(0, Math.signum(point.xyz.y) * SurfaceDemo.instance.getKerfOffset(), 0);
-			result = vecPoint.add(vecOffset);
-			ret.point.xyz.x = (float) result.getX();
-			ret.point.xyz.y = (float) result.getY();
-		}
 
 		MyEdge edg1 = getEdgeFromTwoPoints(point, nextPoint);
 		MyEdge edg2 = getEdgeFromTwoPoints(point, prevPoint);
@@ -1100,9 +1115,10 @@ public class Utils {
 		return ret;
 	}
 
-	private Vector3D pointToVec(org.apache.commons.math3.geometry.Point<Euclidean3D> project) {
-		// TODO Auto-generated method stub
-		return new Vector3D(project.getSpace().)
+	private Vector3D projectPoint(Vector3D point, Plane plane) {
+		double distance = plane.getOffset(point);
+		Vector3D projectedPoint = point.add(plane.getNormal().normalize().scalarMultiply(-1.0 * distance));
+		return projectedPoint;
 	}
 
 	private Vector3D getOpositePoint(MyContinuousEdge continuousEdge, MyPickablePoint point) {

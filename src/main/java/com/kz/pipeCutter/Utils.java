@@ -14,7 +14,6 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
 
 import javax.vecmath.Point3d;
-import javax.vecmath.Vector2d;
 
 import org.apache.commons.math3.geometry.euclidean.threed.Line;
 import org.apache.commons.math3.geometry.euclidean.threed.Plane;
@@ -23,8 +22,10 @@ import org.apache.commons.math3.geometry.euclidean.threed.Vector3D;
 import org.apache.commons.math3.geometry.euclidean.twod.Vector2D;
 import org.jzy3d.colors.Color;
 import org.jzy3d.maths.Coord3d;
+import org.jzy3d.plot3d.primitives.AbstractGeometry.PolygonMode;
 import org.jzy3d.plot3d.primitives.LineStrip;
 import org.jzy3d.plot3d.primitives.Point;
+import org.jzy3d.plot3d.primitives.Polygon;
 import org.jzy3d.plot3d.transform.Rotate;
 import org.jzy3d.plot3d.transform.Transform;
 
@@ -861,7 +862,7 @@ public class Utils {
 	}
 
 	public PointAndPlane calculateOffsetPointAndPlane(MyPickablePoint point) {
-		boolean plotPlanes = false;
+		boolean plotIntermediateResult = false;
 		PointAndPlane ret = new PointAndPlane();
 
 		MyContinuousEdge continuousEdge = continuousEdges.get(point.continuousEdgeNo);
@@ -883,7 +884,6 @@ public class Utils {
 
 		MyPickablePoint prevPoint = continuousEdge.getPointByIndex(prevIndex);
 		MyPickablePoint nextPoint = continuousEdge.getPointByIndex(nextIndex);
-		System.out.println(prevPoint.id + " " + point.id + " " + nextPoint.id);
 		ret.prevPoint = prevPoint;
 		ret.nextPoint = nextPoint;
 
@@ -924,46 +924,39 @@ public class Utils {
 
 		Plane[] planes = new Plane[] { pl1, pl2, pl3, pl4 };
 
-		// Vector3D contEdgOpositePoint = getOpositePoint(continuousEdge, point);
-		Vector3D contEdgOpositePoint = new Vector3D(continuousEdge.center.x, continuousEdge.center.y, continuousEdge.center.z);
-
-		Plane plane = null;
 		int i = -1;
 		for (final Plane pl : planes) {
 			i++;
-			// Polygon polygon = null;
-			// if (plotPlanes) {
-			// polygon = new Polygon();
-			// if (i == 0) {
-			// polygon.add(new Point(new Coord3d(p2.getX(), p2.getY(), p2.getZ())));
-			// polygon.add(new Point(new Coord3d(p3.getX(), p3.getY(), p3.getZ())));
-			// polygon.add(new Point(new Coord3d(p3_.getX(), p3_.getY(),
-			// p3_.getZ())));
-			// } else if (i == 1) {
-			// polygon.add(new Point(new Coord3d(p1.getX(), p1.getY(), p1.getZ())));
-			// polygon.add(new Point(new Coord3d(p2.getX(), p2.getY(), p2.getZ())));
-			// polygon.add(new Point(new Coord3d(p2_.getX(), p2_.getY(),
-			// p2_.getZ())));
-			// } else if (i == 2) {
-			// polygon.add(new Point(new Coord3d(p4.getX(), p4.getY(), p4.getZ())));
-			// polygon.add(new Point(new Coord3d(p1.getX(), p1.getY(), p1.getZ())));
-			// polygon.add(new Point(new Coord3d(p1_.getX(), p1_.getY(),
-			// p1_.getZ())));
-			// } else if (i == 3) {
-			// polygon.add(new Point(new Coord3d(p4.getX(), p4.getY(), p4.getZ())));
-			// polygon.add(new Point(new Coord3d(p3.getX(), p3.getY(), p3.getZ())));
-			// polygon.add(new Point(new Coord3d(p3_.getX(), p3_.getY(),
-			// p3_.getZ())));
-			// }
-			// polygon.setPolygonMode(PolygonMode.FRONT);
-			// polygon.setColor(Color.GREEN);
-			// SurfaceDemo.instance.myComposite.add(polygon);
-			// }
+			if (plotIntermediateResult) {
+				Polygon polygon = null;
+				if (plotIntermediateResult) {
+					polygon = new Polygon();
+					if (i == 0) {
+						polygon.add(new Point(new Coord3d(p2.getX(), p2.getY(), p2.getZ())));
+						polygon.add(new Point(new Coord3d(p3.getX(), p3.getY(), p3.getZ())));
+						polygon.add(new Point(new Coord3d(p3_.getX(), p3_.getY(), p3_.getZ())));
+					} else if (i == 1) {
+						polygon.add(new Point(new Coord3d(p1.getX(), p1.getY(), p1.getZ())));
+						polygon.add(new Point(new Coord3d(p2.getX(), p2.getY(), p2.getZ())));
+						polygon.add(new Point(new Coord3d(p2_.getX(), p2_.getY(), p2_.getZ())));
+					} else if (i == 2) {
+						polygon.add(new Point(new Coord3d(p4.getX(), p4.getY(), p4.getZ())));
+						polygon.add(new Point(new Coord3d(p1.getX(), p1.getY(), p1.getZ())));
+						polygon.add(new Point(new Coord3d(p1_.getX(), p1_.getY(), p1_.getZ())));
+					} else if (i == 3) {
+						polygon.add(new Point(new Coord3d(p4.getX(), p4.getY(), p4.getZ())));
+						polygon.add(new Point(new Coord3d(p3.getX(), p3.getY(), p3.getZ())));
+						polygon.add(new Point(new Coord3d(p3_.getX(), p3_.getY(), p3_.getZ())));
+					}
+					polygon.setPolygonMode(PolygonMode.FRONT);
+					polygon.setColor(Color.GREEN);
+					SurfaceDemo.instance.myComposite.add(polygon);
+				}
+			}
 
 			double distance = pl.getOffset(vecPoint);
 			System.out.println(distance);
 			if (pl.contains(vecPoint)) {
-				plane = pl;
 				ret.plane = pl;
 				break;
 			}
@@ -977,7 +970,7 @@ public class Utils {
 			// equation of tangent of radius
 			// build a plane from plane normal and point on that plane
 			// get start of normal - center of radius
-			// gt angle to see what quadrant it is in
+			// get angle to see what quadrant it is in
 			double angle1 = Math.atan2(point.getZ(), point.getX());
 			double dimX = Double.valueOf(Settings.instance.getSetting("pipe_dim_x"));
 			double dimZ = Double.valueOf(Settings.instance.getSetting("pipe_dim_z"));
@@ -998,40 +991,26 @@ public class Utils {
 			Vector3D planeNormal = normalStart.subtract(normalEnd);
 			ret.plane = new Plane(normalEnd, planeNormal, 0.0001);
 
-			for (int k = -10; k < 10; k++) {
-				for (int l = -10; l < 10; l++) {
-					Vector2D vect2d = new Vector2D(k * 0.1d, l * 0.1d);
-					Vector3D inPlanePoint = ret.plane.getPointAt(vect2d, 0);
-					Point planePoint = new Point(new Coord3d(inPlanePoint.getX(), inPlanePoint.getY(), inPlanePoint.getZ()));
-					planePoint.setColor(Color.RED);
-					planePoint.setWidth(0.3f);
-					SurfaceDemo.instance.myComposite.add(planePoint);
+			if (plotIntermediateResult)
+				for (int k = -10; k < 10; k++) {
+					for (int l = -10; l < 10; l++) {
+						Vector2D vect2d = new Vector2D(k * 0.1d, l * 0.1d);
+						Vector3D inPlanePoint = ret.plane.getPointAt(vect2d, 0);
+						Point planePoint = new Point(new Coord3d(inPlanePoint.getX(), inPlanePoint.getY(), inPlanePoint.getZ()));
+						planePoint.setColor(Color.RED);
+						planePoint.setWidth(0.3f);
+						SurfaceDemo.instance.myComposite.add(planePoint);
+					}
 				}
-			}
-
-			// show normal
-
 		}
 
-		// try {
-		/*
-		 * Vector3D vecA = vecPoint.subtract(vecPrevPoint); Vector3D vecB =
-		 * vecNextPoint.subtract(vecPoint);
-		 */
-
 		Vector3D vecPointPrevProj = projectPoint(vecPrevPoint, ret.plane);
-		Point projPrev = new Point(new Coord3d(vecPointPrevProj.getX(), vecPointPrevProj.getY(), vecPointPrevProj.getZ()));
-		projPrev.setColor(Color.RED);
 		Vector3D vecPointNextProj = projectPoint(vecNextPoint, ret.plane);
-		Point projNext = new Point(new Coord3d(vecPointPrevProj.getX(), vecPointPrevProj.getY(), vecPointPrevProj.getZ()));
-		projPrev.setColor(Color.RED);
-		projPrev.setWidth(0.5f);
-		projNext.setWidth(0.5f);
 
 		Vector3D vecA = vecPoint.subtract(vecPointPrevProj);
 		Vector3D vecB = vecPointNextProj.subtract(vecPoint);
 
-		Line l = new Line(vecPointPrevProj, vecPointNextProj, 0.00000001);
+		Line l = new Line(vecPointPrevProj, vecPointNextProj, 0.1);
 		if (l.contains(vecPoint)) {
 			// all 3 points are collinear
 			// point is NOT on radius edge
@@ -1059,26 +1038,25 @@ public class Utils {
 
 			Vector3D pointA1 = vecPointPrevProj.add(rotatedA.scalarMultiply(SurfaceDemo.getInstance().getKerfOffset()));
 			Vector3D pointB1 = vecPoint.add(rotatedA.scalarMultiply(SurfaceDemo.getInstance().getKerfOffset()));
-			LineStrip ls1 = new LineStrip(new Point(new Coord3d(pointA1.getX(), pointA1.getY(), pointA1.getZ())),
-					new Point(new Coord3d(pointB1.getX(), pointB1.getY(), pointB1.getZ())));
-			ls1.setWireframeColor(Color.RED);
-			SurfaceDemo.instance.myComposite.add(ls1);
-			SurfaceDemo.instance.getChart().render();
+
+			if (plotIntermediateResult) {
+				LineStrip ls1 = new LineStrip(new Point(new Coord3d(pointA1.getX(), pointA1.getY(), pointA1.getZ())),
+						new Point(new Coord3d(pointB1.getX(), pointB1.getY(), pointB1.getZ())));
+				ls1.setWireframeColor(Color.RED);
+				SurfaceDemo.instance.myComposite.add(ls1);
+				SurfaceDemo.instance.getChart().render();
+			}
 
 			Vector3D pointA2 = vecPoint.add(rotatedB.scalarMultiply(SurfaceDemo.getInstance().getKerfOffset()));
 			Vector3D pointB2 = vecPointNextProj.add(rotatedB.scalarMultiply(SurfaceDemo.getInstance().getKerfOffset()));
-			LineStrip ls2 = new LineStrip(new Point(new Coord3d(pointA2.getX(), pointA2.getY(), pointA2.getZ())),
-					new Point(new Coord3d(pointB2.getX(), pointB2.getY(), pointB2.getZ())));
+			if (plotIntermediateResult) {
+				LineStrip ls2 = new LineStrip(new Point(new Coord3d(pointA2.getX(), pointA2.getY(), pointA2.getZ())),
+						new Point(new Coord3d(pointB2.getX(), pointB2.getY(), pointB2.getZ())));
 
-			ls2.setWireframeColor(Color.RED);
-			SurfaceDemo.instance.myComposite.add(ls2);
-			SurfaceDemo.instance.getChart().render();
-
-			//SurfaceDemo.instance.myComposite.remove(ls1);
-			//SurfaceDemo.instance.myComposite.remove(ls2);
-
-			SurfaceDemo.instance.myComposite.add(projNext);
-			SurfaceDemo.instance.myComposite.add(projPrev);
+				ls2.setWireframeColor(Color.RED);
+				SurfaceDemo.instance.myComposite.add(ls2);
+				SurfaceDemo.instance.getChart().render();
+			}
 
 			Line lineA = new Line(pointA1, pointB1, Math_E);
 			Line lineB = new Line(pointA2, pointB2, Math_E);
@@ -1086,16 +1064,8 @@ public class Utils {
 			ret.point.xyz.x = (float) intersect.getX();
 			ret.point.xyz.y = (float) intersect.getY();
 			ret.point.xyz.z = (float) intersect.getZ();
-			
 
 		}
-		// ret.plane = new Plane(plane.getNormal(), vecNextPoint, 0.001);
-		Point cross = new Point(new Coord3d(ret.point.xyz.x, ret.point.xyz.y, ret.point.xyz.z));
-		cross.setColor(Color.GREEN);
-		cross.setWidth(11);
-		SurfaceDemo.instance.myComposite.add(cross);
-		SurfaceDemo.instance.getChart().render();
-
 
 		MyEdge edg1 = getEdgeFromTwoPoints(point, nextPoint);
 		MyEdge edg2 = getEdgeFromTwoPoints(point, prevPoint);

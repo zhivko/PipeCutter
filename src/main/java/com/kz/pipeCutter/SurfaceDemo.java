@@ -1117,8 +1117,8 @@ public class SurfaceDemo extends AbstractAnalysis {
 			
 			if(lastClickedPoint!=null)
 			{
-				lastClickedPoint.setWidth(6f);
-				lastClickedPoint.setColor(Color.GRAY);
+				lastClickedPoint.setWidth(4f);
+				lastClickedPoint.setColor(Color.BLACK);
 			}
 			mp.setWidth(8f);
 			mp.setColor(Color.BLUE);
@@ -1132,7 +1132,8 @@ public class SurfaceDemo extends AbstractAnalysis {
 			offsetPoint.setColor(Color.GREEN);
 			offsetPoint.setWidth(6.0f);
 			myComposite.add(offsetPoint);
-
+			SurfaceDemo.instance.getChart().render();
+			
 			if (!SurfaceDemo.ZOOM_POINT) {
 				SurfaceDemo.ZOOM_POINT = true;
 				SurfaceDemo.ZOOM_PLASMA = false;

@@ -26,6 +26,7 @@ import org.jzy3d.plot3d.primitives.AbstractGeometry.PolygonMode;
 import org.jzy3d.plot3d.primitives.LineStrip;
 import org.jzy3d.plot3d.primitives.Point;
 import org.jzy3d.plot3d.primitives.Polygon;
+import org.jzy3d.plot3d.primitives.pickable.PickablePoint;
 import org.jzy3d.plot3d.transform.Rotate;
 import org.jzy3d.plot3d.transform.Transform;
 
@@ -33,6 +34,7 @@ import com.kz.pipeCutter.ui.Settings;
 
 public class Utils {
 	ConcurrentHashMap<Integer, MyPickablePoint> points = null;
+	ConcurrentHashMap<Integer, Vector3D> offsetPoints = null;
 	HashMap<Integer, MySurface> surfaces = new HashMap<Integer, MySurface>();
 	public ConcurrentHashMap<Integer, MyEdge> edges = new ConcurrentHashMap<Integer, MyEdge>();
 	public ConcurrentHashMap<Integer, MyContinuousEdge> continuousEdges = new ConcurrentHashMap<Integer, MyContinuousEdge>();
@@ -866,6 +868,13 @@ public class Utils {
 		PointAndPlane ret = new PointAndPlane();
 
 		MyContinuousEdge continuousEdge = continuousEdges.get(point.continuousEdgeNo);
+		
+		double angleToOffset = 0;
+		if(continuousEdge.edgeType == MyContinuousEdge.EdgeType.START)
+			angleToOffset = Math.PI/2;
+		else
+			angleToOffset = -Math.PI/2;
+		
 		int index = continuousEdge.points.indexOf(point.id);
 		int prevIndex = -1;
 		int nextIndex = -1;
@@ -951,6 +960,7 @@ public class Utils {
 					polygon.setPolygonMode(PolygonMode.FRONT);
 					polygon.setColor(Color.GREEN);
 					SurfaceDemo.instance.myComposite.add(polygon);
+					System.out.println("Found PLANE.");
 				}
 			}
 
@@ -971,7 +981,8 @@ public class Utils {
 			// build a plane from plane normal and point on that plane
 			// get start of normal - center of radius
 			// get angle to see what quadrant it is in
-			double angle1 = Math.atan2(point.getZ(), point.getX());
+			
+			double angle1 = Math.atan2(origPoints.get(point.id).getZ(), origPoints.get(point.id).getX());
 			double dimX = Double.valueOf(Settings.instance.getSetting("pipe_dim_x"));
 			double dimZ = Double.valueOf(Settings.instance.getSetting("pipe_dim_z"));
 			double dimR = Double.valueOf(Settings.instance.getSetting("pipe_radius"));
@@ -987,9 +998,16 @@ public class Utils {
 			} else if (angle1 > (3 * Math.PI / 2) && angle1 < (2 * Math.PI)) {
 				normalStart = new Vector3D(dimX / 2 - dimR, point.getY(), -dimZ / 2 + dimR);
 			}
-			Vector3D normalEnd = new Vector3D(point.getX(), point.getY(), point.getZ());
-			Vector3D planeNormal = normalStart.subtract(normalEnd);
-			ret.plane = new Plane(normalEnd, planeNormal, 0.0001);
+			Vector3D normalEnd = new Vector3D(origPoints.get(point.id).getX(), origPoints.get(point.id).getY(), origPoints.get(point.id).getZ());
+			
+			//rotate normalStart and normalEnd to compensate for rotation
+			Vector3D normalStartRot = rotPlane.applyTo(normalStart);
+			Vector3D normalEndRot = rotPlane.applyTo(normalEnd);
+			
+			
+			
+			Vector3D planeNormal = normalStartRot.subtract(normalEndRot);
+			ret.plane = new Plane(normalEndRot, planeNormal, 0.0001);
 
 			if (plotIntermediateResult)
 				for (int k = -10; k < 10; k++) {
@@ -1017,7 +1035,7 @@ public class Utils {
 			// try first with 90degree and with -90 degree and take the angle that
 			// produces point nearest to center of edge
 
-			Rotation rotation1 = new Rotation(ret.plane.getNormal(), -Math.PI / 2);
+			Rotation rotation1 = new Rotation(ret.plane.getNormal(), angleToOffset);
 			Vector3D rotatedA = rotation1.applyTo(vecA).normalize();
 			Vector3D newPoint = vecPoint.add(rotatedA.scalarMultiply(SurfaceDemo.getInstance().getKerfOffset()));
 
@@ -1025,11 +1043,8 @@ public class Utils {
 
 		} else {
 
-			double angl = Vector3D.angle(vecA, vecB);
-			System.out.println("Angle of vect=" + (angl * 180 / Math.PI));
-
 			// points are not colinear
-			Rotation rotationP = new Rotation(ret.plane.getNormal(), -Math.PI / 2);
+			Rotation rotationP = new Rotation(ret.plane.getNormal(), angleToOffset);
 			// Rotation rotationN = new Rotation(ret.plane.getNormal(), -Math.PI /
 			// 2);
 
@@ -1131,6 +1146,26 @@ public class Utils {
 				points.remove(pointId);
 			}
 		}
+	}
+
+	public void calculateAllOffsetPoints() {
+		this.offsetPoints = new ConcurrentHashMap<Integer, Vector3D>();
+
+		for (MyPickablePoint p : this.points.values()) {
+			PickablePoint p1 = calculateOffsetPointAndPlane(p).point;
+			this.offsetPoints.put(p.id, new Vector3D(p1.xyz.x, p1.xyz.y, p1.xyz.z));
+		}
+	}
+
+	public Vector3D getOffsetPoint(MyPickablePoint p) {
+		double angle = Float.valueOf(SurfaceDemo.getInstance().angleTxt);
+		Vector3D off = this.offsetPoints.get(p.id);
+
+		double[] zAxisDouble = { 0.0d, 1.0d, 0.0d };
+		Vector3D zAxis = new Vector3D(zAxisDouble);
+		Rotation rotZ = new Rotation(zAxis, Math.toRadians(angle));
+		Vector3D ret = rotZ.applyTo(off);
+		return ret;
 	}
 
 }

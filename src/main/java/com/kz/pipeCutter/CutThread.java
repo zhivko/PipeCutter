@@ -403,12 +403,12 @@ public class CutThread extends SwingWorker<String, Object> {
 			Vector3D vect3Dcent = vecMyPoint.add(delta);
 			Vector3D axis = null;
 
-			if (contEdge.edgeType != MyContinuousEdge.EdgeType.START)
+			if (contEdge.edgeType == MyContinuousEdge.EdgeType.START)
+				axis = offPointAndPlane.plane.getNormal().scalarMultiply(1.0d);
+			else if (contEdge.edgeType == MyContinuousEdge.EdgeType.END) {
 				axis = offPointAndPlane.plane.getNormal().scalarMultiply(-1.0d);
-			else if (contEdge.edgeType != MyContinuousEdge.EdgeType.END) {
-				axis = offPointAndPlane.plane.getNormal().scalarMultiply(1.0d);
-			} else if (contEdge.edgeType != MyContinuousEdge.EdgeType.ONPIPE) {
-				axis = offPointAndPlane.plane.getNormal().scalarMultiply(1.0d);
+			} else if (contEdge.edgeType == MyContinuousEdge.EdgeType.ONPIPE) {
+				axis = offPointAndPlane.plane.getNormal().scalarMultiply(-1.0d);
 			} else {
 				System.out.println("");
 			}
@@ -460,6 +460,7 @@ public class CutThread extends SwingWorker<String, Object> {
 		}
 
 		while (!shouldBreak) {
+			kerfOffVec = new Vector3D(0, 0, 0);
 			if (tempPoint != null) {
 				tempPoint.setColor(Color.GREEN);
 				alAlreadyAddedPoints.add(Integer.valueOf(tempPoint.id));

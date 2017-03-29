@@ -639,6 +639,8 @@ public class SurfaceDemo extends AbstractAnalysis {
 			utils.calculateMaxAndMins();
 			utils.establishRighMostAndLeftMostPoints();
 
+			//utils.calculateAllOffsetPoints();
+			
 			utils.origPoints = new ConcurrentHashMap<Integer, MyPickablePoint>();
 			for (MyPickablePoint mp : utils.points.values()) {
 				utils.origPoints.put(new Integer(mp.id), mp.clone());
@@ -1229,7 +1231,7 @@ public class SurfaceDemo extends AbstractAnalysis {
 		Point p = new Point();
 		p.xyz.set(tempPoint.xyz.x, tempPoint.xyz.y, tempPoint.xyz.z);
 		if (kerOffsetVec != null) {
-			p.xyz = p.xyz.add((float) -kerOffsetVec.getX()/2, (float) -kerOffsetVec.getY()/2, (float) -kerOffsetVec.getZ()/2);
+			p.xyz = p.xyz.add((float) -kerOffsetVec.getX(), (float) -kerOffsetVec.getY(), (float) -kerOffsetVec.getZ());
 		}
 		Coord3d offsetedPoint = p.xyz.add(new Coord3d(0, 0, zOffset));
 		plasma.setPosition(offsetedPoint);

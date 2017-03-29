@@ -25,8 +25,8 @@ public class MyPickablePoint extends PickablePoint {
 
 	public MyPickablePoint() {
 		super(new Coord3d((float) 0, (float) 0, (float) 0));
-	}	
-	
+	}
+
 	public MyPickablePoint(int id, Point3d xyz, Color rgb, float width, int inventorEdge) {
 		super(new Coord3d((float) xyz.x, (float) xyz.y, (float) xyz.z), rgb, width);
 		this.id = id;
@@ -35,7 +35,7 @@ public class MyPickablePoint extends PickablePoint {
 		this.setPickingId(id);
 		this.inventorEdge = inventorEdge;
 		this.continuousEdgeNo = -1;
-		point = new Point3d(xyz.x, xyz.y, xyz.z) ;
+		point = new Point3d(xyz.x, xyz.y, xyz.z);
 	}
 
 	public int getId() {
@@ -55,8 +55,8 @@ public class MyPickablePoint extends PickablePoint {
 	}
 
 	public String toString() {
-		return " Id:" + this.getId() + " inventorEdgeNo:" + this.inventorEdge + " continuousEdgeNo:" + this.continuousEdgeNo
-				+ " x:" + this.getX() + " y:" + this.getY() + " z:" + this.getZ();
+		return " Id:" + this.getId() + " inventorEdgeNo:" + this.inventorEdge + " x:" + this.getX() + " y:" + this.getY() + " z:" + this.getZ()
+				+ " ContEdge " + SurfaceDemo.instance.utils.continuousEdges.get(this.continuousEdgeNo).toString();
 	}
 
 	public boolean isOnSurface(MySurface surf) {
@@ -74,10 +74,10 @@ public class MyPickablePoint extends PickablePoint {
 	public double distance(Point3d p) {
 		return this.point.distance(p);
 	}
-	
+
 	public double distance(MyPickablePoint p) {
 		return this.point.distance(p.point);
-	}	
+	}
 
 	public boolean laysOnLeftSurface() {
 		return firstOrLast.equals(FirstOrLast.LAST);

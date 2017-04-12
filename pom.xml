@@ -43,16 +43,16 @@
 		</repository>
 
 
-<!-- 		<repository> -->
-<!-- 			<id>sonatype-nexus-snapshots</id> -->
-<!-- 			<url>https://oss.sonatype.org/content/repositories/snapshots</url> -->
-<!-- 			<releases> -->
-<!-- 				<enabled>false</enabled> -->
-<!-- 			</releases> -->
-<!-- 			<snapshots> -->
-<!-- 				<enabled>true</enabled> -->
-<!-- 			</snapshots> -->
-<!-- 		</repository> -->
+		<!-- <repository> -->
+		<!-- <id>sonatype-nexus-snapshots</id> -->
+		<!-- <url>https://oss.sonatype.org/content/repositories/snapshots</url> -->
+		<!-- <releases> -->
+		<!-- <enabled>false</enabled> -->
+		<!-- </releases> -->
+		<!-- <snapshots> -->
+		<!-- <enabled>true</enabled> -->
+		<!-- </snapshots> -->
+		<!-- </repository> -->
 
 
 
@@ -145,25 +145,25 @@
 		<!-- <version>${jogl.version}</version> -->
 		<!-- </dependency> -->
 
-	<dependency>
-		<groupId>org.zeromq</groupId>
-		<artifactId>jeromq</artifactId>
-		<version>0.3.5</version>
-	</dependency>
+		<dependency>
+			<groupId>org.zeromq</groupId>
+			<artifactId>jeromq</artifactId>
+			<version>0.3.5</version>
+		</dependency>
 
-<!--         <dependency> -->
-<!--             <groupId>net.lukepalmer</groupId> -->
-<!--             <artifactId>zeromq-native</artifactId> -->
-<!--             <version>4.1.5-SNAPSHOT</version> -->
-<!--         </dependency> -->
-<!--         https://mvnrepository.com/artifact/org.zeromq/jzmq -->
-<!--         <dependency> -->
-<!--             <groupId>net.lukepalmer</groupId> -->
-<!--             <artifactId>jzmq</artifactId> -->
-<!--             <version>3.1.1-SNAPSHOT</version> -->
-<!--         </dependency> -->
-        
-	<!-- 	https://mvnrepository.com/artifact/org.zeromq/jzmq -->
+		<!-- <dependency> -->
+		<!-- <groupId>net.lukepalmer</groupId> -->
+		<!-- <artifactId>zeromq-native</artifactId> -->
+		<!-- <version>4.1.5-SNAPSHOT</version> -->
+		<!-- </dependency> -->
+		<!-- https://mvnrepository.com/artifact/org.zeromq/jzmq -->
+		<!-- <dependency> -->
+		<!-- <groupId>net.lukepalmer</groupId> -->
+		<!-- <artifactId>jzmq</artifactId> -->
+		<!-- <version>3.1.1-SNAPSHOT</version> -->
+		<!-- </dependency> -->
+
+		<!-- https://mvnrepository.com/artifact/org.zeromq/jzmq -->
 
 		<!-- <dependency> -->
 		<!-- <groupId>org.zeromq</groupId> -->
@@ -279,6 +279,13 @@
 			<version>1.7.21</version>
 		</dependency>
 
+		<!-- https://mvnrepository.com/artifact/org.jfree/jfreechart -->
+		<dependency>
+			<groupId>org.jfree</groupId>
+			<artifactId>jfreechart</artifactId>
+			<version>1.0.19</version>
+		</dependency>
+
 
 	</dependencies>
 
@@ -342,7 +349,7 @@
 							</archive>
 						</configuration>
 					</execution>
-										<execution>
+					<execution>
 						<id>make-Test_MT_HALRCOMMAND_DESCRIBE</id>
 						<!-- bind to the packaging phase -->
 						<phase>package</phase>

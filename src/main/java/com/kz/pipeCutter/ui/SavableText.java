@@ -27,6 +27,8 @@ public class SavableText extends SavableControl {
 		super();
 
 		jValue = new JTextField();
+		jValue.setMinimumSize(new Dimension(50,50));
+		//jValue.setMinimumSize();
 		jValue.setHorizontalAlignment(SwingConstants.LEFT);
 		jValue.setText("This is value");
 		// jValue.setColumns(1);

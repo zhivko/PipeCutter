@@ -80,19 +80,23 @@ public class OtherSettings extends JPanel {
 		pipeDimX.setParId("pipe_dim_x");
 		this.add(pipeDimX);
 
-		
 		SavableText pipeDimZ = new SavableText();
 		pipeDimZ.setNeedsSave(true);
 		pipeDimZ.setLabelTxt("Pipe Z dimension:");
 		pipeDimZ.setParId("pipe_dim_z");
 		this.add(pipeDimZ);
 		
-		
-//		SavableText zoomBounds = new SavableText();
-//		zoomBounds.setLabelTxt("Zoom bounds:");
-//		zoomBounds.setParId("ui_zoom_bounds");
-//		zoomBounds.setNeedsSave(true);
-//		this.add(zoomBounds);
+		SavableText pipeDimMaxY = new SavableText();
+		pipeDimMaxY.setNeedsSave(true);
+		pipeDimMaxY.setLabelTxt("Pipe Y max dimension:");
+		pipeDimMaxY.setParId("pipe_dim_max_y");
+		this.add(pipeDimMaxY);
+
+		SavableText pipeDimMinY = new SavableText();
+		pipeDimMinY.setNeedsSave(true);
+		pipeDimMinY.setLabelTxt("Pipe Y min dimension:");
+		pipeDimMinY.setParId("pipe_dim_min_y");
+		this.add(pipeDimMinY);
 
 		SavableText zoomCenter = new SavableText();
 		zoomCenter.setLabelTxt("Zoom center:");

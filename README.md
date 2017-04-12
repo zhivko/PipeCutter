@@ -291,6 +291,20 @@ make clean
 make
 ```
 
+###Enable remote it machinekit.ini
+```
+nano ~/git/machinekitOff/etc/linuxcnc/machinekit.ini
+```
+change
+```
+REMOTE=0
+```
+to
+```
+REMOTE=1
+```
+
+Copying/compiling components 
 
 If you get this error while building:
 ```
@@ -338,13 +352,26 @@ To log pin value to file:
 disown
 ```
 **install ordinary component *.comp**
+First you need to setup environment with:
 ```
-comp --install ./git/machinekit/mycomponents/mythc.comp
+source ~/git/machinekitOff/scripts/rip-environment
 ```
+
+```
+comp --install ~/git/machinekit/mycomponents/mythc.comp
+comp --install ~/git/machinekit/mycomponents/mult4.comp
+comp --install ~/git/machinekit/mycomponents/sincos.comp
+comp --install ~/git/machinekit/mycomponents/atanxy.comp
+comp --install ~/git/machinekit/mycomponents/changeSign.comp
+```
+
 **instal instantiable component *.icomp**
 ```
-instcomp --install ./git/machinekit/mycomponents/udp.icomp
+instcomp --install ~/git/machinekit/mycomponents/udp.icomp
+instcomp --install ~/git/machinekit/mycomponents/myrand.icomp
 ```
+
+
 #Plasma integration
 Plasma used: Powermax 45 XP
 <br>

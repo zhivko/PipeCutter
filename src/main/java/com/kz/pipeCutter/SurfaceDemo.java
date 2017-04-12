@@ -639,8 +639,8 @@ public class SurfaceDemo extends AbstractAnalysis {
 			utils.calculateMaxAndMins();
 			utils.establishRighMostAndLeftMostPoints();
 
-			//utils.calculateAllOffsetPoints();
-			
+			// utils.calculateAllOffsetPoints();
+
 			utils.origPoints = new ConcurrentHashMap<Integer, MyPickablePoint>();
 			for (MyPickablePoint mp : utils.points.values()) {
 				utils.origPoints.put(new Integer(mp.id), mp.clone());
@@ -894,13 +894,21 @@ public class SurfaceDemo extends AbstractAnalysis {
 		ArrayList<MyPickablePoint> sortedZList = new ArrayList(SurfaceDemo.instance.utils.points.values());
 		Collections.sort(sortedZList, new MyPickablePointZComparator());
 
+		ArrayList<MyPickablePoint> sortedYList = new ArrayList(SurfaceDemo.instance.utils.points.values());
+		Collections.sort(sortedYList, new MyPickablePointYComparator());
+
 		double minX = sortedXList.get(0).getX();
 		double maxX = sortedXList.get(sortedXList.size() - 1).getX();
 		double minZ = sortedZList.get(0).getZ();
 		double maxZ = sortedZList.get(sortedZList.size() - 1).getZ();
 
+		double minY = sortedYList.get(0).getY();
+		double maxY = sortedYList.get(sortedYList.size() - 1).getY();
+
 		Settings.instance.setSetting("pipe_dim_x", Double.valueOf(maxX - minX));
 		Settings.instance.setSetting("pipe_dim_z", Double.valueOf(maxZ - minZ));
+		Settings.instance.setSetting("pipe_dim_max_y", Double.valueOf(maxY));
+		Settings.instance.setSetting("pipe_dim_min_y", Double.valueOf(minY));
 
 		ArrayList<MyEdge> edgesToRemove = new ArrayList<MyEdge>();
 		ArrayList<MyEdge> edgesToAdd = new ArrayList<MyEdge>();
@@ -1116,15 +1124,14 @@ public class SurfaceDemo extends AbstractAnalysis {
 
 	public void lastClickedPointChanged(MyPickablePoint mp) {
 		try {
-			
-			if(lastClickedPoint!=null)
-			{
+
+			if (lastClickedPoint != null) {
 				lastClickedPoint.setWidth(4f);
 				lastClickedPoint.setColor(Color.BLACK);
 			}
 			mp.setWidth(8f);
 			mp.setColor(Color.BLUE);
-			
+
 			lastClickedPoint = mp;
 
 			if (offsetPoint != null)
@@ -1135,7 +1142,7 @@ public class SurfaceDemo extends AbstractAnalysis {
 			offsetPoint.setWidth(6.0f);
 			myComposite.add(offsetPoint);
 			SurfaceDemo.instance.getChart().render();
-			
+
 			if (!SurfaceDemo.ZOOM_POINT) {
 				SurfaceDemo.ZOOM_POINT = true;
 				SurfaceDemo.ZOOM_PLASMA = false;
@@ -1257,7 +1264,7 @@ public class SurfaceDemo extends AbstractAnalysis {
 		p.setCoord(tempPoint.xyz);
 
 		if (writeToGCode) {
-			String gcode = SurfaceDemo.instance.utils.coordinateToGcode(tempPoint, zOffset, slow,kerOffsetVec);
+			String gcode = SurfaceDemo.instance.utils.coordinateToGcode(tempPoint, zOffset, slow, kerOffsetVec);
 			if (cut) {
 				writeToGcodeFile(String.format(java.util.Locale.US, "%s", gcode));
 				alreadyCutting = true;
@@ -1279,7 +1286,7 @@ public class SurfaceDemo extends AbstractAnalysis {
 	public void moveAbove(MyPickablePoint tempPoint, float offset, long pierceTimeMs, Vector3D kerOffsetVec) {
 
 		if (kerOffsetVec != null) {
-			tempPoint.xyz.add((float) -kerOffsetVec.getX()/2, (float) -kerOffsetVec.getY()/2, (float) -kerOffsetVec.getZ()/2);
+			tempPoint.xyz.add((float) -kerOffsetVec.getX() / 2, (float) -kerOffsetVec.getY() / 2, (float) -kerOffsetVec.getZ() / 2);
 		}
 
 		Coord3d abovePoint = tempPoint.xyz.add(0f, 0f, offset);
@@ -1290,7 +1297,7 @@ public class SurfaceDemo extends AbstractAnalysis {
 		p1.setWidth(4f);
 		SurfaceDemo.getInstance().myTrail.add(p1);
 
-		String gcode = SurfaceDemo.instance.utils.coordinateToGcode(tempPoint, offset, false,kerOffsetVec);
+		String gcode = SurfaceDemo.instance.utils.coordinateToGcode(tempPoint, offset, false, kerOffsetVec);
 		plasma.setColor(Color.BLUE);
 		plasma.setWireframeColor(Color.BLUE);
 
@@ -1362,6 +1369,11 @@ public class SurfaceDemo extends AbstractAnalysis {
 	public void writeToGcodeFile(String txt) {
 		PrintWriter out = null;
 		try {
+
+			if (CutThread.gcodeFile == null) {
+				String gcodeFolder = Settings.getInstance().getSetting("gcode_folder");
+				CutThread.gcodeFile = new File(gcodeFolder + File.separatorChar + "prog.gcode");
+			}
 			out = new PrintWriter(new BufferedWriter(new FileWriter(CutThread.gcodeFile.getAbsolutePath(), true)));
 			if (txt.startsWith("G01 X0.00 Y250.00 Z61.5 A360.0000 B360.0000 F36.4"))
 				System.out.println(txt);

@@ -60,15 +60,25 @@ public class MachineKitStart extends SSH_Command {
 
 			String command;
 
-			int config = 1;
+			int config = 2;
 			if (config == 0) {
 				command = "source ~/git/machinekit/scripts/rip-environment";
 				ps.println(command);
 			} else if (config == 1) {
 				command = "source ~/git/machinekitMulticore/scripts/rip-environment";
 				ps.println(command);
+			} else if (config == 2) {
+				command = "source ~/git/machinekitOff/scripts/rip-environment";
+				ps.println(command);
 			}
-			command = "machinekit ~/git/machinekit/myini/CRAMPS.ini &";
+			
+			String hostName = Settings.instance.getSetting("machinekit_host");
+			
+			if(hostName.equals("beaglebone.local"))
+				command = "machinekit ~/git/machinekit/myini/CRAMPS.ini &";
+			else
+				command = "machinekit ~/git/machinekit/myini/sim/CRAMPS.ini &";
+				
 			ps.println(command);
 			readOutput(channelShell);
 		}

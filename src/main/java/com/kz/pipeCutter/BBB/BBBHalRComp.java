@@ -103,8 +103,10 @@ public class BBBHalRComp implements Runnable {
 			}
 		}
 
+		int i = 0;
 		for (pb.Object.Component.Builder comp : components.values()) {
 			builder.addComp(comp);
+			i++;
 		}
 
 	}
@@ -133,45 +135,34 @@ public class BBBHalRComp implements Runnable {
 										for (int j = 0; j < contReturned.getComp(i).getPinCount(); j++) {
 											String value = null;
 											if (contReturned.getComp(i).getPin(j).getType() == ValueType.HAL_FLOAT) {
-												value = Double.valueOf(contReturned.getComp(i).getPin(j).getHalfloat())
-														.toString();
-											} else if (contReturned.getComp(i).getPin(j)
-													.getType() == ValueType.HAL_S32) {
-												value = Integer.valueOf(contReturned.getComp(i).getPin(j).getHals32())
-														.toString();
-											} else if (contReturned.getComp(i).getPin(j)
-													.getType() == ValueType.HAL_U32) {
-												value = Integer.valueOf(contReturned.getComp(i).getPin(j).getHalu32())
-														.toString();
-											} else if (contReturned.getComp(i).getPin(j)
-													.getType() == ValueType.HAL_BIT) {
-												value = Boolean.valueOf(contReturned.getComp(i).getPin(j).getHalbit())
-														.toString();
+												value = Double.valueOf(contReturned.getComp(i).getPin(j).getHalfloat()).toString();
+											} else if (contReturned.getComp(i).getPin(j).getType() == ValueType.HAL_S32) {
+												value = Integer.valueOf(contReturned.getComp(i).getPin(j).getHals32()).toString();
+											} else if (contReturned.getComp(i).getPin(j).getType() == ValueType.HAL_U32) {
+												value = Integer.valueOf(contReturned.getComp(i).getPin(j).getHalu32()).toString();
+											} else if (contReturned.getComp(i).getPin(j).getType() == ValueType.HAL_BIT) {
+												value = Boolean.valueOf(contReturned.getComp(i).getPin(j).getHalbit()).toString();
 											}
 											halPins.put(contReturned.getComp(i).getPin(j).getName(), value);
 
-											if (BBBHalRComp.instance.pinsByName
-													.get(contReturned.getComp(i).getPin(j).getName()) == null)
+											if (BBBHalRComp.instance.pinsByName.get(contReturned.getComp(i).getPin(j).getName()) == null)
 												throw new Exception("Missing PIN !!!");
 
-											if (BBBHalRComp.instance.pinsByHandle
-													.get(contReturned.getComp(i).getPin(j).getHandle()) == null
-													&& BBBHalRComp.instance.pinsByName
-															.get(contReturned.getComp(i).getPin(j).getName()) != null)
-												BBBHalRComp.instance.pinsByHandle.put(
-														contReturned.getComp(i).getPin(j).getHandle(),
-														BBBHalRComp.instance.pinsByName
-																.get(contReturned.getComp(i).getPin(j).getName()));
+											if (BBBHalRComp.instance.pinsByHandle.get(contReturned.getComp(i).getPin(j).getHandle()) == null
+													&& BBBHalRComp.instance.pinsByName.get(contReturned.getComp(i).getPin(j).getName()) != null)
+												BBBHalRComp.instance.pinsByHandle.put(contReturned.getComp(i).getPin(j).getHandle(),
+														BBBHalRComp.instance.pinsByName.get(contReturned.getComp(i).getPin(j).getName()));
 
 										}
 									}
 
 									SwingUtilities.invokeLater(updateUi);
+									Settings.instance.updateHalValues();
+
 								} else if (contReturned.getType().equals(ContainerType.MT_PING)) {
 									this.lastPingMs = System.currentTimeMillis();
 									MachinekitSettings.instance.pingHalRcomp();
-								} else if (contReturned.getType()
-										.equals(ContainerType.MT_HALRCOMP_INCREMENTAL_UPDATE)) {
+								} else if (contReturned.getType().equals(ContainerType.MT_HALRCOMP_INCREMENTAL_UPDATE)) {
 									for (int j = 0; j < contReturned.getPinCount(); j++) {
 										String value = null;
 										PinDef pinDef = pinsByHandle.get(contReturned.getPin(j).getHandle());
@@ -263,7 +254,7 @@ public class BBBHalRComp implements Runnable {
 		Container container = this.builder.build();
 		byte[] buff = container.toByteArray();
 		String hexOutput = javax.xml.bind.DatatypeConverter.printHexBinary(buff);
-		System.out.println("Message:  " + hexOutput);
+		System.out.println("Message:    " + hexOutput);
 		BBBHalCommand.instance.socket.send(buff, 0);
 	}
 
@@ -343,25 +334,27 @@ public class BBBHalRComp implements Runnable {
 		public void run() {
 			if (halPins.get("mymotion.program-line") != null) {
 				// GcodeViewer.instance.setLineNumber(Integer.valueOf(halPins.get("mymotion.program-line")).intValue());
-
-				Settings.instance.setSetting("mymotion.program-line",
-						Integer.valueOf(halPins.get("mymotion.program-line")));
+				Settings.instance.setSetting("mymotion.program-line", Integer.valueOf(halPins.get("mymotion.program-line")));
 
 				GcodeViewer.instance.setPlasmaOn(Boolean.valueOf(halPins.get("mymotion.spindle-on")).booleanValue());
 				Settings.instance.setSetting("mymotion.vx", Float.valueOf(halPins.get("mymotion.vx")));
 				Settings.instance.setSetting("mymotion.dvx", Float.valueOf(halPins.get("mymotion.dvx")));
 				Settings.instance.setSetting("mymotion.vz", Float.valueOf(halPins.get("mymotion.vz")));
 				Settings.instance.setSetting("mymotion.dvz", Float.valueOf(halPins.get("mymotion.dvz")));
-				Settings.instance.setSetting("mymotion.current-radius",
-						String.format("%.3f", Float.valueOf(halPins.get("mymotion.current-radius"))));
+				Settings.instance.setSetting("mymotion.current-radius", String.format("%.3f", Float.valueOf(halPins.get("mymotion.current-radius"))));
 				Settings.instance.setSetting("mymotion.vy", Float.valueOf(halPins.get("mymotion.vy")));
 				Settings.instance.setSetting("mymotion.v", Float.valueOf(halPins.get("mymotion.v")));
-				Settings.instance.setSetting("mymotion.laserHeight1",
-						String.format("%.3f", Float.valueOf(halPins.get("mymotion.laserHeight1"))));
+				double laserHeight1 = Float.valueOf(halPins.get("mymotion.laserHeight1"));
+				Settings.instance.setSetting("mymotion.laserHeight1", String.format("%.3f", laserHeight1));
 
-				Settings.instance.setSetting("myini.actual-volts", Float.valueOf(halPins.get("myini.actual-volts")));
-				Settings.instance.setSetting("myini.vel-status",
-						String.format("%s", Boolean.valueOf(halPins.get("myini.vel-status"))));
+				double actualVolts = Float.valueOf(halPins.get("myini.actual-volts"));
+				Settings.instance.setSetting("myini.actual-volts", actualVolts);
+				double requestedVolts = Float.valueOf(Settings.instance.getSetting("myini.volts-requested"));
+				Settings.instance.plasmaSettings.seriesVoltConstTime.add(System.currentTimeMillis(), requestedVolts);
+				Settings.instance.plasmaSettings.seriesVoltTime.add(System.currentTimeMillis(), actualVolts);
+				Settings.instance.plasmaSettings.updateChartRange();
+
+				Settings.instance.setSetting("myini.vel-status", String.format("%s", Boolean.valueOf(halPins.get("myini.vel-status"))));
 
 				Settings.instance.setSetting("myini.thc-z-pos", Float.valueOf(halPins.get("myini.thc-z-pos")));
 				Settings.instance.setSetting("myini.offset-value", Float.valueOf(halPins.get("myini.offset-value")));

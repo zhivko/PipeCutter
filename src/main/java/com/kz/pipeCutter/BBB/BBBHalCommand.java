@@ -163,7 +163,6 @@ public class BBBHalCommand implements Runnable {
 								Settings.instance.log("MT_HALRCOMP_BIND_CONFIRM");
 								BBBHalRComp.getInstance().isBinded = true;
 								BBBHalRComp.getInstance().isTryingToBind = false;
-								BBBHalRComp.getInstance().subcribe();
 
 								for (int i = 0; i < contReturned.getCompCount(); i++) {
 									for (int j = 0; j < contReturned.getComp(i).getPinCount(); j++) {
@@ -171,8 +170,8 @@ public class BBBHalCommand implements Runnable {
 												BBBHalRComp.instance.pinsByName.get(contReturned.getComp(i).getPin(j).getName()));
 									}
 								}
+								BBBHalRComp.getInstance().subcribe();
 								new MachinekitRunPostgui().start();
-								Settings.instance.updateHalValues();
 								Settings.instance.setLaser1IP();
 							} else {
 								Settings.getInstance().log("Unknown message: " + contReturned.getType());

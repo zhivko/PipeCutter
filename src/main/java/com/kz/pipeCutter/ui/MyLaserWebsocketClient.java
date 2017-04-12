@@ -24,7 +24,7 @@ public class MyLaserWebsocketClient {
 	@OnOpen
 	public void onOpen(Session session) {
 		if (Settings.instance != null)
-			Settings.instance.log("\tConnected to laser at: " + session.getRequestURI());
+			Settings.instance.log("\tConnected to laser distance at: " + session.getRequestURI());
 		this.uri = session.getRequestURI();
 		try {
 			session.getBasicRemote().sendText("udpServerIP " + setUdpServerIP + " " + setPort);

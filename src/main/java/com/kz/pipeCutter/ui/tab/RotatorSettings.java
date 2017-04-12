@@ -117,25 +117,6 @@ public class RotatorSettings extends JPanel {
 		pos1 = new Positioner(1);
 		panelRotator1.add(pos1);
 
-		SavableText laserDistance0 = new SavableText();
-		laserDistance0.setLabelTxt("LasDist: ");
-		laserDistance0.setParId("mymotion.laserHeight0");
-		laserDistance0.setNeedsSave(false);
-		laserDistance0.setPin(new PinDef("mymotion.laserHeight0", HalPinDirection.HAL_IN, ValueType.HAL_FLOAT));
-		panelRotator1.add(laserDistance0);
-		laserDistance0.addFocusListener(new FocusListener() {
-			
-			@Override
-			public void focusLost(FocusEvent e) {
-				// TODO Auto-generated method stub
-				
-			}
-			
-			@Override
-			public void focusGained(FocusEvent e) {
-				
-			}
-		});
 
 		// ----------ROTATOR 2---------------------------
 		JPanel panelRotator2 = new JPanel();
@@ -206,28 +187,6 @@ public class RotatorSettings extends JPanel {
 
 		pos2 = new Positioner(2);
 		panelRotator2.add(pos2);
-
-		SavableText laserDistance1 = new SavableText();
-		laserDistance1.setLabelTxt("LasDist: ");
-		laserDistance1.setParId("mymotion.laserHeight1");
-		laserDistance1.setNeedsSave(false);
-		laserDistance1.setPin(new PinDef("mymotion.laserHeight1", HalPinDirection.HAL_IN, ValueType.HAL_FLOAT));
-		panelRotator2.add(laserDistance1);
-		
-		laserDistance1.addFocusListener(new FocusListener() {
-			
-			@Override
-			public void focusLost(FocusEvent e) {
-				// TODO Auto-generated method stub
-				
-			}
-			
-			@Override
-			public void focusGained(FocusEvent e) {
-				Settings.instance.setLaser1IP();
-			}
-		});		
-		
 
 		// ----------ROTATOR 3---------------------------
 		/*

@@ -82,7 +82,9 @@ public class Settings extends JFrame {
 
 	public JSplitPane splitPane;
 	CommandPanel commandPanel;
-
+	public XYZSettings xyzSettings;
+	public PlasmaSettings plasmaSettings; 
+	
 	boolean repositioned = false;
 
 	/**
@@ -166,10 +168,14 @@ public class Settings extends JFrame {
 		JTabbedPane tabbedPane = new JTabbedPane(JTabbedPane.TOP);
 		// tabbedPane.setMinimumSize(new Dimension(600, 500));
 
+		xyzSettings = new XYZSettings();
+		plasmaSettings = new PlasmaSettings();
+		
+		
 		tabbedPane.addTab("MachinekitSettings", new MachinekitSettings());
 		tabbedPane.addTab("Rotators", new RotatorSettings());
-		tabbedPane.addTab("XYZ", new XYZSettings());
-		tabbedPane.addTab("Plasma", new PlasmaSettings());
+		tabbedPane.addTab("XYZ", xyzSettings);
+		tabbedPane.addTab("Plasma", plasmaSettings);
 		tabbedPane.addTab("Other", new OtherSettings());
 
 		tabbedPane.setSelectedIndex(0);

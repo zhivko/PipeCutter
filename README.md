@@ -16,7 +16,7 @@ With CRAMPS hat
 You can check my Google "Machinekit PipeCutter" album to better get idea of project:
 [G+ Album](https://goo.gl/photos/4A623DBE1DQRwYfcA "Google+ Album")
 
-Ability to produce 3D offset like this (acknowledges for plasma or laser kerf offset)
+Ability to produce 3D offset like this (compensate for plasma or laser kerf offset)
 ![bbb](https://raw.githubusercontent.com/zhivko/PipeCutter/master/screenshots/3d-offset.png)
 
 **Steps to start SW**  

@@ -1,16 +1,8 @@
 package com.kz.pipeCutter;
 
-import org.zeromq.ZMQ;
-
-import com.kz.pipeCutter.BBB.BBBHalCommand;
-import com.kz.pipeCutter.BBB.BBBMachineTalkCommand;
-
 import junit.framework.Test;
 import junit.framework.TestCase;
 import junit.framework.TestSuite;
-import pb.Status;
-import pb.Message.Container;
-import pb.Types.ContainerType;
 
 /**
  * Unit test for simple App.

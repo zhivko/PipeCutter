@@ -110,10 +110,16 @@ route add default gw 192.168.7.1
 echo 'nameserver 8.8.8.8' >> /etc/resolv.conf
 ```
 
-##Back-up BBB (write eMMC to uSD)
+##Backup BBB (write eMMC to uSD)
+```
 sudo /opt/scripts/tools/eMMC/beaglebone-black-make-microSD-flasher-from-eMMC.sh
+```
+
 ##BBB becomes unresponsive
+```
 http://dave.cheney.net/2013/09/22/two-point-five-ways-to-access-the-serial-console-on-your-beaglebone-black
+```
+
 ##AVAHI Daemon doesn't always bring up beaglebone.local
 ```
 sudo systemctl --system daemon-reload

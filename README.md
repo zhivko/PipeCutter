@@ -110,12 +110,12 @@ route add default gw 192.168.7.1
 echo 'nameserver 8.8.8.8' >> /etc/resolv.conf
 ```
 
-##Backup BBB (write eMMC to uSD)
+**Backup BBB (write eMMC to uSD)**
 ```
 sudo /opt/scripts/tools/eMMC/beaglebone-black-make-microSD-flasher-from-eMMC.sh
 ```
 
-##BBB becomes unresponsive
+**BBB becomes unresponsive**
 ```
 http://dave.cheney.net/2013/09/22/two-point-five-ways-to-access-the-serial-console-on-your-beaglebone-black
 ```
@@ -153,7 +153,7 @@ use-ipv6=no
 loginctl enable-linger machinekit
 ```
 
-##flashing eMMC from uSD card
+**flashing eMMC from uSD card**
 
 1. change uEnv.txt as below (notice last line ```init-eMMC-flasher-v3.sh```).
 2. reboot. The blue on-board LEDs should light in sequence and then continue to flash for the next 5–25 minutes (depending on the distribution used and the speed of the SD card). The latest distribution flashes in a Cylon/Knightrider pattern.

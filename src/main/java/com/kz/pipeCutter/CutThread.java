@@ -290,7 +290,7 @@ public class CutThread extends SwingWorker<String, Object> {
 				for (Integer pointId : contEdge.points) {
 					pointsToCut.add(SurfaceDemo.getInstance().utils.points.get(pointId));
 				}
-				Collections.sort(pointsToCut, new MyPickablePointMidXToEdgeCenterComparator(contEdge.center));
+				//Collections.sort(pointsToCut, new MyPickablePointMidXToEdgeCenterComparator(contEdge.center));
 				if (pointsToCut.size() > 0) {
 					for (MyPickablePoint myPoint : pointsToCut) {
 						if (!listContainsPoint(myPoint, alAlreadyAddedPoints)) {
@@ -302,6 +302,19 @@ public class CutThread extends SwingWorker<String, Object> {
 							Vector3D kerfOffVec = new Vector3D(myPoint.xyz.x - p.xyz.x, myPoint.xyz.y - p.xyz.y, myPoint.xyz.z - p.xyz.z);
 
 							SurfaceDemo.getInstance().move(safeRetractPoint, false, false, cutOffsetMm, true, kerfOffVec);
+							
+							// lets rotate pipe so myPoint will be topz point
+							double pointAngle = Math.atan2(myPoint.getZ(), myPoint.getX())*180.0d/Math.PI;
+							double sumAngle = Float.valueOf(SurfaceDemo.getInstance().angleTxt);
+							
+							double angleDelta = pointAngle-90;
+							myPoint.setWidth(15);
+							myPoint.setColor(Color.GREEN);
+							SurfaceDemo.getInstance().getChart().render();
+							SurfaceDemo.getInstance().utils.rotatePoints(angleDelta, true);
+							
+									
+									
 							double angle = followThePath(myPoint, this.alAlreadyAddedPoints);
 							hasBeenCutting = true;
 						}

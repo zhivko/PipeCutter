@@ -528,10 +528,12 @@ public class Utils {
 				Rotation rotZ1 = new Rotation(zAxis, Math.toRadians(angleDeg / noSteps));
 
 				for (int j = 0; j < SurfaceDemo.instance.myTrail.size(); j++) {
-					Point p = (Point) SurfaceDemo.instance.myTrail.get(j);
-					Vector3D myPoint = new Vector3D(p.getCoord().x, p.getCoord().y, p.getCoord().z);
-					Vector3D result = rotZ1.applyTo(myPoint);
-					p.setCoord(new Coord3d(result.getX(), result.getY(), result.getZ()));
+					if (SurfaceDemo.instance.myTrail.get(j) instanceof Point) {
+						Point p = (Point) SurfaceDemo.instance.myTrail.get(j);
+						Vector3D myPoint = new Vector3D(p.getCoord().x, p.getCoord().y, p.getCoord().z);
+						Vector3D result = rotZ1.applyTo(myPoint);
+						p.setCoord(new Coord3d(result.getX(), result.getY(), result.getZ()));
+					}
 				}
 
 				for (MyPickablePoint point : SurfaceDemo.instance.utils.origPoints.values()) {
@@ -868,13 +870,13 @@ public class Utils {
 		PointAndPlane ret = new PointAndPlane();
 
 		MyContinuousEdge continuousEdge = continuousEdges.get(point.continuousEdgeNo);
-		
+
 		double angleToOffset = 0;
-		if(continuousEdge.edgeType == MyContinuousEdge.EdgeType.START)
-			angleToOffset = Math.PI/2;
+		if (continuousEdge.edgeType == MyContinuousEdge.EdgeType.START)
+			angleToOffset = Math.PI / 2;
 		else
-			angleToOffset = -Math.PI/2;
-		
+			angleToOffset = -Math.PI / 2;
+
 		int index = continuousEdge.points.indexOf(point.id);
 		int prevIndex = -1;
 		int nextIndex = -1;
@@ -981,7 +983,7 @@ public class Utils {
 			// build a plane from plane normal and point on that plane
 			// get start of normal - center of radius
 			// get angle to see what quadrant it is in
-			
+
 			double angle1 = Math.atan2(origPoints.get(point.id).getZ(), origPoints.get(point.id).getX());
 			double dimX = Double.valueOf(Settings.instance.getSetting("pipe_dim_x"));
 			double dimZ = Double.valueOf(Settings.instance.getSetting("pipe_dim_z"));
@@ -999,13 +1001,11 @@ public class Utils {
 				normalStart = new Vector3D(dimX / 2 - dimR, point.getY(), -dimZ / 2 + dimR);
 			}
 			Vector3D normalEnd = new Vector3D(origPoints.get(point.id).getX(), origPoints.get(point.id).getY(), origPoints.get(point.id).getZ());
-			
-			//rotate normalStart and normalEnd to compensate for rotation
+
+			// rotate normalStart and normalEnd to compensate for rotation
 			Vector3D normalStartRot = rotPlane.applyTo(normalStart);
 			Vector3D normalEndRot = rotPlane.applyTo(normalEnd);
-			
-			
-			
+
 			Vector3D planeNormal = normalStartRot.subtract(normalEndRot);
 			ret.plane = new Plane(normalEndRot, planeNormal, 0.0001);
 

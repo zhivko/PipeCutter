@@ -196,6 +196,9 @@ public class CutThread extends SwingWorker<String, Object> {
 		SurfaceDemo.instance.writeToGcodeFile(String.format(Locale.US, "G00 X%.3f Y%.3f Z%.3f F%s", SurfaceDemo.instance.utils.previousPoint.x,
 				SurfaceDemo.instance.utils.previousPoint.y, diagonal / 2.0f + 20.0f, Settings.getInstance().getSetting("gcode_feedrate_g0")));
 
+		SurfaceDemo.getInstance().utils.rotatePoints(0, true, false);
+		SurfaceDemo.instance.writeToGcodeFile(String.format(java.util.Locale.US, "%s", "G00 A0 B0"));
+
 		// double diagonal = (SurfaceDemo.getInstance().utils.maxEdge *
 		// Math.sqrt(2.0f));
 		// MyPickablePoint safeRetractPoint = new MyPickablePoint(-100000, new
@@ -290,7 +293,8 @@ public class CutThread extends SwingWorker<String, Object> {
 				for (Integer pointId : contEdge.points) {
 					pointsToCut.add(SurfaceDemo.getInstance().utils.points.get(pointId));
 				}
-				//Collections.sort(pointsToCut, new MyPickablePointMidXToEdgeCenterComparator(contEdge.center));
+				// Collections.sort(pointsToCut, new
+				// MyPickablePointMidXToEdgeCenterComparator(contEdge.center));
 				if (pointsToCut.size() > 0) {
 					for (MyPickablePoint myPoint : pointsToCut) {
 						if (!listContainsPoint(myPoint, alAlreadyAddedPoints)) {
@@ -302,17 +306,18 @@ public class CutThread extends SwingWorker<String, Object> {
 							Vector3D kerfOffVec = new Vector3D(myPoint.xyz.x - p.xyz.x, myPoint.xyz.y - p.xyz.y, myPoint.xyz.z - p.xyz.z);
 
 							SurfaceDemo.getInstance().move(safeRetractPoint, false, false, cutOffsetMm, true, kerfOffVec);
-							
+
 							// lets rotate pipe so myPoint will be topz point
-							double pointAngle = Math.atan2(myPoint.getZ(), myPoint.getX())*180.0d/Math.PI;
-							double sumAngle = Float.valueOf(SurfaceDemo.getInstance().angleTxt);
-							
-							double angleDelta = pointAngle-90;
+							double pointAngle = Math.atan2(myPoint.getZ(), myPoint.getX()) * 180.0d / Math.PI;
+
+							double angleDelta = pointAngle - 90;
 							myPoint.setWidth(8);
 							myPoint.setColor(Color.BLUE);
-							SurfaceDemo.getInstance().getChart().render();
 							SurfaceDemo.getInstance().utils.rotatePoints(angleDelta, true);
-							
+							SurfaceDemo.getInstance().getChart().render();
+							SurfaceDemo.instance.writeToGcodeFile(String.format(java.util.Locale.US, "%s", "G00 A90 B90"));
+
+
 							double angle = followThePath(myPoint, this.alAlreadyAddedPoints);
 							hasBeenCutting = true;
 						}
@@ -336,7 +341,7 @@ public class CutThread extends SwingWorker<String, Object> {
 			 */
 		} else {
 			for (int i = 0; i < 4; i++) {
-				calculateTopZ();	
+				calculateTopZ();
 				System.out.println("TopZ=" + topZ);
 
 				ArrayList<MyPickablePoint> pointsToCut = new ArrayList<MyPickablePoint>();
@@ -421,7 +426,6 @@ public class CutThread extends SwingWorker<String, Object> {
 		ArrayList<MyEdge> alreadyCuttedEdges = new ArrayList<MyEdge>();
 
 		MyContinuousEdge contEdge = SurfaceDemo.instance.utils.continuousEdges.get(tempPoint.continuousEdgeNo);
-
 
 		PointAndPlane offPointAndPlane = SurfaceDemo.instance.utils.calculateOffsetPointAndPlane(myPoint);
 		Vector3D delt = offPointAndPlane.plane.getNormal().normalize().scalarMultiply(5);

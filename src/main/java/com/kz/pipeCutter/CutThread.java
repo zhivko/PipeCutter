@@ -308,13 +308,11 @@ public class CutThread extends SwingWorker<String, Object> {
 							double sumAngle = Float.valueOf(SurfaceDemo.getInstance().angleTxt);
 							
 							double angleDelta = pointAngle-90;
-							myPoint.setWidth(15);
-							myPoint.setColor(Color.GREEN);
+							myPoint.setWidth(8);
+							myPoint.setColor(Color.BLUE);
 							SurfaceDemo.getInstance().getChart().render();
 							SurfaceDemo.getInstance().utils.rotatePoints(angleDelta, true);
 							
-									
-									
 							double angle = followThePath(myPoint, this.alAlreadyAddedPoints);
 							hasBeenCutting = true;
 						}
@@ -424,9 +422,6 @@ public class CutThread extends SwingWorker<String, Object> {
 
 		MyContinuousEdge contEdge = SurfaceDemo.instance.utils.continuousEdges.get(tempPoint.continuousEdgeNo);
 
-		if (contEdge.edgeNo == 1) {
-			System.out.println("");
-		}
 
 		PointAndPlane offPointAndPlane = SurfaceDemo.instance.utils.calculateOffsetPointAndPlane(myPoint);
 		Vector3D delt = offPointAndPlane.plane.getNormal().normalize().scalarMultiply(5);

@@ -632,7 +632,7 @@ public class Utils {
 		for (MyPickablePoint p : points.values()) {
 			if (p.getY() < points.get(minYPointInd).getY())
 				minYPointInd = p.id;
-			if (p.getY() > points.get(minYPointInd).getY())
+			if (p.getY() > points.get(maxYPointInd).getY())
 				maxYPointInd = p.id;
 		}
 

@@ -202,12 +202,12 @@ public class PlasmaSettings extends JPanel {
 	public void updateChartRange() {
 		ValueAxis domainAxis = chart.getXYPlot().getDomainAxis();
 		ValueAxis rangeAxis = chart.getXYPlot().getRangeAxis();
-		// set max time window as 1 sec
-		domainAxis.setRange(seriesVoltConstTime.getMaxX() - 1, seriesVoltConstTime.getMaxX());
+		// set max time window as 3 sec
+		domainAxis.setRange(seriesVoltConstTime.getMaxX() - 3000, seriesVoltConstTime.getMaxX());
 		// domainAxis.setTickUnit(new NumberTickUnit(0.1));
 		// set max range window as 20V up and down from latest
-		double minY = (double) seriesVoltTime.getY(seriesVoltTime.getItemCount() - 1) - 20;
-		double maxY = (double) seriesVoltTime.getY(seriesVoltTime.getItemCount() - 1) + 20;
+		double minY = (double) seriesVoltTime.getY(seriesVoltTime.getItemCount() - 1) - 50;
+		double maxY = (double) seriesVoltTime.getY(seriesVoltTime.getItemCount() - 1) + 50;
 		rangeAxis.setRange(minY, maxY);
 		// rangeAxis.setTickUnit(new NumberTickUnit(0.05));
 	}

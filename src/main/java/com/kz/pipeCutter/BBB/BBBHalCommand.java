@@ -173,6 +173,8 @@ public class BBBHalCommand implements Runnable {
 								BBBHalRComp.getInstance().subcribe();
 								new MachinekitRunPostgui().start();
 								Settings.instance.setLaser1IP();
+							} else if (contReturned.getType().equals(ContainerType.MT_HALRCOMP_ACK)) {
+								Settings.getInstance().log("ACK");
 							} else {
 								Settings.getInstance().log("Unknown message: " + contReturned.getType());
 							}

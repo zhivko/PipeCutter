@@ -35,7 +35,7 @@ public class CutThread extends SwingWorker<String, Object> {
 
 	static File gcodeFile;
 	public static int delay = 100;
-	public static float cutterYRange = 50;
+	public static float cutterYRange = 20;
 	private static long longDelay = 1000;
 	private MyPickablePoint point;
 	double sumAngle = 0;
@@ -53,6 +53,7 @@ public class CutThread extends SwingWorker<String, Object> {
 	private boolean wholePipe = false;
 	private boolean onlySelected = false;
 	private boolean useKerfOffset = false;
+	private boolean pipeIsCircular = false;
 	private MyPickablePoint startPoint = null;
 
 	public float filletSpeed = 0.0f;
@@ -130,6 +131,9 @@ public class CutThread extends SwingWorker<String, Object> {
 	public CutThread() {
 		System.out.println("name: " + Thread.currentThread().getName());
 		SurfaceDemo.getInstance().myTrail.clear();
+
+		pipeIsCircular = isPipeCircular();
+		Settings.instance.log("Pipe is " + (pipeIsCircular == true ? "" : "NOT"));
 
 		Thread.currentThread().setName("CutThread");
 		System.out.println("New name: " + Thread.currentThread().getName());
@@ -268,42 +272,19 @@ public class CutThread extends SwingWorker<String, Object> {
 
 	private void cutSegment(float minY, double maxY, boolean withoutLastPoints, int rotationDirection) {
 		System.out.println("Cutting segment " + minY + " " + maxY);
-		for (int i = 0; i < 4; i++) {
-			calculateTopZ();
-			System.out.println("TopZ=" + topZ);
 
-			ArrayList<MyPickablePoint> pointsToCut = new ArrayList<MyPickablePoint>();
-
-			for (MyPickablePoint p : cuttingPoints) {
-				// if (p.id == 279) {
-				// System.out.println("");
-				// }
-				if (p.xyz.y >= minY && p.xyz.y <= maxY && Math.abs(p.getZ() - topZ) < 0.001) {
-					{
-						if (withoutLastPoints) {
-							if (!listContainsPoint(p, firstPoints)) {
-								if (!listContainsPoint(p, alAlreadyAddedPoints)) {
-									pointsToCut.add(p);
-									p.setColor(Color.MAGENTA);
-								}
-							}
-						} else {
-							if (!listContainsPoint(p, alAlreadyAddedPoints)) {
-								pointsToCut.add(p);
-								p.setColor(Color.MAGENTA);
-							}
-						}
-					}
-				}
-			}
+		if (pipeIsCircular) {
 
 			// get all continuous edges
 			ArrayList<MyContinuousEdge> edgesToCut = new ArrayList<MyContinuousEdge>();
-			for (MyPickablePoint p : pointsToCut) {
-				edgesToCut.add(SurfaceDemo.getInstance().utils.continuousEdges.get(p.continuousEdgeNo));
+			for (MyContinuousEdge e : SurfaceDemo.getInstance().utils.continuousEdges.values()) {
+				System.out.println(e.center.y);
+				if (e.center.y > minY && e.center.y <= maxY)
+					edgesToCut.add(e);
 			}
 
 			boolean hasBeenCutting = false;
+			ArrayList<MyPickablePoint> pointsToCut = new ArrayList<MyPickablePoint>();
 			for (MyContinuousEdge contEdge : edgesToCut) {
 				pointsToCut = new ArrayList<MyPickablePoint>();
 				for (Integer pointId : contEdge.points) {
@@ -312,7 +293,7 @@ public class CutThread extends SwingWorker<String, Object> {
 				Collections.sort(pointsToCut, new MyPickablePointMidXToEdgeCenterComparator(contEdge.center));
 				if (pointsToCut.size() > 0) {
 					for (MyPickablePoint myPoint : pointsToCut) {
-						if (!listContainsPoint(myPoint, alAlreadyAddedPoints) && Math.abs(myPoint.getZ() - topZ) < 0.1) {
+						if (!listContainsPoint(myPoint, alAlreadyAddedPoints)) {
 							double diagonal = (SurfaceDemo.getInstance().utils.maxEdge * Math.sqrt(2.0f));
 							MyPickablePoint safeRetractPoint = new MyPickablePoint(-100000, new Point3d(myPoint.xyz.x, myPoint.xyz.y, diagonal / 2 + 10),
 									Color.BLACK, 0.4f, -200000);
@@ -336,11 +317,87 @@ public class CutThread extends SwingWorker<String, Object> {
 			}
 
 			sumAngle = Float.valueOf(SurfaceDemo.getInstance().angleTxt); // sumAngle
-			if (sumAngle >= 360.0)
-				rotationDirection = -1;
-			double angle = rotationDirection * 90.0d;
-			SurfaceDemo.getInstance().utils.rotatePoints(angle, false);
 
+			/*
+			 * if (sumAngle >= 360.0) rotationDirection = -1; double angle =
+			 * rotationDirection * 90.0d;
+			 * SurfaceDemo.getInstance().utils.rotatePoints(angle, false);
+			 */
+		} else {
+			for (int i = 0; i < 4; i++) {
+				calculateTopZ();	
+				System.out.println("TopZ=" + topZ);
+
+				ArrayList<MyPickablePoint> pointsToCut = new ArrayList<MyPickablePoint>();
+
+				for (MyPickablePoint p : cuttingPoints) {
+					// if (p.id == 279) {
+					// System.out.println("");
+					// }
+					if (p.xyz.y >= minY && p.xyz.y <= maxY && Math.abs(p.getZ() - topZ) < 0.001) {
+						{
+							if (withoutLastPoints) {
+								if (!listContainsPoint(p, firstPoints)) {
+									if (!listContainsPoint(p, alAlreadyAddedPoints)) {
+										pointsToCut.add(p);
+										p.setColor(Color.MAGENTA);
+									}
+								}
+							} else {
+								if (!listContainsPoint(p, alAlreadyAddedPoints)) {
+									pointsToCut.add(p);
+									p.setColor(Color.MAGENTA);
+								}
+							}
+						}
+					}
+				}
+
+				// get all continuous edges
+				ArrayList<MyContinuousEdge> edgesToCut = new ArrayList<MyContinuousEdge>();
+				for (MyPickablePoint p : pointsToCut) {
+					edgesToCut.add(SurfaceDemo.getInstance().utils.continuousEdges.get(p.continuousEdgeNo));
+				}
+
+				boolean hasBeenCutting = false;
+				for (MyContinuousEdge contEdge : edgesToCut) {
+					pointsToCut = new ArrayList<MyPickablePoint>();
+					for (Integer pointId : contEdge.points) {
+						pointsToCut.add(SurfaceDemo.getInstance().utils.points.get(pointId));
+					}
+					Collections.sort(pointsToCut, new MyPickablePointMidXToEdgeCenterComparator(contEdge.center));
+					if (pointsToCut.size() > 0) {
+						for (MyPickablePoint myPoint : pointsToCut) {
+							if (!listContainsPoint(myPoint, alAlreadyAddedPoints) && Math.abs(myPoint.getZ() - topZ) < 0.1) {
+								double diagonal = (SurfaceDemo.getInstance().utils.maxEdge * Math.sqrt(2.0f));
+								MyPickablePoint safeRetractPoint = new MyPickablePoint(-100000, new Point3d(myPoint.xyz.x, myPoint.xyz.y, diagonal / 2 + 10),
+										Color.BLACK, 0.4f, -200000);
+
+								Point p = SurfaceDemo.instance.utils.calculateOffsetPoint(myPoint);
+								Vector3D kerfOffVec = new Vector3D(myPoint.xyz.x - p.xyz.x, myPoint.xyz.y - p.xyz.y, myPoint.xyz.z - p.xyz.z);
+
+								SurfaceDemo.getInstance().move(safeRetractPoint, false, false, cutOffsetMm, true, kerfOffVec);
+								double angle = followThePath(myPoint, this.alAlreadyAddedPoints);
+								hasBeenCutting = true;
+							}
+						}
+					}
+				}
+
+				if (hasBeenCutting) {
+					double diagonal = (SurfaceDemo.getInstance().utils.maxEdge * Math.sqrt(2.0d));
+					MyPickablePoint newPoint = new MyPickablePoint(-100000, new Point3d(SurfaceDemo.getInstance().getPlasma().getPosition().x,
+							SurfaceDemo.getInstance().getPlasma().getPosition().y, diagonal / 2.0f + 20), Color.BLACK, 0.4f, -200000);
+					SurfaceDemo.getInstance().move(newPoint, false, false, 0, true, null);
+				}
+
+				sumAngle = Float.valueOf(SurfaceDemo.getInstance().angleTxt); // sumAngle
+				if (sumAngle >= 360.0)
+					rotationDirection = -1;
+				double angle = rotationDirection * 90.0d;
+				SurfaceDemo.getInstance().utils.rotatePoints(angle, false);
+
+			}
 		}
 	}
 
@@ -644,6 +701,18 @@ public class CutThread extends SwingWorker<String, Object> {
 		SurfaceDemo.getInstance().move(this.startPoint, false, false, offsetZ, null);
 
 		SurfaceDemo.instance.writeToGcodeFile("M2");
+	}
+
+	boolean isPipeCircular() {
+		double delta = 0.1;
+		double dimX = Double.valueOf(Settings.instance.getSetting("pipe_dim_x"));
+		for (MyPickablePoint point : SurfaceDemo.instance.utils.points.values()) {
+			double radius = Math.sqrt(point.getX() * point.getX() + point.getZ() * point.getZ());
+			if (Math.abs(radius - dimX / 2) > delta) {
+				return false;
+			}
+		}
+		return true;
 	}
 
 }

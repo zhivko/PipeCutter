@@ -191,13 +191,13 @@ public class CutThread extends SwingWorker<String, Object> {
 
 		// out.println(String.format(Locale.US, "G00 Z%.3f F%s", diagonal / 2.0f +
 		// 20.0f, Settings.getInstance().getSetting("gcode_feedrate_g0")));
+		SurfaceDemo.getInstance().utils.rotatePoints(0, true, false);
+		SurfaceDemo.instance.writeToGcodeFile(String.format(java.util.Locale.US, "%s", "G00 A0.0 B0.0"));
 
+		
 		double diagonal = (SurfaceDemo.getInstance().utils.maxEdge * Math.sqrt(2.0f));
 		SurfaceDemo.instance.writeToGcodeFile(String.format(Locale.US, "G00 X%.3f Y%.3f Z%.3f F%s", SurfaceDemo.instance.utils.previousPoint.x,
 				SurfaceDemo.instance.utils.previousPoint.y, diagonal / 2.0f + 20.0f, Settings.getInstance().getSetting("gcode_feedrate_g0")));
-
-		SurfaceDemo.getInstance().utils.rotatePoints(0, true, false);
-		SurfaceDemo.instance.writeToGcodeFile(String.format(java.util.Locale.US, "%s", "G00 A0 B0"));
 
 		// double diagonal = (SurfaceDemo.getInstance().utils.maxEdge *
 		// Math.sqrt(2.0f));
@@ -298,15 +298,6 @@ public class CutThread extends SwingWorker<String, Object> {
 				if (pointsToCut.size() > 0) {
 					for (MyPickablePoint myPoint : pointsToCut) {
 						if (!listContainsPoint(myPoint, alAlreadyAddedPoints)) {
-							double diagonal = (SurfaceDemo.getInstance().utils.maxEdge * Math.sqrt(2.0f));
-							MyPickablePoint safeRetractPoint = new MyPickablePoint(-100000, new Point3d(myPoint.xyz.x, myPoint.xyz.y, diagonal / 2 + 10),
-									Color.BLACK, 0.4f, -200000);
-
-							Point p = SurfaceDemo.instance.utils.calculateOffsetPoint(myPoint);
-							Vector3D kerfOffVec = new Vector3D(myPoint.xyz.x - p.xyz.x, myPoint.xyz.y - p.xyz.y, myPoint.xyz.z - p.xyz.z);
-
-							SurfaceDemo.getInstance().move(safeRetractPoint, false, false, cutOffsetMm, true, kerfOffVec);
-
 							// lets rotate pipe so myPoint will be topz point
 							double pointAngle = Math.atan2(myPoint.getZ(), myPoint.getX()) * 180.0d / Math.PI;
 
@@ -315,8 +306,19 @@ public class CutThread extends SwingWorker<String, Object> {
 							myPoint.setColor(Color.BLUE);
 							SurfaceDemo.getInstance().utils.rotatePoints(angleDelta, true);
 							SurfaceDemo.getInstance().getChart().render();
-							SurfaceDemo.instance.writeToGcodeFile(String.format(java.util.Locale.US, "%s", "G00 A90 B90"));
+							
+							float currAngle = Float.valueOf(SurfaceDemo.instance.angleTxt);
+							
+							SurfaceDemo.instance.writeToGcodeFile(String.format(java.util.Locale.US, "G00 A%.3f B%.3f",currAngle,currAngle));
 
+							double diagonal = (SurfaceDemo.getInstance().utils.maxEdge * Math.sqrt(2.0f));
+							MyPickablePoint safeRetractPoint = new MyPickablePoint(-100000, new Point3d(myPoint.xyz.x, myPoint.xyz.y, diagonal / 2 + 10),
+									Color.BLACK, 0.4f, -200000);
+
+							Point p = SurfaceDemo.instance.utils.calculateOffsetPoint(myPoint);
+							Vector3D kerfOffVec = new Vector3D(myPoint.xyz.x - p.xyz.x, myPoint.xyz.y - p.xyz.y, myPoint.xyz.z - p.xyz.z);
+
+							SurfaceDemo.getInstance().move(safeRetractPoint, false, false, cutOffsetMm, true, kerfOffVec);							
 
 							double angle = followThePath(myPoint, this.alAlreadyAddedPoints);
 							hasBeenCutting = true;

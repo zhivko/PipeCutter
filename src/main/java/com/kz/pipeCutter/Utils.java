@@ -1168,4 +1168,17 @@ public class Utils {
 		return ret;
 	}
 
+	boolean isPipeCircular() {
+		double delta = 0.1;
+		double dimX = Double.valueOf(Settings.instance.getSetting("pipe_dim_x"));
+		for (MyPickablePoint point : SurfaceDemo.instance.utils.points.values()) {
+			double radius = Math.sqrt(point.getX() * point.getX() + point.getZ() * point.getZ());
+			if (Math.abs(radius - dimX / 2) > delta) {
+				return false;
+			}
+		}
+		return true;
+	}
+	
+	
 }

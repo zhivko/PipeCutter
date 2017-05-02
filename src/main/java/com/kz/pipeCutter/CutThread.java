@@ -132,8 +132,8 @@ public class CutThread extends SwingWorker<String, Object> {
 		System.out.println("name: " + Thread.currentThread().getName());
 		SurfaceDemo.getInstance().myTrail.clear();
 
-		pipeIsCircular = isPipeCircular();
-		Settings.instance.log("Pipe is " + (pipeIsCircular == true ? "" : "NOT"));
+		pipeIsCircular = SurfaceDemo.instance.utils.isPipeCircular();
+		Settings.instance.log("Pipe is " + (pipeIsCircular == true ? "" : "NOT") + " circular.");
 
 		Thread.currentThread().setName("CutThread");
 		System.out.println("New name: " + Thread.currentThread().getName());
@@ -298,6 +298,12 @@ public class CutThread extends SwingWorker<String, Object> {
 				if (pointsToCut.size() > 0) {
 					for (MyPickablePoint myPoint : pointsToCut) {
 						if (!listContainsPoint(myPoint, alAlreadyAddedPoints)) {
+							// lets move to safe distance
+							double diagonal = (SurfaceDemo.getInstance().utils.maxEdge * Math.sqrt(2.0f));
+							MyPickablePoint safeRetractPoint = new MyPickablePoint(-100000, new Point3d(0, myPoint.xyz.y, diagonal / 2 + 10),
+									Color.BLACK, 0.4f, -200000);
+							SurfaceDemo.getInstance().move(safeRetractPoint, false, false, cutOffsetMm, true, null);							
+
 							// lets rotate pipe so myPoint will be topz point
 							double pointAngle = Math.atan2(myPoint.getZ(), myPoint.getX()) * 180.0d / Math.PI;
 
@@ -310,15 +316,6 @@ public class CutThread extends SwingWorker<String, Object> {
 							float currAngle = Float.valueOf(SurfaceDemo.instance.angleTxt);
 							
 							SurfaceDemo.instance.writeToGcodeFile(String.format(java.util.Locale.US, "G00 A%.3f B%.3f",currAngle,currAngle));
-
-							double diagonal = (SurfaceDemo.getInstance().utils.maxEdge * Math.sqrt(2.0f));
-							MyPickablePoint safeRetractPoint = new MyPickablePoint(-100000, new Point3d(myPoint.xyz.x, myPoint.xyz.y, diagonal / 2 + 10),
-									Color.BLACK, 0.4f, -200000);
-
-							Point p = SurfaceDemo.instance.utils.calculateOffsetPoint(myPoint);
-							Vector3D kerfOffVec = new Vector3D(myPoint.xyz.x - p.xyz.x, myPoint.xyz.y - p.xyz.y, myPoint.xyz.z - p.xyz.z);
-
-							SurfaceDemo.getInstance().move(safeRetractPoint, false, false, cutOffsetMm, true, kerfOffVec);							
 
 							double angle = followThePath(myPoint, this.alAlreadyAddedPoints);
 							hasBeenCutting = true;
@@ -715,18 +712,6 @@ public class CutThread extends SwingWorker<String, Object> {
 		SurfaceDemo.getInstance().move(this.startPoint, false, false, offsetZ, null);
 
 		SurfaceDemo.instance.writeToGcodeFile("M2");
-	}
-
-	boolean isPipeCircular() {
-		double delta = 0.1;
-		double dimX = Double.valueOf(Settings.instance.getSetting("pipe_dim_x"));
-		for (MyPickablePoint point : SurfaceDemo.instance.utils.points.values()) {
-			double radius = Math.sqrt(point.getX() * point.getX() + point.getZ() * point.getZ());
-			if (Math.abs(radius - dimX / 2) > delta) {
-				return false;
-			}
-		}
-		return true;
 	}
 
 }

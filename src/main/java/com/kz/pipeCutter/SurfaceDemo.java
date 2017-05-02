@@ -603,10 +603,12 @@ public class SurfaceDemo extends AbstractAnalysis {
 				}
 
 			}
-
-			utils.markRadiusEdges();
-			splitLongEdges();
-			splitNearRadiusEdge();
+			getPipeMax();
+			if (!utils.isPipeCircular()) {
+				utils.markRadiusEdges();
+				splitLongEdges();
+				splitNearRadiusEdge();
+			}
 
 			// remove edges marked to be removed
 			try {
@@ -889,26 +891,7 @@ public class SurfaceDemo extends AbstractAnalysis {
 
 	private void splitLongEdges() {
 		// splitLongEdges
-		ArrayList<MyPickablePoint> sortedXList = new ArrayList(SurfaceDemo.instance.utils.points.values());
-		Collections.sort(sortedXList, new MyPickablePointXComparator());
-		ArrayList<MyPickablePoint> sortedZList = new ArrayList(SurfaceDemo.instance.utils.points.values());
-		Collections.sort(sortedZList, new MyPickablePointZComparator());
-
-		ArrayList<MyPickablePoint> sortedYList = new ArrayList(SurfaceDemo.instance.utils.points.values());
-		Collections.sort(sortedYList, new MyPickablePointYComparator());
-
-		double minX = sortedXList.get(0).getX();
-		double maxX = sortedXList.get(sortedXList.size() - 1).getX();
-		double minZ = sortedZList.get(0).getZ();
-		double maxZ = sortedZList.get(sortedZList.size() - 1).getZ();
-
-		double minY = sortedYList.get(0).getY();
-		double maxY = sortedYList.get(sortedYList.size() - 1).getY();
-
-		Settings.instance.setSetting("pipe_dim_x", Double.valueOf(maxX - minX));
-		Settings.instance.setSetting("pipe_dim_z", Double.valueOf(maxZ - minZ));
-		Settings.instance.setSetting("pipe_dim_max_y", Double.valueOf(maxY));
-		Settings.instance.setSetting("pipe_dim_min_y", Double.valueOf(minY));
+		getPipeMax();
 
 		ArrayList<MyEdge> edgesToRemove = new ArrayList<MyEdge>();
 		ArrayList<MyEdge> edgesToAdd = new ArrayList<MyEdge>();
@@ -974,6 +957,29 @@ public class SurfaceDemo extends AbstractAnalysis {
 				edgeIt.remove();
 			}
 		}
+	}
+
+	private void getPipeMax() {
+		ArrayList<MyPickablePoint> sortedXList = new ArrayList(SurfaceDemo.instance.utils.points.values());
+		Collections.sort(sortedXList, new MyPickablePointXComparator());
+		ArrayList<MyPickablePoint> sortedZList = new ArrayList(SurfaceDemo.instance.utils.points.values());
+		Collections.sort(sortedZList, new MyPickablePointZComparator());
+
+		ArrayList<MyPickablePoint> sortedYList = new ArrayList(SurfaceDemo.instance.utils.points.values());
+		Collections.sort(sortedYList, new MyPickablePointYComparator());
+
+		double minX = sortedXList.get(0).getX();
+		double maxX = sortedXList.get(sortedXList.size() - 1).getX();
+		double minZ = sortedZList.get(0).getZ();
+		double maxZ = sortedZList.get(sortedZList.size() - 1).getZ();
+
+		double minY = sortedYList.get(0).getY();
+		double maxY = sortedYList.get(sortedYList.size() - 1).getY();
+
+		Settings.instance.setSetting("pipe_dim_x", Double.valueOf(maxX - minX));
+		Settings.instance.setSetting("pipe_dim_z", Double.valueOf(maxZ - minZ));
+		Settings.instance.setSetting("pipe_dim_max_y", Double.valueOf(maxY));
+		Settings.instance.setSetting("pipe_dim_min_y", Double.valueOf(minY));
 	}
 
 	public void initDraw() {

@@ -76,7 +76,7 @@ public class MachineKitStart extends SSH_Command {
 			
 			if(hostName.equals("beaglebone.local"))
 				command = "machinekit ~/git/machinekit/myini/CRAMPS.ini &";
-			else
+			else	
 				command = "machinekit ~/git/machinekit/myini/sim/CRAMPS.ini &";
 				
 			ps.println(command);

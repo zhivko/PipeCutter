@@ -4,7 +4,8 @@ import java.awt.MenuItem;
 import java.awt.PopupMenu;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.util.Iterator;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Locale;
 
 import javax.swing.SwingUtilities;
@@ -15,6 +16,7 @@ import com.kz.pipeCutter.CutThread;
 import com.kz.pipeCutter.MyContinuousEdge;
 import com.kz.pipeCutter.MyEdge;
 import com.kz.pipeCutter.MyPickablePoint;
+import com.kz.pipeCutter.MyPickablePointZYmidXcomparator;
 import com.kz.pipeCutter.SurfaceDemo;
 import com.kz.pipeCutter.BBB.BBBStatus;
 import com.kz.pipeCutter.BBB.commands.ExecuteMdi;
@@ -22,6 +24,22 @@ import com.kz.pipeCutter.BBB.commands.ExecuteMdi;
 public class MyPopupMenu extends PopupMenu {
 
 	public MyPopupMenu() {
+		
+		MenuItem MenuItem13 = new MenuItem("Select top right point (startPoint)");
+		MenuItem13.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+				ArrayList<MyPickablePoint> sortedList = new ArrayList(SurfaceDemo.getInstance().utils.origPoints.values());
+				Collections.sort(sortedList, new MyPickablePointZYmidXcomparator());
+				MyPickablePoint p = SurfaceDemo.getInstance().utils.points.get(sortedList.get(0).getId());
+				
+				SurfaceDemo.instance.lastClickedPointChanged(p);
+				
+			}
+		});
+		this.add(MenuItem13);		
+		this.addSeparator();
+		
 		MenuItem MenuItem = new MenuItem("Cut whole pipe");
 		MenuItem.addActionListener(new ActionListener() {
 			@Override

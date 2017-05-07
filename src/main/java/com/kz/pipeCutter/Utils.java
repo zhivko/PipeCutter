@@ -33,13 +33,13 @@ import org.jzy3d.plot3d.transform.Transform;
 import com.kz.pipeCutter.ui.Settings;
 
 public class Utils {
-	ConcurrentHashMap<Integer, MyPickablePoint> points = null;
+	public ConcurrentHashMap<Integer, MyPickablePoint> points = null;
 	ConcurrentHashMap<Integer, Vector3D> offsetPoints = null;
 	HashMap<Integer, MySurface> surfaces = new HashMap<Integer, MySurface>();
 	public ConcurrentHashMap<Integer, MyEdge> edges = new ConcurrentHashMap<Integer, MyEdge>();
 	public ConcurrentHashMap<Integer, MyContinuousEdge> continuousEdges = new ConcurrentHashMap<Integer, MyContinuousEdge>();
 	HashMap<String, MinYMaxY> minAndMaxY;
-	ConcurrentHashMap<Integer, MyPickablePoint> origPoints = null;
+	public ConcurrentHashMap<Integer, MyPickablePoint> origPoints = null;
 
 	// ArrayList<PickableDrawableTextBitmap> edgeTexts = null;
 	// ArrayList<DrawableTextBitmap> pointTexts = null;

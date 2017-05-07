@@ -728,14 +728,17 @@ public class SurfaceDemo extends AbstractAnalysis {
 					// TODO Auto-generated method stub
 					// System.out.println(e.getKeyCode());
 					if (e.getKeyCode() == KeyEvent.VK_0 || e.getKeyCode() == KeyEvent.VK_1) {
-						double angleDelta = 0;
+						double absAngle = 0;
+						
+						float angle = Float.valueOf(angleTxt);
+						
 						if (e.getKeyCode() == KeyEvent.VK_0) {
-							angleDelta = 1;
+							absAngle = angle + 1;
 						}
 						if (e.getKeyCode() == KeyEvent.VK_1) {
-							angleDelta = -1;
+							absAngle = angle - 1;
 						}
-						SurfaceDemo.instance.utils.rotatePoints(angleDelta, false);
+						SurfaceDemo.instance.utils.rotatePoints(Math.round(absAngle), false, false);
 						System.out.println("angle=" + angleTxt);
 					}
 				}

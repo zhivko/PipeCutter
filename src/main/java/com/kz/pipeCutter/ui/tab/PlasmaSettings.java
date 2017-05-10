@@ -105,6 +105,14 @@ public class PlasmaSettings extends JPanel {
 		arcOK.setLabelTxt("arc-ok");
 		arcOK.setToolTipText("When plasma reports arc is OK");
 		this.add(arcOK);		
+
+		SavableCheckBox waitForArcOK = new SavableCheckBox();
+		waitForArcOK.requiresHalRCompSet = false;
+		waitForArcOK.setNeedsSave(true);
+		waitForArcOK.setParId("myini.plasmaWaitForArcOk");
+		waitForArcOK.setLabelTxt("Wait for arc OK from plasma");
+		waitForArcOK.setToolTipText("Gcode execution will wait max for 3 seconds until plasma reports arc-OK. See M66 P0 L3 Q3 in produced gcode");
+		this.add(waitForArcOK);				
 		
 		SavableText velTol = new SavableText();
 		velTol.setPin(new PinDef("myini.vel-tol", HalPinDirection.HAL_OUT, ValueType.HAL_FLOAT));

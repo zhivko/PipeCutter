@@ -583,7 +583,8 @@ public class Utils {
 		float val = Float.valueOf(SurfaceDemo.instance.angleTxt);
 		SurfaceDemo.instance.calculateRotationPoint(val);
 	}
-
+	
+	
 	public void calculateContinuousEdges() {
 		int edgeNo = 1;
 		continuousEdges = new ConcurrentHashMap<Integer, MyContinuousEdge>();
@@ -872,10 +873,18 @@ public class Utils {
 		MyContinuousEdge continuousEdge = continuousEdges.get(point.continuousEdgeNo);
 
 		double angleToOffset = 0;
-		if (continuousEdge.edgeType == MyContinuousEdge.EdgeType.START)
-			angleToOffset = Math.PI / 2;
-		else
-			angleToOffset = -Math.PI / 2;
+
+		if (SurfaceDemo.instance.pipeIsCircular) {
+			if (continuousEdge.edgeType == MyContinuousEdge.EdgeType.START)
+				angleToOffset = -Math.PI / 2;
+			else
+				angleToOffset = -Math.PI / 2;
+		} else {
+			if (continuousEdge.edgeType == MyContinuousEdge.EdgeType.START)
+				angleToOffset = Math.PI / 2;
+			else
+				angleToOffset = -Math.PI / 2;
+		}
 
 		int index = continuousEdge.points.indexOf(point.id);
 		int prevIndex = -1;
@@ -985,20 +994,22 @@ public class Utils {
 			// get angle to see what quadrant it is in
 
 			double angle1 = Math.atan2(origPoints.get(point.id).getZ(), origPoints.get(point.id).getX());
-			double dimX = Double.valueOf(Settings.instance.getSetting("pipe_dim_x"));
-			double dimZ = Double.valueOf(Settings.instance.getSetting("pipe_dim_z"));
-			double dimR = Double.valueOf(Settings.instance.getSetting("pipe_radius"));
+
 			Vector3D normalStart = null;
 			if (angle1 < 0)
 				angle1 = (2 * Math.PI) + angle1;
 			if (angle1 > 0 && angle1 < Math.PI / 2) {
-				normalStart = new Vector3D(dimX / 2 - dimR, point.getY(), dimZ / 2 - dimR);
+				normalStart = new Vector3D(SurfaceDemo.instance.dimX / 2 - SurfaceDemo.instance.dimR, point.getY(),
+						SurfaceDemo.instance.dimZ / 2 - SurfaceDemo.instance.dimR);
 			} else if (angle1 > Math.PI / 2 && angle1 < Math.PI) {
-				normalStart = new Vector3D(-dimX / 2 + dimR, point.getY(), dimZ / 2 - dimR);
+				normalStart = new Vector3D(-SurfaceDemo.instance.dimX / 2 + SurfaceDemo.instance.dimR, point.getY(),
+						SurfaceDemo.instance.dimZ / 2 - SurfaceDemo.instance.dimR);
 			} else if (angle1 > Math.PI && angle1 < (3 * Math.PI / 2)) {
-				normalStart = new Vector3D(-dimX / 2 + dimR, point.getY(), -dimZ / 2 + dimR);
+				normalStart = new Vector3D(-SurfaceDemo.instance.dimX / 2 + SurfaceDemo.instance.dimR, point.getY(),
+						-SurfaceDemo.instance.dimZ / 2 + SurfaceDemo.instance.dimR);
 			} else if (angle1 > (3 * Math.PI / 2) && angle1 < (2 * Math.PI)) {
-				normalStart = new Vector3D(dimX / 2 - dimR, point.getY(), -dimZ / 2 + dimR);
+				normalStart = new Vector3D(SurfaceDemo.instance.dimX / 2 - SurfaceDemo.instance.dimR, point.getY(),
+						-SurfaceDemo.instance.dimZ / 2 + SurfaceDemo.instance.dimR);
 			}
 			Vector3D normalEnd = new Vector3D(origPoints.get(point.id).getX(), origPoints.get(point.id).getY(), origPoints.get(point.id).getZ());
 
@@ -1179,6 +1190,5 @@ public class Utils {
 		}
 		return true;
 	}
-	
-	
+
 }

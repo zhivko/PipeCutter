@@ -53,12 +53,12 @@ public class CutThread extends SwingWorker<String, Object> {
 	private boolean wholePipe = false;
 	private boolean onlySelected = false;
 	private boolean useKerfOffset = false;
-	private boolean pipeIsCircular = false;
 	private MyPickablePoint startPoint = null;
 
 	public float filletSpeed = 0.0f;
 
 	ArrayList<MyPickablePoint> cuttingPoints = new ArrayList<MyPickablePoint>();
+	public boolean waitForArcOK;
 
 	// http://www.pirate4x4.com/forum/11214232-post17.html
 	// For cutting 19.05mm with your Powermax1650 (this info is in your Powermax
@@ -95,6 +95,7 @@ public class CutThread extends SwingWorker<String, Object> {
 		this.alAlreadyAddedPoints = new ArrayList<Integer>();
 
 		this.onlySelected = onlySelected;
+		this.waitForArcOK = Boolean.valueOf(Settings.instance.getSetting("myini.plasmaWaitForArcOk"));
 
 		if (onlySelected) {
 			for (MyEdge e : SurfaceDemo.instance.utils.edges.values()) {
@@ -132,8 +133,7 @@ public class CutThread extends SwingWorker<String, Object> {
 		System.out.println("name: " + Thread.currentThread().getName());
 		SurfaceDemo.getInstance().myTrail.clear();
 
-		pipeIsCircular = SurfaceDemo.instance.utils.isPipeCircular();
-		Settings.instance.log("Pipe is " + (pipeIsCircular == true ? "" : "NOT") + " circular.");
+		Settings.instance.log("Pipe is " + (SurfaceDemo.instance.pipeIsCircular == true ? "" : "NOT") + " circular.");
 
 		Thread.currentThread().setName("CutThread");
 		System.out.println("New name: " + Thread.currentThread().getName());
@@ -276,7 +276,7 @@ public class CutThread extends SwingWorker<String, Object> {
 	private void cutSegment(float minY, double maxY, boolean withoutLastPoints, int rotationDirection) {
 		System.out.println("Cutting segment " + minY + " " + maxY);
 
-		if (pipeIsCircular) {
+		if (SurfaceDemo.instance.pipeIsCircular) {
 
 			// get all continuous edges
 			ArrayList<MyContinuousEdge> edgesToCut = new ArrayList<MyContinuousEdge>();
@@ -310,7 +310,7 @@ public class CutThread extends SwingWorker<String, Object> {
 							double angleDelta = pointAngle - 90;
 							myPoint.setWidth(8);
 							myPoint.setColor(Color.BLUE);
-							SurfaceDemo.getInstance().utils.rotatePoints(angleDelta, true);
+							SurfaceDemo.getInstance().utils.rotatePoints(angleDelta, false);
 							SurfaceDemo.getInstance().getChart().render();
 							
 							float currAngle = Float.valueOf(SurfaceDemo.instance.angleTxt);
@@ -458,7 +458,7 @@ public class CutThread extends SwingWorker<String, Object> {
 			}
 		}
 		Vector3D kerfOffVec = new Vector3D(0, 0, 0);
-		if (!isOnEdge) {
+		if (!isOnEdge) { // we don't do this for line just for edge forming closed loops
 			float radius = Float.valueOf(Settings.instance.getSetting("plasma_leadin_radius"));
 
 			Point offsetPoint = offPointAndPlane.point;

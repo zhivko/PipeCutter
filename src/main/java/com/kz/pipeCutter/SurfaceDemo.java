@@ -113,6 +113,11 @@ public class SurfaceDemo extends AbstractAnalysis {
 
 	int pointId;
 	int edgeNo;
+	public boolean pipeIsCircular;
+	
+	public double dimX;
+	public double dimZ;
+	public double dimR;
 
 	protected SurfaceDemo() {
 		Thread t = new Thread(new Runnable() {
@@ -604,6 +609,19 @@ public class SurfaceDemo extends AbstractAnalysis {
 
 			}
 			getPipeMax();
+			pipeIsCircular = utils.isPipeCircular();
+			
+			dimX = Double.valueOf(Settings.instance.getSetting("pipe_dim_x"));
+			dimZ = Double.valueOf(Settings.instance.getSetting("pipe_dim_z"));
+			if(!pipeIsCircular)
+				dimR = Double.valueOf(Settings.instance.getSetting("pipe_radius"));
+			else
+			{
+				double radius = Math.sqrt(dimX/2 * dimX/2 + dimZ/2 * dimZ/2);
+				dimR = radius;
+			}
+				
+			
 			if (!utils.isPipeCircular()) {
 				utils.markRadiusEdges();
 				splitLongEdges();
@@ -728,17 +746,20 @@ public class SurfaceDemo extends AbstractAnalysis {
 					// TODO Auto-generated method stub
 					// System.out.println(e.getKeyCode());
 					if (e.getKeyCode() == KeyEvent.VK_0 || e.getKeyCode() == KeyEvent.VK_1) {
-						double absAngle = 0;
-						
+						float absAngle = 0;
+
 						float angle = Float.valueOf(angleTxt);
-						
+
 						if (e.getKeyCode() == KeyEvent.VK_0) {
 							absAngle = angle + 1;
 						}
 						if (e.getKeyCode() == KeyEvent.VK_1) {
 							absAngle = angle - 1;
 						}
-						SurfaceDemo.instance.utils.rotatePoints(Math.round(absAngle), false, false);
+
+						float angleDelta = Math.round(absAngle) - angle;
+						//SurfaceDemo.instance.utils.rotatePoints(Math.round(absAngle), false, false);
+						SurfaceDemo.instance.utils.rotatePoints(angleDelta, false, true);
 						System.out.println("angle=" + angleTxt);
 					}
 				}
@@ -1327,6 +1348,10 @@ public class SurfaceDemo extends AbstractAnalysis {
 			plasma.setWireframeColor(Color.RED);
 
 			writeToGcodeFile(String.format(Locale.US, "G04 P%.3f", (pierceTimeMs / 1000.0)));
+
+			if (CutThread.instance.waitForArcOK)
+				writeToGcodeFile("M66 P0 L3 Q3 (wait up to 3 seconds for digital input 0 (Plasma ArcOK) to turn on - L3)");
+
 			try {
 				TimeUnit.MILLISECONDS.sleep(pierceTimeMs);
 			} catch (Exception ex) {

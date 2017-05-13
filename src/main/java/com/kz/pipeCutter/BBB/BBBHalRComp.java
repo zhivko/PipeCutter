@@ -335,31 +335,33 @@ public class BBBHalRComp implements Runnable {
 			if (halPins.get("mymotion.program-line") != null) {
 				// GcodeViewer.instance.setLineNumber(Integer.valueOf(halPins.get("mymotion.program-line")).intValue());
 				Settings.instance.setSetting("mymotion.program-line", Integer.valueOf(halPins.get("mymotion.program-line")));
-
-				GcodeViewer.instance.setPlasmaOn(Boolean.valueOf(halPins.get("mymotion.spindle-on")).booleanValue());
-				Settings.instance.setSetting("mymotion.vx", Float.valueOf(halPins.get("mymotion.vx")));
-				Settings.instance.setSetting("mymotion.dvx", Float.valueOf(halPins.get("mymotion.dvx")));
-				Settings.instance.setSetting("mymotion.vz", Float.valueOf(halPins.get("mymotion.vz")));
-				Settings.instance.setSetting("mymotion.dvz", Float.valueOf(halPins.get("mymotion.dvz")));
-				Settings.instance.setSetting("mymotion.current-radius", String.format("%.3f", Float.valueOf(halPins.get("mymotion.current-radius"))));
-				Settings.instance.setSetting("mymotion.vy", Float.valueOf(halPins.get("mymotion.vy")));
-				Settings.instance.setSetting("mymotion.v", Float.valueOf(halPins.get("mymotion.v")));
-				double laserHeight1 = Float.valueOf(halPins.get("mymotion.laserHeight1"));
-				Settings.instance.setSetting("mymotion.laserHeight1", String.format("%.3f", laserHeight1));
-
-				double actualVolts = Float.valueOf(halPins.get("myini.actual-volts"));
-				Settings.instance.setSetting("myini.actual-volts", actualVolts);
-				double requestedVolts = Float.valueOf(Settings.instance.getSetting("myini.volts-requested"));
-				Settings.instance.plasmaSettings.seriesVoltConstTime.add(System.currentTimeMillis(), requestedVolts);
-				Settings.instance.plasmaSettings.seriesVoltTime.add(System.currentTimeMillis(), actualVolts);
-				Settings.instance.plasmaSettings.updateChartRange();
-
-				Settings.instance.setSetting("myini.vel-status", String.format("%s", Boolean.valueOf(halPins.get("myini.vel-status"))));
-
-				Settings.instance.setSetting("myini.thc-z-pos", Float.valueOf(halPins.get("myini.thc-z-pos")));
-				Settings.instance.setSetting("myini.offset-value", Float.valueOf(halPins.get("myini.offset-value")));
 			}
+			GcodeViewer.instance.setPlasmaOn(Boolean.valueOf(halPins.get("mymotion.spindle-on")).booleanValue());
+			Settings.instance.setSetting("mymotion.vx", Float.valueOf(halPins.get("mymotion.vx")));
+			Settings.instance.setSetting("mymotion.dvx", Float.valueOf(halPins.get("mymotion.dvx")));
+			Settings.instance.setSetting("mymotion.vz", Float.valueOf(halPins.get("mymotion.vz")));
+			Settings.instance.setSetting("mymotion.dvz", Float.valueOf(halPins.get("mymotion.dvz")));
+			Settings.instance.setSetting("mymotion.current-radius", String.format("%.3f", Float.valueOf(halPins.get("mymotion.current-radius"))));
+			Settings.instance.setSetting("mymotion.vy", Float.valueOf(halPins.get("mymotion.vy")));
+			Settings.instance.setSetting("mymotion.v", Float.valueOf(halPins.get("mymotion.v")));
+			double laserHeight1 = Float.valueOf(halPins.get("mymotion.laserHeight1"));
+			Settings.instance.setSetting("mymotion.laserHeight1", String.format("%.3f", laserHeight1));
+
+			double actualVolts = Float.valueOf(halPins.get("myini.actual-volts"));
+			Settings.instance.setSetting("myini.actual-volts", actualVolts);
+			double requestedVolts = Float.valueOf(Settings.instance.getSetting("myini.volts-requested"));
+			Settings.instance.plasmaSettings.seriesVoltConstTime.add(System.currentTimeMillis(), requestedVolts);
+			Settings.instance.plasmaSettings.seriesVoltTime.add(System.currentTimeMillis(), actualVolts);
+			Settings.instance.plasmaSettings.updateChartRange();
+
+			Settings.instance.setSetting("myini.vel-status", String.format("%s", Boolean.valueOf(halPins.get("myini.vel-status"))));
+
+			Settings.instance.setSetting("myini.thc-z-pos", Float.valueOf(halPins.get("myini.thc-z-pos")));
+			Settings.instance.setSetting("myini.offset-value", Float.valueOf(halPins.get("myini.offset-value")));
+
+			Settings.instance.setSetting("myini.arc-ok", String.format("%s", Boolean.valueOf(halPins.get("myini.arc-ok"))));
 		}
+
 	};
 
 }

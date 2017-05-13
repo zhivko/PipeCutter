@@ -1,15 +1,15 @@
 G90 (switch to absolute coordinates)
 G94 (units per minute mode)
 G00 A0.0 B0.0
-G00 X-0.000 Y-49.516 Z53.941 F750
+G00 X6.942 Y34.420 Z53.941 F750
 G64 P.5 Q.5 (path blending - P away from point)
 G93 (inverse time mode)
-G01 X0.00 Y75.00 Z45.7 A0.0000 B0.0000 F5.9 (move length: 126.4 speed:750.0, e:) (pointId: -100000)
+G01 X0.00 Y75.00 Z45.7 A0.0000 B0.0000 F9.4 (move length: 80.1 speed:750.0, e:) (pointId: -100000)
 G00 A86.697 B86.697
 G01 X2.00 Y72.55 Z27.8 A86.6973 B86.6973 F41.1 (move length: 18.2 speed:750.0, e:)
 M3 S400
 G04 P0.500
-M66 P0 L3 Q3 (wait up to 3 seconds for digital input 0 (Plasma ArcOK) to turn on - L3)
+M66 P0 L3 Q5 (wait up to 5 seconds for digital input 0 Plasma-ArcOK to turn on - L3)
 G01 X2.00 Y72.55 Z25.8 A86.6973 B86.6973 F375.0 (move length: 2.0 speed:750.0, e:)
 G01 X1.98 Y72.86 Z25.8 A86.6973 B86.6973 F2390.7 (move length: 0.3 speed:750.0 p:-1, e:)
 G01 X1.91 Y73.17 Z25.8 A86.6973 B86.6973 F2390.8 (move length: 0.3 speed:750.0 p:-1, e:)
@@ -135,7 +135,7 @@ G00 A-187.216 B-187.216
 G01 X2.64 Y66.92 Z27.2 A-187.2160 B-187.2160 F39.8 (move length: 18.8 speed:750.0, e:)
 M3 S400
 G04 P0.500
-M66 P0 L3 Q3 (wait up to 3 seconds for digital input 0 (Plasma ArcOK) to turn on - L3)
+M66 P0 L3 Q5 (wait up to 5 seconds for digital input 0 Plasma-ArcOK to turn on - L3)
 G01 X2.64 Y66.92 Z25.2 A-187.2160 B-187.2160 F375.0 (move length: 2.0 speed:750.0, e:)
 G01 X2.33 Y66.94 Z25.2 A-187.2160 B-187.2160 F2389.8 (move length: 0.3 speed:750.0 p:-1, e:)
 G01 X2.03 Y66.91 Z25.3 A-187.2160 B-187.2160 F2389.8 (move length: 0.3 speed:750.0 p:-1, e:)
@@ -217,7 +217,7 @@ G00 A-405.040 B-405.040
 G01 X-2.84 Y63.28 Z27.8 A-405.0400 B-405.0400 F41.2 (move length: 18.2 speed:750.0, e:)
 M3 S400
 G04 P0.500
-M66 P0 L3 Q3 (wait up to 3 seconds for digital input 0 (Plasma ArcOK) to turn on - L3)
+M66 P0 L3 Q5 (wait up to 5 seconds for digital input 0 Plasma-ArcOK to turn on - L3)
 G01 X-2.84 Y63.28 Z25.8 A-405.0400 B-405.0400 F375.0 (move length: 2.0 speed:750.0, e:)
 G01 X-2.52 Y63.23 Z25.8 A-405.0400 B-405.0400 F2389.8 (move length: 0.3 speed:750.0 p:-1, e:)
 G01 X-2.21 Y63.24 Z25.8 A-405.0400 B-405.0400 F2389.8 (move length: 0.3 speed:750.0 p:-1, e:)
@@ -298,7 +298,7 @@ G00 A-376.922 B-376.922
 G01 X-2.68 Y63.10 Z28.3 A-376.9219 B-376.9219 F42.3 (move length: 17.7 speed:750.0, e:)
 M3 S400
 G04 P0.500
-M66 P0 L3 Q3 (wait up to 3 seconds for digital input 0 (Plasma ArcOK) to turn on - L3)
+M66 P0 L3 Q5 (wait up to 5 seconds for digital input 0 Plasma-ArcOK to turn on - L3)
 G01 X-2.68 Y63.10 Z26.3 A-376.9219 B-376.9219 F375.0 (move length: 2.0 speed:750.0, e:)
 G01 X-2.37 Y63.08 Z26.2 A-376.9219 B-376.9219 F2389.8 (move length: 0.3 speed:750.0 p:-1, e:)
 G01 X-2.06 Y63.11 Z26.2 A-376.9219 B-376.9219 F2389.8 (move length: 0.3 speed:750.0 p:-1, e:)
@@ -379,7 +379,7 @@ G00 A-352.784 B-352.784
 G01 X-2.64 Y63.08 Z27.2 A-352.7840 B-352.7840 F39.8 (move length: 18.8 speed:750.0, e:)
 M3 S400
 G04 P0.500
-M66 P0 L3 Q3 (wait up to 3 seconds for digital input 0 (Plasma ArcOK) to turn on - L3)
+M66 P0 L3 Q5 (wait up to 5 seconds for digital input 0 Plasma-ArcOK to turn on - L3)
 G01 X-2.64 Y63.08 Z25.2 A-352.7840 B-352.7840 F375.0 (move length: 2.0 speed:750.0, e:)
 G01 X-2.33 Y63.06 Z25.2 A-352.7840 B-352.7840 F2389.8 (move length: 0.3 speed:750.0 p:-1, e:)
 G01 X-2.03 Y63.09 Z25.3 A-352.7840 B-352.7840 F2389.8 (move length: 0.3 speed:750.0 p:-1, e:)
@@ -460,7 +460,7 @@ G00 A-327.146 B-327.146
 G01 X-2.79 Y63.20 Z27.6 A-327.1463 B-327.1463 F40.7 (move length: 18.4 speed:750.0, e:)
 M3 S400
 G04 P0.500
-M66 P0 L3 Q3 (wait up to 3 seconds for digital input 0 (Plasma ArcOK) to turn on - L3)
+M66 P0 L3 Q5 (wait up to 5 seconds for digital input 0 Plasma-ArcOK to turn on - L3)
 G01 X-2.79 Y63.20 Z25.6 A-327.1463 B-327.1463 F375.0 (move length: 2.0 speed:750.0, e:)
 G01 X-2.48 Y63.16 Z25.6 A-327.1463 B-327.1463 F2389.8 (move length: 0.3 speed:750.0 p:-1, e:)
 G01 X-2.17 Y63.17 Z25.6 A-327.1463 B-327.1463 F2389.8 (move length: 0.3 speed:750.0 p:-1, e:)
@@ -541,7 +541,7 @@ G00 A-327.146 B-327.146
 G01 X-2.79 Y53.20 Z27.6 A-327.1463 B-327.1463 F40.7 (move length: 18.4 speed:750.0, e:)
 M3 S400
 G04 P0.500
-M66 P0 L3 Q3 (wait up to 3 seconds for digital input 0 (Plasma ArcOK) to turn on - L3)
+M66 P0 L3 Q5 (wait up to 5 seconds for digital input 0 Plasma-ArcOK to turn on - L3)
 G01 X-2.79 Y53.20 Z25.6 A-327.1463 B-327.1463 F375.0 (move length: 2.0 speed:750.0, e:)
 G01 X-2.48 Y53.16 Z25.6 A-327.1463 B-327.1463 F2389.8 (move length: 0.3 speed:750.0 p:-1, e:)
 G01 X-2.17 Y53.17 Z25.6 A-327.1463 B-327.1463 F2389.8 (move length: 0.3 speed:750.0 p:-1, e:)
@@ -622,7 +622,7 @@ G00 A-352.784 B-352.784
 G01 X-2.64 Y53.08 Z27.2 A-352.7840 B-352.7840 F39.8 (move length: 18.8 speed:750.0, e:)
 M3 S400
 G04 P0.500
-M66 P0 L3 Q3 (wait up to 3 seconds for digital input 0 (Plasma ArcOK) to turn on - L3)
+M66 P0 L3 Q5 (wait up to 5 seconds for digital input 0 Plasma-ArcOK to turn on - L3)
 G01 X-2.64 Y53.08 Z25.2 A-352.7840 B-352.7840 F375.0 (move length: 2.0 speed:750.0, e:)
 G01 X-2.33 Y53.06 Z25.2 A-352.7840 B-352.7840 F2389.8 (move length: 0.3 speed:750.0 p:-1, e:)
 G01 X-2.03 Y53.09 Z25.3 A-352.7840 B-352.7840 F2389.8 (move length: 0.3 speed:750.0 p:-1, e:)
@@ -703,7 +703,7 @@ G00 A-376.922 B-376.922
 G01 X-2.68 Y53.10 Z28.3 A-376.9219 B-376.9219 F42.3 (move length: 17.7 speed:750.0, e:)
 M3 S400
 G04 P0.500
-M66 P0 L3 Q3 (wait up to 3 seconds for digital input 0 (Plasma ArcOK) to turn on - L3)
+M66 P0 L3 Q5 (wait up to 5 seconds for digital input 0 Plasma-ArcOK to turn on - L3)
 G01 X-2.68 Y53.10 Z26.3 A-376.9219 B-376.9219 F375.0 (move length: 2.0 speed:750.0, e:)
 G01 X-2.37 Y53.08 Z26.2 A-376.9219 B-376.9219 F2389.8 (move length: 0.3 speed:750.0 p:-1, e:)
 G01 X-2.06 Y53.11 Z26.2 A-376.9219 B-376.9219 F2389.8 (move length: 0.3 speed:750.0 p:-1, e:)
@@ -784,7 +784,7 @@ G00 A-405.040 B-405.040
 G01 X-2.84 Y53.28 Z27.8 A-405.0400 B-405.0400 F41.2 (move length: 18.2 speed:750.0, e:)
 M3 S400
 G04 P0.500
-M66 P0 L3 Q3 (wait up to 3 seconds for digital input 0 (Plasma ArcOK) to turn on - L3)
+M66 P0 L3 Q5 (wait up to 5 seconds for digital input 0 Plasma-ArcOK to turn on - L3)
 G01 X-2.84 Y53.28 Z25.8 A-405.0400 B-405.0400 F375.0 (move length: 2.0 speed:750.0, e:)
 G01 X-2.52 Y53.23 Z25.8 A-405.0400 B-405.0400 F2389.8 (move length: 0.3 speed:750.0 p:-1, e:)
 G01 X-2.21 Y53.24 Z25.8 A-405.0400 B-405.0400 F2389.8 (move length: 0.3 speed:750.0 p:-1, e:)
@@ -865,7 +865,7 @@ G00 A-327.146 B-327.146
 G01 X-2.79 Y43.20 Z27.6 A-327.1463 B-327.1463 F40.7 (move length: 18.4 speed:750.0, e:)
 M3 S400
 G04 P0.500
-M66 P0 L3 Q3 (wait up to 3 seconds for digital input 0 (Plasma ArcOK) to turn on - L3)
+M66 P0 L3 Q5 (wait up to 5 seconds for digital input 0 Plasma-ArcOK to turn on - L3)
 G01 X-2.79 Y43.20 Z25.6 A-327.1463 B-327.1463 F375.0 (move length: 2.0 speed:750.0, e:)
 G01 X-2.48 Y43.16 Z25.6 A-327.1463 B-327.1463 F2389.8 (move length: 0.3 speed:750.0 p:-1, e:)
 G01 X-2.17 Y43.17 Z25.6 A-327.1463 B-327.1463 F2389.8 (move length: 0.3 speed:750.0 p:-1, e:)
@@ -946,7 +946,7 @@ G00 A-523.078 B-523.078
 G01 X2.68 Y46.90 Z28.3 A-523.0781 B-523.0781 F42.3 (move length: 17.7 speed:750.0, e:)
 M3 S400
 G04 P0.500
-M66 P0 L3 Q3 (wait up to 3 seconds for digital input 0 (Plasma ArcOK) to turn on - L3)
+M66 P0 L3 Q5 (wait up to 5 seconds for digital input 0 Plasma-ArcOK to turn on - L3)
 G01 X2.68 Y46.90 Z26.3 A-523.0781 B-523.0781 F375.0 (move length: 2.0 speed:750.0, e:)
 G01 X2.37 Y46.92 Z26.2 A-523.0781 B-523.0781 F2389.8 (move length: 0.3 speed:750.0 p:-1, e:)
 G01 X2.06 Y46.89 Z26.2 A-523.0781 B-523.0781 F2389.8 (move length: 0.3 speed:750.0 p:-1, e:)
@@ -1027,7 +1027,7 @@ G00 A-494.960 B-494.960
 G01 X2.84 Y56.72 Z27.8 A-494.9600 B-494.9600 F41.2 (move length: 18.2 speed:750.0, e:)
 M3 S400
 G04 P0.500
-M66 P0 L3 Q3 (wait up to 3 seconds for digital input 0 (Plasma ArcOK) to turn on - L3)
+M66 P0 L3 Q5 (wait up to 5 seconds for digital input 0 Plasma-ArcOK to turn on - L3)
 G01 X2.84 Y56.72 Z25.8 A-494.9600 B-494.9600 F375.0 (move length: 2.0 speed:750.0, e:)
 G01 X2.52 Y56.77 Z25.8 A-494.9600 B-494.9600 F2389.8 (move length: 0.3 speed:750.0 p:-1, e:)
 G01 X2.21 Y56.76 Z25.8 A-494.9600 B-494.9600 F2389.8 (move length: 0.3 speed:750.0 p:-1, e:)
@@ -1108,7 +1108,7 @@ G00 A-494.960 B-494.960
 G01 X2.84 Y66.72 Z27.8 A-494.9600 B-494.9600 F41.2 (move length: 18.2 speed:750.0, e:)
 M3 S400
 G04 P0.500
-M66 P0 L3 Q3 (wait up to 3 seconds for digital input 0 (Plasma ArcOK) to turn on - L3)
+M66 P0 L3 Q5 (wait up to 5 seconds for digital input 0 Plasma-ArcOK to turn on - L3)
 G01 X2.84 Y66.72 Z25.8 A-494.9600 B-494.9600 F375.0 (move length: 2.0 speed:750.0, e:)
 G01 X2.52 Y66.77 Z25.8 A-494.9600 B-494.9600 F2389.8 (move length: 0.3 speed:750.0 p:-1, e:)
 G01 X2.21 Y66.76 Z25.8 A-494.9600 B-494.9600 F2389.8 (move length: 0.3 speed:750.0 p:-1, e:)
@@ -1189,7 +1189,7 @@ G00 A-523.078 B-523.078
 G01 X2.68 Y66.90 Z28.3 A-523.0781 B-523.0781 F42.3 (move length: 17.7 speed:750.0, e:)
 M3 S400
 G04 P0.500
-M66 P0 L3 Q3 (wait up to 3 seconds for digital input 0 (Plasma ArcOK) to turn on - L3)
+M66 P0 L3 Q5 (wait up to 5 seconds for digital input 0 Plasma-ArcOK to turn on - L3)
 G01 X2.68 Y66.90 Z26.3 A-523.0781 B-523.0781 F375.0 (move length: 2.0 speed:750.0, e:)
 G01 X2.37 Y66.92 Z26.2 A-523.0781 B-523.0781 F2389.8 (move length: 0.3 speed:750.0 p:-1, e:)
 G01 X2.06 Y66.89 Z26.2 A-523.0781 B-523.0781 F2389.8 (move length: 0.3 speed:750.0 p:-1, e:)
@@ -1270,7 +1270,7 @@ G00 A-523.078 B-523.078
 G01 X2.68 Y56.90 Z28.3 A-523.0781 B-523.0781 F42.3 (move length: 17.7 speed:750.0, e:)
 M3 S400
 G04 P0.500
-M66 P0 L3 Q3 (wait up to 3 seconds for digital input 0 (Plasma ArcOK) to turn on - L3)
+M66 P0 L3 Q5 (wait up to 5 seconds for digital input 0 Plasma-ArcOK to turn on - L3)
 G01 X2.68 Y56.90 Z26.3 A-523.0781 B-523.0781 F375.0 (move length: 2.0 speed:750.0, e:)
 G01 X2.37 Y56.92 Z26.2 A-523.0781 B-523.0781 F2389.8 (move length: 0.3 speed:750.0 p:-1, e:)
 G01 X2.06 Y56.89 Z26.2 A-523.0781 B-523.0781 F2389.8 (move length: 0.3 speed:750.0 p:-1, e:)
@@ -1351,7 +1351,7 @@ G00 A-547.216 B-547.216
 G01 X2.64 Y56.92 Z27.2 A-547.2161 B-547.2161 F39.8 (move length: 18.8 speed:750.0, e:)
 M3 S400
 G04 P0.500
-M66 P0 L3 Q3 (wait up to 3 seconds for digital input 0 (Plasma ArcOK) to turn on - L3)
+M66 P0 L3 Q5 (wait up to 5 seconds for digital input 0 Plasma-ArcOK to turn on - L3)
 G01 X2.64 Y56.92 Z25.2 A-547.2161 B-547.2161 F375.0 (move length: 2.0 speed:750.0, e:)
 G01 X2.33 Y56.94 Z25.2 A-547.2161 B-547.2161 F2389.8 (move length: 0.3 speed:750.0 p:-1, e:)
 G01 X2.03 Y56.91 Z25.3 A-547.2161 B-547.2161 F2389.8 (move length: 0.3 speed:750.0 p:-1, e:)
@@ -1432,7 +1432,7 @@ G00 A-572.854 B-572.854
 G01 X2.79 Y66.80 Z27.6 A-572.8537 B-572.8537 F40.7 (move length: 18.4 speed:750.0, e:)
 M3 S400
 G04 P0.500
-M66 P0 L3 Q3 (wait up to 3 seconds for digital input 0 (Plasma ArcOK) to turn on - L3)
+M66 P0 L3 Q5 (wait up to 5 seconds for digital input 0 Plasma-ArcOK to turn on - L3)
 G01 X2.79 Y66.80 Z25.6 A-572.8537 B-572.8537 F375.0 (move length: 2.0 speed:750.0, e:)
 G01 X2.48 Y66.84 Z25.6 A-572.8537 B-572.8537 F2389.8 (move length: 0.3 speed:750.0 p:-1, e:)
 G01 X2.17 Y66.83 Z25.6 A-572.8537 B-572.8537 F2389.8 (move length: 0.3 speed:750.0 p:-1, e:)
@@ -1513,7 +1513,7 @@ G00 A-572.854 B-572.854
 G01 X2.79 Y56.80 Z27.6 A-572.8537 B-572.8537 F40.7 (move length: 18.4 speed:750.0, e:)
 M3 S400
 G04 P0.500
-M66 P0 L3 Q3 (wait up to 3 seconds for digital input 0 (Plasma ArcOK) to turn on - L3)
+M66 P0 L3 Q5 (wait up to 5 seconds for digital input 0 Plasma-ArcOK to turn on - L3)
 G01 X2.79 Y56.80 Z25.6 A-572.8537 B-572.8537 F375.0 (move length: 2.0 speed:750.0, e:)
 G01 X2.48 Y56.84 Z25.6 A-572.8537 B-572.8537 F2389.8 (move length: 0.3 speed:750.0 p:-1, e:)
 G01 X2.17 Y56.83 Z25.6 A-572.8537 B-572.8537 F2389.8 (move length: 0.3 speed:750.0 p:-1, e:)
@@ -1595,7 +1595,7 @@ G00 A-765.040 B-765.040
 G01 X-2.84 Y43.28 Z27.8 A-765.0400 B-765.0400 F41.2 (move length: 18.2 speed:750.0, e:)
 M3 S400
 G04 P0.500
-M66 P0 L3 Q3 (wait up to 3 seconds for digital input 0 (Plasma ArcOK) to turn on - L3)
+M66 P0 L3 Q5 (wait up to 5 seconds for digital input 0 Plasma-ArcOK to turn on - L3)
 G01 X-2.84 Y43.28 Z25.8 A-765.0400 B-765.0400 F375.0 (move length: 2.0 speed:750.0, e:)
 G01 X-2.52 Y43.23 Z25.8 A-765.0400 B-765.0400 F2389.8 (move length: 0.3 speed:750.0 p:-1, e:)
 G01 X-2.21 Y43.24 Z25.8 A-765.0400 B-765.0400 F2389.8 (move length: 0.3 speed:750.0 p:-1, e:)
@@ -1676,7 +1676,7 @@ G00 A-736.922 B-736.922
 G01 X-2.68 Y43.10 Z28.3 A-736.9219 B-736.9219 F42.3 (move length: 17.7 speed:750.0, e:)
 M3 S400
 G04 P0.500
-M66 P0 L3 Q3 (wait up to 3 seconds for digital input 0 (Plasma ArcOK) to turn on - L3)
+M66 P0 L3 Q5 (wait up to 5 seconds for digital input 0 Plasma-ArcOK to turn on - L3)
 G01 X-2.68 Y43.10 Z26.3 A-736.9219 B-736.9219 F375.0 (move length: 2.0 speed:750.0, e:)
 G01 X-2.37 Y43.08 Z26.2 A-736.9219 B-736.9219 F2389.8 (move length: 0.3 speed:750.0 p:-1, e:)
 G01 X-2.06 Y43.11 Z26.2 A-736.9219 B-736.9219 F2389.8 (move length: 0.3 speed:750.0 p:-1, e:)
@@ -1757,7 +1757,7 @@ G00 A-712.784 B-712.784
 G01 X-2.64 Y43.08 Z27.2 A-712.7839 B-712.7839 F39.8 (move length: 18.8 speed:750.0, e:)
 M3 S400
 G04 P0.500
-M66 P0 L3 Q3 (wait up to 3 seconds for digital input 0 (Plasma ArcOK) to turn on - L3)
+M66 P0 L3 Q5 (wait up to 5 seconds for digital input 0 Plasma-ArcOK to turn on - L3)
 G01 X-2.64 Y43.08 Z25.2 A-712.7839 B-712.7839 F375.0 (move length: 2.0 speed:750.0, e:)
 G01 X-2.33 Y43.06 Z25.2 A-712.7839 B-712.7839 F2389.8 (move length: 0.3 speed:750.0 p:-1, e:)
 G01 X-2.03 Y43.09 Z25.3 A-712.7839 B-712.7839 F2389.8 (move length: 0.3 speed:750.0 p:-1, e:)
@@ -1838,7 +1838,7 @@ G00 A-687.146 B-687.146
 G01 X-2.79 Y33.20 Z27.6 A-687.1465 B-687.1465 F40.7 (move length: 18.4 speed:750.0, e:)
 M3 S400
 G04 P0.500
-M66 P0 L3 Q3 (wait up to 3 seconds for digital input 0 (Plasma ArcOK) to turn on - L3)
+M66 P0 L3 Q5 (wait up to 5 seconds for digital input 0 Plasma-ArcOK to turn on - L3)
 G01 X-2.79 Y33.20 Z25.6 A-687.1465 B-687.1465 F375.0 (move length: 2.0 speed:750.0, e:)
 G01 X-2.48 Y33.16 Z25.6 A-687.1465 B-687.1465 F2389.8 (move length: 0.3 speed:750.0 p:-1, e:)
 G01 X-2.17 Y33.17 Z25.6 A-687.1465 B-687.1465 F2389.8 (move length: 0.3 speed:750.0 p:-1, e:)
@@ -1919,7 +1919,7 @@ G00 A-712.784 B-712.784
 G01 X-2.64 Y33.08 Z27.2 A-712.7839 B-712.7839 F39.8 (move length: 18.8 speed:750.0, e:)
 M3 S400
 G04 P0.500
-M66 P0 L3 Q3 (wait up to 3 seconds for digital input 0 (Plasma ArcOK) to turn on - L3)
+M66 P0 L3 Q5 (wait up to 5 seconds for digital input 0 Plasma-ArcOK to turn on - L3)
 G01 X-2.64 Y33.08 Z25.2 A-712.7839 B-712.7839 F375.0 (move length: 2.0 speed:750.0, e:)
 G01 X-2.33 Y33.06 Z25.2 A-712.7839 B-712.7839 F2389.8 (move length: 0.3 speed:750.0 p:-1, e:)
 G01 X-2.03 Y33.09 Z25.3 A-712.7839 B-712.7839 F2389.8 (move length: 0.3 speed:750.0 p:-1, e:)
@@ -2000,7 +2000,7 @@ G00 A-736.922 B-736.922
 G01 X-2.68 Y33.10 Z28.3 A-736.9219 B-736.9219 F42.3 (move length: 17.7 speed:750.0, e:)
 M3 S400
 G04 P0.500
-M66 P0 L3 Q3 (wait up to 3 seconds for digital input 0 (Plasma ArcOK) to turn on - L3)
+M66 P0 L3 Q5 (wait up to 5 seconds for digital input 0 Plasma-ArcOK to turn on - L3)
 G01 X-2.68 Y33.10 Z26.3 A-736.9219 B-736.9219 F375.0 (move length: 2.0 speed:750.0, e:)
 G01 X-2.37 Y33.08 Z26.2 A-736.9219 B-736.9219 F2389.8 (move length: 0.3 speed:750.0 p:-1, e:)
 G01 X-2.06 Y33.11 Z26.2 A-736.9219 B-736.9219 F2389.8 (move length: 0.3 speed:750.0 p:-1, e:)
@@ -2081,7 +2081,7 @@ G00 A-765.042 B-765.042
 G01 X-2.83 Y33.27 Z27.8 A-765.0420 B-765.0420 F41.2 (move length: 18.2 speed:750.0, e:)
 M3 S400
 G04 P0.500
-M66 P0 L3 Q3 (wait up to 3 seconds for digital input 0 (Plasma ArcOK) to turn on - L3)
+M66 P0 L3 Q5 (wait up to 5 seconds for digital input 0 Plasma-ArcOK to turn on - L3)
 G01 X-2.83 Y33.27 Z25.8 A-765.0420 B-765.0420 F375.0 (move length: 2.0 speed:750.0, e:)
 G01 X-2.52 Y33.23 Z25.8 A-765.0420 B-765.0420 F2389.8 (move length: 0.3 speed:750.0 p:-1, e:)
 G01 X-2.21 Y33.23 Z25.8 A-765.0420 B-765.0420 F2389.8 (move length: 0.3 speed:750.0 p:-1, e:)
@@ -2162,7 +2162,7 @@ G00 A-405.040 B-405.040
 G01 X-2.84 Y23.28 Z27.8 A-405.0400 B-405.0400 F41.2 (move length: 18.2 speed:750.0, e:)
 M3 S400
 G04 P0.500
-M66 P0 L3 Q3 (wait up to 3 seconds for digital input 0 (Plasma ArcOK) to turn on - L3)
+M66 P0 L3 Q5 (wait up to 5 seconds for digital input 0 Plasma-ArcOK to turn on - L3)
 G01 X-2.84 Y23.28 Z25.8 A-405.0400 B-405.0400 F375.0 (move length: 2.0 speed:750.0, e:)
 G01 X-2.52 Y23.23 Z25.8 A-405.0400 B-405.0400 F2389.8 (move length: 0.3 speed:750.0 p:-1, e:)
 G01 X-2.21 Y23.24 Z25.8 A-405.0400 B-405.0400 F2389.8 (move length: 0.3 speed:750.0 p:-1, e:)
@@ -2243,7 +2243,7 @@ G00 A-352.784 B-352.784
 G01 X-2.64 Y23.08 Z27.2 A-352.7840 B-352.7840 F39.8 (move length: 18.8 speed:750.0, e:)
 M3 S400
 G04 P0.500
-M66 P0 L3 Q3 (wait up to 3 seconds for digital input 0 (Plasma ArcOK) to turn on - L3)
+M66 P0 L3 Q5 (wait up to 5 seconds for digital input 0 Plasma-ArcOK to turn on - L3)
 G01 X-2.64 Y23.08 Z25.2 A-352.7840 B-352.7840 F375.0 (move length: 2.0 speed:750.0, e:)
 G01 X-2.33 Y23.06 Z25.2 A-352.7840 B-352.7840 F2389.8 (move length: 0.3 speed:750.0 p:-1, e:)
 G01 X-2.03 Y23.09 Z25.3 A-352.7840 B-352.7840 F2389.8 (move length: 0.3 speed:750.0 p:-1, e:)
@@ -2324,7 +2324,7 @@ G00 A-572.854 B-572.854
 G01 X2.79 Y26.80 Z27.6 A-572.8537 B-572.8537 F40.7 (move length: 18.4 speed:750.0, e:)
 M3 S400
 G04 P0.500
-M66 P0 L3 Q3 (wait up to 3 seconds for digital input 0 (Plasma ArcOK) to turn on - L3)
+M66 P0 L3 Q5 (wait up to 5 seconds for digital input 0 Plasma-ArcOK to turn on - L3)
 G01 X2.79 Y26.80 Z25.6 A-572.8537 B-572.8537 F375.0 (move length: 2.0 speed:750.0, e:)
 G01 X2.48 Y26.84 Z25.6 A-572.8537 B-572.8537 F2389.8 (move length: 0.3 speed:750.0 p:-1, e:)
 G01 X2.17 Y26.83 Z25.6 A-572.8537 B-572.8537 F2389.8 (move length: 0.3 speed:750.0 p:-1, e:)
@@ -2405,7 +2405,7 @@ G00 A-523.078 B-523.078
 G01 X2.68 Y26.90 Z28.3 A-523.0781 B-523.0781 F42.3 (move length: 17.7 speed:750.0, e:)
 M3 S400
 G04 P0.500
-M66 P0 L3 Q3 (wait up to 3 seconds for digital input 0 (Plasma ArcOK) to turn on - L3)
+M66 P0 L3 Q5 (wait up to 5 seconds for digital input 0 Plasma-ArcOK to turn on - L3)
 G01 X2.68 Y26.90 Z26.3 A-523.0781 B-523.0781 F375.0 (move length: 2.0 speed:750.0, e:)
 G01 X2.37 Y26.92 Z26.2 A-523.0781 B-523.0781 F2389.8 (move length: 0.3 speed:750.0 p:-1, e:)
 G01 X2.06 Y26.89 Z26.2 A-523.0781 B-523.0781 F2389.8 (move length: 0.3 speed:750.0 p:-1, e:)
@@ -2486,7 +2486,7 @@ G00 A-523.078 B-523.078
 G01 X2.68 Y36.90 Z28.3 A-523.0781 B-523.0781 F42.3 (move length: 17.7 speed:750.0, e:)
 M3 S400
 G04 P0.500
-M66 P0 L3 Q3 (wait up to 3 seconds for digital input 0 (Plasma ArcOK) to turn on - L3)
+M66 P0 L3 Q5 (wait up to 5 seconds for digital input 0 Plasma-ArcOK to turn on - L3)
 G01 X2.68 Y36.90 Z26.3 A-523.0781 B-523.0781 F375.0 (move length: 2.0 speed:750.0, e:)
 G01 X2.37 Y36.92 Z26.2 A-523.0781 B-523.0781 F2389.8 (move length: 0.3 speed:750.0 p:-1, e:)
 G01 X2.06 Y36.89 Z26.2 A-523.0781 B-523.0781 F2389.8 (move length: 0.3 speed:750.0 p:-1, e:)
@@ -2567,7 +2567,7 @@ G00 A-494.960 B-494.960
 G01 X2.84 Y36.72 Z27.8 A-494.9600 B-494.9600 F41.2 (move length: 18.2 speed:750.0, e:)
 M3 S400
 G04 P0.500
-M66 P0 L3 Q3 (wait up to 3 seconds for digital input 0 (Plasma ArcOK) to turn on - L3)
+M66 P0 L3 Q5 (wait up to 5 seconds for digital input 0 Plasma-ArcOK to turn on - L3)
 G01 X2.84 Y36.72 Z25.8 A-494.9600 B-494.9600 F375.0 (move length: 2.0 speed:750.0, e:)
 G01 X2.52 Y36.77 Z25.8 A-494.9600 B-494.9600 F2389.8 (move length: 0.3 speed:750.0 p:-1, e:)
 G01 X2.21 Y36.76 Z25.8 A-494.9600 B-494.9600 F2389.8 (move length: 0.3 speed:750.0 p:-1, e:)
@@ -2648,7 +2648,7 @@ G00 A-547.216 B-547.216
 G01 X2.64 Y36.92 Z27.2 A-547.2161 B-547.2161 F39.8 (move length: 18.8 speed:750.0, e:)
 M3 S400
 G04 P0.500
-M66 P0 L3 Q3 (wait up to 3 seconds for digital input 0 (Plasma ArcOK) to turn on - L3)
+M66 P0 L3 Q5 (wait up to 5 seconds for digital input 0 Plasma-ArcOK to turn on - L3)
 G01 X2.64 Y36.92 Z25.2 A-547.2161 B-547.2161 F375.0 (move length: 2.0 speed:750.0, e:)
 G01 X2.33 Y36.94 Z25.2 A-547.2161 B-547.2161 F2389.8 (move length: 0.3 speed:750.0 p:-1, e:)
 G01 X2.03 Y36.91 Z25.3 A-547.2161 B-547.2161 F2389.8 (move length: 0.3 speed:750.0 p:-1, e:)
@@ -2729,7 +2729,7 @@ G00 A-572.854 B-572.854
 G01 X2.79 Y36.80 Z27.6 A-572.8538 B-572.8538 F40.7 (move length: 18.4 speed:750.0, e:)
 M3 S400
 G04 P0.500
-M66 P0 L3 Q3 (wait up to 3 seconds for digital input 0 (Plasma ArcOK) to turn on - L3)
+M66 P0 L3 Q5 (wait up to 5 seconds for digital input 0 Plasma-ArcOK to turn on - L3)
 G01 X2.79 Y36.80 Z25.6 A-572.8538 B-572.8538 F375.0 (move length: 2.0 speed:750.0, e:)
 G01 X2.48 Y36.84 Z25.6 A-572.8538 B-572.8538 F2389.8 (move length: 0.3 speed:750.0 p:-1, e:)
 G01 X2.17 Y36.83 Z25.6 A-572.8538 B-572.8538 F2389.8 (move length: 0.3 speed:750.0 p:-1, e:)
@@ -2810,7 +2810,7 @@ G00 A147.146 B147.146
 G01 X2.79 Y46.80 Z27.6 A147.1463 B147.1463 F40.7 (move length: 18.4 speed:750.0, e:)
 M3 S400
 G04 P0.500
-M66 P0 L3 Q3 (wait up to 3 seconds for digital input 0 (Plasma ArcOK) to turn on - L3)
+M66 P0 L3 Q5 (wait up to 5 seconds for digital input 0 Plasma-ArcOK to turn on - L3)
 G01 X2.79 Y46.80 Z25.6 A147.1463 B147.1463 F375.0 (move length: 2.0 speed:750.0, e:)
 G01 X2.48 Y46.84 Z25.6 A147.1463 B147.1463 F2389.8 (move length: 0.3 speed:750.0 p:-1, e:)
 G01 X2.17 Y46.83 Z25.6 A147.1463 B147.1463 F2389.8 (move length: 0.3 speed:750.0 p:-1, e:)
@@ -2891,7 +2891,7 @@ G00 A172.784 B172.784
 G01 X2.64 Y46.92 Z27.2 A172.7840 B172.7840 F39.8 (move length: 18.8 speed:750.0, e:)
 M3 S400
 G04 P0.500
-M66 P0 L3 Q3 (wait up to 3 seconds for digital input 0 (Plasma ArcOK) to turn on - L3)
+M66 P0 L3 Q5 (wait up to 5 seconds for digital input 0 Plasma-ArcOK to turn on - L3)
 G01 X2.64 Y46.92 Z25.2 A172.7840 B172.7840 F375.0 (move length: 2.0 speed:750.0, e:)
 G01 X2.33 Y46.94 Z25.2 A172.7840 B172.7840 F2389.8 (move length: 0.3 speed:750.0 p:-1, e:)
 G01 X2.03 Y46.91 Z25.3 A172.7840 B172.7840 F2389.8 (move length: 0.3 speed:750.0 p:-1, e:)
@@ -2972,7 +2972,7 @@ G00 A225.040 B225.040
 G01 X2.84 Y46.72 Z27.8 A225.0400 B225.0400 F41.2 (move length: 18.2 speed:750.0, e:)
 M3 S400
 G04 P0.500
-M66 P0 L3 Q3 (wait up to 3 seconds for digital input 0 (Plasma ArcOK) to turn on - L3)
+M66 P0 L3 Q5 (wait up to 5 seconds for digital input 0 Plasma-ArcOK to turn on - L3)
 G01 X2.84 Y46.72 Z25.8 A225.0400 B225.0400 F375.0 (move length: 2.0 speed:750.0, e:)
 G01 X2.52 Y46.77 Z25.8 A225.0400 B225.0400 F2389.8 (move length: 0.3 speed:750.0 p:-1, e:)
 G01 X2.21 Y46.76 Z25.8 A225.0400 B225.0400 F2389.8 (move length: 0.3 speed:750.0 p:-1, e:)
@@ -3054,7 +3054,7 @@ G00 A-16.922 B-16.922
 G01 X-2.68 Y23.10 Z28.3 A-16.9219 B-16.9219 F42.3 (move length: 17.7 speed:750.0, e:)
 M3 S400
 G04 P0.500
-M66 P0 L3 Q3 (wait up to 3 seconds for digital input 0 (Plasma ArcOK) to turn on - L3)
+M66 P0 L3 Q5 (wait up to 5 seconds for digital input 0 Plasma-ArcOK to turn on - L3)
 G01 X-2.68 Y23.10 Z26.3 A-16.9219 B-16.9219 F375.0 (move length: 2.0 speed:750.0, e:)
 G01 X-2.37 Y23.08 Z26.2 A-16.9219 B-16.9219 F2389.8 (move length: 0.3 speed:750.0 p:-1, e:)
 G01 X-2.06 Y23.11 Z26.2 A-16.9219 B-16.9219 F2389.8 (move length: 0.3 speed:750.0 p:-1, e:)
@@ -3135,7 +3135,7 @@ G00 A32.854 B32.854
 G01 X-2.79 Y23.20 Z27.6 A32.8537 B32.8537 F40.7 (move length: 18.4 speed:750.0, e:)
 M3 S400
 G04 P0.500
-M66 P0 L3 Q3 (wait up to 3 seconds for digital input 0 (Plasma ArcOK) to turn on - L3)
+M66 P0 L3 Q5 (wait up to 5 seconds for digital input 0 Plasma-ArcOK to turn on - L3)
 G01 X-2.79 Y23.20 Z25.6 A32.8537 B32.8537 F375.0 (move length: 2.0 speed:750.0, e:)
 G01 X-2.48 Y23.16 Z25.6 A32.8537 B32.8537 F2389.8 (move length: 0.3 speed:750.0 p:-1, e:)
 G01 X-2.17 Y23.17 Z25.6 A32.8537 B32.8537 F2389.8 (move length: 0.3 speed:750.0 p:-1, e:)
@@ -3216,7 +3216,7 @@ G00 A32.854 B32.854
 G01 X-2.79 Y13.20 Z27.6 A32.8537 B32.8537 F40.7 (move length: 18.4 speed:750.0, e:)
 M3 S400
 G04 P0.500
-M66 P0 L3 Q3 (wait up to 3 seconds for digital input 0 (Plasma ArcOK) to turn on - L3)
+M66 P0 L3 Q5 (wait up to 5 seconds for digital input 0 Plasma-ArcOK to turn on - L3)
 G01 X-2.79 Y13.20 Z25.6 A32.8537 B32.8537 F375.0 (move length: 2.0 speed:750.0, e:)
 G01 X-2.48 Y13.16 Z25.6 A32.8537 B32.8537 F2389.8 (move length: 0.3 speed:750.0 p:-1, e:)
 G01 X-2.17 Y13.17 Z25.6 A32.8537 B32.8537 F2389.8 (move length: 0.3 speed:750.0 p:-1, e:)
@@ -3297,7 +3297,7 @@ G00 A7.216 B7.216
 G01 X-2.64 Y13.08 Z27.2 A7.2160 B7.2160 F39.8 (move length: 18.8 speed:750.0, e:)
 M3 S400
 G04 P0.500
-M66 P0 L3 Q3 (wait up to 3 seconds for digital input 0 (Plasma ArcOK) to turn on - L3)
+M66 P0 L3 Q5 (wait up to 5 seconds for digital input 0 Plasma-ArcOK to turn on - L3)
 G01 X-2.64 Y13.08 Z25.2 A7.2160 B7.2160 F375.0 (move length: 2.0 speed:750.0, e:)
 G01 X-2.33 Y13.06 Z25.2 A7.2160 B7.2160 F2389.8 (move length: 0.3 speed:750.0 p:-1, e:)
 G01 X-2.03 Y13.09 Z25.3 A7.2160 B7.2160 F2389.8 (move length: 0.3 speed:750.0 p:-1, e:)
@@ -3378,7 +3378,7 @@ G00 A-16.922 B-16.922
 G01 X-2.68 Y13.10 Z28.3 A-16.9219 B-16.9219 F42.3 (move length: 17.7 speed:750.0, e:)
 M3 S400
 G04 P0.500
-M66 P0 L3 Q3 (wait up to 3 seconds for digital input 0 (Plasma ArcOK) to turn on - L3)
+M66 P0 L3 Q5 (wait up to 5 seconds for digital input 0 Plasma-ArcOK to turn on - L3)
 G01 X-2.68 Y13.10 Z26.3 A-16.9219 B-16.9219 F375.0 (move length: 2.0 speed:750.0, e:)
 G01 X-2.37 Y13.08 Z26.2 A-16.9219 B-16.9219 F2389.8 (move length: 0.3 speed:750.0 p:-1, e:)
 G01 X-2.06 Y13.11 Z26.2 A-16.9219 B-16.9219 F2389.8 (move length: 0.3 speed:750.0 p:-1, e:)
@@ -3459,7 +3459,7 @@ G00 A-45.040 B-45.040
 G01 X-2.84 Y13.28 Z27.8 A-45.0400 B-45.0400 F41.2 (move length: 18.2 speed:750.0, e:)
 M3 S400
 G04 P0.500
-M66 P0 L3 Q3 (wait up to 3 seconds for digital input 0 (Plasma ArcOK) to turn on - L3)
+M66 P0 L3 Q5 (wait up to 5 seconds for digital input 0 Plasma-ArcOK to turn on - L3)
 G01 X-2.84 Y13.28 Z25.8 A-45.0400 B-45.0400 F375.0 (move length: 2.0 speed:750.0, e:)
 G01 X-2.52 Y13.23 Z25.8 A-45.0400 B-45.0400 F2389.8 (move length: 0.3 speed:750.0 p:-1, e:)
 G01 X-2.21 Y13.24 Z25.8 A-45.0400 B-45.0400 F2389.8 (move length: 0.3 speed:750.0 p:-1, e:)
@@ -3540,7 +3540,7 @@ G00 A-134.960 B-134.960
 G01 X2.84 Y6.72 Z27.8 A-134.9600 B-134.9600 F41.2 (move length: 18.2 speed:750.0, e:)
 M3 S400
 G04 P0.500
-M66 P0 L3 Q3 (wait up to 3 seconds for digital input 0 (Plasma ArcOK) to turn on - L3)
+M66 P0 L3 Q5 (wait up to 5 seconds for digital input 0 Plasma-ArcOK to turn on - L3)
 G01 X2.84 Y6.72 Z25.8 A-134.9600 B-134.9600 F375.0 (move length: 2.0 speed:750.0, e:)
 G01 X2.52 Y6.77 Z25.8 A-134.9600 B-134.9600 F2389.8 (move length: 0.3 speed:750.0 p:-1, e:)
 G01 X2.21 Y6.76 Z25.8 A-134.9600 B-134.9600 F2389.8 (move length: 0.3 speed:750.0 p:-1, e:)
@@ -3621,7 +3621,7 @@ G00 A-134.960 B-134.960
 G01 X2.84 Y16.72 Z27.8 A-134.9600 B-134.9600 F41.2 (move length: 18.2 speed:750.0, e:)
 M3 S400
 G04 P0.500
-M66 P0 L3 Q3 (wait up to 3 seconds for digital input 0 (Plasma ArcOK) to turn on - L3)
+M66 P0 L3 Q5 (wait up to 5 seconds for digital input 0 Plasma-ArcOK to turn on - L3)
 G01 X2.84 Y16.72 Z25.8 A-134.9600 B-134.9600 F375.0 (move length: 2.0 speed:750.0, e:)
 G01 X2.52 Y16.77 Z25.8 A-134.9600 B-134.9600 F2389.8 (move length: 0.3 speed:750.0 p:-1, e:)
 G01 X2.21 Y16.76 Z25.8 A-134.9600 B-134.9600 F2389.8 (move length: 0.3 speed:750.0 p:-1, e:)
@@ -3702,7 +3702,7 @@ G00 A-134.960 B-134.960
 G01 X2.84 Y26.72 Z27.8 A-134.9600 B-134.9600 F41.2 (move length: 18.2 speed:750.0, e:)
 M3 S400
 G04 P0.500
-M66 P0 L3 Q3 (wait up to 3 seconds for digital input 0 (Plasma ArcOK) to turn on - L3)
+M66 P0 L3 Q5 (wait up to 5 seconds for digital input 0 Plasma-ArcOK to turn on - L3)
 G01 X2.84 Y26.72 Z25.8 A-134.9600 B-134.9600 F375.0 (move length: 2.0 speed:750.0, e:)
 G01 X2.52 Y26.77 Z25.8 A-134.9600 B-134.9600 F2389.8 (move length: 0.3 speed:750.0 p:-1, e:)
 G01 X2.21 Y26.76 Z25.8 A-134.9600 B-134.9600 F2389.8 (move length: 0.3 speed:750.0 p:-1, e:)
@@ -3783,7 +3783,7 @@ G00 A-212.854 B-212.854
 G01 X2.79 Y6.80 Z27.6 A-212.8537 B-212.8537 F40.7 (move length: 18.4 speed:750.0, e:)
 M3 S400
 G04 P0.500
-M66 P0 L3 Q3 (wait up to 3 seconds for digital input 0 (Plasma ArcOK) to turn on - L3)
+M66 P0 L3 Q5 (wait up to 5 seconds for digital input 0 Plasma-ArcOK to turn on - L3)
 G01 X2.79 Y6.80 Z25.6 A-212.8537 B-212.8537 F375.0 (move length: 2.0 speed:750.0, e:)
 G01 X2.48 Y6.84 Z25.6 A-212.8537 B-212.8537 F2389.8 (move length: 0.3 speed:750.0 p:-1, e:)
 G01 X2.17 Y6.83 Z25.6 A-212.8537 B-212.8537 F2389.8 (move length: 0.3 speed:750.0 p:-1, e:)
@@ -3864,7 +3864,7 @@ G00 A-187.216 B-187.216
 G01 X2.64 Y6.92 Z27.2 A-187.2160 B-187.2160 F39.8 (move length: 18.8 speed:750.0, e:)
 M3 S400
 G04 P0.500
-M66 P0 L3 Q3 (wait up to 3 seconds for digital input 0 (Plasma ArcOK) to turn on - L3)
+M66 P0 L3 Q5 (wait up to 5 seconds for digital input 0 Plasma-ArcOK to turn on - L3)
 G01 X2.64 Y6.92 Z25.2 A-187.2160 B-187.2160 F375.0 (move length: 2.0 speed:750.0, e:)
 G01 X2.33 Y6.94 Z25.2 A-187.2160 B-187.2160 F2389.8 (move length: 0.3 speed:750.0 p:-1, e:)
 G01 X2.03 Y6.91 Z25.3 A-187.2160 B-187.2160 F2389.8 (move length: 0.3 speed:750.0 p:-1, e:)
@@ -3945,7 +3945,7 @@ G00 A-163.078 B-163.078
 G01 X2.68 Y16.90 Z28.3 A-163.0781 B-163.0781 F42.3 (move length: 17.7 speed:750.0, e:)
 M3 S400
 G04 P0.500
-M66 P0 L3 Q3 (wait up to 3 seconds for digital input 0 (Plasma ArcOK) to turn on - L3)
+M66 P0 L3 Q5 (wait up to 5 seconds for digital input 0 Plasma-ArcOK to turn on - L3)
 G01 X2.68 Y16.90 Z26.3 A-163.0781 B-163.0781 F375.0 (move length: 2.0 speed:750.0, e:)
 G01 X2.37 Y16.92 Z26.2 A-163.0781 B-163.0781 F2389.8 (move length: 0.3 speed:750.0 p:-1, e:)
 G01 X2.06 Y16.89 Z26.2 A-163.0781 B-163.0781 F2389.8 (move length: 0.3 speed:750.0 p:-1, e:)
@@ -4026,7 +4026,7 @@ G00 A-187.216 B-187.216
 G01 X2.64 Y16.92 Z27.2 A-187.2160 B-187.2160 F39.8 (move length: 18.8 speed:750.0, e:)
 M3 S400
 G04 P0.500
-M66 P0 L3 Q3 (wait up to 3 seconds for digital input 0 (Plasma ArcOK) to turn on - L3)
+M66 P0 L3 Q5 (wait up to 5 seconds for digital input 0 Plasma-ArcOK to turn on - L3)
 G01 X2.64 Y16.92 Z25.2 A-187.2160 B-187.2160 F375.0 (move length: 2.0 speed:750.0, e:)
 G01 X2.33 Y16.94 Z25.2 A-187.2160 B-187.2160 F2389.8 (move length: 0.3 speed:750.0 p:-1, e:)
 G01 X2.03 Y16.91 Z25.3 A-187.2160 B-187.2160 F2389.8 (move length: 0.3 speed:750.0 p:-1, e:)
@@ -4107,7 +4107,7 @@ G00 A-212.854 B-212.854
 G01 X2.79 Y16.80 Z27.6 A-212.8537 B-212.8537 F40.7 (move length: 18.4 speed:750.0, e:)
 M3 S400
 G04 P0.500
-M66 P0 L3 Q3 (wait up to 3 seconds for digital input 0 (Plasma ArcOK) to turn on - L3)
+M66 P0 L3 Q5 (wait up to 5 seconds for digital input 0 Plasma-ArcOK to turn on - L3)
 G01 X2.79 Y16.80 Z25.6 A-212.8537 B-212.8537 F375.0 (move length: 2.0 speed:750.0, e:)
 G01 X2.48 Y16.84 Z25.6 A-212.8537 B-212.8537 F2389.8 (move length: 0.3 speed:750.0 p:-1, e:)
 G01 X2.17 Y16.83 Z25.6 A-212.8537 B-212.8537 F2389.8 (move length: 0.3 speed:750.0 p:-1, e:)
@@ -4188,7 +4188,7 @@ G00 A-187.216 B-187.216
 G01 X2.64 Y26.92 Z27.2 A-187.2160 B-187.2160 F39.8 (move length: 18.8 speed:750.0, e:)
 M3 S400
 G04 P0.500
-M66 P0 L3 Q3 (wait up to 3 seconds for digital input 0 (Plasma ArcOK) to turn on - L3)
+M66 P0 L3 Q5 (wait up to 5 seconds for digital input 0 Plasma-ArcOK to turn on - L3)
 G01 X2.64 Y26.92 Z25.2 A-187.2160 B-187.2160 F375.0 (move length: 2.0 speed:750.0, e:)
 G01 X2.33 Y26.94 Z25.2 A-187.2160 B-187.2160 F2389.8 (move length: 0.3 speed:750.0 p:-1, e:)
 G01 X2.03 Y26.91 Z25.3 A-187.2160 B-187.2160 F2389.8 (move length: 0.3 speed:750.0 p:-1, e:)
@@ -4270,7 +4270,7 @@ G00 A-405.040 B-405.040
 G01 X-2.84 Y3.28 Z27.8 A-405.0400 B-405.0400 F41.2 (move length: 18.2 speed:750.0, e:)
 M3 S400
 G04 P0.500
-M66 P0 L3 Q3 (wait up to 3 seconds for digital input 0 (Plasma ArcOK) to turn on - L3)
+M66 P0 L3 Q5 (wait up to 5 seconds for digital input 0 Plasma-ArcOK to turn on - L3)
 G01 X-2.84 Y3.28 Z25.8 A-405.0400 B-405.0400 F375.0 (move length: 2.0 speed:750.0, e:)
 G01 X-2.52 Y3.23 Z25.8 A-405.0400 B-405.0400 F2389.8 (move length: 0.3 speed:750.0 p:-1, e:)
 G01 X-2.21 Y3.24 Z25.8 A-405.0400 B-405.0400 F2389.8 (move length: 0.3 speed:750.0 p:-1, e:)
@@ -4351,7 +4351,7 @@ G00 A-376.922 B-376.922
 G01 X-2.68 Y3.10 Z28.3 A-376.9219 B-376.9219 F42.3 (move length: 17.7 speed:750.0, e:)
 M3 S400
 G04 P0.500
-M66 P0 L3 Q3 (wait up to 3 seconds for digital input 0 (Plasma ArcOK) to turn on - L3)
+M66 P0 L3 Q5 (wait up to 5 seconds for digital input 0 Plasma-ArcOK to turn on - L3)
 G01 X-2.68 Y3.10 Z26.3 A-376.9219 B-376.9219 F375.0 (move length: 2.0 speed:750.0, e:)
 G01 X-2.37 Y3.08 Z26.2 A-376.9219 B-376.9219 F2389.8 (move length: 0.3 speed:750.0 p:-1, e:)
 G01 X-2.06 Y3.11 Z26.2 A-376.9219 B-376.9219 F2389.8 (move length: 0.3 speed:750.0 p:-1, e:)
@@ -4432,7 +4432,7 @@ G00 A-352.784 B-352.784
 G01 X-2.64 Y3.08 Z27.2 A-352.7840 B-352.7840 F39.8 (move length: 18.8 speed:750.0, e:)
 M3 S400
 G04 P0.500
-M66 P0 L3 Q3 (wait up to 3 seconds for digital input 0 (Plasma ArcOK) to turn on - L3)
+M66 P0 L3 Q5 (wait up to 5 seconds for digital input 0 Plasma-ArcOK to turn on - L3)
 G01 X-2.64 Y3.08 Z25.2 A-352.7840 B-352.7840 F375.0 (move length: 2.0 speed:750.0, e:)
 G01 X-2.33 Y3.06 Z25.2 A-352.7840 B-352.7840 F2389.8 (move length: 0.3 speed:750.0 p:-1, e:)
 G01 X-2.03 Y3.09 Z25.3 A-352.7840 B-352.7840 F2389.8 (move length: 0.3 speed:750.0 p:-1, e:)
@@ -4513,7 +4513,7 @@ G00 A-327.146 B-327.146
 G01 X-2.79 Y3.20 Z27.6 A-327.1463 B-327.1463 F40.7 (move length: 18.4 speed:750.0, e:)
 M3 S400
 G04 P0.500
-M66 P0 L3 Q3 (wait up to 3 seconds for digital input 0 (Plasma ArcOK) to turn on - L3)
+M66 P0 L3 Q5 (wait up to 5 seconds for digital input 0 Plasma-ArcOK to turn on - L3)
 G01 X-2.79 Y3.20 Z25.6 A-327.1463 B-327.1463 F375.0 (move length: 2.0 speed:750.0, e:)
 G01 X-2.48 Y3.16 Z25.6 A-327.1463 B-327.1463 F2389.8 (move length: 0.3 speed:750.0 p:-1, e:)
 G01 X-2.17 Y3.17 Z25.6 A-327.1463 B-327.1463 F2389.8 (move length: 0.3 speed:750.0 p:-1, e:)
@@ -4594,7 +4594,7 @@ G00 A-327.146 B-327.146
 G01 X-2.79 Y-6.80 Z27.6 A-327.1463 B-327.1463 F40.7 (move length: 18.4 speed:750.0, e:)
 M3 S400
 G04 P0.500
-M66 P0 L3 Q3 (wait up to 3 seconds for digital input 0 (Plasma ArcOK) to turn on - L3)
+M66 P0 L3 Q5 (wait up to 5 seconds for digital input 0 Plasma-ArcOK to turn on - L3)
 G01 X-2.79 Y-6.80 Z25.6 A-327.1463 B-327.1463 F375.0 (move length: 2.0 speed:750.0, e:)
 G01 X-2.48 Y-6.84 Z25.6 A-327.1463 B-327.1463 F2389.8 (move length: 0.3 speed:750.0 p:-1, e:)
 G01 X-2.17 Y-6.83 Z25.6 A-327.1463 B-327.1463 F2389.8 (move length: 0.3 speed:750.0 p:-1, e:)
@@ -4675,7 +4675,7 @@ G00 A-352.784 B-352.784
 G01 X-2.64 Y-6.92 Z27.2 A-352.7840 B-352.7840 F39.8 (move length: 18.8 speed:750.0, e:)
 M3 S400
 G04 P0.500
-M66 P0 L3 Q3 (wait up to 3 seconds for digital input 0 (Plasma ArcOK) to turn on - L3)
+M66 P0 L3 Q5 (wait up to 5 seconds for digital input 0 Plasma-ArcOK to turn on - L3)
 G01 X-2.64 Y-6.92 Z25.2 A-352.7840 B-352.7840 F375.0 (move length: 2.0 speed:750.0, e:)
 G01 X-2.33 Y-6.94 Z25.2 A-352.7840 B-352.7840 F2389.8 (move length: 0.3 speed:750.0 p:-1, e:)
 G01 X-2.03 Y-6.91 Z25.3 A-352.7840 B-352.7840 F2389.8 (move length: 0.3 speed:750.0 p:-1, e:)
@@ -4756,7 +4756,7 @@ G00 A-376.922 B-376.922
 G01 X-2.68 Y-6.90 Z28.3 A-376.9219 B-376.9219 F42.3 (move length: 17.7 speed:750.0, e:)
 M3 S400
 G04 P0.500
-M66 P0 L3 Q3 (wait up to 3 seconds for digital input 0 (Plasma ArcOK) to turn on - L3)
+M66 P0 L3 Q5 (wait up to 5 seconds for digital input 0 Plasma-ArcOK to turn on - L3)
 G01 X-2.68 Y-6.90 Z26.3 A-376.9219 B-376.9219 F375.0 (move length: 2.0 speed:750.0, e:)
 G01 X-2.37 Y-6.92 Z26.2 A-376.9219 B-376.9219 F2389.8 (move length: 0.3 speed:750.0 p:-1, e:)
 G01 X-2.06 Y-6.89 Z26.2 A-376.9219 B-376.9219 F2389.8 (move length: 0.3 speed:750.0 p:-1, e:)
@@ -4837,7 +4837,7 @@ G00 A-405.040 B-405.040
 G01 X-3.18 Y-5.71 Z27.8 A-405.0400 B-405.0400 F41.1 (move length: 18.2 speed:750.0, e:)
 M3 S400
 G04 P0.500
-M66 P0 L3 Q3 (wait up to 3 seconds for digital input 0 (Plasma ArcOK) to turn on - L3)
+M66 P0 L3 Q5 (wait up to 5 seconds for digital input 0 Plasma-ArcOK to turn on - L3)
 G01 X-3.18 Y-5.71 Z25.8 A-405.0400 B-405.0400 F375.0 (move length: 2.0 speed:750.0, e:)
 G01 X-2.90 Y-5.85 Z25.8 A-405.0400 B-405.0400 F2389.8 (move length: 0.3 speed:750.0 p:-1, e:)
 G01 X-2.61 Y-5.95 Z25.8 A-405.0400 B-405.0400 F2389.8 (move length: 0.3 speed:750.0 p:-1, e:)
@@ -4903,7 +4903,7 @@ G00 A-32.154 B-32.154
 G01 X-0.85 Y-4.69 Z27.9 A-32.1535 B-32.1535 F41.3 (move length: 18.1 speed:750.0, e:)
 M3 S400
 G04 P0.500
-M66 P0 L3 Q3 (wait up to 3 seconds for digital input 0 (Plasma ArcOK) to turn on - L3)
+M66 P0 L3 Q5 (wait up to 5 seconds for digital input 0 Plasma-ArcOK to turn on - L3)
 G01 X-0.85 Y-4.69 Z25.9 A-32.1535 B-32.1535 F375.0 (move length: 2.0 speed:750.0, e:)
 G01 X-0.95 Y-4.99 Z25.9 A-32.1535 B-32.1535 F2389.8 (move length: 0.3 speed:750.0 p:-1, e:)
 G01 X-1.01 Y-5.30 Z25.9 A-32.1535 B-32.1535 F2389.8 (move length: 0.3 speed:750.0 p:-1, e:)
@@ -4922,7 +4922,7 @@ G00 A-29.481 B-29.481
 G01 X0.38 Y-3.91 Z27.8 A-29.4809 B-29.4809 F41.1 (move length: 18.3 speed:750.0, e:)
 M3 S400
 G04 P0.500
-M66 P0 L3 Q3 (wait up to 3 seconds for digital input 0 (Plasma ArcOK) to turn on - L3)
+M66 P0 L3 Q5 (wait up to 5 seconds for digital input 0 Plasma-ArcOK to turn on - L3)
 G01 X0.38 Y-3.91 Z25.8 A-29.4809 B-29.4809 F375.0 (move length: 2.0 speed:750.0, e:)
 G01 X0.17 Y-4.15 Z25.8 A-29.4809 B-29.4809 F2389.8 (move length: 0.3 speed:750.0 p:-1, e:)
 G01 X0.00 Y-4.41 Z25.8 A-29.4809 B-29.4809 F2389.8 (move length: 0.3 speed:750.0 p:-1, e:)
@@ -4941,7 +4941,7 @@ G00 A-27.709 B-27.709
 G01 X1.73 Y-3.33 Z27.6 A-27.7094 B-27.7094 F40.7 (move length: 18.4 speed:750.0, e:)
 M3 S400
 G04 P0.500
-M66 P0 L3 Q3 (wait up to 3 seconds for digital input 0 (Plasma ArcOK) to turn on - L3)
+M66 P0 L3 Q5 (wait up to 5 seconds for digital input 0 Plasma-ArcOK to turn on - L3)
 G01 X1.73 Y-3.33 Z25.6 A-27.7094 B-27.7094 F375.0 (move length: 2.0 speed:750.0, e:)
 G01 X1.45 Y-3.44 Z25.6 A-27.7094 B-27.7094 F2389.8 (move length: 0.3 speed:750.0 p:-1, e:)
 G01 X1.18 Y-3.60 Z25.7 A-27.7094 B-27.7094 F2389.8 (move length: 0.3 speed:750.0 p:-1, e:)
@@ -4960,7 +4960,7 @@ G00 A7.216 B7.216
 G01 X-2.64 Y-16.92 Z27.2 A7.2160 B7.2160 F39.8 (move length: 18.8 speed:750.0, e:)
 M3 S400
 G04 P0.500
-M66 P0 L3 Q3 (wait up to 3 seconds for digital input 0 (Plasma ArcOK) to turn on - L3)
+M66 P0 L3 Q5 (wait up to 5 seconds for digital input 0 Plasma-ArcOK to turn on - L3)
 G01 X-2.64 Y-16.92 Z25.2 A7.2160 B7.2160 F375.0 (move length: 2.0 speed:750.0, e:)
 G01 X-2.33 Y-16.94 Z25.2 A7.2160 B7.2160 F2389.8 (move length: 0.3 speed:750.0 p:-1, e:)
 G01 X-2.03 Y-16.91 Z25.3 A7.2160 B7.2160 F2389.8 (move length: 0.3 speed:750.0 p:-1, e:)
@@ -5041,7 +5041,7 @@ G00 A-134.960 B-134.960
 G01 X2.84 Y-13.28 Z27.8 A-134.9600 B-134.9600 F41.2 (move length: 18.2 speed:750.0, e:)
 M3 S400
 G04 P0.500
-M66 P0 L3 Q3 (wait up to 3 seconds for digital input 0 (Plasma ArcOK) to turn on - L3)
+M66 P0 L3 Q5 (wait up to 5 seconds for digital input 0 Plasma-ArcOK to turn on - L3)
 G01 X2.84 Y-13.28 Z25.8 A-134.9600 B-134.9600 F375.0 (move length: 2.0 speed:750.0, e:)
 G01 X2.52 Y-13.23 Z25.8 A-134.9600 B-134.9600 F2389.8 (move length: 0.3 speed:750.0 p:-1, e:)
 G01 X2.21 Y-13.24 Z25.8 A-134.9600 B-134.9600 F2389.8 (move length: 0.3 speed:750.0 p:-1, e:)
@@ -5122,7 +5122,7 @@ G00 A-134.960 B-134.960
 G01 X2.84 Y-3.28 Z27.8 A-134.9600 B-134.9600 F41.2 (move length: 18.2 speed:750.0, e:)
 M3 S400
 G04 P0.500
-M66 P0 L3 Q3 (wait up to 3 seconds for digital input 0 (Plasma ArcOK) to turn on - L3)
+M66 P0 L3 Q5 (wait up to 5 seconds for digital input 0 Plasma-ArcOK to turn on - L3)
 G01 X2.84 Y-3.28 Z25.8 A-134.9600 B-134.9600 F375.0 (move length: 2.0 speed:750.0, e:)
 G01 X2.52 Y-3.23 Z25.8 A-134.9600 B-134.9600 F2389.8 (move length: 0.3 speed:750.0 p:-1, e:)
 G01 X2.21 Y-3.24 Z25.8 A-134.9600 B-134.9600 F2389.8 (move length: 0.3 speed:750.0 p:-1, e:)
@@ -5203,7 +5203,7 @@ G00 A-163.078 B-163.078
 G01 X2.68 Y-3.10 Z28.3 A-163.0781 B-163.0781 F42.3 (move length: 17.7 speed:750.0, e:)
 M3 S400
 G04 P0.500
-M66 P0 L3 Q3 (wait up to 3 seconds for digital input 0 (Plasma ArcOK) to turn on - L3)
+M66 P0 L3 Q5 (wait up to 5 seconds for digital input 0 Plasma-ArcOK to turn on - L3)
 G01 X2.68 Y-3.10 Z26.3 A-163.0781 B-163.0781 F375.0 (move length: 2.0 speed:750.0, e:)
 G01 X2.37 Y-3.08 Z26.2 A-163.0781 B-163.0781 F2389.8 (move length: 0.3 speed:750.0 p:-1, e:)
 G01 X2.06 Y-3.11 Z26.2 A-163.0781 B-163.0781 F2389.8 (move length: 0.3 speed:750.0 p:-1, e:)
@@ -5284,7 +5284,7 @@ G00 A-187.216 B-187.216
 G01 X2.64 Y-3.08 Z27.2 A-187.2160 B-187.2160 F39.8 (move length: 18.8 speed:750.0, e:)
 M3 S400
 G04 P0.500
-M66 P0 L3 Q3 (wait up to 3 seconds for digital input 0 (Plasma ArcOK) to turn on - L3)
+M66 P0 L3 Q5 (wait up to 5 seconds for digital input 0 Plasma-ArcOK to turn on - L3)
 G01 X2.64 Y-3.08 Z25.2 A-187.2160 B-187.2160 F375.0 (move length: 2.0 speed:750.0, e:)
 G01 X2.33 Y-3.06 Z25.2 A-187.2160 B-187.2160 F2389.8 (move length: 0.3 speed:750.0 p:-1, e:)
 G01 X2.03 Y-3.09 Z25.3 A-187.2160 B-187.2160 F2389.8 (move length: 0.3 speed:750.0 p:-1, e:)
@@ -5365,7 +5365,7 @@ G00 A-212.854 B-212.854
 G01 X2.79 Y-3.20 Z27.6 A-212.8537 B-212.8537 F40.7 (move length: 18.4 speed:750.0, e:)
 M3 S400
 G04 P0.500
-M66 P0 L3 Q3 (wait up to 3 seconds for digital input 0 (Plasma ArcOK) to turn on - L3)
+M66 P0 L3 Q5 (wait up to 5 seconds for digital input 0 Plasma-ArcOK to turn on - L3)
 G01 X2.79 Y-3.20 Z25.6 A-212.8537 B-212.8537 F375.0 (move length: 2.0 speed:750.0, e:)
 G01 X2.48 Y-3.16 Z25.6 A-212.8537 B-212.8537 F2389.8 (move length: 0.3 speed:750.0 p:-1, e:)
 G01 X2.17 Y-3.17 Z25.6 A-212.8537 B-212.8537 F2389.8 (move length: 0.3 speed:750.0 p:-1, e:)
@@ -5446,7 +5446,7 @@ G00 A-163.078 B-163.078
 G01 X2.68 Y6.90 Z28.3 A-163.0781 B-163.0781 F42.3 (move length: 17.7 speed:750.0, e:)
 M3 S400
 G04 P0.500
-M66 P0 L3 Q3 (wait up to 3 seconds for digital input 0 (Plasma ArcOK) to turn on - L3)
+M66 P0 L3 Q5 (wait up to 5 seconds for digital input 0 Plasma-ArcOK to turn on - L3)
 G01 X2.68 Y6.90 Z26.3 A-163.0781 B-163.0781 F375.0 (move length: 2.0 speed:750.0, e:)
 G01 X2.37 Y6.92 Z26.2 A-163.0781 B-163.0781 F2389.8 (move length: 0.3 speed:750.0 p:-1, e:)
 G01 X2.06 Y6.89 Z26.2 A-163.0781 B-163.0781 F2389.8 (move length: 0.3 speed:750.0 p:-1, e:)
@@ -5528,7 +5528,7 @@ G00 A-327.146 B-327.146
 G01 X-2.79 Y-16.80 Z27.6 A-327.1463 B-327.1463 F40.7 (move length: 18.4 speed:750.0, e:)
 M3 S400
 G04 P0.500
-M66 P0 L3 Q3 (wait up to 3 seconds for digital input 0 (Plasma ArcOK) to turn on - L3)
+M66 P0 L3 Q5 (wait up to 5 seconds for digital input 0 Plasma-ArcOK to turn on - L3)
 G01 X-2.79 Y-16.80 Z25.6 A-327.1463 B-327.1463 F375.0 (move length: 2.0 speed:750.0, e:)
 G01 X-2.48 Y-16.84 Z25.6 A-327.1463 B-327.1463 F2389.8 (move length: 0.3 speed:750.0 p:-1, e:)
 G01 X-2.17 Y-16.83 Z25.6 A-327.1463 B-327.1463 F2389.8 (move length: 0.3 speed:750.0 p:-1, e:)
@@ -5609,7 +5609,7 @@ G00 A-376.922 B-376.922
 G01 X-2.68 Y-16.90 Z28.3 A-376.9219 B-376.9219 F42.3 (move length: 17.7 speed:750.0, e:)
 M3 S400
 G04 P0.500
-M66 P0 L3 Q3 (wait up to 3 seconds for digital input 0 (Plasma ArcOK) to turn on - L3)
+M66 P0 L3 Q5 (wait up to 5 seconds for digital input 0 Plasma-ArcOK to turn on - L3)
 G01 X-2.68 Y-16.90 Z26.3 A-376.9219 B-376.9219 F375.0 (move length: 2.0 speed:750.0, e:)
 G01 X-2.37 Y-16.92 Z26.2 A-376.9219 B-376.9219 F2389.8 (move length: 0.3 speed:750.0 p:-1, e:)
 G01 X-2.06 Y-16.89 Z26.2 A-376.9219 B-376.9219 F2389.8 (move length: 0.3 speed:750.0 p:-1, e:)
@@ -5690,7 +5690,7 @@ G00 A-405.040 B-405.040
 G01 X-2.84 Y-16.72 Z27.8 A-405.0400 B-405.0400 F41.2 (move length: 18.2 speed:750.0, e:)
 M3 S400
 G04 P0.500
-M66 P0 L3 Q3 (wait up to 3 seconds for digital input 0 (Plasma ArcOK) to turn on - L3)
+M66 P0 L3 Q5 (wait up to 5 seconds for digital input 0 Plasma-ArcOK to turn on - L3)
 G01 X-2.84 Y-16.72 Z25.8 A-405.0400 B-405.0400 F375.0 (move length: 2.0 speed:750.0, e:)
 G01 X-2.52 Y-16.77 Z25.8 A-405.0400 B-405.0400 F2389.8 (move length: 0.3 speed:750.0 p:-1, e:)
 G01 X-2.21 Y-16.76 Z25.8 A-405.0400 B-405.0400 F2389.8 (move length: 0.3 speed:750.0 p:-1, e:)
@@ -5771,7 +5771,7 @@ G00 A-405.040 B-405.040
 G01 X-2.84 Y-26.72 Z27.8 A-405.0400 B-405.0400 F41.2 (move length: 18.2 speed:750.0, e:)
 M3 S400
 G04 P0.500
-M66 P0 L3 Q3 (wait up to 3 seconds for digital input 0 (Plasma ArcOK) to turn on - L3)
+M66 P0 L3 Q5 (wait up to 5 seconds for digital input 0 Plasma-ArcOK to turn on - L3)
 G01 X-2.84 Y-26.72 Z25.8 A-405.0400 B-405.0400 F375.0 (move length: 2.0 speed:750.0, e:)
 G01 X-2.52 Y-26.77 Z25.8 A-405.0400 B-405.0400 F2389.8 (move length: 0.3 speed:750.0 p:-1, e:)
 G01 X-2.21 Y-26.76 Z25.8 A-405.0400 B-405.0400 F2389.8 (move length: 0.3 speed:750.0 p:-1, e:)
@@ -5852,7 +5852,7 @@ G00 A-376.922 B-376.922
 G01 X-2.68 Y-26.90 Z28.3 A-376.9219 B-376.9219 F42.3 (move length: 17.7 speed:750.0, e:)
 M3 S400
 G04 P0.500
-M66 P0 L3 Q3 (wait up to 3 seconds for digital input 0 (Plasma ArcOK) to turn on - L3)
+M66 P0 L3 Q5 (wait up to 5 seconds for digital input 0 Plasma-ArcOK to turn on - L3)
 G01 X-2.68 Y-26.90 Z26.3 A-376.9219 B-376.9219 F375.0 (move length: 2.0 speed:750.0, e:)
 G01 X-2.37 Y-26.92 Z26.2 A-376.9219 B-376.9219 F2389.8 (move length: 0.3 speed:750.0 p:-1, e:)
 G01 X-2.06 Y-26.89 Z26.2 A-376.9219 B-376.9219 F2389.8 (move length: 0.3 speed:750.0 p:-1, e:)
@@ -5933,7 +5933,7 @@ G00 A-352.784 B-352.784
 G01 X-2.64 Y-26.92 Z27.2 A-352.7840 B-352.7840 F39.8 (move length: 18.8 speed:750.0, e:)
 M3 S400
 G04 P0.500
-M66 P0 L3 Q3 (wait up to 3 seconds for digital input 0 (Plasma ArcOK) to turn on - L3)
+M66 P0 L3 Q5 (wait up to 5 seconds for digital input 0 Plasma-ArcOK to turn on - L3)
 G01 X-2.64 Y-26.92 Z25.2 A-352.7840 B-352.7840 F375.0 (move length: 2.0 speed:750.0, e:)
 G01 X-2.33 Y-26.94 Z25.2 A-352.7840 B-352.7840 F2389.8 (move length: 0.3 speed:750.0 p:-1, e:)
 G01 X-2.03 Y-26.91 Z25.3 A-352.7840 B-352.7840 F2389.8 (move length: 0.3 speed:750.0 p:-1, e:)
@@ -6014,7 +6014,7 @@ G00 A-327.146 B-327.146
 G01 X-2.79 Y-26.80 Z27.6 A-327.1463 B-327.1463 F40.7 (move length: 18.4 speed:750.0, e:)
 M3 S400
 G04 P0.500
-M66 P0 L3 Q3 (wait up to 3 seconds for digital input 0 (Plasma ArcOK) to turn on - L3)
+M66 P0 L3 Q5 (wait up to 5 seconds for digital input 0 Plasma-ArcOK to turn on - L3)
 G01 X-2.79 Y-26.80 Z25.6 A-327.1463 B-327.1463 F375.0 (move length: 2.0 speed:750.0, e:)
 G01 X-2.48 Y-26.84 Z25.6 A-327.1463 B-327.1463 F2389.8 (move length: 0.3 speed:750.0 p:-1, e:)
 G01 X-2.17 Y-26.83 Z25.6 A-327.1463 B-327.1463 F2389.8 (move length: 0.3 speed:750.0 p:-1, e:)
@@ -6095,7 +6095,7 @@ G00 A-494.960 B-494.960
 G01 X2.84 Y-23.28 Z27.8 A-494.9600 B-494.9600 F41.2 (move length: 18.2 speed:750.0, e:)
 M3 S400
 G04 P0.500
-M66 P0 L3 Q3 (wait up to 3 seconds for digital input 0 (Plasma ArcOK) to turn on - L3)
+M66 P0 L3 Q5 (wait up to 5 seconds for digital input 0 Plasma-ArcOK to turn on - L3)
 G01 X2.84 Y-23.28 Z25.8 A-494.9600 B-494.9600 F375.0 (move length: 2.0 speed:750.0, e:)
 G01 X2.52 Y-23.23 Z25.8 A-494.9600 B-494.9600 F2389.8 (move length: 0.3 speed:750.0 p:-1, e:)
 G01 X2.21 Y-23.24 Z25.8 A-494.9600 B-494.9600 F2389.8 (move length: 0.3 speed:750.0 p:-1, e:)
@@ -6176,7 +6176,7 @@ G00 A-523.078 B-523.078
 G01 X2.68 Y-23.10 Z28.3 A-523.0781 B-523.0781 F42.3 (move length: 17.7 speed:750.0, e:)
 M3 S400
 G04 P0.500
-M66 P0 L3 Q3 (wait up to 3 seconds for digital input 0 (Plasma ArcOK) to turn on - L3)
+M66 P0 L3 Q5 (wait up to 5 seconds for digital input 0 Plasma-ArcOK to turn on - L3)
 G01 X2.68 Y-23.10 Z26.3 A-523.0781 B-523.0781 F375.0 (move length: 2.0 speed:750.0, e:)
 G01 X2.37 Y-23.08 Z26.2 A-523.0781 B-523.0781 F2389.8 (move length: 0.3 speed:750.0 p:-1, e:)
 G01 X2.06 Y-23.11 Z26.2 A-523.0781 B-523.0781 F2389.8 (move length: 0.3 speed:750.0 p:-1, e:)
@@ -6257,7 +6257,7 @@ G00 A-547.216 B-547.216
 G01 X2.64 Y-23.08 Z27.2 A-547.2161 B-547.2161 F39.8 (move length: 18.8 speed:750.0, e:)
 M3 S400
 G04 P0.500
-M66 P0 L3 Q3 (wait up to 3 seconds for digital input 0 (Plasma ArcOK) to turn on - L3)
+M66 P0 L3 Q5 (wait up to 5 seconds for digital input 0 Plasma-ArcOK to turn on - L3)
 G01 X2.64 Y-23.08 Z25.2 A-547.2161 B-547.2161 F375.0 (move length: 2.0 speed:750.0, e:)
 G01 X2.33 Y-23.06 Z25.2 A-547.2161 B-547.2161 F2389.8 (move length: 0.3 speed:750.0 p:-1, e:)
 G01 X2.03 Y-23.09 Z25.3 A-547.2161 B-547.2161 F2389.8 (move length: 0.3 speed:750.0 p:-1, e:)
@@ -6338,7 +6338,7 @@ G00 A-572.854 B-572.854
 G01 X2.79 Y-23.20 Z27.6 A-572.8537 B-572.8537 F40.7 (move length: 18.4 speed:750.0, e:)
 M3 S400
 G04 P0.500
-M66 P0 L3 Q3 (wait up to 3 seconds for digital input 0 (Plasma ArcOK) to turn on - L3)
+M66 P0 L3 Q5 (wait up to 5 seconds for digital input 0 Plasma-ArcOK to turn on - L3)
 G01 X2.79 Y-23.20 Z25.6 A-572.8537 B-572.8537 F375.0 (move length: 2.0 speed:750.0, e:)
 G01 X2.48 Y-23.16 Z25.6 A-572.8537 B-572.8537 F2389.8 (move length: 0.3 speed:750.0 p:-1, e:)
 G01 X2.17 Y-23.17 Z25.6 A-572.8537 B-572.8537 F2389.8 (move length: 0.3 speed:750.0 p:-1, e:)
@@ -6419,7 +6419,7 @@ G00 A-572.854 B-572.854
 G01 X2.79 Y-13.20 Z27.6 A-572.8537 B-572.8537 F40.7 (move length: 18.4 speed:750.0, e:)
 M3 S400
 G04 P0.500
-M66 P0 L3 Q3 (wait up to 3 seconds for digital input 0 (Plasma ArcOK) to turn on - L3)
+M66 P0 L3 Q5 (wait up to 5 seconds for digital input 0 Plasma-ArcOK to turn on - L3)
 G01 X2.79 Y-13.20 Z25.6 A-572.8537 B-572.8537 F375.0 (move length: 2.0 speed:750.0, e:)
 G01 X2.48 Y-13.16 Z25.6 A-572.8537 B-572.8537 F2389.8 (move length: 0.3 speed:750.0 p:-1, e:)
 G01 X2.17 Y-13.17 Z25.6 A-572.8537 B-572.8537 F2389.8 (move length: 0.3 speed:750.0 p:-1, e:)
@@ -6500,7 +6500,7 @@ G00 A-547.216 B-547.216
 G01 X2.64 Y-13.08 Z27.2 A-547.2161 B-547.2161 F39.8 (move length: 18.8 speed:750.0, e:)
 M3 S400
 G04 P0.500
-M66 P0 L3 Q3 (wait up to 3 seconds for digital input 0 (Plasma ArcOK) to turn on - L3)
+M66 P0 L3 Q5 (wait up to 5 seconds for digital input 0 Plasma-ArcOK to turn on - L3)
 G01 X2.64 Y-13.08 Z25.2 A-547.2161 B-547.2161 F375.0 (move length: 2.0 speed:750.0, e:)
 G01 X2.33 Y-13.06 Z25.2 A-547.2161 B-547.2161 F2389.8 (move length: 0.3 speed:750.0 p:-1, e:)
 G01 X2.03 Y-13.09 Z25.3 A-547.2161 B-547.2161 F2389.8 (move length: 0.3 speed:750.0 p:-1, e:)
@@ -6581,7 +6581,7 @@ G00 A-523.078 B-523.078
 G01 X2.68 Y-13.10 Z28.3 A-523.0781 B-523.0781 F42.3 (move length: 17.7 speed:750.0, e:)
 M3 S400
 G04 P0.500
-M66 P0 L3 Q3 (wait up to 3 seconds for digital input 0 (Plasma ArcOK) to turn on - L3)
+M66 P0 L3 Q5 (wait up to 5 seconds for digital input 0 Plasma-ArcOK to turn on - L3)
 G01 X2.68 Y-13.10 Z26.3 A-523.0781 B-523.0781 F375.0 (move length: 2.0 speed:750.0, e:)
 G01 X2.37 Y-13.08 Z26.2 A-523.0781 B-523.0781 F2389.8 (move length: 0.3 speed:750.0 p:-1, e:)
 G01 X2.06 Y-13.11 Z26.2 A-523.0781 B-523.0781 F2389.8 (move length: 0.3 speed:750.0 p:-1, e:)
@@ -6663,7 +6663,7 @@ G00 A-452.727 B-452.727
 G01 X1.81 Y-26.65 Z27.8 A-452.7273 B-452.7273 F41.1 (move length: 18.2 speed:750.0, e:)
 M3 S400
 G04 P0.500
-M66 P0 L3 Q3 (wait up to 3 seconds for digital input 0 (Plasma ArcOK) to turn on - L3)
+M66 P0 L3 Q5 (wait up to 5 seconds for digital input 0 Plasma-ArcOK to turn on - L3)
 G01 X1.81 Y-26.65 Z25.8 A-452.7273 B-452.7273 F375.0 (move length: 2.0 speed:750.0, e:)
 G01 X1.81 Y-26.34 Z25.8 A-452.7273 B-452.7273 F2390.5 (move length: 0.3 speed:750.0 p:-1, e:)
 G01 X1.76 Y-26.03 Z25.8 A-452.7273 B-452.7273 F2390.5 (move length: 0.3 speed:750.0 p:-1, e:)

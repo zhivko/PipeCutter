@@ -49,7 +49,6 @@ java -jar ./target/SurfaceDemo-standalone-jar-with-dependencies.jar
 On beaglebone add nameservers with following:
 ```
 echo nameserver 8.8.8.8 | sudo tee /etc/resolv.conf  #prints to screen as well
-```
 If you using USB connected BBB you would probably need to define gateway like this:
 ```
 sudo route add default gw 192.168.7.1
@@ -402,9 +401,9 @@ The BBB & Hypertherm CPC connection
 ![PLASMA_WIREUP](https://raw.githubusercontent.com/zhivko/PipeCutter/master/screenshots/PLASMA_WIREUP.jpg)
 Pins to be used on BBB:
 ```
-CRAMPS_P503_2 MISO P929 ...  for thc voltage from mesa thc 10v - needs to go to pru_generic encoder
-CRAMPS_P503_4 SCK  P931 ...  plasma start physically connected to 3.3V relay
-CRAMPS_P503_6 MOSI P930 ...  arc OK - transfer start CNC machine motion
+CRAMPS_P503_2 SPI_CS0 	P928 ...  for thc voltage from mesa thc 10v - needs to go to pru_generic encoder bb_gpio.p9.in-28
+CRAMPS_P503_4 SCK   	P931 ...  plasma start physically connected to 3.3V relay  bb_gpio.p9.out-31 	
+CRAMPS_P503_6 MOSI  	P930 ...  arc OK - transfer start CNC machine motion bb_gpio.p9.in-30 			
 ```
 Fritzing connections below:
 ![Fritzing pipecuter setup](https://raw.githubusercontent.com/zhivko/PipeCutter/master/screenshots/PipeCutter_bb.png)

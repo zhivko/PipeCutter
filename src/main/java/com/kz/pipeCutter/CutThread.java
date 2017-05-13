@@ -133,7 +133,7 @@ public class CutThread extends SwingWorker<String, Object> {
 		System.out.println("name: " + Thread.currentThread().getName());
 		SurfaceDemo.getInstance().myTrail.clear();
 
-		Settings.instance.log("Pipe is " + (SurfaceDemo.instance.pipeIsCircular == true ? "" : "NOT") + " circular.");
+		Settings.instance.log("Pipe is" + (SurfaceDemo.instance.pipeIsCircular == true ? " " : " NOT ") + "circular.");
 
 		Thread.currentThread().setName("CutThread");
 		System.out.println("New name: " + Thread.currentThread().getName());

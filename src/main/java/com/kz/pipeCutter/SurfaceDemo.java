@@ -1349,7 +1349,7 @@ public class SurfaceDemo extends AbstractAnalysis {
 			writeToGcodeFile(String.format(Locale.US, "G04 P%.3f", (pierceTimeMs / 1000.0)));
 
 			if (CutThread.instance.waitForArcOK)
-				writeToGcodeFile("M66 P0 L3 Q3 (wait up to 3 seconds for digital input 0 (Plasma ArcOK) to turn on - L3)");
+				writeToGcodeFile("M66 P0 L3 Q5 (wait up to 5 seconds for digital input 0 Plasma-ArcOK to turn on - L3)");
 
 			try {
 				TimeUnit.MILLISECONDS.sleep(pierceTimeMs);

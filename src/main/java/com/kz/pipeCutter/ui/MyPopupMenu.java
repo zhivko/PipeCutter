@@ -16,7 +16,7 @@ import com.kz.pipeCutter.CutThread;
 import com.kz.pipeCutter.MyContinuousEdge;
 import com.kz.pipeCutter.MyEdge;
 import com.kz.pipeCutter.MyPickablePoint;
-import com.kz.pipeCutter.MyPickablePointZYmidXcomparator;
+import com.kz.pipeCutter.MyPickablePointYZmidXcomparator;
 import com.kz.pipeCutter.SurfaceDemo;
 import com.kz.pipeCutter.BBB.BBBStatus;
 import com.kz.pipeCutter.BBB.commands.ExecuteMdi;
@@ -30,7 +30,7 @@ public class MyPopupMenu extends PopupMenu {
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
 				ArrayList<MyPickablePoint> sortedList = new ArrayList(SurfaceDemo.getInstance().utils.origPoints.values());
-				Collections.sort(sortedList, new MyPickablePointZYmidXcomparator());
+				Collections.sort(sortedList, new MyPickablePointYZmidXcomparator());
 				MyPickablePoint p = SurfaceDemo.getInstance().utils.points.get(sortedList.get(0).getId());
 				
 				SurfaceDemo.instance.lastClickedPointChanged(p);

@@ -55,7 +55,8 @@ java -jar ./target/SurfaceDemo-standalone-jar-with-dependencies.jar
 ###Nameserver on BBB
 On beaglebone add nameservers with following:
 ```
-echo nameserver 8.8.8.8 | sudo tee /etc/resolv.conf  #prints to screen as well
+echo nameserver 8.8.8.8 | sudo tee /etc/resolv.conf
+```
 If you using USB connected BBB you would probably need to define gateway like this:
 ```
 sudo route add default gw 192.168.7.1

@@ -62,7 +62,7 @@ If you using USB connected BBB you would probably need to define gateway like th
 sudo route add default gw 192.168.7.1
 ```
 
-###Internet sharing for USB connected BeagleBone Black
+###Internet sharing for USB connected BeagleBone Black  
 On host pc:
 This should show you interface that has ip 192.168.7.1. For me it is ***enx544a16c5d02c***
 ```

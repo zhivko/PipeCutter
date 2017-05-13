@@ -51,7 +51,7 @@ java -jar ./target/SurfaceDemo-standalone-jar-with-dependencies.jar
 ```
 
 # Linux notes
-##Network setup, name resolution, internet sharing
+##Network setup, name resolution, internet sharing  
 ###Nameserver on BBB
 On beaglebone add nameservers with following:
 ```

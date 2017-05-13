@@ -50,9 +50,9 @@ start PipeCutter with:
 java -jar ./target/SurfaceDemo-standalone-jar-with-dependencies.jar
 ```
 
-# Linux notes
+# Linux notes  
 ##Network setup, name resolution, internet sharing  
-###Nameserver on BBB
+###Nameserver on BBB  
 On beaglebone add nameservers with following:
 ```
 echo nameserver 8.8.8.8 | sudo tee /etc/resolv.conf

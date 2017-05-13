@@ -17,20 +17,20 @@ Used to generate GCODE of Autodesk Inventor pipe like this:
 And runs that gcode on BeagleBone Black  
 ![bbb](https://raw.githubusercontent.com/zhivko/PipeCutter/master/screenshots/REV_A5A.jpg)
 
-With CRAMPS hat
+With CRAMPS hat  
 ![pipe](https://raw.githubusercontent.com/zhivko/PipeCutter/master/screenshots/cramps.jpg)
 
-You can check my Google "Machinekit PipeCutter" album to better get idea of project:
+You can check my Google "Machinekit PipeCutter" album to better get idea of project:  
 [G+ Album](https://goo.gl/photos/4A623DBE1DQRwYfcA "Google+ Album")
 
-Ability to produce 3D offset like this (compensate for plasma or laser kerf offset)
+Ability to produce 3D offset like this (compensate for plasma or laser kerf offset)  
 ![bbb](https://raw.githubusercontent.com/zhivko/PipeCutter/master/screenshots/3d-offset.png)
-and circular pipe with offset
+and circular pipe with offset  
 ![bbb](https://raw.githubusercontent.com/zhivko/PipeCutter/master/screenshots/circularPipeWithOffset.png)
 testing arcOk signa- circular pipe with plenty of holes
-inventor design
+inventor design  
 ![bbb](https://raw.githubusercontent.com/zhivko/PipeCutter/master/screenshots/circularPipeWithOffsetArcOkTest-Inventor.png)
-to edges in PipeCutter - very simple
+to edges in PipeCutter - very simple  
 ![bbb](https://raw.githubusercontent.com/zhivko/PipeCutter/master/screenshots/circularPipeWithOffsetArcOkTest.png)
 
 **Steps to start SW**  

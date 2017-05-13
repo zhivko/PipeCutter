@@ -583,8 +583,7 @@ public class Utils {
 		float val = Float.valueOf(SurfaceDemo.instance.angleTxt);
 		SurfaceDemo.instance.calculateRotationPoint(val);
 	}
-	
-	
+
 	public void calculateContinuousEdges() {
 		int edgeNo = 1;
 		continuousEdges = new ConcurrentHashMap<Integer, MyContinuousEdge>();
@@ -874,17 +873,10 @@ public class Utils {
 
 		double angleToOffset = 0;
 
-		if (SurfaceDemo.instance.pipeIsCircular) {
-			if (continuousEdge.edgeType == MyContinuousEdge.EdgeType.START)
-				angleToOffset = -Math.PI / 2;
-			else
-				angleToOffset = -Math.PI / 2;
-		} else {
-			if (continuousEdge.edgeType == MyContinuousEdge.EdgeType.START)
-				angleToOffset = Math.PI / 2;
-			else
-				angleToOffset = -Math.PI / 2;
-		}
+		if (continuousEdge.edgeType == MyContinuousEdge.EdgeType.START)
+			angleToOffset = Math.PI / 2;
+		else
+			angleToOffset = -Math.PI / 2;
 
 		int index = continuousEdge.points.indexOf(point.id);
 		int prevIndex = -1;

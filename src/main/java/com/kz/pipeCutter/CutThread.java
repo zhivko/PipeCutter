@@ -130,6 +130,8 @@ public class CutThread extends SwingWorker<String, Object> {
 	}
 
 	public CutThread() {
+		SurfaceDemo.getInstance().utils.rotatePoints(0, true, false);
+
 		System.out.println("name: " + Thread.currentThread().getName());
 		SurfaceDemo.getInstance().myTrail.clear();
 
@@ -166,34 +168,34 @@ public class CutThread extends SwingWorker<String, Object> {
 
 		SurfaceDemo.instance.gCodeLineNo = 0;
 		SurfaceDemo.instance.g93mode = false;
-		ArrayList<MyPickablePoint> sortedList = new ArrayList<MyPickablePoint>(cuttingPoints);
-		Collections.sort(sortedList, new MyPickablePointYComparator());
+		SurfaceDemo.instance.writeToGcodeFile("G90 (switch to absolute coordinates)");
+		SurfaceDemo.instance.writeToGcodeFile("G94 (units per minute mode)");
+
+		// out.println(String.format(Locale.US, "G00 Z%.3f F%s", diagonal / 2.0f +
+		// 20.0f, Settings.getInstance().getSetting("gcode_feedrate_g0")));
+		SurfaceDemo.instance.writeToGcodeFile(String.format(java.util.Locale.US, "%s", "G00 A0.0 B0.0"));
+
+		ArrayList<MyPickablePoint> sortedList = new ArrayList<MyPickablePoint>(cuttingPoints);	
+		Collections.sort(sortedList, new MyPickablePointYZmidXcomparator());
 
 		// SurfaceDemo.getInstance().utils.establishNeighbourPoints();
-		MyPickablePoint firstOuterPoint = sortedList.get(0);
+		MyPickablePoint firstOuterPoint = sortedList.get(sortedList.size() - 1);
 
 		if (wholePipe)
 			firstPoints = SurfaceDemo.getInstance().utils.findAllConnectedPoints(firstOuterPoint, new ArrayList<Integer>());
 		else
 			firstPoints = new ArrayList<Integer>();
 
-		double mminY = sortedList.get(0).xyz.y;
-		double mmaxY = sortedList.get(sortedList.size() - 1).xyz.y;
+		double mminY = sortedList.get(sortedList.size() - 1).xyz.y;
+		double mmaxY = sortedList.get(0).xyz.y;
 
 		ArrayList<MyPickablePoint> sortedList2 = new ArrayList<MyPickablePoint>(cuttingPoints);
-		Collections.sort(sortedList2, new MyPickablePointZMidXYComparator());
-		SurfaceDemo.instance.utils.previousPoint = sortedList2.get(0).xyz;
+		Collections.sort(sortedList2, new MyPickablePointYZmidXcomparator());
+		SurfaceDemo.instance.utils.previousPoint = sortedList2.get(sortedList.size() - 1).xyz;
 		SurfaceDemo.instance.utils.previousAngle = 0.0f;
 
 		SurfaceDemo.getInstance().angleTxt = "0.0";
-		SurfaceDemo.instance.writeToGcodeFile("G90 (switch to absolute coordinates)");
-		SurfaceDemo.instance.writeToGcodeFile("G94 (units per minute mode)");
-
-		// out.println(String.format(Locale.US, "G00 Z%.3f F%s", diagonal / 2.0f +
-		// 20.0f, Settings.getInstance().getSetting("gcode_feedrate_g0")));
-		SurfaceDemo.getInstance().utils.rotatePoints(0, true, false);
-		SurfaceDemo.instance.writeToGcodeFile(String.format(java.util.Locale.US, "%s", "G00 A0.0 B0.0"));
-
+		
 		
 		double diagonal = (SurfaceDemo.getInstance().utils.maxEdge * Math.sqrt(2.0f));
 		SurfaceDemo.instance.writeToGcodeFile(String.format(Locale.US, "G00 X%.3f Y%.3f Z%.3f F%s", SurfaceDemo.instance.utils.previousPoint.x,
@@ -290,13 +292,16 @@ public class CutThread extends SwingWorker<String, Object> {
 			ArrayList<MyPickablePoint> pointsToCut = new ArrayList<MyPickablePoint>();
 			for (MyContinuousEdge contEdge : edgesToCut) {
 				pointsToCut = new ArrayList<MyPickablePoint>();
+				
 				for (Integer pointId : contEdge.points) {
 					pointsToCut.add(SurfaceDemo.getInstance().utils.points.get(pointId));
 				}
+				ArrayList<MyPickablePoint> sortedPointsToCut = new ArrayList<MyPickablePoint>(pointsToCut);
+				Collections.sort(sortedPointsToCut, new MyPickablePointYZmidXcomparator());
 				// Collections.sort(pointsToCut, new
 				// MyPickablePointMidXToEdgeCenterComparator(contEdge.center));
 				if (pointsToCut.size() > 0) {
-					for (MyPickablePoint myPoint : pointsToCut) {
+					for (MyPickablePoint myPoint : sortedPointsToCut) {
 						if (!listContainsPoint(myPoint, alAlreadyAddedPoints)) {
 							// lets move to safe distance
 							double diagonal = (SurfaceDemo.getInstance().utils.maxEdge * Math.sqrt(2.0f));

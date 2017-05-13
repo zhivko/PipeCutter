@@ -760,7 +760,6 @@ public class SurfaceDemo extends AbstractAnalysis {
 						float angleDelta = Math.round(absAngle) - angle;
 						//SurfaceDemo.instance.utils.rotatePoints(Math.round(absAngle), false, false);
 						SurfaceDemo.instance.utils.rotatePoints(angleDelta, false, true);
-						System.out.println("angle=" + angleTxt);
 					}
 				}
 

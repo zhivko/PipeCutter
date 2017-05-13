@@ -18,6 +18,9 @@ You can check my Google "Machinekit PipeCutter" album to better get idea of proj
 
 Ability to produce 3D offset like this (compensate for plasma or laser kerf offset)
 ![bbb](https://raw.githubusercontent.com/zhivko/PipeCutter/master/screenshots/3d-offset.png)
+and circular pipe with offset
+![bbb](https://raw.githubusercontent.com/zhivko/PipeCutter/master/screenshots/circularPipeWithOffset.png)
+
 
 **Steps to start SW**  
 You would need:

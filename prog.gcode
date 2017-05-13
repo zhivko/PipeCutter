@@ -1,10 +1,10 @@
 G90 (switch to absolute coordinates)
 G94 (units per minute mode)
 G00 A0.0 B0.0
-G00 X-24.186 Y42.332 Z54.295 F750
+G00 X-0.118 Y63.053 Z54.295 F750
 G64 P.5 Q.5 (path blending - P away from point)
 G93 (inverse time mode)
-G01 X0.00 Y85.78 Z46.1 A0.0000 B0.0000 F11.3 (move length: 66.6 speed:750.0, e:) (pointId: -100000)
+G01 X0.00 Y85.78 Z46.1 A0.0000 B0.0000 F23.8 (move length: 31.5 speed:750.0, e:) (pointId: -100000)
 G00 A-193.200 B-193.200
 G01 X-1.96 Y88.23 Z28.5 A-193.1999 B-193.1999 F41.9 (move length: 17.9 speed:750.0, e:)
 M3 S400

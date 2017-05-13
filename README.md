@@ -10,9 +10,9 @@ LinuxCNC controller: **TexasInstruments BeagleBone Black**
 
 
 
-Used to generate GCODE of Autodesk Inventor pipe like this:
-![pipe](https://raw.githubusercontent.com/zhivko/PipeCutter/master/screenshots/pipe.png)
-![pipeCutter](https://raw.githubusercontent.com/zhivko/PipeCutter/master/screenshots/PipeCutterVideo.gif)
+Used to generate GCODE of Autodesk Inventor pipe like this:  
+![pipe](https://raw.githubusercontent.com/zhivko/PipeCutter/master/screenshots/pipe.png)  
+![pipeCutter](https://raw.githubusercontent.com/zhivko/PipeCutter/master/screenshots/PipeCutterVideo.gif)  
 
 And runs that gcode on BeagleBone Black  
 ![bbb](https://raw.githubusercontent.com/zhivko/PipeCutter/master/screenshots/REV_A5A.jpg)

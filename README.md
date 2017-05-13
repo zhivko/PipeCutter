@@ -51,8 +51,8 @@ java -jar ./target/SurfaceDemo-standalone-jar-with-dependencies.jar
 ```
 
 # Linux notes  
-##Network setup, name resolution, internet sharing  
-###Nameserver on BBB  
+## Network setup, name resolution, internet sharing  
+### Nameserver on BBB  
 On beaglebone add nameservers with following:
 ```
 echo nameserver 8.8.8.8 | sudo tee /etc/resolv.conf
@@ -62,7 +62,7 @@ If you using USB connected BBB you would probably need to define gateway like th
 sudo route add default gw 192.168.7.1
 ```
 
-###Internet sharing for USB connected BeagleBone Black  
+### Internet sharing for USB connected BeagleBone Black  
 On host pc:
 This should show you interface that has ip 192.168.7.1. For me it is ***enx544a16c5d02c***
 ```
@@ -115,7 +115,7 @@ sudo sysctl -w net.ipv4.ip_forward=1
 sudo /etc/init.d/procps restart
 ```
 
-**Internet sharing on windows for USB connected BeagleBone Black**
+** Internet sharing on windows for USB connected BeagleBone Black**
 Follow: http://lanceme.blogspot.hr/2013/06/windows-7-internet-sharing-for.html
 ```
 sudo su
@@ -124,12 +124,12 @@ route add default gw 192.168.7.1
 echo 'nameserver 8.8.8.8' >> /etc/resolv.conf
 ```
 
-**Backup BBB (write eMMC to uSD)**
+** Backup BBB (write eMMC to uSD)**
 ```
 sudo /opt/scripts/tools/eMMC/beaglebone-black-make-microSD-flasher-from-eMMC.sh
 ```
 
-**BBB becomes unresponsive**
+** BBB becomes unresponsive**
 ```
 http://dave.cheney.net/2013/09/22/two-point-five-ways-to-access-the-serial-console-on-your-beaglebone-black
 ```
@@ -162,12 +162,12 @@ change to use only ipv4
 sudo nano /etc/avahi/avahi-daemon.conf
 use-ipv6=no
 ```
-***Enable lingering for long running processes started with machinekit user***
+*** Enable lingering for long running processes started with machinekit user***
 ```
 loginctl enable-linger machinekit
 ```
 
-**flashing eMMC from uSD card**
+** flashing eMMC from uSD card**
 
 1. change uEnv.txt as below (notice last line ```init-eMMC-flasher-v3.sh```).
 2. reboot. The blue on-board LEDs should light in sequence and then continue to flash for the next 5–25 minutes (depending on the distribution used and the speed of the SD card). The latest distribution flashes in a Cylon/Knightrider pattern.
@@ -239,7 +239,7 @@ cmdline=init=/opt/scripts/tools/eMMC/init-eMMC-flasher-v3.sh
 ```
 
 
-##flashing BBB from RobertNelson Machinekit image
+## flashing BBB from RobertNelson Machinekit image
 Get image from:  
 ```
 wget https://rcn-ee.com/rootfs/bb.org/testing/2016-06-19/machinekit/bone-debian-8.5-machinekit-armhf-2016-06-19-4gb.img.xz
@@ -269,7 +269,7 @@ tmpfs             806708       80    806628   1% /run/user/1000
 More detailed instructions in:
 http://elinux.org/Beagleboard:BeagleBoneBlack_Debian#microSD.2FStandalone:_.28machinekit.29_Based_on_Debian_Jessie_.28new.29
 <br>
-***PostInstall procedure***  
+** PostInstall procedure **  
 Configure locale
 ```
 sudo dpkg-reconfigure locales
@@ -283,8 +283,8 @@ Test if xenomai is working
 latency-test
 ```
 
-##Machinekit notes
-###Building machinekit from source
+## Machinekit notes
+### Building machinekit from source
 check:
 ```
 http://www.machinekit.io/docs/developing/machinekit-developing/
@@ -311,7 +311,7 @@ make clean
 make
 ```
 
-###Enable remote it machinekit.ini
+### Enable remote it machinekit.ini
 ```
 nano ~/git/machinekitOff/etc/linuxcnc/machinekit.ini
 ```
@@ -334,7 +334,7 @@ issue:
 ```
 find ~/git/machinekit/src -type f -exec touch {} +
 ```
-###Building machinekit java protobuff classes
+### Building machinekit java protobuff classes
 On BBB or system where you want to build protobuf java machinkeit classes clone repository
 ```
 git clone https://github.com/machinekoder/machinetalk-protobuf.git
@@ -351,10 +351,10 @@ Then you get java remote classes that are used in PipeCutter machinekit client a
 
  
 
-###Hal remote components
+### Hal remote components
 https://github.com/mhaberler/asciidoc-sandbox/wiki/Remote-HAL-Components
-###LinuxCnc related
-**halcmd**
+### LinuxCnc related
+** halcmd **
 To show one pin value:
 ```
 halcmd show pin motion.spindle-*
@@ -385,14 +385,14 @@ comp --install ~/git/machinekit/mycomponents/atanxy.comp
 comp --install ~/git/machinekit/mycomponents/changeSign.comp
 ```
 
-**instal instantiable component *.icomp**
+** instal instantiable component *.icomp **
 ```
 instcomp --install ~/git/machinekit/mycomponents/udp.icomp
 instcomp --install ~/git/machinekit/mycomponents/myrand.icomp
 ```
 
 
-#Plasma integration
+# Plasma integration
 Plasma used: Powermax 45 XP
 <br>
 [Powermax 45 XP manual](./screenshots/OM_809240r1_PMX45XP.pdf)
@@ -417,7 +417,7 @@ Fritzing connections below:
 ![Fritzing pipecuter setup](https://raw.githubusercontent.com/zhivko/PipeCutter/master/screenshots/PipeCutter_bb.png)
 
 
-##THCAD
+## THCAD
 [THCAD 10V manual](./screenshots/THCAD_10v.pdf)
 <br>
 OUTPUT FREQUENCY switch: use F/32: 1000000Hz/32 = 31250Hz
@@ -429,10 +429,10 @@ Thcad calibration:
 <br>
 ![THCAD_10V](https://raw.githubusercontent.com/zhivko/PipeCutter/master/screenshots/thcad10_calibration.ods)
 
-##Linuxcnc thc − Torch Height Control component
+## Linuxcnc thc − Torch Height Control component
 [Linuxcnc THC comp](http://linuxcnc.org/docs/html/man/man9/thc.9.html)
 
-#Next steps
+# Next steps
 stmbl servo controler that uses "cascaded pid with feed forward, and clamping"
 https://github.com/rene-dev/stmbl/blob/newstuff/src/comps/ypid.comp
 

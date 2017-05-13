@@ -21,6 +21,9 @@ Ability to produce 3D offset like this (compensate for plasma or laser kerf offs
 and circular pipe with offset
 ![bbb](https://raw.githubusercontent.com/zhivko/PipeCutter/master/screenshots/circularPipeWithOffset.png)
 testing arcOk signa- circular pipe with plenty of holes
+inventor design
+![bbb](https://raw.githubusercontent.com/zhivko/PipeCutter/master/screenshots/circularPipeWithOffsetArcOkTest-Inventor.png)
+to edges in PipeCutter - very simple
 ![bbb](https://raw.githubusercontent.com/zhivko/PipeCutter/master/screenshots/circularPipeWithOffsetArcOkTest.png)
 
 **Steps to start SW**  

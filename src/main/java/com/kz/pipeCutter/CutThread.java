@@ -10,16 +10,12 @@ import java.util.concurrent.ExecutionException;
 
 import javax.swing.SwingWorker;
 import javax.vecmath.Point3d;
-import javax.vecmath.Tuple3d;
 
-import org.apache.commons.math3.exception.MathArithmeticException;
-import org.apache.commons.math3.exception.util.LocalizedFormats;
 import org.apache.commons.math3.geometry.euclidean.threed.Line;
 import org.apache.commons.math3.geometry.euclidean.threed.Rotation;
 import org.apache.commons.math3.geometry.euclidean.threed.Vector3D;
 import org.apache.commons.math3.geometry.euclidean.twod.Vector2D;
 import org.apache.commons.math3.util.FastMath;
-import org.apache.commons.math3.util.MathArrays;
 import org.jzy3d.chart.controllers.camera.AbstractCameraController;
 import org.jzy3d.chart.controllers.mouse.camera.AWTCameraMouseController;
 import org.jzy3d.colors.Color;
@@ -175,8 +171,8 @@ public class CutThread extends SwingWorker<String, Object> {
 		// 20.0f, Settings.getInstance().getSetting("gcode_feedrate_g0")));
 		SurfaceDemo.instance.writeToGcodeFile(String.format(java.util.Locale.US, "%s", "G00 A0.0 B0.0"));
 
-		ArrayList<MyPickablePoint> sortedList = new ArrayList<MyPickablePoint>(cuttingPoints);	
-		Collections.sort(sortedList, new MyPickablePointYZmidXcomparator());
+		ArrayList<MyPickablePoint> sortedList = new ArrayList<MyPickablePoint>(cuttingPoints);
+		Collections.sort(sortedList, new MyPickablePointYZMidXComparator());
 
 		// SurfaceDemo.getInstance().utils.establishNeighbourPoints();
 		MyPickablePoint firstOuterPoint = sortedList.get(sortedList.size() - 1);
@@ -190,13 +186,12 @@ public class CutThread extends SwingWorker<String, Object> {
 		double mmaxY = sortedList.get(0).xyz.y;
 
 		ArrayList<MyPickablePoint> sortedList2 = new ArrayList<MyPickablePoint>(cuttingPoints);
-		Collections.sort(sortedList2, new MyPickablePointYZmidXcomparator());
-		SurfaceDemo.instance.utils.previousPoint = sortedList2.get(sortedList.size() - 1).xyz;
+		Collections.sort(sortedList2, new MyPickablePointZYmidXcomparator());
+		SurfaceDemo.instance.utils.previousPoint = sortedList2.get(0).xyz;
 		SurfaceDemo.instance.utils.previousAngle = 0.0f;
 
 		SurfaceDemo.getInstance().angleTxt = "0.0";
-		
-		
+
 		double diagonal = (SurfaceDemo.getInstance().utils.maxEdge * Math.sqrt(2.0f));
 		SurfaceDemo.instance.writeToGcodeFile(String.format(Locale.US, "G00 X%.3f Y%.3f Z%.3f F%s", SurfaceDemo.instance.utils.previousPoint.x,
 				SurfaceDemo.instance.utils.previousPoint.y, diagonal / 2.0f + 20.0f, Settings.getInstance().getSetting("gcode_feedrate_g0")));
@@ -292,12 +287,12 @@ public class CutThread extends SwingWorker<String, Object> {
 			ArrayList<MyPickablePoint> pointsToCut = new ArrayList<MyPickablePoint>();
 			for (MyContinuousEdge contEdge : edgesToCut) {
 				pointsToCut = new ArrayList<MyPickablePoint>();
-				
+
 				for (Integer pointId : contEdge.points) {
 					pointsToCut.add(SurfaceDemo.getInstance().utils.points.get(pointId));
 				}
 				ArrayList<MyPickablePoint> sortedPointsToCut = new ArrayList<MyPickablePoint>(pointsToCut);
-				Collections.sort(sortedPointsToCut, new MyPickablePointYZmidXcomparator());
+				Collections.sort(sortedPointsToCut, new MyPickablePointMidXToEdgeCenterComparator(contEdge.center));
 				// Collections.sort(pointsToCut, new
 				// MyPickablePointMidXToEdgeCenterComparator(contEdge.center));
 				if (pointsToCut.size() > 0) {
@@ -305,9 +300,9 @@ public class CutThread extends SwingWorker<String, Object> {
 						if (!listContainsPoint(myPoint, alAlreadyAddedPoints)) {
 							// lets move to safe distance
 							double diagonal = (SurfaceDemo.getInstance().utils.maxEdge * Math.sqrt(2.0f));
-							MyPickablePoint safeRetractPoint = new MyPickablePoint(-100000, new Point3d(0, myPoint.xyz.y, diagonal / 2 + 10),
-									Color.BLACK, 0.4f, -200000);
-							SurfaceDemo.getInstance().move(safeRetractPoint, false, false, cutOffsetMm, true, null);							
+							MyPickablePoint safeRetractPoint = new MyPickablePoint(-100000, new Point3d(0, myPoint.xyz.y, diagonal / 2 + 10), Color.BLACK, 0.4f,
+									-200000);
+							SurfaceDemo.getInstance().move(safeRetractPoint, false, false, cutOffsetMm, true, null);
 
 							// lets rotate pipe so myPoint will be topz point
 							double pointAngle = Math.atan2(myPoint.getZ(), myPoint.getX()) * 180.0d / Math.PI;
@@ -317,10 +312,10 @@ public class CutThread extends SwingWorker<String, Object> {
 							myPoint.setColor(Color.BLUE);
 							SurfaceDemo.getInstance().utils.rotatePoints(angleDelta, false);
 							SurfaceDemo.getInstance().getChart().render();
-							
+
 							float currAngle = Float.valueOf(SurfaceDemo.instance.angleTxt);
-							
-							SurfaceDemo.instance.writeToGcodeFile(String.format(java.util.Locale.US, "G00 A%.3f B%.3f",currAngle,currAngle));
+
+							SurfaceDemo.instance.writeToGcodeFile(String.format(java.util.Locale.US, "G00 A%.3f B%.3f", currAngle, currAngle));
 
 							double angle = followThePath(myPoint, this.alAlreadyAddedPoints);
 							hasBeenCutting = true;
@@ -463,7 +458,8 @@ public class CutThread extends SwingWorker<String, Object> {
 			}
 		}
 		Vector3D kerfOffVec = new Vector3D(0, 0, 0);
-		if (!isOnEdge) { // we don't do this for line just for edge forming closed loops
+		if (!isOnEdge) { // we don't do this for line just for edge forming closed
+											// loops
 			float radius = Float.valueOf(Settings.instance.getSetting("plasma_leadin_radius"));
 
 			Point offsetPoint = offPointAndPlane.point;
@@ -539,7 +535,10 @@ public class CutThread extends SwingWorker<String, Object> {
 				alAlreadyAddedPoints.add(Integer.valueOf(tempPoint.id));
 			}
 			if (contEdge.edgeType == MyContinuousEdge.EdgeType.START)
-				tempPoint = SurfaceDemo.getInstance().utils.findConnectedPoint(tempPoint, alAlreadyAddedPoints, false);
+				if (SurfaceDemo.instance.pipeIsCircular)
+					tempPoint = SurfaceDemo.getInstance().utils.findConnectedPoint(tempPoint, alAlreadyAddedPoints, true);
+				else
+					tempPoint = SurfaceDemo.getInstance().utils.findConnectedPoint(tempPoint, alAlreadyAddedPoints, false);
 			else if (contEdge.edgeType == MyContinuousEdge.EdgeType.END)
 				tempPoint = SurfaceDemo.getInstance().utils.findConnectedPoint(tempPoint, alAlreadyAddedPoints, true);
 			else {

@@ -874,7 +874,10 @@ public class Utils {
 		double angleToOffset = 0;
 
 		if (continuousEdge.edgeType == MyContinuousEdge.EdgeType.START)
-			angleToOffset = Math.PI / 2;
+			if (SurfaceDemo.instance.pipeIsCircular)
+				angleToOffset = -Math.PI / 2;
+			else
+				angleToOffset = Math.PI / 2;
 		else
 			angleToOffset = -Math.PI / 2;
 

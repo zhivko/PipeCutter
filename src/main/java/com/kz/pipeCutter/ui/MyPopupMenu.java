@@ -24,7 +24,58 @@ import com.kz.pipeCutter.BBB.commands.ExecuteMdi;
 public class MyPopupMenu extends PopupMenu {
 
 	public MyPopupMenu() {
-		
+
+		MenuItem MenuItem14 = new MenuItem("Rotate around X for 90[deg]");
+		/*
+		 * MenuItem14.addActionListener(new ActionListener() {
+		 * 
+		 * @Override public void actionPerformed(ActionEvent arg0) {
+		 * 
+		 * double[] axisDouble = { 1.0d, 0.0d, 0.0d }; Vector3D axis = new
+		 * Vector3D(axisDouble); Rotation rot = new Rotation(axis,
+		 * Math.toRadians(90.0d)); // Rotation rotZ1 = new Rotation(zAxis,
+		 * Math.toRadians(angleDeg)); for (MyPickablePoint point :
+		 * SurfaceDemo.instance.utils.origPoints.values()) { double[] myPointDouble
+		 * = { point.getX(), point.getY(), point.getZ() }; Vector3D myPoint = new
+		 * Vector3D(myPointDouble); Vector3D result = rot.applyTo(myPoint);
+		 * SurfaceDemo.instance.utils.origPoints.get(point.id).setCoord(result.getX(
+		 * ), result.getY(), result.getZ());
+		 * SurfaceDemo.instance.utils.points.get(point.id).setCoord(result.getX(),
+		 * result.getY(), result.getZ()); }
+		 * 
+		 * 
+		 * SurfaceDemo.instance.utils.calculateMaxAndMins();
+		 * 
+		 * SurfaceDemo.instance.utils.calculateCenters();
+		 * SurfaceDemo.instance.utils.markRadiusEdges();
+		 * SurfaceDemo.instance.splitLongEdges();
+		 * SurfaceDemo.instance.splitNearRadiusEdge();
+		 * SurfaceDemo.instance.utils.establishNeighbourPoints();
+		 * 
+		 * 
+		 * SurfaceDemo.instance.utils.calculateContinuousEdges();
+		 * 
+		 * SurfaceDemo.instance.utils.origPoints = new ConcurrentHashMap<Integer,
+		 * MyPickablePoint>(); for (MyPickablePoint mp :
+		 * SurfaceDemo.instance.utils.points.values()) {
+		 * SurfaceDemo.instance.utils.origPoints.put(new Integer(mp.id),
+		 * mp.clone()); }
+		 * 
+		 * SurfaceDemo.instance.initDraw();
+		 * 
+		 * } });
+		 */
+		MenuItem14.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+				SurfaceDemo.instance.rotateArroundX = SurfaceDemo.instance.rotateArroundX + 90;
+				SurfaceDemo.instance.init();
+			}
+		});
+
+		this.add(MenuItem14);
+		this.addSeparator();
+
 		MenuItem MenuItem13 = new MenuItem("Select top right point (startPoint)");
 		MenuItem13.addActionListener(new ActionListener() {
 			@Override
@@ -32,14 +83,14 @@ public class MyPopupMenu extends PopupMenu {
 				ArrayList<MyPickablePoint> sortedList = new ArrayList(SurfaceDemo.getInstance().utils.origPoints.values());
 				Collections.sort(sortedList, new MyPickablePointZYmidXcomparator());
 				MyPickablePoint p = SurfaceDemo.getInstance().utils.points.get(sortedList.get(0).getId());
-				
+
 				SurfaceDemo.instance.lastClickedPointChanged(p);
-				
+
 			}
 		});
-		this.add(MenuItem13);		
+		this.add(MenuItem13);
 		this.addSeparator();
-		
+
 		MenuItem MenuItem = new MenuItem("Cut whole pipe");
 		MenuItem.addActionListener(new ActionListener() {
 			@Override
@@ -187,7 +238,7 @@ public class MyPopupMenu extends PopupMenu {
 			public void actionPerformed(ActionEvent arg0) {
 
 				MyPickablePoint mp = SurfaceDemo.instance.lastClickedPoint;
-				String gCode = SurfaceDemo.instance.utils.coordinateToGcode(mp,null);
+				String gCode = SurfaceDemo.instance.utils.coordinateToGcode(mp, null);
 				SurfaceDemo.instance.smoothie.send(gCode);
 
 			}

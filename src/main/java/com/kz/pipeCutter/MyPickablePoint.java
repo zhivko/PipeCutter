@@ -11,7 +11,7 @@ import org.jzy3d.plot3d.primitives.pickable.PickablePoint;
 
 public class MyPickablePoint extends PickablePoint {
 
-	int id;
+	public int id;
 	public Point3d point;
 	ArrayList<MyPickablePoint> neighbourPoints;
 	public int inventorEdge;

@@ -78,19 +78,6 @@ public class Utils {
 			points.put(id, mp);
 		}
 
-		if (maxX < p.x)
-			maxX = p.x;
-		if (maxY < p.y)
-			maxY = p.y;
-		if (maxZ < p.z)
-			maxZ = p.z;
-		if (minX > p.x)
-			minX = p.x;
-		if (minY > p.y)
-			minY = p.y;
-		if (minZ > p.z)
-			minZ = p.z;
-
 		return mp;
 	}
 
@@ -588,6 +575,9 @@ public class Utils {
 		int edgeNo = 1;
 		continuousEdges = new ConcurrentHashMap<Integer, MyContinuousEdge>();
 		for (MyPickablePoint point : points.values()) {
+			point.continuousEdgeNo = -1;
+		}
+		for (MyPickablePoint point : points.values()) {
 			if (point.continuousEdgeNo == -1) {
 				MyContinuousEdge contEdge = new MyContinuousEdge(edgeNo, -1);
 				ArrayList<Integer> pointsOfEdgeAl = findAllConnectedPoints(point, new ArrayList<Integer>());
@@ -617,15 +607,6 @@ public class Utils {
 				edgeNo++;
 			}
 		}
-
-		// calculate type of Edge START MIDDLE or END
-		// ArrayList<MyContinuousEdge> sortedContinuousEdgeList = new
-		// ArrayList(continuousEdges.values());
-		// Collections.sort(sortedContinuousEdgeList, new MyEdgeYComparator());
-		//
-		// sortedContinuousEdgeList.get(0).edgeType = MyContinuousEdge.EdgeType.END;
-		// sortedContinuousEdgeList.get(sortedContinuousEdgeList.size() -
-		// 1).edgeType = MyContinuousEdge.EdgeType.START;
 
 		int minYPointInd = 0;
 		int maxYPointInd = 0;
@@ -765,6 +746,8 @@ public class Utils {
 		maxX = Double.MIN_VALUE;
 		maxY = Double.MIN_VALUE;
 		maxZ = Double.MIN_VALUE;
+		
+		maxEdge = Double.MIN_VALUE;
 
 		for (MyPickablePoint point : this.points.values()) {
 			if (point.getX() < this.minX)
@@ -787,6 +770,26 @@ public class Utils {
 		if (maxZ - minZ > maxEdge)
 			maxEdge = maxZ - minZ;
 
+		SurfaceDemo.instance.dimX = Double.valueOf(maxX - minX);
+		SurfaceDemo.instance.dimZ =  Double.valueOf(maxZ - minZ);
+		Settings.instance.setSetting("pipe_dim_x", SurfaceDemo.instance.dimX);
+		Settings.instance.setSetting("pipe_dim_z", SurfaceDemo.instance.dimZ);
+		Settings.instance.setSetting("pipe_dim_max_y", Double.valueOf(maxY));
+		Settings.instance.setSetting("pipe_dim_min_y", Double.valueOf(minY));		
+		
+		SurfaceDemo.instance.dimX = Double.valueOf(maxX - minX);
+		SurfaceDemo.instance.dimZ = Double.valueOf(maxZ - minZ);
+		
+		SurfaceDemo.instance.pipeIsCircular = isPipeCircular();
+
+		if(!SurfaceDemo.instance.pipeIsCircular)
+			SurfaceDemo.instance.dimR = Double.valueOf(Settings.instance.getSetting("pipe_radius"));
+		else
+		{
+			double radius = Math.sqrt(SurfaceDemo.instance.dimX/2 * SurfaceDemo.instance.dimX/2 + SurfaceDemo.instance.dimZ/2 * SurfaceDemo.instance.dimZ/2);
+			SurfaceDemo.instance.dimR = radius;
+		}		
+		
 	}
 
 	public void showLengthDistrib() {
@@ -867,6 +870,8 @@ public class Utils {
 
 	public PointAndPlane calculateOffsetPointAndPlane(MyPickablePoint point) {
 		boolean plotIntermediateResult = false;
+		boolean plotPlane = false;
+
 		PointAndPlane ret = new PointAndPlane();
 
 		MyContinuousEdge continuousEdge = continuousEdges.get(point.continuousEdgeNo);
@@ -877,7 +882,9 @@ public class Utils {
 			if (SurfaceDemo.instance.pipeIsCircular)
 				angleToOffset = -Math.PI / 2;
 			else
-				angleToOffset = Math.PI / 2;
+				angleToOffset = - Math.PI / 2;
+		else if (continuousEdge.edgeType == MyContinuousEdge.EdgeType.ONPIPE)
+			angleToOffset = -Math.PI / 2;
 		else
 			angleToOffset = -Math.PI / 2;
 
@@ -1012,18 +1019,29 @@ public class Utils {
 			Vector3D normalStartRot = rotPlane.applyTo(normalStart);
 			Vector3D normalEndRot = rotPlane.applyTo(normalEnd);
 
+//			LineStrip ls1 = new LineStrip(new Point(new Coord3d(normalStartRot.getX(), normalStartRot.getY(), normalStartRot.getZ()))
+//					,new Point(new Coord3d(normalEndRot.getX(), normalEndRot.getY(), normalEndRot.getZ())));
+//			ls1.setWireframeColor(Color.RED);
+//			ls1.setWidth(2);
+//			SurfaceDemo.instance.myComposite.add(ls1);
+			
 			Vector3D planeNormal = normalStartRot.subtract(normalEndRot);
 			ret.plane = new Plane(normalEndRot, planeNormal, 0.0001);
 
-			if (plotIntermediateResult)
+			if (plotPlane)
 				for (int k = -10; k < 10; k++) {
 					for (int l = -10; l < 10; l++) {
 						Vector2D vect2d = new Vector2D(k * 0.1d, l * 0.1d);
 						Vector3D inPlanePoint = ret.plane.getPointAt(vect2d, 0);
+						//Vector3D inPlanePoint2= inPlanePoint.add(vecPoint);
+						
 						Point planePoint = new Point(new Coord3d(inPlanePoint.getX(), inPlanePoint.getY(), inPlanePoint.getZ()));
+						
 						planePoint.setColor(Color.RED);
 						planePoint.setWidth(0.3f);
 						SurfaceDemo.instance.myComposite.add(planePoint);
+						//SurfaceDemo.instance.getChart().render();
+						//System.out.print("");
 					}
 				}
 		}
@@ -1034,13 +1052,13 @@ public class Utils {
 		Vector3D vecA = vecPoint.subtract(vecPointPrevProj);
 		Vector3D vecB = vecPointNextProj.subtract(vecPoint);
 
-		Line l = new Line(vecPointPrevProj, vecPointNextProj, 0.1);
+		Line l = new Line(vecPointPrevProj, vecPointNextProj, 0.01);
 		if (l.contains(vecPoint)) {
 			// all 3 points are collinear
 			// point is NOT on radius edge
 			// try first with 90degree and with -90 degree and take the angle that
 			// produces point nearest to center of edge
-
+			System.out.println("Colinear");
 			Rotation rotation1 = new Rotation(ret.plane.getNormal(), angleToOffset);
 			Vector3D rotatedA = rotation1.applyTo(vecA).normalize();
 			Vector3D newPoint = vecPoint.add(rotatedA.scalarMultiply(SurfaceDemo.getInstance().getKerfOffset()));
@@ -1079,8 +1097,8 @@ public class Utils {
 				SurfaceDemo.instance.getChart().render();
 			}
 
-			Line lineA = new Line(pointA1, pointB1, Math_E);
-			Line lineB = new Line(pointA2, pointB2, Math_E);
+			Line lineA = new Line(pointA1, pointB1, 0.1);
+			Line lineB = new Line(pointA2, pointB2, 0.1);
 			Vector3D intersect = lineA.intersection(lineB);
 			ret.point.xyz.x = (float) intersect.getX();
 			ret.point.xyz.y = (float) intersect.getY();
@@ -1106,6 +1124,8 @@ public class Utils {
 		return ret;
 	}
 
+
+	
 	private Vector3D projectPoint(Vector3D point, Plane plane) {
 		double distance = plane.getOffset(point);
 		Vector3D projectedPoint = point.add(plane.getNormal().normalize().scalarMultiply(-1.0 * distance));
@@ -1184,6 +1204,15 @@ public class Utils {
 			}
 		}
 		return true;
+	}
+
+	public void calculateCenters() {
+		for (MyEdge myContEdge : SurfaceDemo.instance.utils.continuousEdges.values()) {
+			myContEdge.calculateCenter();
+		}
+		for (MyEdge myContEdge : SurfaceDemo.instance.utils.edges.values()) {
+			myContEdge.calculateCenter();
+		}
 	}
 
 }

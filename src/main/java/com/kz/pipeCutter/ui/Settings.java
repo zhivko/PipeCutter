@@ -83,7 +83,7 @@ public class Settings extends JFrame {
 	public JSplitPane splitPane;
 	CommandPanel commandPanel;
 	public XYZSettings xyzSettings;
-	public PlasmaSettings plasmaSettings; 
+	public PlasmaSettings plasmaSettings;
 	
 	boolean repositioned = false;
 
@@ -445,7 +445,8 @@ public class Settings extends JFrame {
 		// otherSymbols.setDecimalSeparator('.');
 		// otherSymbols.setGroupingSeparator(',');
 
-		DecimalFormat df = new DecimalFormat("##,##0.0000", otherSymbols);
+		//DecimalFormat df = new DecimalFormat("##,##0.0000", otherSymbols);
+		DecimalFormat df = new DecimalFormat("0.0000", otherSymbols);
 		df.setDecimalSeparatorAlwaysShown(true);
 		String strValue = df.format(value);
 		setSetting(parameterId, strValue);

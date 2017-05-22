@@ -26,7 +26,6 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.List;
@@ -40,7 +39,6 @@ import javax.swing.JPopupMenu;
 import javax.swing.SwingUtilities;
 import javax.swing.SwingWorker;
 import javax.vecmath.Point3d;
-import javax.vecmath.Vector3d;
 
 import org.apache.commons.math3.geometry.euclidean.threed.Line;
 import org.apache.commons.math3.geometry.euclidean.threed.Vector3D;
@@ -51,6 +49,7 @@ import org.jzy3d.chart.Chart;
 import org.jzy3d.chart.controllers.camera.AbstractCameraController;
 import org.jzy3d.chart.controllers.mouse.picking.AWTMousePickingController;
 import org.jzy3d.chart.factories.AWTChartComponentFactory;
+import org.jzy3d.chart.factories.IChartComponentFactory.Toolkit;
 import org.jzy3d.colors.Color;
 import org.jzy3d.maths.BoundingBox3d;
 import org.jzy3d.maths.Coord3d;
@@ -93,6 +92,12 @@ public class SurfaceDemo extends AbstractAnalysis {
 	public static boolean ZOOM_POINT = false;
 	public static boolean ZOOM_PLASMA = false;
 
+	public int rotateArroundX;
+	public int rotateArroundY;
+	public int rotateArroundZ;
+
+	public Frame frame;
+
 	float g0Speed = 0;
 	float g1Speed = 0;
 	public boolean g93mode;
@@ -114,7 +119,7 @@ public class SurfaceDemo extends AbstractAnalysis {
 	int pointId;
 	int edgeNo;
 	public boolean pipeIsCircular;
-	
+
 	public double dimX;
 	public double dimZ;
 	public double dimR;
@@ -130,6 +135,47 @@ public class SurfaceDemo extends AbstractAnalysis {
 					public void run() {
 
 						instance = SurfaceDemo.this;
+						// Create a chart
+						instance.chart = AWTChartComponentFactory.chart(Quality.Advanced, instance.getCanvasType());
+						instance.canvas = (CanvasAWT) instance.chart.getCanvas();
+
+						canvas.addKeyListener(new KeyListener() {
+							@Override
+							public void keyReleased(KeyEvent e) {
+
+							}
+
+							@Override
+							public void keyPressed(KeyEvent e) {
+								if (e.getKeyCode() == KeyEvent.VK_0 || e.getKeyCode() == KeyEvent.VK_1) {
+									float absAngle = 0;
+
+									float angle = Float.valueOf(angleTxt);
+
+									if (e.getKeyCode() == KeyEvent.VK_0) {
+										absAngle = angle + 1;
+									}
+									if (e.getKeyCode() == KeyEvent.VK_1) {
+										absAngle = angle - 1;
+									}
+
+									float angleDelta = Math.round(absAngle) - angle;
+									// SurfaceDemo.instance.utils.rotatePoints(Math.round(absAngle),
+									// false, false);
+									Settings.instance.log("Rotate to: " + Math.round(absAngle) + " deg");
+									SurfaceDemo.instance.utils.rotatePoints(angleDelta, false, true);
+								}
+
+							}
+
+							@Override
+							public void keyTyped(KeyEvent e) {
+
+							}
+						});
+
+						Logger.getLogger(SurfaceDemo.class).info("Creating chart! Thread: " + Thread.currentThread().getName() + "... DONE.");
+
 						System.setProperty("java.net.preferIPv4Stack", "true");
 						// discoverer = new Discoverer();
 						try {
@@ -203,8 +249,9 @@ public class SurfaceDemo extends AbstractAnalysis {
 							}
 						});
 
+						instance.frame = ((Frame) (SurfaceDemo.instance.canvas.getParent()));
 						final PopupMenu menu = new MyPopupMenu();
-						instance.canvas.add(menu);
+
 						instance.canvas.addMouseListener(new MouseListener() {
 
 							@Override
@@ -217,17 +264,19 @@ public class SurfaceDemo extends AbstractAnalysis {
 							public void mousePressed(final MouseEvent arg0) {
 								// TODO Auto-generated method stub
 								if (arg0.getButton() == MouseEvent.BUTTON3) {
+									instance.frame.setVisible(true);
+									instance.frame.add(menu);
+									menu.show(instance.frame, arg0.getX(), arg0.getY());
 
-									SwingWorker menuShower = new SwingWorker<String, Object>() {
-										@Override
-										protected String doInBackground() throws Exception {
-											// TODO Auto-generated method stub
-											menu.show(instance.canvas, arg0.getX(), arg0.getY());
-											return "Menu closed.";
-										}
-									};
-									menuShower.execute();
-
+									/*
+									 * SwingWorker menuShower = new SwingWorker<String, Object>()
+									 * {
+									 * 
+									 * @Override protected String doInBackground() throws
+									 * Exception { // TODO Auto-generated method stub
+									 * menu.show(instance.canvas, arg0.getX(), arg0.getY());
+									 * return "Menu closed."; } }; menuShower.execute();
+									 */
 								}
 							}
 
@@ -517,20 +566,6 @@ public class SurfaceDemo extends AbstractAnalysis {
 	public void init() {
 		try {
 			Logger.getLogger(this.getClass()).info("Creating chart! Thread: " + Thread.currentThread().getName());
-			// smoothie = new MyTelnetClient(SmoothieUploader.smoothieIP,
-			// SmoothieUploader.smoothieRemotePort);
-			// Create a chart
-			chart = AWTChartComponentFactory.chart(Quality.Advanced, getCanvasType());
-			canvas = (CanvasAWT) chart.getCanvas();
-			Logger.getLogger(this.getClass()).info("Creating chart! Thread: " + Thread.currentThread().getName() + "... DONE.");
-
-			// chart = newt SwingChartComponentFactory.chart(Quality.Advanced);
-			// chart.getView().setMaximized(true);
-			// chart.getView().setBoundManual(instance.chart.getView().getBounds());
-
-			// canvas.getAnimator().start();
-			// System.out.println("Animator started?: " + chart.ge
-			// .getAnimator().isStarted());
 
 			String filePath = null;
 			if (OSValidator.isUnix())
@@ -552,9 +587,7 @@ public class SurfaceDemo extends AbstractAnalysis {
 			ArrayList<String> line = new ArrayList<String>();
 
 			// Point previousPolyPoint = null;
-			LineStrip ls_p = null;
 			int previousSurfaceNo = -1;
-			int previousEdgeNo = -1;
 			int edgeNoInSurface = -1;
 			pointId = -1;
 
@@ -564,7 +597,6 @@ public class SurfaceDemo extends AbstractAnalysis {
 				String splitted[] = string.split(";");
 				int surfaceNo = Integer.valueOf(splitted[0].split("_")[1]);
 				int inventorEdgeNo = Integer.valueOf(splitted[0].split("_")[2]);
-				int colorNo = inventorEdgeNo % Color.COLORS.length;
 
 				if (surfaceNo != previousSurfaceNo)
 					edgeNoInSurface = 0;
@@ -606,22 +638,25 @@ public class SurfaceDemo extends AbstractAnalysis {
 						mp1 = mp2;
 					}
 				}
+			}
 
+			// rotate arround X if user choose so
+			if (SurfaceDemo.instance.rotateArroundX != 0.0) {
+				double[] axisDouble = { 1.0d, 0.0d, 0.0d };
+				Vector3D axis = new Vector3D(axisDouble);
+				org.apache.commons.math3.geometry.euclidean.threed.Rotation rot = new org.apache.commons.math3.geometry.euclidean.threed.Rotation(axis,
+						Math.toRadians(SurfaceDemo.instance.rotateArroundX));
+				// Rotation rotZ1 = new Rotation(zAxis, Math.toRadians(angleDeg));
+				for (MyPickablePoint point : SurfaceDemo.instance.utils.points.values()) {
+					double[] myPointDouble = { point.getX(), point.getY(), point.getZ() };
+					Vector3D myPoint = new Vector3D(myPointDouble);
+					Vector3D result = rot.applyTo(myPoint);
+					SurfaceDemo.instance.utils.points.get(point.id).setCoord(result.getX(), result.getY(), result.getZ());
+				}
 			}
-			getPipeMax();
-			pipeIsCircular = utils.isPipeCircular();
-			
-			dimX = Double.valueOf(Settings.instance.getSetting("pipe_dim_x"));
-			dimZ = Double.valueOf(Settings.instance.getSetting("pipe_dim_z"));
-			if(!pipeIsCircular)
-				dimR = Double.valueOf(Settings.instance.getSetting("pipe_radius"));
-			else
-			{
-				double radius = Math.sqrt(dimX/2 * dimX/2 + dimZ/2 * dimZ/2);
-				dimR = radius;
-			}
-				
-			
+
+			utils.calculateMaxAndMins();
+
 			if (!utils.isPipeCircular()) {
 				utils.markRadiusEdges();
 				splitLongEdges();
@@ -656,7 +691,7 @@ public class SurfaceDemo extends AbstractAnalysis {
 
 			utils.establishNeighbourPoints();
 			utils.calculateContinuousEdges();
-			utils.calculateMaxAndMins();
+			// utils.calculateMaxAndMins();
 			utils.establishRighMostAndLeftMostPoints();
 
 			// utils.calculateAllOffsetPoints();
@@ -666,12 +701,12 @@ public class SurfaceDemo extends AbstractAnalysis {
 				utils.origPoints.put(new Integer(mp.id), mp.clone());
 			}
 
-			System.out.println("Points: " + utils.points.size());
-			System.out.println("Edges: " + utils.edges.size());
-			System.out.println("Surfaces: " + utils.surfaces.size());
+			Settings.instance.log("Points: " + utils.points.size());
+			Settings.instance.log("Edges: " + utils.edges.size());
+			Settings.instance.log("Surfaces: " + utils.surfaces.size());
 
 			// Creates the 3d object
-			System.out.println("Thread: " + Thread.currentThread().getName());
+			Settings.instance.log("Thread: " + Thread.currentThread().getName());
 			chart.getAxeLayout().setXAxeLabel("X");
 			chart.getAxeLayout().setYAxeLabel("Y");
 			chart.getAxeLayout().setZAxeLabel("Z");
@@ -730,45 +765,9 @@ public class SurfaceDemo extends AbstractAnalysis {
 			this.NUMBER_EDGES = Boolean.valueOf(Settings.instance.getSetting("ui_number_edges"));
 			this.NUMBER_POINTS = Boolean.valueOf(Settings.instance.getSetting("ui_number_points"));
 
-			initDraw();
 			System.out.println("Thread: " + Thread.currentThread().getName());
 
-			canvas.addKeyListener(new KeyListener() {
-
-				@Override
-				public void keyReleased(KeyEvent e) {
-					// TODO Auto-generated method stub
-
-				}
-
-				@Override
-				public void keyPressed(KeyEvent e) {
-					// TODO Auto-generated method stub
-					// System.out.println(e.getKeyCode());
-					if (e.getKeyCode() == KeyEvent.VK_0 || e.getKeyCode() == KeyEvent.VK_1) {
-						float absAngle = 0;
-
-						float angle = Float.valueOf(angleTxt);
-
-						if (e.getKeyCode() == KeyEvent.VK_0) {
-							absAngle = angle + 1;
-						}
-						if (e.getKeyCode() == KeyEvent.VK_1) {
-							absAngle = angle - 1;
-						}
-
-						float angleDelta = Math.round(absAngle) - angle;
-						//SurfaceDemo.instance.utils.rotatePoints(Math.round(absAngle), false, false);
-						SurfaceDemo.instance.utils.rotatePoints(angleDelta, false, true);
-					}
-				}
-
-				@Override
-				public void keyTyped(KeyEvent e) {
-					// TODO Auto-generated method stub
-
-				}
-			});
+			initDraw();
 
 		} catch (Exception ex) {
 			ex.printStackTrace();
@@ -791,7 +790,7 @@ public class SurfaceDemo extends AbstractAnalysis {
 		return ret;
 	}
 
-	private void splitNearRadiusEdge() {
+	public void splitNearRadiusEdge() {
 		// find intersection of lines to add
 		float dx = Float.valueOf(Settings.instance.getSetting("pipe_dim_x"));
 		float dz = Float.valueOf(Settings.instance.getSetting("pipe_dim_z"));
@@ -912,9 +911,8 @@ public class SurfaceDemo extends AbstractAnalysis {
 		}
 	}
 
-	private void splitLongEdges() {
+	public void splitLongEdges() {
 		// splitLongEdges
-		getPipeMax();
 
 		ArrayList<MyEdge> edgesToRemove = new ArrayList<MyEdge>();
 		ArrayList<MyEdge> edgesToAdd = new ArrayList<MyEdge>();
@@ -933,7 +931,7 @@ public class SurfaceDemo extends AbstractAnalysis {
 		edgeIt = utils.edges.values().iterator();
 		while (edgeIt.hasNext()) {
 			MyEdge edge = edgeIt.next();
-			if (edge.length >= minLength * 0.5 && edge.edgeType == MyEdge.EdgeType.NORMAL) {
+			if (edge.edgeType == MyEdge.EdgeType.NORMAL && edge.length >= minLength * 0.5) {
 				MyPickablePoint p1 = SurfaceDemo.instance.utils.points.get(edge.points.get(0));
 				MyPickablePoint p2 = SurfaceDemo.instance.utils.points.get(edge.points.get(1));
 
@@ -969,6 +967,7 @@ public class SurfaceDemo extends AbstractAnalysis {
 			}
 		}
 
+		System.out.println("Edges splitted: " + edgesToRemove.size());
 		for (MyEdge myEdge : edgesToAdd) {
 			utils.edges.put(myEdge.edgeNo, myEdge);
 		}
@@ -982,29 +981,6 @@ public class SurfaceDemo extends AbstractAnalysis {
 		}
 	}
 
-	private void getPipeMax() {
-		ArrayList<MyPickablePoint> sortedXList = new ArrayList(SurfaceDemo.instance.utils.points.values());
-		Collections.sort(sortedXList, new MyPickablePointXComparator());
-		ArrayList<MyPickablePoint> sortedZList = new ArrayList(SurfaceDemo.instance.utils.points.values());
-		Collections.sort(sortedZList, new MyPickablePointZComparator());
-
-		ArrayList<MyPickablePoint> sortedYList = new ArrayList(SurfaceDemo.instance.utils.points.values());
-		Collections.sort(sortedYList, new MyPickablePointYComparator());
-
-		double minX = sortedXList.get(0).getX();
-		double maxX = sortedXList.get(sortedXList.size() - 1).getX();
-		double minZ = sortedZList.get(0).getZ();
-		double maxZ = sortedZList.get(sortedZList.size() - 1).getZ();
-
-		double minY = sortedYList.get(0).getY();
-		double maxY = sortedYList.get(sortedYList.size() - 1).getY();
-
-		Settings.instance.setSetting("pipe_dim_x", Double.valueOf(maxX - minX));
-		Settings.instance.setSetting("pipe_dim_z", Double.valueOf(maxZ - minZ));
-		Settings.instance.setSetting("pipe_dim_max_y", Double.valueOf(maxY));
-		Settings.instance.setSetting("pipe_dim_min_y", Double.valueOf(minY));
-	}
-
 	public void initDraw() {
 
 		Thread t = new Thread(new Runnable() {
@@ -1015,6 +991,7 @@ public class SurfaceDemo extends AbstractAnalysis {
 				clearPicking();
 				plasma = null;
 				instance.getChart().getScene().getGraph().remove(instance.myComposite);
+				instance.getChart().getScene().getGraph().remove(instance.myTrail);
 				myComposite = new MyComposite();
 				myTrail = new MyComposite();
 				addAxis();
@@ -1082,6 +1059,7 @@ public class SurfaceDemo extends AbstractAnalysis {
 					myComposite.add(utils.pointTexts);
 				}
 				instance.getChart().getScene().getGraph().add(instance.myComposite);
+				instance.getChart().getScene().getGraph().add(instance.myTrail);
 				System.out.println("Composite element size: " + myComposite.getDrawables().size());
 				getPlasma();
 				redrawPosition();
@@ -1140,6 +1118,22 @@ public class SurfaceDemo extends AbstractAnalysis {
 							MyPickablePoint mp = ((MyPickablePoint) picked.get(0));
 							Settings.instance.log(mp.toString());
 							SurfaceDemo.this.lastClickedPointChanged(mp);
+
+							MyContinuousEdge mE = utils.continuousEdges.get(mp.continuousEdgeNo);
+							Iterator<Integer> it = mE.points.iterator();
+							boolean found = false;
+							System.out.println("------");
+							while (it.hasNext()) {
+								Integer pointId = it.next();
+								// MyPickablePoint point = utils.points.get(pointId);
+								if (pointId == mp.id) {
+									found = true;
+								} else {
+									if (found)
+										System.out.println(pointId);
+								}
+							}
+
 						} else if (picked.get(0).getClass().getName().equals("org.jzy3d.plot3d.primitives.pickable.PickablePolygon")) {
 						} else {
 						}
@@ -1166,20 +1160,20 @@ public class SurfaceDemo extends AbstractAnalysis {
 			if (offsetPoint != null)
 				myComposite.remove(offsetPoint);
 
-			offsetPoint = SurfaceDemo.instance.utils.calculateOffsetPoint(mp);
-			offsetPoint.setColor(Color.GREEN);
-			offsetPoint.setWidth(6.0f);
-			myComposite.add(offsetPoint);
-			SurfaceDemo.instance.getChart().render();
-
 			if (!SurfaceDemo.ZOOM_POINT) {
 				SurfaceDemo.ZOOM_POINT = true;
 				SurfaceDemo.ZOOM_PLASMA = false;
 			}
-			this.redrawPosition();
+
+			offsetPoint = SurfaceDemo.instance.utils.calculateOffsetPoint(mp);
+			offsetPoint.setColor(Color.GREEN);
+			offsetPoint.setWidth(6.0f);
+			myComposite.add(offsetPoint);
+
 		} catch (Exception ex) {
 			ex.printStackTrace();
 		}
+		SurfaceDemo.instance.getChart().render();
 		redrawPosition();
 	}
 

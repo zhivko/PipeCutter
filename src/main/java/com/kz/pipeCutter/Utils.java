@@ -746,7 +746,7 @@ public class Utils {
 		maxX = Double.MIN_VALUE;
 		maxY = Double.MIN_VALUE;
 		maxZ = Double.MIN_VALUE;
-		
+
 		maxEdge = Double.MIN_VALUE;
 
 		for (MyPickablePoint point : this.points.values()) {
@@ -771,25 +771,25 @@ public class Utils {
 			maxEdge = maxZ - minZ;
 
 		SurfaceDemo.instance.dimX = Double.valueOf(maxX - minX);
-		SurfaceDemo.instance.dimZ =  Double.valueOf(maxZ - minZ);
+		SurfaceDemo.instance.dimZ = Double.valueOf(maxZ - minZ);
 		Settings.instance.setSetting("pipe_dim_x", SurfaceDemo.instance.dimX);
 		Settings.instance.setSetting("pipe_dim_z", SurfaceDemo.instance.dimZ);
 		Settings.instance.setSetting("pipe_dim_max_y", Double.valueOf(maxY));
-		Settings.instance.setSetting("pipe_dim_min_y", Double.valueOf(minY));		
-		
+		Settings.instance.setSetting("pipe_dim_min_y", Double.valueOf(minY));
+
 		SurfaceDemo.instance.dimX = Double.valueOf(maxX - minX);
 		SurfaceDemo.instance.dimZ = Double.valueOf(maxZ - minZ);
-		
+
 		SurfaceDemo.instance.pipeIsCircular = isPipeCircular();
 
-		if(!SurfaceDemo.instance.pipeIsCircular)
+		if (!SurfaceDemo.instance.pipeIsCircular)
 			SurfaceDemo.instance.dimR = Double.valueOf(Settings.instance.getSetting("pipe_radius"));
-		else
-		{
-			double radius = Math.sqrt(SurfaceDemo.instance.dimX/2 * SurfaceDemo.instance.dimX/2 + SurfaceDemo.instance.dimZ/2 * SurfaceDemo.instance.dimZ/2);
+		else {
+			double radius = Math
+					.sqrt(SurfaceDemo.instance.dimX / 2 * SurfaceDemo.instance.dimX / 2 + SurfaceDemo.instance.dimZ / 2 * SurfaceDemo.instance.dimZ / 2);
 			SurfaceDemo.instance.dimR = radius;
-		}		
-		
+		}
+
 	}
 
 	public void showLengthDistrib() {
@@ -882,11 +882,13 @@ public class Utils {
 			if (SurfaceDemo.instance.pipeIsCircular)
 				angleToOffset = -Math.PI / 2;
 			else
-				angleToOffset = - Math.PI / 2;
+				angleToOffset = -Math.PI / 2;
 		else if (continuousEdge.edgeType == MyContinuousEdge.EdgeType.ONPIPE)
 			angleToOffset = -Math.PI / 2;
-		else
+		else if (SurfaceDemo.instance.pipeIsCircular)
 			angleToOffset = -Math.PI / 2;
+		else
+			angleToOffset = Math.PI / 2;
 
 		int index = continuousEdge.points.indexOf(point.id);
 		int prevIndex = -1;
@@ -1019,12 +1021,15 @@ public class Utils {
 			Vector3D normalStartRot = rotPlane.applyTo(normalStart);
 			Vector3D normalEndRot = rotPlane.applyTo(normalEnd);
 
-//			LineStrip ls1 = new LineStrip(new Point(new Coord3d(normalStartRot.getX(), normalStartRot.getY(), normalStartRot.getZ()))
-//					,new Point(new Coord3d(normalEndRot.getX(), normalEndRot.getY(), normalEndRot.getZ())));
-//			ls1.setWireframeColor(Color.RED);
-//			ls1.setWidth(2);
-//			SurfaceDemo.instance.myComposite.add(ls1);
-			
+			// LineStrip ls1 = new LineStrip(new Point(new
+			// Coord3d(normalStartRot.getX(), normalStartRot.getY(),
+			// normalStartRot.getZ()))
+			// ,new Point(new Coord3d(normalEndRot.getX(), normalEndRot.getY(),
+			// normalEndRot.getZ())));
+			// ls1.setWireframeColor(Color.RED);
+			// ls1.setWidth(2);
+			// SurfaceDemo.instance.myComposite.add(ls1);
+
 			Vector3D planeNormal = normalStartRot.subtract(normalEndRot);
 			ret.plane = new Plane(normalEndRot, planeNormal, 0.0001);
 
@@ -1033,15 +1038,15 @@ public class Utils {
 					for (int l = -10; l < 10; l++) {
 						Vector2D vect2d = new Vector2D(k * 0.1d, l * 0.1d);
 						Vector3D inPlanePoint = ret.plane.getPointAt(vect2d, 0);
-						//Vector3D inPlanePoint2= inPlanePoint.add(vecPoint);
-						
+						// Vector3D inPlanePoint2= inPlanePoint.add(vecPoint);
+
 						Point planePoint = new Point(new Coord3d(inPlanePoint.getX(), inPlanePoint.getY(), inPlanePoint.getZ()));
-						
+
 						planePoint.setColor(Color.RED);
 						planePoint.setWidth(0.3f);
 						SurfaceDemo.instance.myComposite.add(planePoint);
-						//SurfaceDemo.instance.getChart().render();
-						//System.out.print("");
+						// SurfaceDemo.instance.getChart().render();
+						// System.out.print("");
 					}
 				}
 		}
@@ -1124,8 +1129,6 @@ public class Utils {
 		return ret;
 	}
 
-
-	
 	private Vector3D projectPoint(Vector3D point, Plane plane) {
 		double distance = plane.getOffset(point);
 		Vector3D projectedPoint = point.add(plane.getNormal().normalize().scalarMultiply(-1.0 * distance));

@@ -1119,20 +1119,21 @@ public class SurfaceDemo extends AbstractAnalysis {
 							Settings.instance.log(mp.toString());
 							SurfaceDemo.this.lastClickedPointChanged(mp);
 
-							MyContinuousEdge mE = utils.continuousEdges.get(mp.continuousEdgeNo);
-							Iterator<Integer> it = mE.points.iterator();
-							boolean found = false;
-							System.out.println("------");
-							while (it.hasNext()) {
-								Integer pointId = it.next();
-								// MyPickablePoint point = utils.points.get(pointId);
-								if (pointId == mp.id) {
-									found = true;
-								} else {
-									if (found)
-										System.out.println(pointId);
-								}
-							}
+							// MyContinuousEdge mE =
+							// utils.continuousEdges.get(mp.continuousEdgeNo);
+							// Iterator<Integer> it = mE.points.iterator();
+							// boolean found = false;
+							// System.out.println("------");
+							// while (it.hasNext()) {
+							// Integer pointId = it.next();
+							// // MyPickablePoint point = utils.points.get(pointId);
+							// if (pointId == mp.id) {
+							// found = true;
+							// } else {
+							// if (found)
+							// System.out.println(pointId);
+							// }
+							// }
 
 						} else if (picked.get(0).getClass().getName().equals("org.jzy3d.plot3d.primitives.pickable.PickablePolygon")) {
 						} else {
@@ -1160,10 +1161,8 @@ public class SurfaceDemo extends AbstractAnalysis {
 			if (offsetPoint != null)
 				myComposite.remove(offsetPoint);
 
-			if (!SurfaceDemo.ZOOM_POINT) {
-				SurfaceDemo.ZOOM_POINT = true;
-				SurfaceDemo.ZOOM_PLASMA = false;
-			}
+			SurfaceDemo.ZOOM_POINT = true;
+			SurfaceDemo.ZOOM_PLASMA = false;
 
 			offsetPoint = SurfaceDemo.instance.utils.calculateOffsetPoint(mp);
 			offsetPoint.setColor(Color.GREEN);

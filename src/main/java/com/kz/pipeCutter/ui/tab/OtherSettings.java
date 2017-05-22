@@ -6,6 +6,8 @@ import java.awt.FlowLayout;
 import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
 
 import javax.swing.JButton;
 import javax.swing.JLabel;
@@ -15,6 +17,7 @@ import javax.swing.event.DocumentListener;
 import javax.swing.text.DefaultHighlighter;
 import javax.swing.text.DefaultHighlighter.DefaultHighlightPainter;
 
+import com.kz.pipeCutter.SurfaceDemo;
 import com.kz.pipeCutter.BBB.BBBHalCommand;
 import com.kz.pipeCutter.BBB.BBBHalRComp;
 import com.kz.pipeCutter.BBB.BBBStatus;
@@ -56,6 +59,28 @@ public class OtherSettings extends JPanel {
 		SavableText parseFile = new SavableText();
 		parseFile.setLabelTxt("File to parse:");
 		parseFile.setParId("gcode_input_file");
+		parseFile.jValue.addKeyListener(new KeyListener() {
+
+			@Override
+			public void keyTyped(KeyEvent e) {
+				// TODO Auto-generated method stub
+				if (e.getKeyChar() == '\n') {
+					SurfaceDemo.instance.init();
+				}
+			}
+
+			@Override
+			public void keyReleased(KeyEvent e) {
+				// TODO Auto-generated method stub
+
+			}
+
+			@Override
+			public void keyPressed(KeyEvent e) {
+				// TODO Auto-generated method stub
+
+			}
+		});
 		this.add(parseFile);
 
 		SavableText screenshotFolder = new SavableText();
@@ -67,12 +92,12 @@ public class OtherSettings extends JPanel {
 		radius.setLabelTxt("Pipe radius:");
 		radius.setParId("pipe_radius");
 		this.add(radius);
-		
+
 		SavableCheckBox cutKerfOffset = new SavableCheckBox();
 		cutKerfOffset.setLabelTxt("Kerf offset edge wile cuttting");
 		cutKerfOffset.setParId("cut_kerf_offset");
 		cutKerfOffset.setNeedsSave(true);
-		this.add(cutKerfOffset);				
+		this.add(cutKerfOffset);
 
 		SavableText pipeDimX = new SavableText();
 		pipeDimX.setNeedsSave(true);
@@ -85,7 +110,7 @@ public class OtherSettings extends JPanel {
 		pipeDimZ.setLabelTxt("Pipe Z dimension:");
 		pipeDimZ.setParId("pipe_dim_z");
 		this.add(pipeDimZ);
-		
+
 		SavableText pipeDimMaxY = new SavableText();
 		pipeDimMaxY.setNeedsSave(true);
 		pipeDimMaxY.setLabelTxt("Pipe Y max dimension:");
@@ -102,8 +127,8 @@ public class OtherSettings extends JPanel {
 		zoomCenter.setLabelTxt("Zoom center:");
 		zoomCenter.setParId("ui_zoom_center");
 		zoomCenter.setNeedsSave(true);
-		this.add(zoomCenter);		
-		
+		this.add(zoomCenter);
+
 		SavableText zoomRadius = new SavableText();
 		zoomRadius.setLabelTxt("Zoom radius:");
 		zoomRadius.setParId("ui_zoom_radius");
@@ -114,14 +139,14 @@ public class OtherSettings extends JPanel {
 		numberEdges.setLabelTxt("Number edges");
 		numberEdges.setParId("ui_number_edges");
 		numberEdges.setNeedsSave(true);
-		this.add(numberEdges);				
+		this.add(numberEdges);
 
 		SavableCheckBox numberPoints = new SavableCheckBox();
 		numberPoints.setLabelTxt("Number points");
 		numberPoints.setParId("ui_number_points");
 		numberPoints.setNeedsSave(true);
-		this.add(numberPoints);	
-		
+		this.add(numberPoints);
+
 		SavableCheckBox pingBBBHalCmd = new SavableCheckBox() {
 			@Override
 			public void valueChangedFromUI() {
@@ -139,7 +164,6 @@ public class OtherSettings extends JPanel {
 		pingBBBHalCmd.setParId("ping_halcmd");
 		this.add(pingBBBHalCmd);
 
-		
 		SavableCheckBox g93mode = new SavableCheckBox();
 		g93mode.setLabelTxt("G93 mode");
 		g93mode.setParId("gcode_g93");
@@ -156,33 +180,31 @@ public class OtherSettings extends JPanel {
 		uiZoomPoint.setParId("ui_zoom_point");
 		uiZoomPoint.setNeedsSave(true);
 		this.add(uiZoomPoint);
-				
+
 		SavableText uiZoom = new SavableText();
 		uiZoom.setLabelTxt("Zoom");
 		uiZoom.setParId("ui_zoom");
 		uiZoom.setNeedsSave(true);
-		this.add(uiZoom);		
+		this.add(uiZoom);
 
 		SavableText laser1IP = new SavableText();
 		laser1IP.setLabelTxt("Laser 1 IP");
 		laser1IP.setParId("laser_1_ip");
 		laser1IP.setNeedsSave(true);
-		this.add(laser1IP);		
+		this.add(laser1IP);
 
 		SavableText positioner1reassign = new SavableText();
 		positioner1reassign.setLabelTxt("Rotator 1 reassign: ");
 		positioner1reassign.setParId("rotator_1_reassign");
 		positioner1reassign.setNeedsSave(true);
-		this.add(positioner1reassign);		
-		
+		this.add(positioner1reassign);
+
 		SavableText positioner2reassign = new SavableText();
 		positioner2reassign.setLabelTxt("Rotator 2 reassign: ");
 		positioner2reassign.setParId("rotator_2_reassign");
 		positioner2reassign.setNeedsSave(true);
-		this.add(positioner2reassign);		
-		
-		
-		
+		this.add(positioner2reassign);
+
 		SavableText hal_vx = new SavableText();
 		hal_vx.setLabelTxt("HAL vx:");
 		hal_vx.setParId("mymotion.vx");
@@ -196,14 +218,14 @@ public class OtherSettings extends JPanel {
 		hal_dvx.setNeedsSave(false);
 		hal_dvx.setPin(new PinDef("mymotion.dvx", HalPinDirection.HAL_IN, ValueType.HAL_FLOAT));
 		this.add(hal_dvx);
-		
+
 		SavableText hal_vy = new SavableText();
 		hal_vy.setLabelTxt("HAL vy:");
 		hal_vy.setParId("mymotion.vy");
 		hal_vy.setNeedsSave(false);
 		hal_vy.setPin(new PinDef("mymotion.vy", HalPinDirection.HAL_IN, ValueType.HAL_FLOAT));
 		this.add(hal_vy);
-		
+
 		SavableText hal_vz = new SavableText();
 		hal_vz.setLabelTxt("HAL vz:");
 		hal_vz.setParId("mymotion.vz");
@@ -217,7 +239,7 @@ public class OtherSettings extends JPanel {
 		hal_dvz.setNeedsSave(false);
 		hal_dvz.setPin(new PinDef("mymotion.dvz", HalPinDirection.HAL_IN, ValueType.HAL_FLOAT));
 		this.add(hal_dvz);
-		
+
 		SavableText hal_curr_radius = new SavableText();
 		hal_curr_radius.setLabelTxt("HAL radius:");
 		hal_curr_radius.setParId("mymotion.current-radius");
@@ -232,8 +254,5 @@ public class OtherSettings extends JPanel {
 		hal_v.setPin(new PinDef("mymotion.v", HalPinDirection.HAL_IN, ValueType.HAL_FLOAT));
 		this.add(hal_v);
 
-		
-		
-		
 	}
 }

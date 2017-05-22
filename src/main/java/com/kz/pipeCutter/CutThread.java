@@ -561,7 +561,7 @@ public class CutThread extends SwingWorker<String, Object> {
 				if (SurfaceDemo.instance.pipeIsCircular)
 					tempPoint = SurfaceDemo.getInstance().utils.findConnectedPoint(tempPoint, alAlreadyAddedPoints, true);
 				else
-					tempPoint = SurfaceDemo.getInstance().utils.findConnectedPoint(tempPoint, alAlreadyAddedPoints, false);
+					tempPoint = SurfaceDemo.getInstance().utils.findConnectedPoint(tempPoint, alAlreadyAddedPoints, true);
 			else if (contEdge.edgeType == MyContinuousEdge.EdgeType.END)
 				tempPoint = SurfaceDemo.getInstance().utils.findConnectedPoint(tempPoint, alAlreadyAddedPoints, true);
 			else {
@@ -574,7 +574,9 @@ public class CutThread extends SwingWorker<String, Object> {
 					{
 						System.out.println(tempPoint.id);
 					}						
-					tempPoint = SurfaceDemo.getInstance().utils.findConnectedPoint(tempPoint, alAlreadyAddedPoints, true);
+//					tempPoint = SurfaceDemo.getInstance().utils.findConnectedPoint(tempPoint, alAlreadyAddedPoints, true);
+					tempPoint = SurfaceDemo.getInstance().utils.findConnectedPoint(tempPoint, alAlreadyAddedPoints, !offPointAndPlane.direction );
+					
 				} else {
 					if (contEdge.points.indexOf(myPoint.id) == 0)
 						tempPoint = SurfaceDemo.getInstance().utils.findConnectedPoint(tempPoint, alAlreadyAddedPoints, true);

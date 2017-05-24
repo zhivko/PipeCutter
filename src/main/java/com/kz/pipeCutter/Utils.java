@@ -889,7 +889,7 @@ public class Utils {
 			if (SurfaceDemo.instance.pipeIsCircular)
 				angleToOffset = -Math.PI / 2;
 			else
-				angleToOffset = Math.PI / 2;
+				angleToOffset = -Math.PI / 2;
 		}
 		int index = continuousEdge.points.indexOf(point.id);
 		int prevIndex = -1;

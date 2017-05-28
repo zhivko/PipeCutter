@@ -177,13 +177,13 @@ public class Utils {
 	public ArrayList<MyPickablePoint> findConnectedPoints(MyPickablePoint point, ArrayList<MyPickablePoint> alreadyAdded) {
 		ArrayList<MyPickablePoint> ret = new ArrayList<MyPickablePoint>();
 		for (MyEdge edge : edges.values()) {
-			if (edge.getPointByIndex(0).distance(point.point) < Math_E) {
+			if (edge.points.get(0) == point.id) {
 				if (!alreadyAdded.contains(edge.points.get(1))) {
-					ret.add(edge.getPointByIndex(1));
+					ret.add(points.get(edge.points.get(1)));
 				}
-			} else if (edge.getPointByIndex(1).distance(point.point) < Math_E) {
+			} else if (edge.points.get(1) == point.id) {
 				if (!alreadyAdded.contains(edge.points.get(0))) {
-					ret.add(edge.getPointByIndex(0));
+					ret.add(points.get(edge.points.get(0)));
 				}
 			}
 
@@ -571,6 +571,19 @@ public class Utils {
 		SurfaceDemo.instance.calculateRotationPoint(val);
 	}
 
+	public void calculateContinuousEdges2() {
+		for (MyPickablePoint point : points.values()) {
+			if (point.continuousEdgeNo == -1) {
+					for (MyEdge edg : edges.values()) {
+						if(edg.points.get(0) == point.id)
+						{
+							
+						}
+					}
+			}
+		}
+	}	
+	
 	public void calculateContinuousEdges() {
 		int edgeNo = 1;
 		continuousEdges = new ConcurrentHashMap<Integer, MyContinuousEdge>();
@@ -626,6 +639,7 @@ public class Utils {
 			edgeNo = it.next();
 			MyContinuousEdge edge = continuousEdges.get(edgeNo);
 
+			
 			if (edge.edgeType != MyContinuousEdge.EdgeType.END && edge.edgeType != MyContinuousEdge.EdgeType.START) {
 				MyPickablePoint p1 = edge.getPointByIndex(0);
 				MyPickablePoint p2 = edge.getPointByIndex(1);
@@ -640,6 +654,11 @@ public class Utils {
 				Vector3D vecCenOrigin = new Vector3D(0, vecC.getY(), 0);
 				Vector3D vecCen = vecC.subtract(vecCenOrigin);
 
+				if(edgeNo==1)
+					System.out.println(edge.points);
+				//Collections.sort(edge.points, new RoundPointComparator());
+				if(edgeNo==1)
+					System.out.println(edge.points);
 				try {
 					double angle = Vector3D.angle(vecCen, vecN);
 					System.out.println(angle);
@@ -657,8 +676,10 @@ public class Utils {
 
 				}
 			}
+
 		}
 	}
+
 
 	public Plane getPlaneForPoint(MyPickablePoint point) throws org.apache.commons.math3.exception.MathArithmeticException {
 		Plane plane = null;
@@ -889,7 +910,7 @@ public class Utils {
 			if (SurfaceDemo.instance.pipeIsCircular)
 				angleToOffset = -Math.PI / 2;
 			else
-				angleToOffset = -Math.PI / 2;
+				angleToOffset = Math.PI / 2;
 		}
 		int index = continuousEdge.points.indexOf(point.id);
 		int prevIndex = -1;
@@ -898,19 +919,21 @@ public class Utils {
 		if (index == 0)
 			// check if there is edge that connect 0 and continuousEdge.points.size()
 			// - 1 point
-			prevIndex = continuousEdge.points.size() - 1;
+			prevIndex = continuousEdge.points.size()-1;
 		else
 			prevIndex = index - 1;
 
-		if (index == continuousEdge.points.size() - 1)
+		if (index == continuousEdge.points.size()-1)
 			nextIndex = 0;
 		else
 			nextIndex = index + 1;
 
-		MyPickablePoint prevPoint = continuousEdge.getPointByIndex(prevIndex);
-		MyPickablePoint nextPoint = continuousEdge.getPointByIndex(nextIndex);
+		MyPickablePoint prevPoint = points.get(continuousEdge.points.get(prevIndex));
+		MyPickablePoint nextPoint = points.get(continuousEdge.points.get(nextIndex));
 		ret.prevPoint = prevPoint;
 		ret.nextPoint = nextPoint;
+		System.out.println("prev=" + ret.prevPoint.id + "(" + prevPoint.continuousEdgeNo + ") point=" + point.id + "(" + point.continuousEdgeNo
+				+ ") next=" + nextPoint.id + "(" + nextPoint.continuousEdgeNo + ")");
 
 		Vector3D vecPrevPoint = new Vector3D(prevPoint.xyz.x, prevPoint.xyz.y, prevPoint.xyz.z);
 		Vector3D vecNextPoint = new Vector3D(nextPoint.xyz.x, nextPoint.xyz.y, nextPoint.xyz.z);
@@ -1089,6 +1112,16 @@ public class Utils {
 						new Point(new Coord3d(pointB1.getX(), pointB1.getY(), pointB1.getZ())));
 				ls1.setWireframeColor(Color.RED);
 				SurfaceDemo.instance.myComposite.add(ls1);
+				Point pA1 = new Point(new Coord3d(pointA1.getX(), pointA1.getY(), pointA1.getZ()));
+				Point pB1 = new Point(new Coord3d(pointB1.getX(), pointB1.getY(), pointB1.getZ()));
+				pA1.setWidth(8);
+				pA1.setColor(Color.BLUE);
+				pB1.setWidth(8);
+				pB1.setColor(Color.RED);
+				SurfaceDemo.instance.myComposite.add(pA1);
+				SurfaceDemo.instance.myComposite.add(pB1);
+				SurfaceDemo.instance.myComposite.add(ls1);
+
 				SurfaceDemo.instance.getChart().render();
 			}
 
@@ -1100,11 +1133,21 @@ public class Utils {
 
 				ls2.setWireframeColor(Color.RED);
 				SurfaceDemo.instance.myComposite.add(ls2);
+				Point pA2 = new Point(new Coord3d(pointA2.getX(), pointA2.getY(), pointA2.getZ()));
+				Point pB2 = new Point(new Coord3d(pointB2.getX(), pointB2.getY(), pointB2.getZ()));
+				pA2.setWidth(8);
+				pA2.setColor(Color.BLUE);
+				pB2.setWidth(8);
+				pB2.setColor(Color.RED);
+				SurfaceDemo.instance.myComposite.add(pA2);
+				SurfaceDemo.instance.myComposite.add(pB2);
+				SurfaceDemo.instance.myComposite.add(ls2);
+
 				SurfaceDemo.instance.getChart().render();
 			}
 
-			Line lineA = new Line(pointA1, pointB1, 0.1);
-			Line lineB = new Line(pointA2, pointB2, 0.1);
+			Line lineA = new Line(pointA1, pointB1, 0.01);
+			Line lineB = new Line(pointA2, pointB2, 0.01);
 			Vector3D intersect = lineA.intersection(lineB);
 			ret.point.xyz.x = (float) intersect.getX();
 			ret.point.xyz.y = (float) intersect.getY();
@@ -1200,10 +1243,9 @@ public class Utils {
 
 	boolean isPipeCircular() {
 		double delta = 0.1;
-		double dimX = Double.valueOf(Settings.instance.getSetting("pipe_dim_x"));
 		for (MyPickablePoint point : SurfaceDemo.instance.utils.points.values()) {
 			double radius = Math.sqrt(point.getX() * point.getX() + point.getZ() * point.getZ());
-			if (Math.abs(radius - dimX / 2) > delta) {
+			if (Math.abs(radius - SurfaceDemo.instance.dimX / 2) > delta) {
 				return false;
 			}
 		}

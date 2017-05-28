@@ -12,13 +12,6 @@ public class RoundPointComparator implements Comparator<Integer> {
 		MyPickablePoint p1 = SurfaceDemo.instance.utils.points.get(o1);
 		MyContinuousEdge contEdge = SurfaceDemo.instance.utils.continuousEdges.get(p1.continuousEdgeNo);
 		
-		if(contEdge.edgeNo == 14)
-		{
-			System.out.println("Comparing " + o1 + " to " + o2);
-			System.out.println("");
-		}
-		
-		
 		for (MyEdge edge : contEdge.connectedEdges) {
 			if (edge.points.get(0).equals(o1) && edge.points.get(1).equals(o2)) {
 				return -1;

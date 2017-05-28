@@ -37,7 +37,6 @@ import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JPopupMenu;
 import javax.swing.SwingUtilities;
-import javax.swing.SwingWorker;
 import javax.vecmath.Point3d;
 
 import org.apache.commons.math3.geometry.euclidean.threed.Line;
@@ -46,10 +45,8 @@ import org.apache.log4j.Logger;
 import org.jzy3d.analysis.AbstractAnalysis;
 import org.jzy3d.analysis.AnalysisLauncher;
 import org.jzy3d.chart.Chart;
-import org.jzy3d.chart.controllers.camera.AbstractCameraController;
 import org.jzy3d.chart.controllers.mouse.picking.AWTMousePickingController;
 import org.jzy3d.chart.factories.AWTChartComponentFactory;
-import org.jzy3d.chart.factories.IChartComponentFactory.Toolkit;
 import org.jzy3d.colors.Color;
 import org.jzy3d.maths.BoundingBox3d;
 import org.jzy3d.maths.Coord3d;
@@ -92,7 +89,7 @@ public class SurfaceDemo extends AbstractAnalysis {
 	public static boolean ZOOM_POINT = false;
 	public static boolean ZOOM_PLASMA = false;
 
-	public int rotateArroundX;
+	public int rotateArroundX=270;
 	public int rotateArroundY;
 	public int rotateArroundZ;
 
@@ -433,6 +430,70 @@ public class SurfaceDemo extends AbstractAnalysis {
 						if (OSValidator.isWindows())
 							new MyAWTMousePickingController(instance.chart);
 
+						// Creates the 3d object
+						Settings.instance.log("Thread: " + Thread.currentThread().getName());
+						chart.getAxeLayout().setXAxeLabel("X");
+						chart.getAxeLayout().setYAxeLabel("Y");
+						chart.getAxeLayout().setZAxeLabel("Z");
+						chart.getView().setSquared(false);
+
+						NUMBER_EDGES = Boolean.valueOf(Settings.instance.getSetting("ui_number_edges"));
+						NUMBER_POINTS = Boolean.valueOf(Settings.instance.getSetting("ui_number_points"));
+						
+						
+						// pauseAnimator();
+						// resumeAnimator();
+						SurfaceDemo.instance.canvas.getAnimator().getThread().setName("ANIMATOR_TREAD");
+						if (Settings.instance.getSetting("ui_zoom_plasma").equals("True"))
+							SurfaceDemo.ZOOM_PLASMA = true;
+						if (Settings.instance.getSetting("ui_zoom_point").equals("True"))
+							SurfaceDemo.ZOOM_POINT = true;
+
+						SwingUtilities.invokeLater(new Runnable() {
+							public void run() {
+								try {
+									Settings.instance.log("Sleeping...");
+									Thread.sleep(100);
+									Settings.instance.log("Sleeping...Done.");
+								} catch (InterruptedException e) {
+									// TODO Auto-generated catch block
+									e.printStackTrace();
+								}
+								Settings.instance.log("Starting zoom and focus to last point...");
+								if (!Settings.instance.getSetting("ui_zoom_center").equals("")) {
+									try {
+										String center_str = Settings.instance.getSetting("ui_zoom_center");
+										String radius = Settings.instance.getSetting("ui_zoom_radius");
+
+										float x = Float.valueOf(center_str.split("\\s")[0].split("=")[1]);
+										float y = Float.valueOf(center_str.split("\\s")[1].split("=")[1]);
+										float z = Float.valueOf(center_str.split("\\s")[2].split("=")[1]);
+
+										instance.chart.getView().setBoundManual(new BoundingBox3d(new Coord3d(x, y, z), Float.valueOf(radius)));
+										instance.canvas.getAnimator().start();
+
+										MyPickablePoint lastClicked = findSelectedPoint();
+										if (lastClicked != null)
+											lastClickedPointChanged(lastClicked);
+
+									} catch (Exception ex) {
+										ex.printStackTrace();
+									}
+								}
+								Settings.instance.log("Starting zoom and focus to last point...Done.");
+
+							}
+						});
+
+						instance.canvas.getView().setViewPositionMode(ViewPositionMode.FREE);
+						instance.canvas.getView().setMaximized(true);
+						instance.canvas.getView().setCameraMode(CameraMode.ORTHOGONAL);
+
+						// this.NUMBER_EDGES = true;
+
+
+						System.out.println("Thread: " + Thread.currentThread().getName());
+
 					}
 
 				});
@@ -656,11 +717,11 @@ public class SurfaceDemo extends AbstractAnalysis {
 			}
 
 			utils.calculateMaxAndMins();
+			utils.markRadiusEdges();
 
 			if (!utils.isPipeCircular()) {
-				utils.markRadiusEdges();
-				splitLongEdges();
-				splitNearRadiusEdge();
+				//splitLongEdges();
+				//splitNearRadiusEdge();
 			}
 
 			// remove edges marked to be removed
@@ -683,17 +744,13 @@ public class SurfaceDemo extends AbstractAnalysis {
 			// remove points that do not belong to either edge
 			utils.removeNotUsedPoints();
 
-			utils.markRadiusEdges();
-
 			System.out.println("Points: " + utils.points.size());
 			System.out.println("Edges: " + utils.edges.size());
 			System.out.println("Surfaces: " + utils.surfaces.size());
 
 			utils.establishNeighbourPoints();
 			utils.calculateContinuousEdges();
-			// utils.calculateMaxAndMins();
 			utils.establishRighMostAndLeftMostPoints();
-
 			// utils.calculateAllOffsetPoints();
 
 			utils.origPoints = new ConcurrentHashMap<Integer, MyPickablePoint>();
@@ -705,73 +762,15 @@ public class SurfaceDemo extends AbstractAnalysis {
 			Settings.instance.log("Edges: " + utils.edges.size());
 			Settings.instance.log("Surfaces: " + utils.surfaces.size());
 
-			// Creates the 3d object
-			Settings.instance.log("Thread: " + Thread.currentThread().getName());
-			chart.getAxeLayout().setXAxeLabel("X");
-			chart.getAxeLayout().setYAxeLabel("Y");
-			chart.getAxeLayout().setZAxeLabel("Z");
-			chart.getView().setSquared(false);
-
-			// pauseAnimator();
-			// resumeAnimator();
-			SurfaceDemo.instance.canvas.getAnimator().getThread().setName("ANIMATOR_TREAD");
-			if (Settings.instance.getSetting("ui_zoom_plasma").equals("True"))
-				SurfaceDemo.ZOOM_PLASMA = true;
-			if (Settings.instance.getSetting("ui_zoom_point").equals("True"))
-				SurfaceDemo.ZOOM_POINT = true;
-
-			SwingUtilities.invokeLater(new Runnable() {
-				public void run() {
-					try {
-						Settings.instance.log("Sleeping...");
-						Thread.sleep(100);
-						Settings.instance.log("Sleeping...Done.");
-					} catch (InterruptedException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					}
-					Settings.instance.log("Starting zoom and focus to last point...");
-					if (!Settings.instance.getSetting("ui_zoom_center").equals("")) {
-						try {
-							String center_str = Settings.instance.getSetting("ui_zoom_center");
-							String radius = Settings.instance.getSetting("ui_zoom_radius");
-
-							float x = Float.valueOf(center_str.split("\\s")[0].split("=")[1]);
-							float y = Float.valueOf(center_str.split("\\s")[1].split("=")[1]);
-							float z = Float.valueOf(center_str.split("\\s")[2].split("=")[1]);
-
-							instance.chart.getView().setBoundManual(new BoundingBox3d(new Coord3d(x, y, z), Float.valueOf(radius)));
-							instance.canvas.getAnimator().start();
-
-							MyPickablePoint lastClicked = findSelectedPoint();
-							if (lastClicked != null)
-								lastClickedPointChanged(lastClicked);
-
-						} catch (Exception ex) {
-							ex.printStackTrace();
-						}
-					}
-					Settings.instance.log("Starting zoom and focus to last point...Done.");
-
-				}
-			});
-
-			instance.canvas.getView().setViewPositionMode(ViewPositionMode.FREE);
-			instance.canvas.getView().setMaximized(true);
-			instance.canvas.getView().setCameraMode(CameraMode.ORTHOGONAL);
-
-			// this.NUMBER_EDGES = true;
-
-			this.NUMBER_EDGES = Boolean.valueOf(Settings.instance.getSetting("ui_number_edges"));
-			this.NUMBER_POINTS = Boolean.valueOf(Settings.instance.getSetting("ui_number_points"));
-
-			System.out.println("Thread: " + Thread.currentThread().getName());
-
+			ArrayList<Integer> ret = utils.findAllConnectedPoints(utils.points.get(1), new ArrayList<Integer>());
+			System.out.println(ret);
+			
 			initDraw();
 
 		} catch (Exception ex) {
 			ex.printStackTrace();
 		}
+		
 	}
 
 	private MyPickablePoint findSelectedPoint() {
@@ -792,9 +791,9 @@ public class SurfaceDemo extends AbstractAnalysis {
 
 	public void splitNearRadiusEdge() {
 		// find intersection of lines to add
-		float dx = Float.valueOf(Settings.instance.getSetting("pipe_dim_x"));
-		float dz = Float.valueOf(Settings.instance.getSetting("pipe_dim_z"));
-		float radius = Float.valueOf(Settings.instance.getSetting("pipe_radius"));
+		double dx = SurfaceDemo.instance.dimX;
+		double dz = SurfaceDemo.instance.dimZ;
+		double radius = SurfaceDemo.instance.dimR;
 		float offset = 1;
 
 		float length = 1;
@@ -987,8 +986,7 @@ public class SurfaceDemo extends AbstractAnalysis {
 
 			@Override
 			public void run() {
-				// instance.canvas.getAnimator().stop();
-				clearPicking();
+				instance.canvas.getAnimator().stop();
 				plasma = null;
 				instance.getChart().getScene().getGraph().remove(instance.myComposite);
 				instance.getChart().getScene().getGraph().remove(instance.myTrail);
@@ -1064,6 +1062,7 @@ public class SurfaceDemo extends AbstractAnalysis {
 				getPlasma();
 				redrawPosition();
 				instance.canvas.getAnimator().start();
+				instance.disablePicking();
 				instance.enablePicking(instance.utils.points.values(), instance.chart, 10);
 			}
 		});
@@ -1090,51 +1089,38 @@ public class SurfaceDemo extends AbstractAnalysis {
 		return plasma;
 	}
 
-	private void clearPicking() {
-
-		for (AbstractCameraController controller : chart.getControllers()) {
-			if (controller instanceof AWTMousePickingController) {
-				AWTMousePickingController mousePicker = (AWTMousePickingController) controller;
-				mousePicker.getPickingSupport().unRegisterAllPickableObjects();
-				break;
-			}
-		}
+	private void disablePicking() {
+		getPickingSupport().unRegisterAllPickableObjects();
+		// for (AbstractCameraController controller : chart.getControllers()) {
+		// if (controller instanceof AWTMousePickingController) {
+		// AWTMousePickingController mousePicker = (AWTMousePickingController)
+		// controller;
+		// mousePicker.getPickingSupport().unRegisterAllPickableObjects();
+		// //break;
+		// }
+		// }
 	}
 
 	private void enablePicking(Collection<MyPickablePoint> points, Chart chart, int brushSize) {
 
 		if (getPickingSupport() != null) {
+			System.out.println("Point size:" + points.size());
 			for (MyPickablePoint p : points) {
-				getPickingSupport().registerPickableObject(p, p);
+				if (!getPickingSupport().isObjectRegistered(p))
+					getPickingSupport().registerPickableObject(p, p);
 			}
 
 			getPickingSupport().addObjectPickedListener(new IObjectPickedListener() {
 				@Override
 				public void objectPicked(List<?> picked, PickingSupport ps) {
 
+					System.out.println("Point size:" + utils.points.size());
 					if (picked.size() > 0) // && (System.currentTimeMillis() -
 					{
 						if (picked.get(0).getClass().getName().equals("com.kz.pipeCutter.MyPickablePoint")) {
 							MyPickablePoint mp = ((MyPickablePoint) picked.get(0));
 							Settings.instance.log(mp.toString());
 							SurfaceDemo.this.lastClickedPointChanged(mp);
-
-							// MyContinuousEdge mE =
-							// utils.continuousEdges.get(mp.continuousEdgeNo);
-							// Iterator<Integer> it = mE.points.iterator();
-							// boolean found = false;
-							// System.out.println("------");
-							// while (it.hasNext()) {
-							// Integer pointId = it.next();
-							// // MyPickablePoint point = utils.points.get(pointId);
-							// if (pointId == mp.id) {
-							// found = true;
-							// } else {
-							// if (found)
-							// System.out.println(pointId);
-							// }
-							// }
-
 						} else if (picked.get(0).getClass().getName().equals("org.jzy3d.plot3d.primitives.pickable.PickablePolygon")) {
 						} else {
 						}

@@ -608,6 +608,7 @@ public class CutThread extends SwingWorker<String, Object> {
 								tempPoint.xyz.z - offPointAndPlane.point.xyz.z);
 					}
 					SurfaceDemo.getInstance().move(tempPoint, true, true, cutOffsetMm, kerfOffVec);
+					System.out.println("point:" + tempPoint.id);
 					if (contEdge.edgeNo == 4) {
 						System.out.println("TempPoint id: " + tempPoint.id);
 					}

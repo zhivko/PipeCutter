@@ -1106,7 +1106,7 @@ public class SurfaceDemo extends AbstractAnalysis {
 		if (getPickingSupport() != null) {
 			System.out.println("Point size:" + points.size());
 			for (MyPickablePoint p : points) {
-				if (!getPickingSupport().isObjectRegistered(p))
+				//if (!getPickingSupport().isObjectRegistered(p))
 					getPickingSupport().registerPickableObject(p, p);
 			}
 

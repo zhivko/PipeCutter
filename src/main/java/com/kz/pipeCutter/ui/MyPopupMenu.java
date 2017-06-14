@@ -310,7 +310,7 @@ public class MyPopupMenu extends PopupMenu {
 		this.add(menuItem15);
 
 		// Gcodes for BBB
-		MenuItem menuItem12 = new MenuItem("SET POINT LOCATION AS ORIGIN - G92 (A=0deg and B=0deg)");
+		MenuItem menuItem12 = new MenuItem("SET POINT LOCATION AS ORIGIN - G92 (A=CurrAngle and B=CurrAngle)");
 		menuItem12.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
@@ -325,8 +325,11 @@ public class MyPopupMenu extends PopupMenu {
 						// float z =
 						// Float.valueOf(Settings.getInstance().getSetting("position_z"));
 						// "G92 X%.3f Y%.3f Z%.3f\nG92.3"
-						String mdiCommand = String.format(Locale.US, "G92 X%.3f Y%.3f Z%.3f A0 B0", SurfaceDemo.instance.lastClickedPoint.xyz.x,
-								SurfaceDemo.instance.lastClickedPoint.xyz.y, SurfaceDemo.instance.lastClickedPoint.xyz.z);
+						
+						float angle = Float.valueOf(SurfaceDemo.instance.angleTxt).floatValue();
+						
+						String mdiCommand = String.format(Locale.US, "G92 X%.3f Y%.3f Z%.3f A%.3f B%.3f", SurfaceDemo.instance.lastClickedPoint.xyz.x,
+								SurfaceDemo.instance.lastClickedPoint.xyz.y, SurfaceDemo.instance.lastClickedPoint.xyz.z, angle,angle);
 						Settings.getInstance().log(mdiCommand);
 						new ExecuteMdi(mdiCommand).start();
 

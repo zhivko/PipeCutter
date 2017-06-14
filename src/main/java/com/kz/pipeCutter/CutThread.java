@@ -16,6 +16,7 @@ import org.apache.commons.math3.geometry.euclidean.threed.Rotation;
 import org.apache.commons.math3.geometry.euclidean.threed.Vector3D;
 import org.apache.commons.math3.geometry.euclidean.twod.Vector2D;
 import org.apache.commons.math3.util.FastMath;
+import org.jfree.ui.StandardGradientPaintTransformer;
 import org.jzy3d.chart.controllers.camera.AbstractCameraController;
 import org.jzy3d.chart.controllers.mouse.camera.AWTCameraMouseController;
 import org.jzy3d.colors.Color;
@@ -28,7 +29,7 @@ import com.kz.pipeCutter.ui.Settings;
 import com.kz.pipeCutter.ui.tab.GcodeViewer;
 
 public class CutThread extends SwingWorker<String, Object> {
-
+	float plasmaLeadinRadius;
 	static File gcodeFile;
 	public static int delay = 100;
 	public static float cutterYRange = 20;
@@ -126,6 +127,7 @@ public class CutThread extends SwingWorker<String, Object> {
 	}
 
 	public CutThread() {
+		plasmaLeadinRadius = Float.valueOf(Settings.instance.getSetting("plasma_leadin_radius"));
 		SurfaceDemo.getInstance().utils.rotatePoints(0, true, false);
 
 		System.out.println("name: " + Thread.currentThread().getName());
@@ -479,24 +481,22 @@ public class CutThread extends SwingWorker<String, Object> {
 		Vector3D kerfOffVec = new Vector3D(0, 0, 0);
 		if (!isOnEdge) { // we don't do this for line just for edge forming closed
 											// loops
-			float radius = Float.valueOf(Settings.instance.getSetting("plasma_leadin_radius"));
-
 			Point offsetPoint = offPointAndPlane.point;
 			if (this.useKerfOffset)
 				kerfOffVec = new Vector3D(myPoint.xyz.x - offsetPoint.xyz.x, myPoint.xyz.y - offsetPoint.xyz.y, myPoint.xyz.z - offsetPoint.xyz.z);
 
 			Vector3D vecMyPoint = new Vector3D(myPoint.point.x, myPoint.point.y, myPoint.point.z);
 			Vector3D vect3DoffPoint = new Vector3D(offsetPoint.getCoord().x, offsetPoint.getCoord().y, offsetPoint.getCoord().z);
-			Vector3D delta = vect3DoffPoint.subtract(vecMyPoint).normalize().scalarMultiply(radius);
+			Vector3D delta = vect3DoffPoint.subtract(vecMyPoint).normalize().scalarMultiply(plasmaLeadinRadius);
 			Vector3D vect3Dcent = vecMyPoint.add(delta);
 			Vector3D axis = null;
 
 			if (contEdge.edgeType == MyContinuousEdge.EdgeType.START)
 				axis = offPointAndPlane.plane.getNormal().scalarMultiply(1.0d);
 			else if (contEdge.edgeType == MyContinuousEdge.EdgeType.END) {
-				axis = offPointAndPlane.plane.getNormal().scalarMultiply(-1.0d);
+				axis = offPointAndPlane.plane.getNormal().scalarMultiply(1.0d);
 			} else if (contEdge.edgeType == MyContinuousEdge.EdgeType.ONPIPE) {
-				axis = offPointAndPlane.plane.getNormal().scalarMultiply(-1.0d);
+				axis = offPointAndPlane.plane.getNormal().scalarMultiply(offPointAndPlane.direction == true ? 1 : -1);
 			} else {
 				System.out.println("");
 			}
@@ -504,31 +504,22 @@ public class CutThread extends SwingWorker<String, Object> {
 			double angleDelta = 0, startAngle = 0, endAngle = 0;
 
 			if (contEdge.edgeType == MyContinuousEdge.EdgeType.START) {
-				startAngle = 3.0d * Math.PI / 2.0d;
-				endAngle = Math.PI;
-				angleDelta = -Math.PI / 20.0d;
+				startAngle = Math.PI/2;
+				endAngle = 0;
 			} else if (contEdge.edgeType == MyContinuousEdge.EdgeType.END) {
 				startAngle = Math.PI / 2.0d;
-				endAngle = Math.PI;
-				angleDelta = Math.PI / 20.0d;
+				endAngle = 0;
 			} else if (contEdge.edgeType == MyContinuousEdge.EdgeType.ONPIPE) {
-				if (offPointAndPlane.direction == false) {
-					startAngle = Math.PI / 2.0d;
-					endAngle = Math.PI;
-					angleDelta = Math.PI / 20.0d;
-				} else {
-					startAngle = 3.0d * Math.PI / 2.0d;
-					endAngle = Math.PI;
-					angleDelta = -Math.PI / 20.0d;
-				}
+				startAngle = Math.PI/2;
+				endAngle = 0;
 			}
+			angleDelta = (endAngle - startAngle) / 20.0d;
 
-			for (double angle = startAngle; angle != endAngle; angle = angle + angleDelta) {
-				System.out.println(angle * 180 / Math.PI);
+			for (double angle = startAngle; Math.abs(angle - endAngle) > 0.1; angle = angle + angleDelta) {
 				Rotation rotat2 = new Rotation(axis, angle);
 				Vector3D rotatedVec = rotat2.applyTo(delta);
 				System.out.println(rotatedVec);
-				Vector3D leadPoint = vect3Dcent.add(rotatedVec);
+				Vector3D leadPoint = vect3Dcent.subtract(rotatedVec);
 				Point3d c = new Point3d((float) leadPoint.getX(), (float) leadPoint.getY(), (float) leadPoint.getZ());
 				if (angle == startAngle) {
 					SurfaceDemo.instance.redrawPosition();
@@ -551,10 +542,6 @@ public class CutThread extends SwingWorker<String, Object> {
 			kerfOffVec = new Vector3D(0, 0, 0);
 			if (tempPoint != null) {
 				tempPoint.setColor(Color.GREEN);
-				if(tempPoint.id == 686)
-				{
-					System.out.println("OOPS");
-				}
 				alAlreadyAddedPoints.add(Integer.valueOf(tempPoint.id));
 			}
 			if (contEdge.edgeType == MyContinuousEdge.EdgeType.START)
@@ -563,20 +550,15 @@ public class CutThread extends SwingWorker<String, Object> {
 				else
 					tempPoint = SurfaceDemo.getInstance().utils.findConnectedPoint(tempPoint, alAlreadyAddedPoints, true);
 			else if (contEdge.edgeType == MyContinuousEdge.EdgeType.END)
-				tempPoint = SurfaceDemo.getInstance().utils.findConnectedPoint(tempPoint, alAlreadyAddedPoints, true);
+				tempPoint = SurfaceDemo.getInstance().utils.findConnectedPoint(tempPoint, alAlreadyAddedPoints, false);
 			else {
-				if (contEdge.edgeNo == 4) {
-					System.out.println("TempPoint id: " + tempPoint.id);
-				}				
 				if (contEdge.points.size() == contEdge.connectedEdges.size()) {
 					// it is closed edge
-					if(tempPoint.id==686 || tempPoint.id==685)
-					{
-						System.out.println(tempPoint.id);
-					}						
-					tempPoint = SurfaceDemo.getInstance().utils.findConnectedPoint(tempPoint, alAlreadyAddedPoints, true);
-					//tempPoint = SurfaceDemo.getInstance().utils.findConnectedPoint(tempPoint, alAlreadyAddedPoints, !offPointAndPlane.direction );
-					
+					// tempPoint =
+					// SurfaceDemo.getInstance().utils.findConnectedPoint(tempPoint,
+					// alAlreadyAddedPoints, true);
+					tempPoint = SurfaceDemo.getInstance().utils.findConnectedPoint(tempPoint, alAlreadyAddedPoints, !offPointAndPlane.direction);
+
 				} else {
 					if (contEdge.points.indexOf(myPoint.id) == 0)
 						tempPoint = SurfaceDemo.getInstance().utils.findConnectedPoint(tempPoint, alAlreadyAddedPoints, true);
@@ -599,7 +581,7 @@ public class CutThread extends SwingWorker<String, Object> {
 						System.out.println("");
 					}
 				}
-			} else {			
+			} else {
 				MyEdge edge = SurfaceDemo.instance.utils.getEdgeFromTwoPoints(prevPoint, tempPoint);
 				if (edge != null && !alreadyCuttedEdges.contains(edge)) {
 					if (contEdge.points.size() == contEdge.connectedEdges.size() && this.useKerfOffset) {
@@ -608,10 +590,6 @@ public class CutThread extends SwingWorker<String, Object> {
 								tempPoint.xyz.z - offPointAndPlane.point.xyz.z);
 					}
 					SurfaceDemo.getInstance().move(tempPoint, true, true, cutOffsetMm, kerfOffVec);
-					System.out.println("point:" + tempPoint.id);
-					if (contEdge.edgeNo == 4) {
-						System.out.println("TempPoint id: " + tempPoint.id);
-					}
 					alreadyCuttedEdges.add(edge);
 				}
 			}

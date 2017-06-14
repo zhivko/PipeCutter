@@ -1152,7 +1152,7 @@ public class SurfaceDemo extends AbstractAnalysis {
 
 			offsetPoint = SurfaceDemo.instance.utils.calculateOffsetPoint(mp);
 			offsetPoint.setColor(Color.GREEN);
-			offsetPoint.setWidth(6.0f);
+			offsetPoint.setWidth(10.0f);
 			myComposite.add(offsetPoint);
 
 		} catch (Exception ex) {

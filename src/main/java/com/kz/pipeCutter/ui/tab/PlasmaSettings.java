@@ -1,9 +1,18 @@
 package com.kz.pipeCutter.ui.tab;
 
+import java.awt.Color;
 import java.awt.Dimension;
+import java.awt.event.FocusEvent;
+import java.awt.event.FocusListener;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 
 import javax.swing.JPanel;
+import javax.swing.JTextField;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
 
+import org.glassfish.grizzly.http.io.InputBuffer;
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartPanel;
 import org.jfree.chart.JFreeChart;
@@ -17,6 +26,7 @@ import com.kz.pipeCutter.ui.MyVerticalFlowLayout;
 import com.kz.pipeCutter.ui.PinDef;
 import com.kz.pipeCutter.ui.SavableCheckBox;
 import com.kz.pipeCutter.ui.SavableText;
+import com.kz.pipeCutter.ui.Settings;
 
 import pb.Types.HalPinDirection;
 import pb.Types.ValueType;
@@ -26,6 +36,24 @@ public class PlasmaSettings extends JPanel {
 	public XYSeries seriesVoltTime = new XYSeries("XYGraph");
 	public XYSeries seriesVoltConstTime = new XYSeries("ConstLine");
 	JFreeChart chart;
+
+	private void testKerfOffset(FocusEvent e) {
+		try {
+			JTextField jField = (JTextField)(e.getSource());
+			String value = (jField).getText();
+			if (Float.valueOf(value) == 0) {
+				Settings.instance.log("Must be > 0");
+				jField.setBackground(Color.RED);
+			}
+			else
+			{
+				jField.setBackground(Color.WHITE);
+			}
+			
+		} catch (Exception ex) {
+			ex.printStackTrace();
+		}
+	}
 
 	public PlasmaSettings() {
 		super();
@@ -53,6 +81,20 @@ public class PlasmaSettings extends JPanel {
 		plasmaKerfOffsetMm.setParId("plasma_kerf_offset_mm");
 		this.add(plasmaKerfOffsetMm);
 
+		plasmaKerfOffsetMm.jValue.addFocusListener(new FocusListener() {
+			
+			@Override
+			public void focusLost(FocusEvent e) {
+				PlasmaSettings.this.testKerfOffset(e);
+			}
+			
+			@Override
+			public void focusGained(FocusEvent e) {
+				// TODO Auto-generated method stub
+				
+			}
+		});
+		
 		SavableText plasmaLeadInRadius = new SavableText();
 		plasmaLeadInRadius.setLabelTxt("Plasma lead in radius [mm]:");
 		plasmaLeadInRadius.setParId("plasma_leadin_radius");
@@ -104,7 +146,7 @@ public class PlasmaSettings extends JPanel {
 		arcOK.setParId("myini.arc-ok");
 		arcOK.setLabelTxt("arc-ok");
 		arcOK.setToolTipText("When plasma reports arc is OK");
-		this.add(arcOK);		
+		this.add(arcOK);
 
 		SavableCheckBox waitForArcOK = new SavableCheckBox();
 		waitForArcOK.requiresHalRCompSet = false;
@@ -112,8 +154,8 @@ public class PlasmaSettings extends JPanel {
 		waitForArcOK.setParId("myini.plasmaWaitForArcOk");
 		waitForArcOK.setLabelTxt("Wait for arc OK from plasma");
 		waitForArcOK.setToolTipText("Gcode execution will wait max for 3 seconds until plasma reports arc-OK. See M66 P0 L3 Q3 in produced gcode");
-		this.add(waitForArcOK);				
-		
+		this.add(waitForArcOK);
+
 		SavableText velTol = new SavableText();
 		velTol.setPin(new PinDef("myini.vel-tol", HalPinDirection.HAL_OUT, ValueType.HAL_FLOAT));
 		velTol.requiresHalRCompSet = true;
@@ -182,7 +224,7 @@ public class PlasmaSettings extends JPanel {
 		offsetValue.setParId("myini.offset-value");
 		offsetValue.setLabelTxt("thc offset value");
 		this.add(offsetValue);
-		
+
 		SavableCheckBox thcSimulation = new SavableCheckBox();
 		thcSimulation.setPin(new PinDef("myini.thc-simulation", HalPinDirection.HAL_OUT, ValueType.HAL_BIT));
 		thcSimulation.requiresHalRCompSet = true;
@@ -190,7 +232,7 @@ public class PlasmaSettings extends JPanel {
 		thcSimulation.setParId("myini.thc-simulation");
 		thcSimulation.setLabelTxt("THC simulation");
 		thcSimulation.setToolTipText("We are simulating and ignoring torch_on && arc_ok && vel_status");
-		this.add(thcSimulation);		
+		this.add(thcSimulation);
 
 		// Add the series to your data set
 		seriesVoltTime.add(1, 1);
@@ -232,12 +274,14 @@ public class PlasmaSettings extends JPanel {
 		domainAxis.setRange(seriesVoltConstTime.getMaxX() - 3000, seriesVoltConstTime.getMaxX());
 		// domainAxis.setTickUnit(new NumberTickUnit(0.1));
 		// set max range window as 20V up and down from latest
-		
-		//double minY = (double) seriesVoltTime.getY(seriesVoltTime.getItemCount() - 1) - 50;
-		//double maxY = (double) seriesVoltTime.getY(seriesVoltTime.getItemCount() - 1) + 50;
+
+		// double minY = (double) seriesVoltTime.getY(seriesVoltTime.getItemCount()
+		// - 1) - 50;
+		// double maxY = (double) seriesVoltTime.getY(seriesVoltTime.getItemCount()
+		// - 1) + 50;
 		double minY = (double) seriesVoltConstTime.getY(seriesVoltConstTime.getItemCount() - 1) - 120;
 		double maxY = (double) seriesVoltConstTime.getY(seriesVoltConstTime.getItemCount() - 1) + 120;
-		
+
 		rangeAxis.setRange(minY, maxY);
 		// rangeAxis.setTickUnit(new NumberTickUnit(0.05));
 	}

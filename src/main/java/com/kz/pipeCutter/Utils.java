@@ -1165,7 +1165,7 @@ public class Utils {
 		// define follow the path direction clockwise/anticlockwise depending on
 		// plane pointing up or down
 		double angle1 = Vector3D.angle(ret.plane.getNormal(), new Vector3D(0.0d, 0.0d, 1.0d));
-		if (angle1 < Math.PI)
+		if (Math.abs(angle1) < 0.1)
 			ret.direction = false;
 		else
 			ret.direction = true;

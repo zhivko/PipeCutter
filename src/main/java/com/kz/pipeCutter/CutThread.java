@@ -558,7 +558,7 @@ public class CutThread extends SwingWorker<String, Object> {
 					// tempPoint =
 					// SurfaceDemo.getInstance().utils.findConnectedPoint(tempPoint,
 					// alAlreadyAddedPoints, true);
-					tempPoint = SurfaceDemo.getInstance().utils.findConnectedPoint(tempPoint, alAlreadyAddedPoints, !offPointAndPlane.direction);
+					tempPoint = SurfaceDemo.getInstance().utils.findConnectedPoint(tempPoint, alAlreadyAddedPoints, offPointAndPlane.direction);
 
 				} else {
 					if (contEdge.points.indexOf(myPoint.id) == 0)

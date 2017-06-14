@@ -965,10 +965,10 @@ public class Utils {
 		p2_ = rotPlane.applyTo(p2_);
 		p3_ = rotPlane.applyTo(p3_);
 
-		Plane pl1 = new Plane(p2, p3, p3_, 0.1);
-		Plane pl2 = new Plane(p1, p2, p2_, 0.1);
-		Plane pl3 = new Plane(p4, p1, p1_, 0.1);
-		Plane pl4 = new Plane(p4, p3_, p3, 0.1);
+		Plane pl1 = new Plane(p2, p3, p3_, 0.0001);
+		Plane pl2 = new Plane(p1, p2, p2_, 0.0001);
+		Plane pl3 = new Plane(p4, p1, p1_, 0.0001);
+		Plane pl4 = new Plane(p4, p3_, p3, 0.0001);
 
 		Plane[] planes = new Plane[] { pl1, pl2, pl3, pl4 };
 
@@ -1149,6 +1149,10 @@ public class Utils {
 			Line lineA = new Line(pointA1, pointB1, 0.01);
 			Line lineB = new Line(pointA2, pointB2, 0.01);
 			Vector3D intersect = lineA.intersection(lineB);
+			if(intersect==null)
+			{
+				System.out.println("oops");
+			}
 			ret.point.xyz.x = (float) intersect.getX();
 			ret.point.xyz.y = (float) intersect.getY();
 			ret.point.xyz.z = (float) intersect.getZ();

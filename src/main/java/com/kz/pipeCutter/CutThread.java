@@ -127,6 +127,7 @@ public class CutThread extends SwingWorker<String, Object> {
 	}
 
 	public CutThread() {
+		Thread.currentThread().setName("CutThread");
 		plasmaLeadinRadius = Float.valueOf(Settings.instance.getSetting("plasma_leadin_radius"));
 		SurfaceDemo.getInstance().utils.rotatePoints(0, true, false);
 

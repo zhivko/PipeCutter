@@ -385,6 +385,12 @@ comp --install ~/git/machinekit/mycomponents/atanxy.comp
 comp --install ~/git/machinekit/mycomponents/changeSign.comp
 ```
 
+** install kinematics **
+```
+sudo comp --install /home/machinekit/git/machinekit/mycomponents/pipecutkins.c
+```
+
+
 ** instal instantiable component *.icomp **
 ```
 instcomp --install ~/git/machinekit/mycomponents/udp.icomp

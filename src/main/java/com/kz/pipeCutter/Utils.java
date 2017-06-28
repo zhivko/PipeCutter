@@ -574,16 +574,15 @@ public class Utils {
 	public void calculateContinuousEdges2() {
 		for (MyPickablePoint point : points.values()) {
 			if (point.continuousEdgeNo == -1) {
-					for (MyEdge edg : edges.values()) {
-						if(edg.points.get(0) == point.id)
-						{
-							
-						}
+				for (MyEdge edg : edges.values()) {
+					if (edg.points.get(0) == point.id) {
+
 					}
+				}
 			}
 		}
-	}	
-	
+	}
+
 	public void calculateContinuousEdges() {
 		int edgeNo = 1;
 		continuousEdges = new ConcurrentHashMap<Integer, MyContinuousEdge>();
@@ -639,7 +638,6 @@ public class Utils {
 			edgeNo = it.next();
 			MyContinuousEdge edge = continuousEdges.get(edgeNo);
 
-			
 			if (edge.edgeType != MyContinuousEdge.EdgeType.END && edge.edgeType != MyContinuousEdge.EdgeType.START) {
 				MyPickablePoint p1 = edge.getPointByIndex(0);
 				MyPickablePoint p2 = edge.getPointByIndex(1);
@@ -654,10 +652,10 @@ public class Utils {
 				Vector3D vecCenOrigin = new Vector3D(0, vecC.getY(), 0);
 				Vector3D vecCen = vecC.subtract(vecCenOrigin);
 
-				if(edgeNo==1)
+				if (edgeNo == 1)
 					System.out.println(edge.points);
-				//Collections.sort(edge.points, new RoundPointComparator());
-				if(edgeNo==1)
+				// Collections.sort(edge.points, new RoundPointComparator());
+				if (edgeNo == 1)
 					System.out.println(edge.points);
 				try {
 					double angle = Vector3D.angle(vecCen, vecN);
@@ -679,7 +677,6 @@ public class Utils {
 
 		}
 	}
-
 
 	public Plane getPlaneForPoint(MyPickablePoint point) throws org.apache.commons.math3.exception.MathArithmeticException {
 		Plane plane = null;
@@ -907,10 +904,8 @@ public class Utils {
 		else if (continuousEdge.edgeType == MyContinuousEdge.EdgeType.ONPIPE)
 			angleToOffset = -Math.PI / 2;
 		else {
-			if (SurfaceDemo.instance.pipeIsCircular)
-				angleToOffset = -Math.PI / 2;
-			else
-				angleToOffset = -Math.PI / 2;
+			// if (SurfaceDemo.instance.pipeIsCircular)
+			angleToOffset = -Math.PI / 2;
 		}
 		int index = continuousEdge.points.indexOf(point.id);
 		int prevIndex = -1;
@@ -919,11 +914,11 @@ public class Utils {
 		if (index == 0)
 			// check if there is edge that connect 0 and continuousEdge.points.size()
 			// - 1 point
-			prevIndex = continuousEdge.points.size()-1;
+			prevIndex = continuousEdge.points.size() - 1;
 		else
 			prevIndex = index - 1;
 
-		if (index == continuousEdge.points.size()-1)
+		if (index == continuousEdge.points.size() - 1)
 			nextIndex = 0;
 		else
 			nextIndex = index + 1;
@@ -1149,8 +1144,7 @@ public class Utils {
 			Line lineA = new Line(pointA1, pointB1, 0.01);
 			Line lineB = new Line(pointA2, pointB2, 0.01);
 			Vector3D intersect = lineA.intersection(lineB);
-			if(intersect==null)
-			{
+			if (intersect == null) {
 				System.out.println("oops");
 			}
 			ret.point.xyz.x = (float) intersect.getX();

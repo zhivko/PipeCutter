@@ -89,7 +89,7 @@ public class SurfaceDemo extends AbstractAnalysis {
 	public static boolean ZOOM_POINT = false;
 	public static boolean ZOOM_PLASMA = false;
 
-	public int rotateArroundX=270;
+	public int rotateArroundX;
 	public int rotateArroundY;
 	public int rotateArroundZ;
 
@@ -439,8 +439,7 @@ public class SurfaceDemo extends AbstractAnalysis {
 
 						NUMBER_EDGES = Boolean.valueOf(Settings.instance.getSetting("ui_number_edges"));
 						NUMBER_POINTS = Boolean.valueOf(Settings.instance.getSetting("ui_number_points"));
-						
-						
+
 						// pauseAnimator();
 						// resumeAnimator();
 						SurfaceDemo.instance.canvas.getAnimator().getThread().setName("ANIMATOR_TREAD");
@@ -490,7 +489,6 @@ public class SurfaceDemo extends AbstractAnalysis {
 						instance.canvas.getView().setCameraMode(CameraMode.ORTHOGONAL);
 
 						// this.NUMBER_EDGES = true;
-
 
 						System.out.println("Thread: " + Thread.currentThread().getName());
 
@@ -701,13 +699,28 @@ public class SurfaceDemo extends AbstractAnalysis {
 				}
 			}
 
-			// rotate arround X if user choose so
-			if (SurfaceDemo.instance.rotateArroundX != 0.0) {
-				double[] axisDouble = { 1.0d, 0.0d, 0.0d };
+			
+			//rotate geometry as needed
+			String rotations = Settings.instance.getSetting("rotations");
+			String[] rotatSplit = rotations.split(" ");
+			for (String definition : rotatSplit) {
+				String axisStr = definition.substring(0, 1).toLowerCase();
+				double angle = Double.valueOf(definition.substring(1,definition.length())).doubleValue();
+				double[] axisDouble;
+				if(axisStr.equals("x"))
+					axisDouble = new double[]{ 1.0d, 0.0d, 0.0d };
+				else if(axisStr.equals("y"))
+					axisDouble = new double[]{ 0.0d, 1.0d, 0.0d };
+				else if(axisStr.equals("z"))
+					axisDouble = new double[]{ 0.0d, 0.0d, 1.0d };
+				else
+				{
+					Settings.instance.log("Unknown axis: " + axisStr);
+					throw new Exception("Unnown axis");
+				}
 				Vector3D axis = new Vector3D(axisDouble);
 				org.apache.commons.math3.geometry.euclidean.threed.Rotation rot = new org.apache.commons.math3.geometry.euclidean.threed.Rotation(axis,
-						Math.toRadians(SurfaceDemo.instance.rotateArroundX));
-				// Rotation rotZ1 = new Rotation(zAxis, Math.toRadians(angleDeg));
+						Math.toRadians(angle));
 				for (MyPickablePoint point : SurfaceDemo.instance.utils.points.values()) {
 					double[] myPointDouble = { point.getX(), point.getY(), point.getZ() };
 					Vector3D myPoint = new Vector3D(myPointDouble);
@@ -715,13 +728,13 @@ public class SurfaceDemo extends AbstractAnalysis {
 					SurfaceDemo.instance.utils.points.get(point.id).setCoord(result.getX(), result.getY(), result.getZ());
 				}
 			}
-
+			
 			utils.calculateMaxAndMins();
 			utils.markRadiusEdges();
 
 			if (!utils.isPipeCircular()) {
-				//splitLongEdges();
-				//splitNearRadiusEdge();
+				// splitLongEdges();
+				splitNearRadiusEdge();
 			}
 
 			// remove edges marked to be removed
@@ -764,13 +777,13 @@ public class SurfaceDemo extends AbstractAnalysis {
 
 			ArrayList<Integer> ret = utils.findAllConnectedPoints(utils.points.get(1), new ArrayList<Integer>());
 			System.out.println(ret);
-			
+
 			initDraw();
 
 		} catch (Exception ex) {
 			ex.printStackTrace();
 		}
-		
+
 	}
 
 	private MyPickablePoint findSelectedPoint() {
@@ -1106,8 +1119,8 @@ public class SurfaceDemo extends AbstractAnalysis {
 		if (getPickingSupport() != null) {
 			System.out.println("Point size:" + points.size());
 			for (MyPickablePoint p : points) {
-				//if (!getPickingSupport().isObjectRegistered(p))
-					getPickingSupport().registerPickableObject(p, p);
+				// if (!getPickingSupport().isObjectRegistered(p))
+				getPickingSupport().registerPickableObject(p, p);
 			}
 
 			getPickingSupport().addObjectPickedListener(new IObjectPickedListener() {
@@ -1328,7 +1341,7 @@ public class SurfaceDemo extends AbstractAnalysis {
 			writeToGcodeFile(String.format(Locale.US, "G04 P%.3f", (pierceTimeMs / 1000.0)));
 
 			if (CutThread.instance.waitForArcOK)
-				writeToGcodeFile("M66 P0 L3 Q5 (wait up to 5 seconds for digital input 0 Plasma-ArcOK to turn on - L3)");
+				writeToGcodeFile("M66 P0 L3 Q3 (wait up to 5 seconds for digital input 0 Plasma-ArcOK to turn on - L3)");
 
 			try {
 				TimeUnit.MILLISECONDS.sleep(pierceTimeMs);

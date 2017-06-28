@@ -281,7 +281,7 @@ public class CutThread extends SwingWorker<String, Object> {
 			ArrayList<MyContinuousEdge> edgesToCut = new ArrayList<MyContinuousEdge>();
 			for (MyContinuousEdge e : SurfaceDemo.getInstance().utils.continuousEdges.values()) {
 				System.out.println(e.center.y);
-				if (e.center.y > minY && e.center.y <= maxY)
+				if (e.center.y >= minY && e.center.y <= maxY)
 					edgesToCut.add(e);
 			}
 

@@ -25,55 +25,37 @@ public class MyPopupMenu extends PopupMenu {
 
 	public MyPopupMenu() {
 
-		MenuItem MenuItem14 = new MenuItem("Rotate around X for 90[deg]");
-		/*
-		 * MenuItem14.addActionListener(new ActionListener() {
-		 * 
-		 * @Override public void actionPerformed(ActionEvent arg0) {
-		 * 
-		 * double[] axisDouble = { 1.0d, 0.0d, 0.0d }; Vector3D axis = new
-		 * Vector3D(axisDouble); Rotation rot = new Rotation(axis,
-		 * Math.toRadians(90.0d)); // Rotation rotZ1 = new Rotation(zAxis,
-		 * Math.toRadians(angleDeg)); for (MyPickablePoint point :
-		 * SurfaceDemo.instance.utils.origPoints.values()) { double[] myPointDouble
-		 * = { point.getX(), point.getY(), point.getZ() }; Vector3D myPoint = new
-		 * Vector3D(myPointDouble); Vector3D result = rot.applyTo(myPoint);
-		 * SurfaceDemo.instance.utils.origPoints.get(point.id).setCoord(result.getX(
-		 * ), result.getY(), result.getZ());
-		 * SurfaceDemo.instance.utils.points.get(point.id).setCoord(result.getX(),
-		 * result.getY(), result.getZ()); }
-		 * 
-		 * 
-		 * SurfaceDemo.instance.utils.calculateMaxAndMins();
-		 * 
-		 * SurfaceDemo.instance.utils.calculateCenters();
-		 * SurfaceDemo.instance.utils.markRadiusEdges();
-		 * SurfaceDemo.instance.splitLongEdges();
-		 * SurfaceDemo.instance.splitNearRadiusEdge();
-		 * SurfaceDemo.instance.utils.establishNeighbourPoints();
-		 * 
-		 * 
-		 * SurfaceDemo.instance.utils.calculateContinuousEdges();
-		 * 
-		 * SurfaceDemo.instance.utils.origPoints = new ConcurrentHashMap<Integer,
-		 * MyPickablePoint>(); for (MyPickablePoint mp :
-		 * SurfaceDemo.instance.utils.points.values()) {
-		 * SurfaceDemo.instance.utils.origPoints.put(new Integer(mp.id),
-		 * mp.clone()); }
-		 * 
-		 * SurfaceDemo.instance.initDraw();
-		 * 
-		 * } });
-		 */
-		MenuItem14.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent arg0) {
-				SurfaceDemo.instance.rotateArroundX = SurfaceDemo.instance.rotateArroundX + 90;
-				SurfaceDemo.instance.init();
-			}
-		});
-
-		this.add(MenuItem14);
+//		MenuItem MenuItem14 = new MenuItem("Rotate around X for 90[deg]");
+//		MenuItem14.addActionListener(new ActionListener() {
+//			@Override
+//			public void actionPerformed(ActionEvent arg0) {
+//				SurfaceDemo.instance.rotateArroundX += 45;
+//				SurfaceDemo.instance.init();
+//			}
+//		});
+//		this.add(MenuItem14);
+//
+//		MenuItem MenuItem15 = new MenuItem("Rotate around Y for 90[deg]");
+//		MenuItem15.addActionListener(new ActionListener() {
+//			@Override
+//			public void actionPerformed(ActionEvent arg0) {
+//				SurfaceDemo.instance.rotateArroundY += 45;
+//				SurfaceDemo.instance.init();
+//			}
+//		});
+//		this.add(MenuItem15);
+//
+//		MenuItem MenuItem16 = new MenuItem("Rotate around Z for 90[deg]");
+//		MenuItem16.addActionListener(new ActionListener() {
+//			@Override
+//			public void actionPerformed(ActionEvent arg0) {
+//				SurfaceDemo.instance.rotateArroundZ += 45;
+//				SurfaceDemo.instance.init();
+//			}
+//		});
+//		this.add(MenuItem16);
+		
+		
 		this.addSeparator();
 
 		MenuItem MenuItem13 = new MenuItem("Select top right point (startPoint)");

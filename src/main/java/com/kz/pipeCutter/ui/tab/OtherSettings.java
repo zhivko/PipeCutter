@@ -82,6 +82,37 @@ public class OtherSettings extends JPanel {
 			}
 		});
 		this.add(parseFile);
+		
+		
+		//rotations of input file
+		SavableText rotations = new SavableText();
+		rotations.setLabelTxt("Rotations:");
+		rotations.setParId("rotations");
+		rotations.jValue.setToolTipText("Add coordinate and separate with space example: x+90 y-90 z+270");
+		rotations.jValue.addKeyListener(new KeyListener() {
+
+			@Override
+			public void keyTyped(KeyEvent e) {
+				// TODO Auto-generated method stub
+				if (e.getKeyChar() == '\n') {
+					SurfaceDemo.instance.init();
+				}
+			}
+
+			@Override
+			public void keyReleased(KeyEvent e) {
+				// TODO Auto-generated method stub
+
+			}
+
+			@Override
+			public void keyPressed(KeyEvent e) {
+				// TODO Auto-generated method stub
+
+			}
+		});
+		this.add(rotations);		
+		
 
 		SavableText screenshotFolder = new SavableText();
 		screenshotFolder.setLabelTxt("Screenshot folder:");

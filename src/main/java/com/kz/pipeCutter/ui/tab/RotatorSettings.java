@@ -247,22 +247,18 @@ public class RotatorSettings extends JPanel {
 		// do synchronized rotations
 		String settingRot1 = "rotator1_linkedJog_enable";
 		String settingRot2 = "rotator2_linkedJog_enable";
-		String settingRot3 = "rotator3_linkedJog_enable";
 
-		if (Settings.getInstance().getParameter(settingRot1).getParValue().equals("1")
-				|| Settings.getInstance().getParameter(settingRot2).getParValue().equals("1")
-				|| Settings.getInstance().getParameter(settingRot3).getParValue().equals("1")) {
+		if (Boolean.valueOf(Settings.getInstance().getParameter(settingRot1).getParValue())
+				|| Boolean.valueOf(Settings.getInstance().getParameter(settingRot2).getParValue())) {
 
 			String mdiCommand = "G91";
 			new ExecuteMdi(mdiCommand).start();
 
 			mdiCommand = "G01";
-			if (Settings.getInstance().getParameter(settingRot1).getParValue().equals("1"))
+			if (Boolean.valueOf(Settings.getInstance().getParameter(settingRot1).getParValue()))
 				mdiCommand += " A" + distance;
-			if (Settings.getInstance().getParameter(settingRot2).getParValue().equals("1"))
+			if (Boolean.valueOf(Settings.getInstance().getParameter(settingRot2).getParValue()))
 				mdiCommand += " B" + distance;
-			if (Settings.getInstance().getParameter(settingRot3).getParValue().equals("1"))
-				mdiCommand += " C" + distance;
 
 			mdiCommand += " F" + String.valueOf(speed);
 			new ExecuteMdi(mdiCommand).start();

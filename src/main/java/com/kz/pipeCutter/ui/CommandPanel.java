@@ -38,14 +38,14 @@ public class CommandPanel extends JPanel {
 	public CommandPanel() {
 		super();
 
-		// this.setPreferredSize(new Dimension(420, 332));
+		this.setPreferredSize(new Dimension(520, 280));
 		FlowLayout flowLayout = (FlowLayout) this.getLayout();
 		flowLayout.setAlignment(FlowLayout.LEFT);
 
 		// ----------machineKitPanel---------------------------
 
 		JPanel machineKitPanel = new JPanel();
-		machineKitPanel.setPreferredSize(new Dimension(150, 350));
+		machineKitPanel.setPreferredSize(new Dimension(130, 280));
 		this.add(machineKitPanel);
 
 		MyButton startMachineKit = new MyButton("Start MK") {
@@ -91,7 +91,6 @@ public class CommandPanel extends JPanel {
 		
 		// ----------machineTalkPanel---------------------------
 		JPanel machineTalkPanel = new JPanel();
-		machineTalkPanel.setPreferredSize(new Dimension(130, 350));
 
 		this.add(machineTalkPanel);
 
@@ -224,6 +223,41 @@ public class CommandPanel extends JPanel {
 
 			}
 		});
+		
+		
+		final SavableText mdiCommand3 = new SavableText();
+		mdiCommand3.setLabelTxt("MDI3:");
+		mdiCommand3.setParId("machinekit_mdi3");
+		machineTalkPanel.add(mdiCommand3);
+		mdiCommand3.jValue.addKeyListener(new KeyListener() {
+
+			@Override
+			public void keyTyped(KeyEvent e) {
+				// TODO Auto-generated method stub
+
+			}
+
+			@Override
+			public void keyReleased(KeyEvent e) {
+				// TODO Auto-generated method stub
+				if (e.getKeyCode() == 10) {
+					try {
+						new ExecuteMdi(mdiCommand3.getParValue()).start();
+					} catch (Exception ex) {
+						ex.printStackTrace();
+					}
+				} else {
+					// System.out.println(e.getKeyCode());
+				}
+			}
+
+			@Override
+			public void keyPressed(KeyEvent e) {
+				// TODO Auto-generated method stub
+
+			}
+		});		
+		
 
 		MyButton uploadGCode = new MyButton("Upload GC") {
 			@Override
@@ -262,9 +296,9 @@ public class CommandPanel extends JPanel {
 
 		JScrollPane sp = new JScrollPane(log);
 		sp.setAutoscrolls(true);
-		sp.setPreferredSize(new Dimension(530, 80));
+		sp.setPreferredSize(new Dimension(730, 130));
 		machineTalkPanel.add(sp);
 
-		machineTalkPanel.setPreferredSize(new Dimension(650, 400));
+		machineTalkPanel.setPreferredSize(new Dimension(850, 400));
 	}
 }

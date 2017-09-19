@@ -432,6 +432,7 @@ public class Settings extends JFrame {
 			// }
 			// controls.put(parameterId, mysavable);
 			// }
+			
 			mysavable = controls.get(parameterId);
 			mysavable.setParValue(value);
 			mysavable.save();
@@ -565,33 +566,4 @@ public class Settings extends JFrame {
 		Settings.getInstance().log("Update-ing hal values...DONE.");
 	}
 
-	public void setLaser1IP() {
-		try {
-			String laserUrl = "ws://" + Settings.instance.getParameter("laser_1_ip").getParValue();
-			ClientManager cm = ClientManager.createClient();
-			URI uri;
-
-			uri = new URI(laserUrl);
-			MyLaserWebsocketClient myWebsocketClient = new MyLaserWebsocketClient(Settings.instance.getParameter("machinekit_ip").getParValue(), 1234);
-			if (Settings.instance != null)
-				Settings.instance.log("Connecting to: " + uri.toString());
-			Session wsSession = cm.asyncConnectToServer(myWebsocketClient, uri).get(2000, TimeUnit.MILLISECONDS);
-		} catch (URISyntaxException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (ExecutionException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (TimeoutException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (DeploymentException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-
-	}
 }

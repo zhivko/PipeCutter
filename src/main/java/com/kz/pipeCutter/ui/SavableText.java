@@ -7,20 +7,14 @@ import java.awt.geom.AffineTransform;
 
 import javax.swing.JTextField;
 import javax.swing.SwingConstants;
+import javax.swing.SwingUtilities;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
-
-import com.kz.pipeCutter.BBB.BBBHalCommand;
-import com.kz.pipeCutter.BBB.BBBHalRComp;
-
-import pb.Message.Container;
-import pb.Object.Pin;
-import pb.Types.ContainerType;
-import pb.Types.ValueType;
 
 @SuppressWarnings("serial")
 public class SavableText extends SavableControl {
 	public JTextField jValue;
+	public String value;
 	public boolean preventResize = false;
 
 	public SavableText() {
@@ -65,22 +59,22 @@ public class SavableText extends SavableControl {
 
 	@Override
 	public void setParValue(String val) {
-		SavableText.this.jValue.setText(val);
+		value = val;
 		// resizeBox();
-		// final String myValue = val;
-		// SwingUtilities.invokeLater(new Runnable() {
-		//
-		// @Override
-		// public void run() {
-		// SavableText.this.jValue.setText(myValue);
-		// //resizeBox();
-		// }
-		// });
+		final String myValue = val;
+		SwingUtilities.invokeLater(new Runnable() {
+
+			@Override
+			public void run() {
+				SavableText.this.jValue.setText(myValue);
+				resizeBox();
+			}
+		});
 	}
 
 	@Override
 	public String getParValue() {
-		return this.jValue.getText();
+		return this.value;
 	}
 
 	@Override

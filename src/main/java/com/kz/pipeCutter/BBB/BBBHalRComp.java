@@ -337,6 +337,8 @@ public class BBBHalRComp implements Runnable {
 				Settings.instance.setSetting("mymotion.program-line", Integer.valueOf(halPins.get("mymotion.program-line")));
 			}
 			GcodeViewer.instance.setPlasmaOn(Boolean.valueOf(halPins.get("mymotion.spindle-on")).booleanValue());
+			
+			/*
 			Settings.instance.setSetting("mymotion.vx", Float.valueOf(halPins.get("mymotion.vx")));
 			Settings.instance.setSetting("mymotion.dvx", Float.valueOf(halPins.get("mymotion.dvx")));
 			Settings.instance.setSetting("mymotion.vz", Float.valueOf(halPins.get("mymotion.vz")));
@@ -344,8 +346,10 @@ public class BBBHalRComp implements Runnable {
 			Settings.instance.setSetting("mymotion.current-radius", String.format("%.3f", Float.valueOf(halPins.get("mymotion.current-radius"))));
 			Settings.instance.setSetting("mymotion.vy", Float.valueOf(halPins.get("mymotion.vy")));
 			Settings.instance.setSetting("mymotion.v", Float.valueOf(halPins.get("mymotion.v")));
-			double laserHeight1 = Float.valueOf(halPins.get("mymotion.laserHeight1"));
-			Settings.instance.setSetting("mymotion.laserHeight1", String.format("%.3f", laserHeight1));
+			*/
+			
+//			double laserHeight1 = Float.valueOf(halPins.get("mymotion.laserHeight1"));
+//			Settings.instance.setSetting("mymotion.laserHeight1", String.format("%.3f", laserHeight1));
 
 			double actualVolts = Float.valueOf(halPins.get("myini.actual-volts"));
 			Settings.instance.setSetting("myini.actual-volts", actualVolts);

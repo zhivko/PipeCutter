@@ -218,11 +218,38 @@ public class OtherSettings extends JPanel {
 		uiZoom.setNeedsSave(true);
 		this.add(uiZoom);
 
-		SavableText laser1IP = new SavableText();
-		laser1IP.setLabelTxt("Laser 1 IP");
-		laser1IP.setParId("laser_1_ip");
-		laser1IP.setNeedsSave(true);
-		this.add(laser1IP);
+		SavableText laser1WebsocketUrl = new SavableText();
+		// in forma ws://[IP]
+		laser1WebsocketUrl.setLabelTxt("Laser 1 websocketurl (ws://[ip address])");
+		laser1WebsocketUrl.setParId("laser_1_websocketurl");
+		laser1WebsocketUrl.setNeedsSave(true);
+		laser1WebsocketUrl.jValue.addKeyListener(new KeyListener() {
+
+			@Override
+			public void keyTyped(KeyEvent e) {
+				// TODO Auto-generated method stub
+				if (e.getKeyChar() == '\n') {
+					Settings.getInstance().xyzSettings.makeWebsocketConnection();
+				}
+			}
+
+			@Override
+			public void keyReleased(KeyEvent e) {
+				// TODO Auto-generated method stub
+
+			}
+
+			@Override
+			public void keyPressed(KeyEvent e) {
+				// TODO Auto-generated method stub
+
+			}
+		});		
+		this.add(laser1WebsocketUrl);
+		
+		
+		
+		
 
 		SavableText positioner1reassign = new SavableText();
 		positioner1reassign.setLabelTxt("Rotator 1 reassign: ");

@@ -1,6 +1,5 @@
 package com.kz.pipeCutter.ui;
 
-import java.io.IOException;
 import java.net.URI;
 
 import javax.websocket.ClientEndpoint;
@@ -13,30 +12,35 @@ import javax.websocket.Session;
 @ClientEndpoint
 public class MyLaserWebsocketClient {
 	public URI uri;
-	int setPort = 1234;
-	private String setUdpServerIP;
 
-	public MyLaserWebsocketClient(String setIp, int setPort) {
-		this.setUdpServerIP = setIp;
-		this.setPort = setPort;
-	}
+	// public MyLaserWebsocketClient(URI myUri) {
+	// this.uri = myUri;
+	// }
 
 	@OnOpen
 	public void onOpen(Session session) {
 		if (Settings.instance != null)
 			Settings.instance.log("\tConnected to laser distance at: " + session.getRequestURI());
 		this.uri = session.getRequestURI();
-		try {
-			session.getBasicRemote().sendText("udpServerIP " + setUdpServerIP + " " + setPort);
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+		// try {
+		// session.getBasicRemote().sendText("udpServerIP " + setUdpServerIP + " " +
+		// setPort);
+		// } catch (IOException e) {
+		// // TODO Auto-generated catch block
+		// e.printStackTrace();
+		// }
 	}
 
 	@OnMessage
 	public void onMessage(String message) {
-		//Settings.instance.log("\tGot message from laser at: " + uri + " message:" + message);
+		// Settings.instance.log("\tGot message from laser at: " + uri + " message:"
+		// + message);
+		if (message.startsWith("Analogue")) {
+			String value = message.substring(message.lastIndexOf(" "), message.length());
+			
+			Settings.instance.setSetting("mymotion.laserHeight1",value);
+			//System.out.println(value);
+		}
 	}
 
 	@OnError

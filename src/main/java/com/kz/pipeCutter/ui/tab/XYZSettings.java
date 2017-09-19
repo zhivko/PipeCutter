@@ -8,11 +8,18 @@ import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
+import java.net.URI;
+import java.util.concurrent.TimeUnit;
 
+import javax.swing.AbstractButton;
 import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.JToggleButton;
+import javax.websocket.Session;
+import javax.websocket.WebSocketContainer;
 
+import org.glassfish.tyrus.client.ClientManager;
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartPanel;
 import org.jfree.chart.JFreeChart;
@@ -27,6 +34,7 @@ import com.kz.pipeCutter.BBB.commands.ExecuteMdi;
 import com.kz.pipeCutter.BBB.commands.Jog;
 import com.kz.pipeCutter.BBB.commands.MakeXHorizontal;
 import com.kz.pipeCutter.BBB.commands.PlasmaTouch;
+import com.kz.pipeCutter.ui.MyLaserWebsocketClient;
 import com.kz.pipeCutter.ui.MyVerticalFlowLayout;
 import com.kz.pipeCutter.ui.PinDef;
 import com.kz.pipeCutter.ui.SavableSlider;
@@ -41,6 +49,12 @@ public class XYZSettings extends JPanel {
 
 	public XYSeries seriesXZ = new XYSeries("XYGraph");
 	public JFreeChart chart;
+
+	WebSocketContainer wsContainer;
+	MyLaserWebsocketClient myWebsocketClient;
+	public Session wsSession;
+
+	CenterXOnPipe centerXOnPipe;
 
 	public XYZSettings() {
 		super();
@@ -116,14 +130,21 @@ public class XYZSettings extends JPanel {
 		positionX.setParId("position_x");
 		positionX.setNeedsSave(false);
 
-		JButton btnC = new JButton("Center X on pipe");
+		final JToggleButton btnC = new JToggleButton("Center X on pipe");
 		btnC.setBounds(75, 32, 54, 31);
 		panelXAxis.add(btnC);
 		btnC.addActionListener(new ActionListener() {
 
 			@Override
 			public void actionPerformed(ActionEvent e1) {
-				new Thread(new CenterXOnPipe()).start();
+				AbstractButton abstractButton = (AbstractButton) e1.getSource();
+				boolean selected = abstractButton.getModel().isSelected();
+				if (selected) {
+					centerXOnPipe = new CenterXOnPipe();
+					new Thread(centerXOnPipe).start();
+				} else {
+					centerXOnPipe.stop();
+				}
 			}
 		});
 
@@ -328,7 +349,8 @@ public class XYZSettings extends JPanel {
 		laserDistance1.setLabelTxt("LasDist: ");
 		laserDistance1.setParId("mymotion.laserHeight1");
 		laserDistance1.setNeedsSave(false);
-		laserDistance1.setPin(new PinDef("mymotion.laserHeight1", HalPinDirection.HAL_IN, ValueType.HAL_FLOAT));
+		// laserDistance1.setPin(new PinDef("mymotion.laserHeight1",
+		// HalPinDirection.HAL_IN, ValueType.HAL_FLOAT));
 		panelZAxis.add(laserDistance1);
 		laserDistance1.addFocusListener(new FocusListener() {
 
@@ -344,24 +366,27 @@ public class XYZSettings extends JPanel {
 			}
 		});
 
-		SavableText laserDistance0 = new SavableText();
-		laserDistance0.setLabelTxt("LasDist: ");
-		laserDistance0.setParId("mymotion.laserHeight0");
-		laserDistance0.setNeedsSave(false);
-		laserDistance0.setPin(new PinDef("mymotion.laserHeight0", HalPinDirection.HAL_IN, ValueType.HAL_FLOAT));
-		panelZAxis.add(laserDistance0);
-		laserDistance0.addFocusListener(new FocusListener() {
-			@Override
-			public void focusLost(FocusEvent e) {
-				// TODO Auto-generated method stub
+		// smakeWebsocketConnection();
 
-			}
-
-			@Override
-			public void focusGained(FocusEvent e) {
-
-			}
-		});
+		// SavableText laserDistance0 = new SavableText();
+		// laserDistance0.setLabelTxt("LasDist: ");
+		// laserDistance0.setParId("mymotion.laserHeight0");
+		// laserDistance0.setNeedsSave(false);
+		// laserDistance0.setPin(new PinDef("mymotion.laserHeight0",
+		// HalPinDirection.HAL_IN, ValueType.HAL_FLOAT));
+		// panelZAxis.add(laserDistance0);
+		// laserDistance0.addFocusListener(new FocusListener() {
+		// @Override
+		// public void focusLost(FocusEvent e) {
+		// // TODO Auto-generated method stub
+		//
+		// }
+		//
+		// @Override
+		// public void focusGained(FocusEvent e) {
+		//
+		// }
+		// });
 
 		// Add the series to your data set
 		XYSeriesCollection dataset = new XYSeriesCollection();
@@ -393,14 +418,41 @@ public class XYZSettings extends JPanel {
 		// set max time window as 1 sec
 
 		Float pipeDimX = Float.valueOf(Settings.instance.getSetting("pipe_dim_x"));
+
+		Float posX = Float.valueOf(Settings.instance.getSetting("position_x"));
+
 		Float pipeDimZ = Float.valueOf(Settings.instance.getSetting("pipe_dim_z"));
 
 		// current las measurement
 		Float lasHeight = Float.valueOf(Settings.instance.getSetting("mymotion.laserHeight1"));
 
-		domainAxis.setRange(-pipeDimX, pipeDimX);
-		rangeAxis.setRange(lasHeight - 3, lasHeight + 3);
+		domainAxis.setRange(posX - pipeDimX, posX + pipeDimX);
+		rangeAxis.setRange(lasHeight - 0.002, lasHeight + 0.002);
 		// rangeAxis.setTickUnit(new NumberTickUnit(0.05));
+	}
+
+	public void makeWebsocketConnection() {
+		URI uri = null;
+		try {
+			if (wsSession != null && wsSession.isOpen())
+				wsSession.close();
+
+			ClientManager cm = ClientManager.createClient();
+
+			String positionerUrlStr = Settings.getInstance().getSetting("laser_1_websocketurl");
+
+			if (positionerUrlStr != null && !positionerUrlStr.equals("")) {
+				uri = new URI(positionerUrlStr);
+				myWebsocketClient = new MyLaserWebsocketClient();
+				if (Settings.instance != null)
+					Settings.instance.log("Connecting to: " + uri.toString());
+				wsSession = cm.asyncConnectToServer(myWebsocketClient, uri).get(2000, TimeUnit.MILLISECONDS);
+			}
+		} catch (Exception e) {
+			if (Settings.instance != null)
+				Settings.instance.log("\t" + uri.toString() + " " + e.toString());
+		}
+
 	}
 
 }

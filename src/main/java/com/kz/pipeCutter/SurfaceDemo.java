@@ -69,6 +69,7 @@ import com.kz.pipeCutter.BBB.Discoverer;
 import com.kz.pipeCutter.ui.MyPopupMenu;
 import com.kz.pipeCutter.ui.Settings;
 import com.kz.pipeCutter.ui.SortedProperties;
+import com.kz.pipeCutter.ui.tab.XYZSettings;
 
 public class SurfaceDemo extends AbstractAnalysis {
 	// plasma torch heigh control process:
@@ -81,7 +82,7 @@ public class SurfaceDemo extends AbstractAnalysis {
 	Point offsetPoint = null;
 	public MyPickablePoint lastClickedPoint;
 	public String angleTxt = "0";
-	public static SurfaceDemo instance;
+	private static SurfaceDemo instance;
 	public MyComposite myComposite;
 	public MyComposite myTrail;
 	public static boolean NUMBER_EDGES = false;
@@ -159,7 +160,7 @@ public class SurfaceDemo extends AbstractAnalysis {
 									float angleDelta = Math.round(absAngle) - angle;
 									// SurfaceDemo.instance.utils.rotatePoints(Math.round(absAngle),
 									// false, false);
-									Settings.instance.log("Rotate to: " + Math.round(absAngle) + " deg");
+									Settings.getInstance().log("Rotate to: " + Math.round(absAngle) + " deg");
 									SurfaceDemo.instance.utils.rotatePoints(angleDelta, false, true);
 								}
 
@@ -407,7 +408,7 @@ public class SurfaceDemo extends AbstractAnalysis {
 									}
 									// splitPane.setDividerLocation(1 -
 									// (commandPanel.getHeight() /
-									// Settings.instance.getHeight()));
+									// Settings.getInstance().getHeight()));
 								}
 
 							}
@@ -431,38 +432,44 @@ public class SurfaceDemo extends AbstractAnalysis {
 							new MyAWTMousePickingController(instance.chart);
 
 						// Creates the 3d object
-						Settings.instance.log("Thread: " + Thread.currentThread().getName());
+						Settings.getInstance().log("Thread: " + Thread.currentThread().getName());
 						chart.getAxeLayout().setXAxeLabel("X");
 						chart.getAxeLayout().setYAxeLabel("Y");
 						chart.getAxeLayout().setZAxeLabel("Z");
 						chart.getView().setSquared(false);
 
-						NUMBER_EDGES = Boolean.valueOf(Settings.instance.getSetting("ui_number_edges"));
-						NUMBER_POINTS = Boolean.valueOf(Settings.instance.getSetting("ui_number_points"));
+						NUMBER_EDGES = Boolean.valueOf(Settings.getInstance().getSetting("ui_number_edges"));
+						NUMBER_POINTS = Boolean.valueOf(Settings.getInstance().getSetting("ui_number_points"));
 
 						// pauseAnimator();
 						// resumeAnimator();
-						SurfaceDemo.instance.canvas.getAnimator().getThread().setName("ANIMATOR_TREAD");
-						if (Settings.instance.getSetting("ui_zoom_plasma").equals("True"))
+						try {
+							Thread.currentThread().sleep(500);
+						} catch (InterruptedException e1) {
+							// TODO Auto-generated catch block
+							e1.printStackTrace();
+						}
+						SurfaceDemo.getInstance().canvas.getAnimator().getThread().setName("ANIMATOR_THREAD");
+						if (Settings.getInstance().getSetting("ui_zoom_plasma").equals("True"))
 							SurfaceDemo.ZOOM_PLASMA = true;
-						if (Settings.instance.getSetting("ui_zoom_point").equals("True"))
+						if (Settings.getInstance().getSetting("ui_zoom_point").equals("True"))
 							SurfaceDemo.ZOOM_POINT = true;
 
 						SwingUtilities.invokeLater(new Runnable() {
 							public void run() {
 								try {
-									Settings.instance.log("Sleeping...");
+									Settings.getInstance().log("Sleeping...");
 									Thread.sleep(100);
-									Settings.instance.log("Sleeping...Done.");
+									Settings.getInstance().log("Sleeping...Done.");
 								} catch (InterruptedException e) {
 									// TODO Auto-generated catch block
 									e.printStackTrace();
 								}
-								Settings.instance.log("Starting zoom and focus to last point...");
-								if (!Settings.instance.getSetting("ui_zoom_center").equals("")) {
+								Settings.getInstance().log("Starting zoom and focus to last point...");
+								if (!Settings.getInstance().getSetting("ui_zoom_center").equals("")) {
 									try {
-										String center_str = Settings.instance.getSetting("ui_zoom_center");
-										String radius = Settings.instance.getSetting("ui_zoom_radius");
+										String center_str = Settings.getInstance().getSetting("ui_zoom_center");
+										String radius = Settings.getInstance().getSetting("ui_zoom_radius");
 
 										float x = Float.valueOf(center_str.split("\\s")[0].split("=")[1]);
 										float y = Float.valueOf(center_str.split("\\s")[1].split("=")[1]);
@@ -479,8 +486,12 @@ public class SurfaceDemo extends AbstractAnalysis {
 										ex.printStackTrace();
 									}
 								}
-								Settings.instance.log("Starting zoom and focus to last point...Done.");
+								Settings.getInstance().log("Starting zoom and focus to last point...Done.");
 
+								
+								Settings.getInstance().log("Connecting centering capacity sensor....");
+								XYZSettings.getInstance().makeWebsocketConnection();								
+								
 							}
 						});
 
@@ -501,7 +512,7 @@ public class SurfaceDemo extends AbstractAnalysis {
 		t.start();
 	}
 
-	public static SurfaceDemo getInstance() {
+	public static synchronized SurfaceDemo getInstance() {
 		if (instance == null)
 			instance = new SurfaceDemo();
 		return instance;
@@ -534,7 +545,7 @@ public class SurfaceDemo extends AbstractAnalysis {
 							final Integer edgeNo = Integer.valueOf(e.getText().split(" ")[0]);
 
 							MyEdge edge = utils.edges.get(edgeNo);
-							Settings.instance.log(edge.toString());
+							Settings.getInstance().log(edge.toString());
 
 							final JPopupMenu menu = new JPopupMenu();
 							JMenuItem menuItem = new JMenuItem("Remove edge: " + edgeNo);
@@ -701,7 +712,7 @@ public class SurfaceDemo extends AbstractAnalysis {
 
 			
 			//rotate geometry as needed
-			String rotations = Settings.instance.getSetting("rotations");
+			String rotations = Settings.getInstance().getSetting("rotations");
 			String[] rotatSplit = rotations.split(" ");
 			for (String definition : rotatSplit) {
 				String axisStr = definition.substring(0, 1).toLowerCase();
@@ -715,7 +726,7 @@ public class SurfaceDemo extends AbstractAnalysis {
 					axisDouble = new double[]{ 0.0d, 0.0d, 1.0d };
 				else
 				{
-					Settings.instance.log("Unknown axis: " + axisStr);
+					Settings.getInstance().log("Unknown axis: " + axisStr);
 					throw new Exception("Unnown axis");
 				}
 				Vector3D axis = new Vector3D(axisDouble);
@@ -771,9 +782,9 @@ public class SurfaceDemo extends AbstractAnalysis {
 				utils.origPoints.put(new Integer(mp.id), mp.clone());
 			}
 
-			Settings.instance.log("Points: " + utils.points.size());
-			Settings.instance.log("Edges: " + utils.edges.size());
-			Settings.instance.log("Surfaces: " + utils.surfaces.size());
+			Settings.getInstance().log("Points: " + utils.points.size());
+			Settings.getInstance().log("Edges: " + utils.edges.size());
+			Settings.getInstance().log("Surfaces: " + utils.surfaces.size());
 
 			ArrayList<Integer> ret = utils.findAllConnectedPoints(utils.points.get(1), new ArrayList<Integer>());
 			System.out.println(ret);
@@ -788,7 +799,7 @@ public class SurfaceDemo extends AbstractAnalysis {
 
 	private MyPickablePoint findSelectedPoint() {
 		MyPickablePoint ret = null;
-		String val = Settings.instance.getSetting("ui_zoom_center");
+		String val = Settings.getInstance().getSetting("ui_zoom_center");
 		Float x = Float.valueOf(val.split(" ")[0].split("=")[1]);
 		Float y = Float.valueOf(val.split(" ")[1].split("=")[1]);
 		Float z = Float.valueOf(val.split(" ")[2].split("=")[1]);
@@ -1132,7 +1143,7 @@ public class SurfaceDemo extends AbstractAnalysis {
 					{
 						if (picked.get(0).getClass().getName().equals("com.kz.pipeCutter.MyPickablePoint")) {
 							MyPickablePoint mp = ((MyPickablePoint) picked.get(0));
-							Settings.instance.log(mp.toString());
+							Settings.getInstance().log(mp.toString());
 							SurfaceDemo.this.lastClickedPointChanged(mp);
 						} else if (picked.get(0).getClass().getName().equals("org.jzy3d.plot3d.primitives.pickable.PickablePolygon")) {
 						} else {
@@ -1376,7 +1387,7 @@ public class SurfaceDemo extends AbstractAnalysis {
 
 	public void redrawPosition() {
 		if (instance.getChart().getView().getCanvas() != null) {
-			float currentViewRadius = Float.valueOf(Settings.instance.getSetting("ui_zoom_radius"));
+			float currentViewRadius = Float.valueOf(Settings.getInstance().getSetting("ui_zoom_radius"));
 			if (currentViewRadius == 0)
 				currentViewRadius = 0.1f;
 			if (ZOOM_PLASMA && SurfaceDemo.instance.getPlasma().getPosition() != null) {

@@ -15,7 +15,7 @@ public class RoundPointComparator2 implements Comparator<MyPickablePoint> {
 			System.out.println("Comparing " + o1.id + " to " + o2.id);
 		}
 		
-		for (MyEdge edg : SurfaceDemo.instance.utils.edges.values()) {
+		for (MyEdge edg : SurfaceDemo.getInstance().utils.edges.values()) {
 			if (edg.points.get(0) == o1.id && edg.points.get(1) == o2.id) {
 				return 1;
 			}

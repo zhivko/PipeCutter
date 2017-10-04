@@ -51,7 +51,7 @@ public abstract class SavableControl extends JPanel implements IParameter, ISave
 	}
 
 	boolean isLoadingValue;
-
+	
 	public JPanel panel;
 
 	public SavableControl() {

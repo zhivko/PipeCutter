@@ -23,11 +23,11 @@ public class MyWebsocketClient {
 	@OnOpen
 	public void onOpen(Session session) {
 		this.uri = session.getRequestURI();
-		if(Settings.instance!=null)
-			Settings.instance.log("\tConnected to: " + uri);
+		if(Settings.getInstance()!=null)
+			Settings.getInstance().log("\tConnected to: " + uri);
 		this.positioner.isConnected = true;
 		
-		String reassignString = Settings.instance.getSetting("rotator_" + this.positioner.id + "_reassign");
+		String reassignString = Settings.getInstance().getSetting("rotator_" + this.positioner.id + "_reassign");
 		try {
 			if(reassignString!=null && !reassignString.equals(""))
 			session.getBasicRemote().sendText("reassign " + reassignString);
@@ -66,8 +66,8 @@ public class MyWebsocketClient {
 
 	@OnClose
 	public void onClose() {
-		if(Settings.instance!=null)
-			Settings.instance.log("\tDisconnected from: " + uri);
+		if(Settings.getInstance()!=null)
+			Settings.getInstance().log("\tDisconnected from: " + uri);
 		positioner.isConnected = false;
 	}
 

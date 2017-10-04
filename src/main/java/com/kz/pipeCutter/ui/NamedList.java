@@ -187,7 +187,7 @@ public class NamedList extends JPanel implements IParameter, IHasLabel {
 			final String commandUrl = "tcp://" + getServer(serviceInfo.getServer()) + ":" + ret.getPort();
 			if (!commandUrl.equals(Settings.getInstance().getSetting("machinekit_commandService_url"))) {
 				Settings.getInstance().setSetting("machinekit_commandService_url", commandUrl);
-				Settings.instance.initCommandService();
+				Settings.getInstance().initCommandService();
 			}
 		}
 	}
@@ -210,7 +210,7 @@ public class NamedList extends JPanel implements IParameter, IHasLabel {
 			if (!errorUrl.equals(Settings.getInstance().getSetting("machinekit_errorService_url"))
 					|| !BBBError.instance.isAlive()) {
 				Settings.getInstance().setSetting("machinekit_errorService_url", errorUrl);
-				Settings.instance.initErrorService();
+				Settings.getInstance().initErrorService();
 			}
 		}
 	}
@@ -227,7 +227,7 @@ public class NamedList extends JPanel implements IParameter, IHasLabel {
 			if (!statusUrl.equals(Settings.getInstance().getSetting("machinekit_statusService_url"))
 					|| !BBBStatus.instance.isAlive()) {
 				Settings.getInstance().setSetting("machinekit_statusService_url", statusUrl);
-				Settings.instance.initStatusService();
+				Settings.getInstance().initStatusService();
 			}
 		}
 	}
@@ -276,7 +276,7 @@ public class NamedList extends JPanel implements IParameter, IHasLabel {
 			if (!hallCmdUrl.equals(Settings.getInstance().getSetting("machinekit_halCmdService_url"))
 					|| !BBBHalCommand.instance.isAlive()) {
 				Settings.getInstance().setSetting("machinekit_halCmdService_url", hallCmdUrl);
-				Settings.instance.initHalCmdService();
+				Settings.getInstance().initHalCmdService();
 			}
 		}
 	}

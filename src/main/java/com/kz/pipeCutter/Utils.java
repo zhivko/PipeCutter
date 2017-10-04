@@ -262,7 +262,7 @@ public class Utils {
 		ArrayList<Coord3d> alCrossPoints2 = Utils.CalculateLineLineIntersection(a2, b2, c2, d2);
 
 		// calculate edge surfaces
-		List<MySurface> surfacesSortedByCenterY = new ArrayList<MySurface>(SurfaceDemo.instance.utils.surfaces.values());
+		List<MySurface> surfacesSortedByCenterY = new ArrayList<MySurface>(SurfaceDemo.getInstance().utils.surfaces.values());
 		Collections.sort(surfacesSortedByCenterY, new MySurfaceYComparator());
 		MySurface rightMostSurf = surfacesSortedByCenterY.get(0);
 		MySurface leftMostSurf = surfacesSortedByCenterY.get(surfacesSortedByCenterY.size() - 1);
@@ -270,14 +270,14 @@ public class Utils {
 		ArrayList<MyPickablePoint> outerPoints = new ArrayList<MyPickablePoint>();
 		float sumAngle = 0;
 		for (int i = 0; i < 4; i++) {
-			List<MyPickablePoint> pointsSortedByZ = new ArrayList<MyPickablePoint>(SurfaceDemo.instance.utils.points.values());
+			List<MyPickablePoint> pointsSortedByZ = new ArrayList<MyPickablePoint>(SurfaceDemo.getInstance().utils.points.values());
 			Collections.sort(pointsSortedByZ, new MyPickablePointZComparator());
 			float topZ = pointsSortedByZ.get(pointsSortedByZ.size() - 1).xyz.z;
 			if (topZ < 0)
 				topZ = pointsSortedByZ.get(0).xyz.z;
 			System.out.println("sumAngle: " + sumAngle + "\n top z: " + topZ);
 			float delta = (float) Math_E;
-			for (MyPickablePoint p : SurfaceDemo.instance.utils.points.values()) {
+			for (MyPickablePoint p : SurfaceDemo.getInstance().utils.points.values()) {
 				if (Math.abs(p.xyz.z - topZ) < delta) {
 					// if it's point from vertical edge - don't add it.
 					//
@@ -287,8 +287,8 @@ public class Utils {
 				}
 			}
 			double angle = 90.0d;
-			SurfaceDemo.instance.utils.rotatePoints(angle, true);
-			SurfaceDemo.instance.getChart().render();
+			SurfaceDemo.getInstance().utils.rotatePoints(angle, true);
+			SurfaceDemo.getInstance().getChart().render();
 			sumAngle = (float) (sumAngle + angle);
 		}
 	}
@@ -370,18 +370,18 @@ public class Utils {
 		y = p.getY() - kerfOffset.getY() / 2;
 		z = p.getZ() - kerfOffset.getZ() / 2 + zOffset;
 
-		float angle = Float.valueOf(SurfaceDemo.instance.angleTxt);
+		float angle = Float.valueOf(SurfaceDemo.getInstance().angleTxt);
 
 		MyEdge edge = null;
 		float calcSpeed = 0;
 		if (slow) {
-			calcSpeed = SurfaceDemo.instance.g1Speed;
+			calcSpeed = SurfaceDemo.getInstance().g1Speed;
 		} else
-			calcSpeed = SurfaceDemo.instance.g0Speed;
+			calcSpeed = SurfaceDemo.getInstance().g0Speed;
 
 		double length = 0;
 		if (this.previousPointId > 0 && (p.id != this.previousPointId)) {
-			edge = getEdgeFromTwoPoints(p, SurfaceDemo.instance.utils.points.get(this.previousPointId));
+			edge = getEdgeFromTwoPoints(p, SurfaceDemo.getInstance().utils.points.get(this.previousPointId));
 
 			if (edge != null) {
 
@@ -394,13 +394,13 @@ public class Utils {
 				/*
 				 * 
 				 * if (edge.edgeType == MyEdge.EdgeType.ONRADIUS) { float radius_of_edge
-				 * = Float.valueOf(Settings.instance.getSetting("pipe_radius")); float
+				 * = Float.valueOf(Settings.getInstance().getSetting("pipe_radius")); float
 				 * maxRadius = (float) Math.sqrt(this.maxX * this.maxX + this.maxZ *
 				 * this.maxZ); float s = (float) (maxRadius * Math.PI) * 1f; float
 				 * arc_length = (float) (radius_of_edge * Math.PI / 2); float v =
-				 * SurfaceDemo.instance.g1Speed * s / arc_length * 1f; // float dv = v -
-				 * SurfaceDemo.instance.g1Speed; // float t = s /
-				 * SurfaceDemo.instance.g1Speed; // float a = 2 * dv / t; // double
+				 * SurfaceDemo.getInstance().g1Speed * s / arc_length * 1f; // float dv = v -
+				 * SurfaceDemo.getInstance().g1Speed; // float t = s /
+				 * SurfaceDemo.getInstance().g1Speed; // float a = 2 * dv / t; // double
 				 * currAngle = Math.atan2(p.getCoord().z, p.getCoord().x) * 180.0 /
 				 * Math.PI; // double maxAngle = Math.atan2(this.maxZ, (this.maxX -
 				 * radius_of_edge)) * 180.0 / Math.PI; CutThread.instance.filletSpeed =
@@ -461,11 +461,11 @@ public class Utils {
 
 	public void rotatePoints(double angleDeg, boolean slow, boolean angleInDelta) {
 		double value;
-		if (SurfaceDemo.instance.utils.origPoints == null)
+		if (SurfaceDemo.getInstance().utils.origPoints == null)
 			return;
 		if (!slow) {
 			if (angleInDelta)
-				value = Double.valueOf(SurfaceDemo.instance.angleTxt) + angleDeg;
+				value = Double.valueOf(SurfaceDemo.getInstance().angleTxt) + angleDeg;
 			else
 				value = angleDeg;
 
@@ -473,26 +473,26 @@ public class Utils {
 			Vector3D zAxis = new Vector3D(zAxisDouble);
 			Rotation rotZ = new Rotation(zAxis, Math.toRadians(value));
 			// Rotation rotZ1 = new Rotation(zAxis, Math.toRadians(angleDeg));
-			for (MyPickablePoint point : SurfaceDemo.instance.utils.origPoints.values()) {
+			for (MyPickablePoint point : SurfaceDemo.getInstance().utils.origPoints.values()) {
 				double[] myPointDouble = { point.getX(), point.getY(), point.getZ() };
 				Vector3D myPoint = new Vector3D(myPointDouble);
 				Vector3D result = rotZ.applyTo(myPoint);
 				points.get(point.id).setCoord(result.getX(), result.getY(), result.getZ());
 			}
 
-			// for (int j = 0; j < SurfaceDemo.instance.myTrail.size(); j++) {
-			// Point p = (Point) SurfaceDemo.instance.myTrail.get(j);
+			// for (int j = 0; j < SurfaceDemo.getInstance().myTrail.size(); j++) {
+			// Point p = (Point) SurfaceDemo.getInstance().myTrail.get(j);
 			// Vector3D myPoint = new Vector3D(p.getCoord().x, p.getCoord().y,
 			// p.getCoord().z);
 			// Vector3D result = rotZ1.applyTo(myPoint);
 			// p.setCoord(new Coord3d(result.getX(), result.getY(), result.getZ()));
 			// }
 			Transform myRot = new Transform(new Rotate(angleDeg, new Coord3d(0f, 1f, 0f)));
-			SurfaceDemo.instance.myTrail.applyGeometryTransform(myRot);
-			if (SurfaceDemo.instance.NUMBER_EDGES) {
+			SurfaceDemo.getInstance().myTrail.applyGeometryTransform(myRot);
+			if (SurfaceDemo.getInstance().NUMBER_EDGES) {
 				edgeTexts.applyGeometryTransform(myRot);
 			}
-			if (SurfaceDemo.instance.NUMBER_POINTS) {
+			if (SurfaceDemo.getInstance().NUMBER_POINTS) {
 				pointTexts.applyGeometryTransform(myRot);
 			}
 			for (MyEdge edge : continuousEdges.values()) {
@@ -503,27 +503,27 @@ public class Utils {
 			Transform transf = new Transform(new Rotate(angleDeg / noSteps, new Coord3d(0, 1, 0)));
 			for (int i = 0; i <= noSteps; i++) {
 				if (angleInDelta)
-					value = Double.valueOf(SurfaceDemo.instance.angleTxt) + angleDeg * i / noSteps;
+					value = Double.valueOf(SurfaceDemo.getInstance().angleTxt) + angleDeg * i / noSteps;
 				else
 					value = angleDeg * i / noSteps;
 
-				SurfaceDemo.instance.myTrail.applyGeometryTransform(transf);
+				SurfaceDemo.getInstance().myTrail.applyGeometryTransform(transf);
 
 				double[] zAxisDouble = { 0.0d, 1.0d, 0.0d };
 				Vector3D zAxis = new Vector3D(zAxisDouble);
 				Rotation rotZ = new Rotation(zAxis, Math.toRadians(value));
 				Rotation rotZ1 = new Rotation(zAxis, Math.toRadians(angleDeg / noSteps));
 
-				for (int j = 0; j < SurfaceDemo.instance.myTrail.size(); j++) {
-					if (SurfaceDemo.instance.myTrail.get(j) instanceof Point) {
-						Point p = (Point) SurfaceDemo.instance.myTrail.get(j);
+				for (int j = 0; j < SurfaceDemo.getInstance().myTrail.size(); j++) {
+					if (SurfaceDemo.getInstance().myTrail.get(j) instanceof Point) {
+						Point p = (Point) SurfaceDemo.getInstance().myTrail.get(j);
 						Vector3D myPoint = new Vector3D(p.getCoord().x, p.getCoord().y, p.getCoord().z);
 						Vector3D result = rotZ1.applyTo(myPoint);
 						p.setCoord(new Coord3d(result.getX(), result.getY(), result.getZ()));
 					}
 				}
 
-				for (MyPickablePoint point : SurfaceDemo.instance.utils.origPoints.values()) {
+				for (MyPickablePoint point : SurfaceDemo.getInstance().utils.origPoints.values()) {
 					double[] myPointDouble = { point.getX(), point.getY(), point.getZ() };
 					Vector3D myPoint = new Vector3D(myPointDouble);
 					Vector3D result = rotZ.applyTo(myPoint);
@@ -531,11 +531,11 @@ public class Utils {
 				}
 
 				Transform myRot = new Transform(new Rotate(angleDeg, new Coord3d(0f, 1f, 0f)));
-				SurfaceDemo.instance.myTrail.applyGeometryTransform(myRot);
-				if (SurfaceDemo.instance.NUMBER_EDGES) {
+				SurfaceDemo.getInstance().myTrail.applyGeometryTransform(myRot);
+				if (SurfaceDemo.getInstance().NUMBER_EDGES) {
 					edgeTexts.applyGeometryTransform(myRot);
 				}
-				if (SurfaceDemo.instance.NUMBER_POINTS) {
+				if (SurfaceDemo.getInstance().NUMBER_POINTS) {
 					pointTexts.applyGeometryTransform(myRot);
 				}
 
@@ -543,7 +543,7 @@ public class Utils {
 					edge.calculateCenter();
 				}
 				float val = (float) (value);
-				SurfaceDemo.instance.calculateRotationPoint(val);
+				SurfaceDemo.getInstance().calculateRotationPoint(val);
 				try {
 					TimeUnit.MILLISECONDS.sleep(100);
 				} catch (InterruptedException e) {
@@ -552,7 +552,7 @@ public class Utils {
 				}
 			}
 		}
-		for (MyEdge edge : SurfaceDemo.instance.utils.edges.values()) {
+		for (MyEdge edge : SurfaceDemo.getInstance().utils.edges.values()) {
 			edge.calculateCenter();
 		}
 
@@ -561,14 +561,14 @@ public class Utils {
 		// newValue = 0.0f;
 		// }
 		if (angleInDelta) {
-			value = Double.valueOf(SurfaceDemo.instance.angleTxt);
+			value = Double.valueOf(SurfaceDemo.getInstance().angleTxt);
 			double newValue = value + angleDeg;
-			SurfaceDemo.instance.angleTxt = Double.valueOf(newValue).toString();
+			SurfaceDemo.getInstance().angleTxt = Double.valueOf(newValue).toString();
 		} else
-			SurfaceDemo.instance.angleTxt = Double.valueOf(angleDeg).toString();
+			SurfaceDemo.getInstance().angleTxt = Double.valueOf(angleDeg).toString();
 
-		float val = Float.valueOf(SurfaceDemo.instance.angleTxt);
-		SurfaceDemo.instance.calculateRotationPoint(val);
+		float val = Float.valueOf(SurfaceDemo.getInstance().angleTxt);
+		SurfaceDemo.getInstance().calculateRotationPoint(val);
 	}
 
 	public void calculateContinuousEdges2() {
@@ -788,24 +788,24 @@ public class Utils {
 		if (maxZ - minZ > maxEdge)
 			maxEdge = maxZ - minZ;
 
-		SurfaceDemo.instance.dimX = Double.valueOf(maxX - minX);
-		SurfaceDemo.instance.dimZ = Double.valueOf(maxZ - minZ);
-		Settings.instance.setSetting("pipe_dim_x", SurfaceDemo.instance.dimX);
-		Settings.instance.setSetting("pipe_dim_z", SurfaceDemo.instance.dimZ);
-		Settings.instance.setSetting("pipe_dim_max_y", Double.valueOf(maxY));
-		Settings.instance.setSetting("pipe_dim_min_y", Double.valueOf(minY));
+		SurfaceDemo.getInstance().dimX = Double.valueOf(maxX - minX);
+		SurfaceDemo.getInstance().dimZ = Double.valueOf(maxZ - minZ);
+		Settings.getInstance().setSetting("pipe_dim_x", SurfaceDemo.getInstance().dimX);
+		Settings.getInstance().setSetting("pipe_dim_z", SurfaceDemo.getInstance().dimZ);
+		Settings.getInstance().setSetting("pipe_dim_max_y", Double.valueOf(maxY));
+		Settings.getInstance().setSetting("pipe_dim_min_y", Double.valueOf(minY));
 
-		SurfaceDemo.instance.dimX = Double.valueOf(maxX - minX);
-		SurfaceDemo.instance.dimZ = Double.valueOf(maxZ - minZ);
+		SurfaceDemo.getInstance().dimX = Double.valueOf(maxX - minX);
+		SurfaceDemo.getInstance().dimZ = Double.valueOf(maxZ - minZ);
 
-		SurfaceDemo.instance.pipeIsCircular = isPipeCircular();
+		SurfaceDemo.getInstance().pipeIsCircular = isPipeCircular();
 
-		if (!SurfaceDemo.instance.pipeIsCircular)
-			SurfaceDemo.instance.dimR = Double.valueOf(Settings.instance.getSetting("pipe_radius"));
+		if (!SurfaceDemo.getInstance().pipeIsCircular)
+			SurfaceDemo.getInstance().dimR = Double.valueOf(Settings.getInstance().getSetting("pipe_radius"));
 		else {
 			double radius = Math
-					.sqrt(SurfaceDemo.instance.dimX / 2 * SurfaceDemo.instance.dimX / 2 + SurfaceDemo.instance.dimZ / 2 * SurfaceDemo.instance.dimZ / 2);
-			SurfaceDemo.instance.dimR = radius;
+					.sqrt(SurfaceDemo.getInstance().dimX / 2 * SurfaceDemo.getInstance().dimX / 2 + SurfaceDemo.getInstance().dimZ / 2 * SurfaceDemo.getInstance().dimZ / 2);
+			SurfaceDemo.getInstance().dimR = radius;
 		}
 
 	}
@@ -817,7 +817,7 @@ public class Utils {
 	}
 
 	public void markRadiusEdges() {
-		double radius = Double.valueOf(Settings.instance.getSetting("pipe_radius"));
+		double radius = Double.valueOf(Settings.getInstance().getSetting("pipe_radius"));
 
 		double rx_min = -this.maxX + radius;
 		double rx_max = this.maxX - radius;
@@ -897,14 +897,14 @@ public class Utils {
 		double angleToOffset = 0;
 
 		if (continuousEdge.edgeType == MyContinuousEdge.EdgeType.START)
-			if (SurfaceDemo.instance.pipeIsCircular)
+			if (SurfaceDemo.getInstance().pipeIsCircular)
 				angleToOffset = -Math.PI / 2;
 			else
 				angleToOffset = -Math.PI / 2;
 		else if (continuousEdge.edgeType == MyContinuousEdge.EdgeType.ONPIPE)
 			angleToOffset = -Math.PI / 2;
 		else {
-			// if (SurfaceDemo.instance.pipeIsCircular)
+			// if (SurfaceDemo.getInstance().pipeIsCircular)
 			angleToOffset = -Math.PI / 2;
 		}
 		int index = continuousEdge.points.indexOf(point.id);
@@ -948,7 +948,7 @@ public class Utils {
 		// Vector3D p4_ = new Vector3D(-this.maxX, -this.maxY, -this.maxZ);
 
 		// rotate planes like anglTxt is rotated
-		double angle = Double.valueOf(SurfaceDemo.instance.angleTxt);
+		double angle = Double.valueOf(SurfaceDemo.getInstance().angleTxt);
 		// angle = Math.round(angle);
 
 		Rotation rotPlane = new Rotation(new Vector3D(0, 1.0d, 0), Math.toRadians(angle));
@@ -993,7 +993,7 @@ public class Utils {
 					}
 					polygon.setPolygonMode(PolygonMode.FRONT);
 					polygon.setColor(Color.GREEN);
-					SurfaceDemo.instance.myComposite.add(polygon);
+					SurfaceDemo.getInstance().myComposite.add(polygon);
 					System.out.println("Found PLANE.");
 				}
 			}
@@ -1004,9 +1004,9 @@ public class Utils {
 				ret.plane = pl;
 				break;
 			}
-			// SurfaceDemo.instance.getChart().render();
+			// SurfaceDemo.getInstance().getChart().render();
 			// if (polygon != null)
-			// SurfaceDemo.instance.myComposite.remove(polygon);
+			// SurfaceDemo.getInstance().myComposite.remove(polygon);
 		}
 
 		if (ret.plane == null) {
@@ -1022,17 +1022,17 @@ public class Utils {
 			if (angle1 < 0)
 				angle1 = (2 * Math.PI) + angle1;
 			if (angle1 > 0 && angle1 < Math.PI / 2) {
-				normalStart = new Vector3D(SurfaceDemo.instance.dimX / 2 - SurfaceDemo.instance.dimR, point.getY(),
-						SurfaceDemo.instance.dimZ / 2 - SurfaceDemo.instance.dimR);
+				normalStart = new Vector3D(SurfaceDemo.getInstance().dimX / 2 - SurfaceDemo.getInstance().dimR, point.getY(),
+						SurfaceDemo.getInstance().dimZ / 2 - SurfaceDemo.getInstance().dimR);
 			} else if (angle1 > Math.PI / 2 && angle1 < Math.PI) {
-				normalStart = new Vector3D(-SurfaceDemo.instance.dimX / 2 + SurfaceDemo.instance.dimR, point.getY(),
-						SurfaceDemo.instance.dimZ / 2 - SurfaceDemo.instance.dimR);
+				normalStart = new Vector3D(-SurfaceDemo.getInstance().dimX / 2 + SurfaceDemo.getInstance().dimR, point.getY(),
+						SurfaceDemo.getInstance().dimZ / 2 - SurfaceDemo.getInstance().dimR);
 			} else if (angle1 > Math.PI && angle1 < (3 * Math.PI / 2)) {
-				normalStart = new Vector3D(-SurfaceDemo.instance.dimX / 2 + SurfaceDemo.instance.dimR, point.getY(),
-						-SurfaceDemo.instance.dimZ / 2 + SurfaceDemo.instance.dimR);
+				normalStart = new Vector3D(-SurfaceDemo.getInstance().dimX / 2 + SurfaceDemo.getInstance().dimR, point.getY(),
+						-SurfaceDemo.getInstance().dimZ / 2 + SurfaceDemo.getInstance().dimR);
 			} else if (angle1 > (3 * Math.PI / 2) && angle1 < (2 * Math.PI)) {
-				normalStart = new Vector3D(SurfaceDemo.instance.dimX / 2 - SurfaceDemo.instance.dimR, point.getY(),
-						-SurfaceDemo.instance.dimZ / 2 + SurfaceDemo.instance.dimR);
+				normalStart = new Vector3D(SurfaceDemo.getInstance().dimX / 2 - SurfaceDemo.getInstance().dimR, point.getY(),
+						-SurfaceDemo.getInstance().dimZ / 2 + SurfaceDemo.getInstance().dimR);
 			}
 			Vector3D normalEnd = new Vector3D(origPoints.get(point.id).getX(), origPoints.get(point.id).getY(), origPoints.get(point.id).getZ());
 
@@ -1047,7 +1047,7 @@ public class Utils {
 			// normalEndRot.getZ())));
 			// ls1.setWireframeColor(Color.RED);
 			// ls1.setWidth(2);
-			// SurfaceDemo.instance.myComposite.add(ls1);
+			// SurfaceDemo.getInstance().myComposite.add(ls1);
 
 			Vector3D planeNormal = normalStartRot.subtract(normalEndRot);
 			ret.plane = new Plane(normalEndRot, planeNormal, 0.0001);
@@ -1063,8 +1063,8 @@ public class Utils {
 
 						planePoint.setColor(Color.RED);
 						planePoint.setWidth(0.3f);
-						SurfaceDemo.instance.myComposite.add(planePoint);
-						// SurfaceDemo.instance.getChart().render();
+						SurfaceDemo.getInstance().myComposite.add(planePoint);
+						// SurfaceDemo.getInstance().getChart().render();
 						// System.out.print("");
 					}
 				}
@@ -1106,18 +1106,18 @@ public class Utils {
 				LineStrip ls1 = new LineStrip(new Point(new Coord3d(pointA1.getX(), pointA1.getY(), pointA1.getZ())),
 						new Point(new Coord3d(pointB1.getX(), pointB1.getY(), pointB1.getZ())));
 				ls1.setWireframeColor(Color.RED);
-				SurfaceDemo.instance.myComposite.add(ls1);
+				SurfaceDemo.getInstance().myComposite.add(ls1);
 				Point pA1 = new Point(new Coord3d(pointA1.getX(), pointA1.getY(), pointA1.getZ()));
 				Point pB1 = new Point(new Coord3d(pointB1.getX(), pointB1.getY(), pointB1.getZ()));
 				pA1.setWidth(8);
 				pA1.setColor(Color.BLUE);
 				pB1.setWidth(8);
 				pB1.setColor(Color.RED);
-				SurfaceDemo.instance.myComposite.add(pA1);
-				SurfaceDemo.instance.myComposite.add(pB1);
-				SurfaceDemo.instance.myComposite.add(ls1);
+				SurfaceDemo.getInstance().myComposite.add(pA1);
+				SurfaceDemo.getInstance().myComposite.add(pB1);
+				SurfaceDemo.getInstance().myComposite.add(ls1);
 
-				SurfaceDemo.instance.getChart().render();
+				SurfaceDemo.getInstance().getChart().render();
 			}
 
 			Vector3D pointA2 = vecPoint.add(rotatedB.scalarMultiply(SurfaceDemo.getInstance().getKerfOffset()));
@@ -1127,18 +1127,18 @@ public class Utils {
 						new Point(new Coord3d(pointB2.getX(), pointB2.getY(), pointB2.getZ())));
 
 				ls2.setWireframeColor(Color.RED);
-				SurfaceDemo.instance.myComposite.add(ls2);
+				SurfaceDemo.getInstance().myComposite.add(ls2);
 				Point pA2 = new Point(new Coord3d(pointA2.getX(), pointA2.getY(), pointA2.getZ()));
 				Point pB2 = new Point(new Coord3d(pointB2.getX(), pointB2.getY(), pointB2.getZ()));
 				pA2.setWidth(8);
 				pA2.setColor(Color.BLUE);
 				pB2.setWidth(8);
 				pB2.setColor(Color.RED);
-				SurfaceDemo.instance.myComposite.add(pA2);
-				SurfaceDemo.instance.myComposite.add(pB2);
-				SurfaceDemo.instance.myComposite.add(ls2);
+				SurfaceDemo.getInstance().myComposite.add(pA2);
+				SurfaceDemo.getInstance().myComposite.add(pB2);
+				SurfaceDemo.getInstance().myComposite.add(ls2);
 
-				SurfaceDemo.instance.getChart().render();
+				SurfaceDemo.getInstance().getChart().render();
 			}
 
 			Line lineA = new Line(pointA1, pointB1, 0.01);
@@ -1241,9 +1241,9 @@ public class Utils {
 
 	boolean isPipeCircular() {
 		double delta = 0.1;
-		for (MyPickablePoint point : SurfaceDemo.instance.utils.points.values()) {
+		for (MyPickablePoint point : SurfaceDemo.getInstance().utils.points.values()) {
 			double radius = Math.sqrt(point.getX() * point.getX() + point.getZ() * point.getZ());
-			if (Math.abs(radius - SurfaceDemo.instance.dimX / 2) > delta) {
+			if (Math.abs(radius - SurfaceDemo.getInstance().dimX / 2) > delta) {
 				return false;
 			}
 		}
@@ -1251,10 +1251,10 @@ public class Utils {
 	}
 
 	public void calculateCenters() {
-		for (MyEdge myContEdge : SurfaceDemo.instance.utils.continuousEdges.values()) {
+		for (MyEdge myContEdge : SurfaceDemo.getInstance().utils.continuousEdges.values()) {
 			myContEdge.calculateCenter();
 		}
-		for (MyEdge myContEdge : SurfaceDemo.instance.utils.edges.values()) {
+		for (MyEdge myContEdge : SurfaceDemo.getInstance().utils.edges.values()) {
 			myContEdge.calculateCenter();
 		}
 	}

@@ -4,25 +4,28 @@ import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.font.FontRenderContext;
 import java.awt.geom.AffineTransform;
+import java.util.concurrent.Semaphore;
 
 import javax.swing.JTextField;
 import javax.swing.SwingConstants;
-import javax.swing.SwingUtilities;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 
 @SuppressWarnings("serial")
 public class SavableText extends SavableControl {
 	public JTextField jValue;
-	public String value;
+	String value;
+
+	Semaphore semaphore = new Semaphore(1);
+
 	public boolean preventResize = false;
 
 	public SavableText() {
 		super();
 
 		jValue = new JTextField();
-		jValue.setMinimumSize(new Dimension(50,50));
-		//jValue.setMinimumSize();
+		jValue.setMinimumSize(new Dimension(50, 50));
+		// jValue.setMinimumSize();
 		jValue.setHorizontalAlignment(SwingConstants.LEFT);
 		jValue.setText("This is value");
 		// jValue.setColumns(1);
@@ -43,6 +46,7 @@ public class SavableText extends SavableControl {
 			public void warn() {
 				try {
 					if (!SavableText.this.isLoadingValue()) {
+						value = jValue.getText();
 						SavableText.this.save();
 						valueChangedFromUI();
 					}
@@ -59,28 +63,52 @@ public class SavableText extends SavableControl {
 
 	@Override
 	public void setParValue(String val) {
-		value = val;
-		// resizeBox();
-		final String myValue = val;
-		SwingUtilities.invokeLater(new Runnable() {
 
-			@Override
-			public void run() {
-				SavableText.this.jValue.setText(myValue);
-				resizeBox();
-			}
-		});
+		semaphore.acquireUninterruptibly();
+
+		try {
+			// synchronized (this.value) {
+			if (this.getParId().equals("mymotion.laserHeight1") && val.trim().equals(""))
+				System.out.println("");
+
+			if (!val.trim().equals(""))
+				this.value = val.trim();
+			else
+				this.value = "0";
+			// resizeBox();
+			// String myValue = val;
+			// SwingUtilities.invokeLater(new Runnable() {
+			//
+			// @Override
+			// public void run() {
+
+			// }
+			// });
+			// }
+		} finally {
+			semaphore.release();
+		}
+		SavableText.this.jValue.setText(this.value);
+		resizeBox();
 	}
 
 	@Override
 	public String getParValue() {
-		return this.value;
+		String ret;
+		semaphore.acquireUninterruptibly();
+		try {
+
+			ret = this.value;
+		} finally {
+			semaphore.release();
+		}
+		return ret;
 	}
 
 	@Override
 	public void valueChangedFromUI() {
 		if (!preventResize) {
-			//resizeBox();
+			// resizeBox();
 		}
 		updateHal();
 	}

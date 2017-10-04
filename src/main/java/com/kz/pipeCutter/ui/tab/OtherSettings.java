@@ -65,7 +65,7 @@ public class OtherSettings extends JPanel {
 			public void keyTyped(KeyEvent e) {
 				// TODO Auto-generated method stub
 				if (e.getKeyChar() == '\n') {
-					SurfaceDemo.instance.init();
+					SurfaceDemo.getInstance().init();
 				}
 			}
 
@@ -95,7 +95,7 @@ public class OtherSettings extends JPanel {
 			public void keyTyped(KeyEvent e) {
 				// TODO Auto-generated method stub
 				if (e.getKeyChar() == '\n') {
-					SurfaceDemo.instance.init();
+					SurfaceDemo.getInstance().init();
 				}
 			}
 
@@ -183,8 +183,8 @@ public class OtherSettings extends JPanel {
 			public void valueChangedFromUI() {
 				// TODO Auto-generated method stub
 				super.valueChangedFromUI();
-				if (Settings.instance != null) {
-					if (Settings.instance.isVisible() && this.getParValue().equals("0"))
+				if (Settings.getInstance() != null) {
+					if (Settings.getInstance().isVisible() && this.getParValue().equals("0"))
 						BBBHalCommand.getInstance().stopPing();
 					else
 						BBBHalCommand.getInstance().startPing();

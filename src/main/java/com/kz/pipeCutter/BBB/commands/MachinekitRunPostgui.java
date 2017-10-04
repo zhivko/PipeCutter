@@ -15,6 +15,7 @@ import com.jcraft.jsch.ChannelShell;
 import com.jcraft.jsch.JSch;
 import com.jcraft.jsch.Session;
 import com.kz.pipeCutter.ui.Settings;
+import com.kz.pipeCutter.ui.tab.XYZSettings;
 
 public class MachinekitRunPostgui {
 
@@ -27,7 +28,7 @@ public class MachinekitRunPostgui {
 			String user = Settings.getInstance().getSetting("machinekit_user");
 			String pass = Settings.getInstance().getSetting("machinekit_password");
 			Settings.getInstance().log("MK instance at IP: " + ip);
-			// Settings.instance.log("MK instance at host: " + host);
+			// Settings.getInstance().log("MK instance at host: " + host);
 			session = jsch.getSession(user, ip, 22);
 			session.setPassword(pass);
 
@@ -50,17 +51,20 @@ public class MachinekitRunPostgui {
 
 			// String command = "source ~/git/machinekit/scripts/rip-environment";
 			// ps.println(command);
-			Settings.instance.log("Running postgui hal....");
+			Settings.getInstance().log("Running postgui hal....");
 			//String command = "halcmd -f /home/machinekit/git/machinekit-multicore/myini/3D.postgui.hal || echo 'hal completed'\n";
 			String command = "halcmd -f /home/machinekit/git/machinekit/myini/3D.postgui.hal || echo 'hal completed'\n";
 			ps.println(command);
 			readOutput(channelShell);
+			
+
+			
 		} catch (Exception ex) {
 			ex.printStackTrace();
 		} finally {
 			if (channelShell != null && channelShell.isConnected())
 				channelShell.disconnect();
-			Settings.instance.log("Running postgui hal....COMPLETED.");
+			Settings.getInstance().log("Running postgui hal....COMPLETED.");
 		}
 	}
 

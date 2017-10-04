@@ -12,7 +12,7 @@ public class PlayGCode extends BBBMachineTalkCommand {
 		System.out.println(new Object() {
 		}.getClass().getEnclosingMethod().getName());
 
-		SurfaceDemo.instance.myTrail.clear();	
+		SurfaceDemo.getInstance().myTrail.clear();	
 		pb.Message.Container.Builder builder = Container.newBuilder();
 
 		pb.Status.EmcCommandParameters emcCommandParameter = pb.Status.EmcCommandParameters.newBuilder().setLineNumber(0).build();

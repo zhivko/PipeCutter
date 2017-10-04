@@ -36,7 +36,7 @@ public class MySurface {
 	
 	public MyEdge getEdge(Integer edgeNo)
 	{
-		return SurfaceDemo.instance.utils.edges.get(edgeNo);
+		return SurfaceDemo.getInstance().utils.edges.get(edgeNo);
 	}
 	
 	public Collection<MyEdge> getEdges() {

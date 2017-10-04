@@ -118,14 +118,14 @@ public class BBBPreviewStatus implements Runnable {
 									}
 								}
 
-								if (SurfaceDemo.getInstance() != null && SurfaceDemo.instance != null) {
+								if (SurfaceDemo.getInstance() != null && SurfaceDemo.getInstance() != null) {
 									if (SurfaceDemo.getInstance().getChart() != null) {
 										// System.out.println(String.format("%1$,.2f, %2$,.2f,
 										// %3$,.2f",x,y,z));
 
 										if (BBBPreviewStatus.instance != null) {
 											Coord3d coord = new Coord3d(BBBPreviewStatus.instance.x, BBBPreviewStatus.instance.y, BBBPreviewStatus.instance.z);
-											//double angleDelta = BBBPreviewStatus.instance.a - Double.valueOf(SurfaceDemo.instance.angleTxt);
+											//double angleDelta = BBBPreviewStatus.instance.a - Double.valueOf(SurfaceDemo.getInstance().angleTxt);
 											SurfaceDemo.getInstance().utils.rotatePoints(BBBPreviewStatus.instance.a, false, false);
 
 											SurfaceDemo.getInstance().getPlasma().setPosition(coord);
@@ -137,7 +137,7 @@ public class BBBPreviewStatus implements Runnable {
 								}
 							} else if (contReturned.getType().equals(ContainerType.MT_PING)) {
 								this.lastPingMs = System.currentTimeMillis();
-								MachinekitSettings.instance.pingStatus();
+								MachinekitSettings.getInstance().pingStatus();
 							} else {
 								System.out.println(contReturned.getType());
 							}

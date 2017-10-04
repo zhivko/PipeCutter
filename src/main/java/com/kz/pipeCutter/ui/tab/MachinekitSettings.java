@@ -40,6 +40,11 @@ public class MachinekitSettings extends JPanel {
 
 	}
 
+	public synchronized static MachinekitSettings getInstance()
+	{
+		return instance;
+	}
+	
 	public MachinekitSettings() {
 		this.setLayout(new MyVerticalFlowLayout());
 

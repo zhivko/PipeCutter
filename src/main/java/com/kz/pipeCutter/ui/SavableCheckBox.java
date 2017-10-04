@@ -26,10 +26,12 @@ public class SavableCheckBox extends SavableControl {
 			@Override
 			public void itemStateChanged(ItemEvent e) {
 				try {
-					SavableCheckBox.this.save();
-					valueChangedFromUI();
-					if (BBBHalCommand.instance != null)
-						SavableCheckBox.this.updateHal();
+					if (!isLoadingValue) {
+						SavableCheckBox.this.save();
+						valueChangedFromUI();
+						if (BBBHalCommand.instance != null)
+							SavableCheckBox.this.updateHal();
+					}
 				} catch (IOException e1) {
 					// TODO Auto-generated catch block
 					e1.printStackTrace();

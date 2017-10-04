@@ -40,7 +40,7 @@ public class BlinkThread extends Thread {
 			}
 			try {
 				TimeUnit.MILLISECONDS.sleep(300);
-				SurfaceDemo.instance.getChart().render();
+				SurfaceDemo.getInstance().getChart().render();
 				count++;
 			} catch (InterruptedException e) {
 				// TODO Auto-generated catch block

@@ -42,7 +42,7 @@ public class PlasmaSettings extends JPanel {
 			JTextField jField = (JTextField)(e.getSource());
 			String value = (jField).getText();
 			if (Float.valueOf(value) == 0) {
-				Settings.instance.log("Must be > 0");
+				Settings.getInstance().log("Must be > 0");
 				jField.setBackground(Color.RED);
 			}
 			else

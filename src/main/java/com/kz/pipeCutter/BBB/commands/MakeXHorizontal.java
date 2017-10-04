@@ -15,13 +15,13 @@ public class MakeXHorizontal implements Runnable {
 		HashMap<Float, Float> xz = new HashMap<Float, Float>();
 
 		int waitPositionMs = 200;
-		float maxDx = (Float.valueOf(Settings.instance.getSetting("pipe_dim_x")) - 2.0f * Float.valueOf(Settings.instance.getSetting("pipe_radius"))) / 2.0f;
+		float maxDx = (Float.valueOf(Settings.getInstance().getSetting("pipe_dim_x")) - 2.0f * Float.valueOf(Settings.getInstance().getSetting("pipe_radius"))) / 2.0f;
 
 		int speed = 1000;
 		float xmin, xmax;
 		float z;
 		float xPos = Float.valueOf(Settings.getInstance().getSetting("position_x"));
-		z = Float.valueOf(Settings.instance.getSetting("mymotion.laserHeight1"));
+		z = Float.valueOf(Settings.getInstance().getSetting("mymotion.laserHeight1"));
 		float startZ = z;
 		float startX = xPos;
 		float deltaX = 1.5f;
@@ -47,7 +47,7 @@ public class MakeXHorizontal implements Runnable {
 			} catch (Exception ex) {
 				ex.printStackTrace();
 			}
-			z = Float.valueOf(Settings.instance.getSetting("mymotion.laserHeight1"));
+			z = Float.valueOf(Settings.getInstance().getSetting("mymotion.laserHeight1"));
 			xz.put(Float.valueOf(xPos), Float.valueOf(z));
 			regression.addData(xPos, z);
 
@@ -95,7 +95,7 @@ public class MakeXHorizontal implements Runnable {
 			} catch (Exception ex) {
 				ex.printStackTrace();
 			}
-			z = Float.valueOf(Settings.instance.getSetting("mymotion.laserHeight1"));
+			z = Float.valueOf(Settings.getInstance().getSetting("mymotion.laserHeight1"));
 			xz.put(Float.valueOf(xPos), Float.valueOf(z));
 			regression.addData(xPos, z);
 			if (z > 1000 || Math.abs(startX - newXPos) > maxDx) {
@@ -115,12 +115,12 @@ public class MakeXHorizontal implements Runnable {
 		double angle = Math.atan2(regression.getSlope(), 1.0d);
 		double angleDeg = angle * 180.0f / Math.PI;
 
-		Settings.instance.log(String.format("xmin: %5.3f xmax: %5.3f x_center: %5.3f", xmin, xmax, (xmin + xmax) / 2.0f));
-		Settings.instance.log(String.format("angle: %5.3f", angleDeg));
+		Settings.getInstance().log(String.format("xmin: %5.3f xmax: %5.3f x_center: %5.3f", xmin, xmax, (xmin + xmax) / 2.0f));
+		Settings.getInstance().log(String.format("angle: %5.3f", angleDeg));
 		double angleCorr = -angleDeg;
-		Settings.instance.log(String.format("Rotating for angle: %5.3f", angleCorr));
+		Settings.getInstance().log(String.format("Rotating for angle: %5.3f", angleCorr));
 
-		Float maxRotSpeed = Float.valueOf(Settings.instance.getSetting("myini.maxvel_3"));
+		Float maxRotSpeed = Float.valueOf(Settings.getInstance().getSetting("myini.maxvel_3"));
 		new ExecuteMdi(String.format("G91\nG01 A%5.3f B%5.3f F%5.3f\nG90", angleCorr, angleCorr, (maxRotSpeed*60.0))).start();
 	}
 

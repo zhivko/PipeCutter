@@ -29,8 +29,8 @@ public class MyPopupMenu extends PopupMenu {
 //		MenuItem14.addActionListener(new ActionListener() {
 //			@Override
 //			public void actionPerformed(ActionEvent arg0) {
-//				SurfaceDemo.instance.rotateArroundX += 45;
-//				SurfaceDemo.instance.init();
+//				SurfaceDemo.getInstance().rotateArroundX += 45;
+//				SurfaceDemo.getInstance().init();
 //			}
 //		});
 //		this.add(MenuItem14);
@@ -39,8 +39,8 @@ public class MyPopupMenu extends PopupMenu {
 //		MenuItem15.addActionListener(new ActionListener() {
 //			@Override
 //			public void actionPerformed(ActionEvent arg0) {
-//				SurfaceDemo.instance.rotateArroundY += 45;
-//				SurfaceDemo.instance.init();
+//				SurfaceDemo.getInstance().rotateArroundY += 45;
+//				SurfaceDemo.getInstance().init();
 //			}
 //		});
 //		this.add(MenuItem15);
@@ -49,8 +49,8 @@ public class MyPopupMenu extends PopupMenu {
 //		MenuItem16.addActionListener(new ActionListener() {
 //			@Override
 //			public void actionPerformed(ActionEvent arg0) {
-//				SurfaceDemo.instance.rotateArroundZ += 45;
-//				SurfaceDemo.instance.init();
+//				SurfaceDemo.getInstance().rotateArroundZ += 45;
+//				SurfaceDemo.getInstance().init();
 //			}
 //		});
 //		this.add(MenuItem16);
@@ -66,7 +66,7 @@ public class MyPopupMenu extends PopupMenu {
 				Collections.sort(sortedList, new MyPickablePointZYmidXcomparator());
 				MyPickablePoint p = SurfaceDemo.getInstance().utils.points.get(sortedList.get(0).getId());
 
-				SurfaceDemo.instance.lastClickedPointChanged(p);
+				SurfaceDemo.getInstance().lastClickedPointChanged(p);
 
 			}
 		});
@@ -77,7 +77,7 @@ public class MyPopupMenu extends PopupMenu {
 		MenuItem.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
-				CutThread th = new CutThread(true, SurfaceDemo.instance.lastClickedPoint, false);
+				CutThread th = new CutThread(true, SurfaceDemo.getInstance().lastClickedPoint, false);
 				th.execute();
 			}
 		});
@@ -87,8 +87,8 @@ public class MyPopupMenu extends PopupMenu {
 		menuItem6.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
-				if (SurfaceDemo.instance.lastClickedPoint.getClass().getName().equals("com.kz.pipeCutter.MyPickablePoint")) {
-					CutThread th = new CutThread(false, SurfaceDemo.instance.lastClickedPoint, false);
+				if (SurfaceDemo.getInstance().lastClickedPoint.getClass().getName().equals("com.kz.pipeCutter.MyPickablePoint")) {
+					CutThread th = new CutThread(false, SurfaceDemo.getInstance().lastClickedPoint, false);
 					th.execute();
 				}
 			}
@@ -99,8 +99,8 @@ public class MyPopupMenu extends PopupMenu {
 		menuItem16.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
-				if (SurfaceDemo.instance.lastClickedPoint.getClass().getName().equals("com.kz.pipeCutter.MyPickablePoint")) {
-					CutThread th = new CutThread(false, SurfaceDemo.instance.lastClickedPoint, true);
+				if (SurfaceDemo.getInstance().lastClickedPoint.getClass().getName().equals("com.kz.pipeCutter.MyPickablePoint")) {
+					CutThread th = new CutThread(false, SurfaceDemo.getInstance().lastClickedPoint, true);
 					th.execute();
 				}
 			}
@@ -113,7 +113,7 @@ public class MyPopupMenu extends PopupMenu {
 		menuItem17.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
-				MyContinuousEdge myCEdge = SurfaceDemo.instance.utils.continuousEdges.get(SurfaceDemo.instance.lastClickedPoint.continuousEdgeNo);
+				MyContinuousEdge myCEdge = SurfaceDemo.getInstance().utils.continuousEdges.get(SurfaceDemo.getInstance().lastClickedPoint.continuousEdgeNo);
 				System.out.println(myCEdge.connectedEdges.size());
 				for (MyEdge e : myCEdge.connectedEdges) {
 					e.markToCut(true);
@@ -128,7 +128,7 @@ public class MyPopupMenu extends PopupMenu {
 		menuItem18.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
-				MyContinuousEdge myCEdge = SurfaceDemo.instance.utils.continuousEdges.get(SurfaceDemo.instance.lastClickedPoint.continuousEdgeNo);
+				MyContinuousEdge myCEdge = SurfaceDemo.getInstance().utils.continuousEdges.get(SurfaceDemo.getInstance().lastClickedPoint.continuousEdgeNo);
 				System.out.println(myCEdge.connectedEdges.size());
 				for (MyEdge e : myCEdge.connectedEdges) {
 					e.markToCut(false);
@@ -146,9 +146,9 @@ public class MyPopupMenu extends PopupMenu {
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
 				SurfaceDemo.NUMBER_EDGES = !SurfaceDemo.NUMBER_EDGES;
-				Settings.instance.setSetting("ui_number_edges", String.valueOf(SurfaceDemo.NUMBER_EDGES));
-				// SurfaceDemo.instance.canvas.getView().setBoundMode(ViewBoundMode.AUTO_FIT);
-				SurfaceDemo.instance.initDraw();
+				Settings.getInstance().setSetting("ui_number_edges", String.valueOf(SurfaceDemo.NUMBER_EDGES));
+				// SurfaceDemo.getInstance().canvas.getView().setBoundMode(ViewBoundMode.AUTO_FIT);
+				SurfaceDemo.getInstance().initDraw();
 			}
 		});
 		this.add(menuItem7);
@@ -158,9 +158,9 @@ public class MyPopupMenu extends PopupMenu {
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
 				SurfaceDemo.NUMBER_POINTS = !SurfaceDemo.NUMBER_POINTS;
-				Settings.instance.setSetting("ui_number_points", String.valueOf(SurfaceDemo.NUMBER_POINTS));
-				// SurfaceDemo.instance.canvas.getView().setBoundMode(ViewBoundMode.AUTO_FIT);
-				SurfaceDemo.instance.initDraw();
+				Settings.getInstance().setSetting("ui_number_points", String.valueOf(SurfaceDemo.NUMBER_POINTS));
+				// SurfaceDemo.getInstance().canvas.getView().setBoundMode(ViewBoundMode.AUTO_FIT);
+				SurfaceDemo.getInstance().initDraw();
 			}
 		});
 		this.add(menuItem8);
@@ -171,9 +171,9 @@ public class MyPopupMenu extends PopupMenu {
 			public void actionPerformed(ActionEvent arg0) {
 				SurfaceDemo.ZOOM_PLASMA = false;
 				SurfaceDemo.ZOOM_POINT = true;
-				Settings.instance.setSetting("ui_zoom_plasma", "False");
-				Settings.instance.setSetting("ui_zoom_point", "True");
-				SurfaceDemo.instance.redrawPosition();
+				Settings.getInstance().setSetting("ui_zoom_plasma", "False");
+				Settings.getInstance().setSetting("ui_zoom_point", "True");
+				SurfaceDemo.getInstance().redrawPosition();
 			}
 		});
 		this.add(menuItem9);
@@ -184,10 +184,10 @@ public class MyPopupMenu extends PopupMenu {
 			public void actionPerformed(ActionEvent arg0) {
 				SurfaceDemo.ZOOM_POINT = false;
 				SurfaceDemo.ZOOM_PLASMA = true;
-				Settings.instance.setSetting("ui_zoom_plasma", "True");
-				Settings.instance.setSetting("ui_zoom_point", "False");
+				Settings.getInstance().setSetting("ui_zoom_plasma", "True");
+				Settings.getInstance().setSetting("ui_zoom_point", "False");
 
-				SurfaceDemo.instance.redrawPosition();
+				SurfaceDemo.getInstance().redrawPosition();
 			}
 		});
 		this.add(menuItem13);
@@ -198,7 +198,7 @@ public class MyPopupMenu extends PopupMenu {
 			public void actionPerformed(ActionEvent arg0) {
 				SurfaceDemo.ZOOM_POINT = false;
 				SurfaceDemo.ZOOM_PLASMA = false;
-				SurfaceDemo.instance.redrawPosition();
+				SurfaceDemo.getInstance().redrawPosition();
 			}
 		});
 		this.add(menuItem10);
@@ -209,7 +209,7 @@ public class MyPopupMenu extends PopupMenu {
 		menuItem2.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
-				SurfaceDemo.instance.smoothie.send("play /sd/prog.gcode -q");
+				SurfaceDemo.getInstance().smoothie.send("play /sd/prog.gcode -q");
 			}
 		});
 		this.add(menuItem2);
@@ -219,9 +219,9 @@ public class MyPopupMenu extends PopupMenu {
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
 
-				MyPickablePoint mp = SurfaceDemo.instance.lastClickedPoint;
-				String gCode = SurfaceDemo.instance.utils.coordinateToGcode(mp, null);
-				SurfaceDemo.instance.smoothie.send(gCode);
+				MyPickablePoint mp = SurfaceDemo.getInstance().lastClickedPoint;
+				String gCode = SurfaceDemo.getInstance().utils.coordinateToGcode(mp, null);
+				SurfaceDemo.getInstance().smoothie.send(gCode);
 
 			}
 		});
@@ -231,8 +231,8 @@ public class MyPopupMenu extends PopupMenu {
 		menuItem4.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
-				SurfaceDemo.instance.smoothie.send("G90");
-				SurfaceDemo.instance.smoothie.send("G28 X0 Y0 Z0");
+				SurfaceDemo.getInstance().smoothie.send("G90");
+				SurfaceDemo.getInstance().smoothie.send("G28 X0 Y0 Z0");
 			}
 		});
 		this.addSeparator();
@@ -246,7 +246,7 @@ public class MyPopupMenu extends PopupMenu {
 
 					@Override
 					public void run() {
-						SurfaceDemo.instance.discoverer.discover();
+						SurfaceDemo.getInstance().discoverer.discover();
 					}
 				});
 			}
@@ -308,10 +308,10 @@ public class MyPopupMenu extends PopupMenu {
 						// Float.valueOf(Settings.getInstance().getSetting("position_z"));
 						// "G92 X%.3f Y%.3f Z%.3f\nG92.3"
 						
-						float angle = Float.valueOf(SurfaceDemo.instance.angleTxt).floatValue();
+						float angle = Float.valueOf(SurfaceDemo.getInstance().angleTxt).floatValue();
 						
-						String mdiCommand = String.format(Locale.US, "G92 X%.3f Y%.3f Z%.3f A%.3f B%.3f", SurfaceDemo.instance.lastClickedPoint.xyz.x,
-								SurfaceDemo.instance.lastClickedPoint.xyz.y, SurfaceDemo.instance.lastClickedPoint.xyz.z, angle,angle);
+						String mdiCommand = String.format(Locale.US, "G92 X%.3f Y%.3f Z%.3f A%.3f B%.3f", SurfaceDemo.getInstance().lastClickedPoint.xyz.x,
+								SurfaceDemo.getInstance().lastClickedPoint.xyz.y, SurfaceDemo.getInstance().lastClickedPoint.xyz.z, angle,angle);
 						Settings.getInstance().log(mdiCommand);
 						new ExecuteMdi(mdiCommand).start();
 
@@ -363,8 +363,8 @@ public class MyPopupMenu extends PopupMenu {
 						}
 						String speed = Settings.getInstance().getSetting("gcode_feedrate_g0");
 
-						mdiCommand = String.format(Locale.US, "G01 X%.3f Y%.3f Z%.3f F%s", SurfaceDemo.instance.lastClickedPoint.xyz.x,
-								SurfaceDemo.instance.lastClickedPoint.xyz.y, SurfaceDemo.instance.lastClickedPoint.xyz.z, speed);
+						mdiCommand = String.format(Locale.US, "G01 X%.3f Y%.3f Z%.3f F%s", SurfaceDemo.getInstance().lastClickedPoint.xyz.x,
+								SurfaceDemo.getInstance().lastClickedPoint.xyz.y, SurfaceDemo.getInstance().lastClickedPoint.xyz.z, speed);
 						Settings.getInstance().log(mdiCommand);
 						new ExecuteMdi(mdiCommand).start();
 

@@ -28,6 +28,7 @@ import org.jfree.chart.plot.PlotOrientation;
 import org.jfree.data.xy.XYSeries;
 import org.jfree.data.xy.XYSeriesCollection;
 
+import com.kz.pipeCutter.BBB.commands.CapSenseCalibrate;
 import com.kz.pipeCutter.BBB.commands.CenterXOnPipe;
 import com.kz.pipeCutter.BBB.commands.CenterXOnPipeProcedure;
 import com.kz.pipeCutter.BBB.commands.ExecuteMdi;
@@ -54,10 +55,18 @@ public class XYZSettings extends JPanel {
 	MyLaserWebsocketClient myWebsocketClient;
 	public Session wsSession;
 
-	CenterXOnPipe centerXOnPipe;
+	private CenterXOnPipe centerXOnPipe;
+	private CapSenseCalibrate capSenseCalibrate;
+
+	private static XYZSettings instance = null;
+
+	public static XYZSettings getInstance() {
+		return instance;
+	}
 
 	public XYZSettings() {
 		super();
+
 		Dimension panelPreferedDimension = new Dimension(300, 600);
 
 		this.setPreferredSize(new Dimension(900, 650));
@@ -166,7 +175,7 @@ public class XYZSettings extends JPanel {
 
 		// x_cut_centProc.jValue.setText("0.01");
 
-		// Settings.instance.setSetting("x_cut_centProc", "0.00012");
+		// Settings.getInstance().setSetting("x_cut_centProc", "0.00012");
 		panelXAxis.add(x_cut_centProc);
 		x_cut_centProc.jValue.addKeyListener(new KeyListener() {
 
@@ -185,12 +194,12 @@ public class XYZSettings extends JPanel {
 			@Override
 			public void keyPressed(KeyEvent e) {
 				if (e.getKeyCode() == KeyEvent.VK_ENTER) {
-					Settings.instance.log("Setting x offset...");
-					Float dimX = Float.valueOf(Settings.instance.getSetting("pipe_dim_x"));
+					Settings.getInstance().log("Setting x offset...");
+					Float dimX = Float.valueOf(Settings.getInstance().getSetting("pipe_dim_x"));
 
 					ExecuteMdi command = new ExecuteMdi("G92 X" + (dimX.floatValue() / 2.0f - Float.valueOf(x_cut_centProc.jValue.getText())));
 					command.start();
-					Settings.instance.log("Setting x offset...Done.");
+					Settings.getInstance().log("Setting x offset...Done.");
 				}
 			}
 		});
@@ -346,12 +355,11 @@ public class XYZSettings extends JPanel {
 		});
 
 		SavableText laserDistance1 = new SavableText();
-		laserDistance1.setLabelTxt("LasDist: ");
+		laserDistance1.setLabelTxt("Cap. sense distance: ");
 		laserDistance1.setParId("mymotion.laserHeight1");
 		laserDistance1.setNeedsSave(false);
 		// laserDistance1.setPin(new PinDef("mymotion.laserHeight1",
 		// HalPinDirection.HAL_IN, ValueType.HAL_FLOAT));
-		panelZAxis.add(laserDistance1);
 		laserDistance1.addFocusListener(new FocusListener() {
 
 			@Override
@@ -365,37 +373,19 @@ public class XYZSettings extends JPanel {
 
 			}
 		});
+		panelZAxis.add(laserDistance1);
 
-		// smakeWebsocketConnection();
-
-		// SavableText laserDistance0 = new SavableText();
-		// laserDistance0.setLabelTxt("LasDist: ");
-		// laserDistance0.setParId("mymotion.laserHeight0");
-		// laserDistance0.setNeedsSave(false);
-		// laserDistance0.setPin(new PinDef("mymotion.laserHeight0",
+		SavableText laserDistance2 = new SavableText();
+		laserDistance2.setLabelTxt("Cap. sense distance [mm]: ");
+		laserDistance2.setParId("mymotion.laserHeight1mm");
+		laserDistance2.setNeedsSave(false);
+		// laserDistance1.setPin(new PinDef("mymotion.laserHeight1",
 		// HalPinDirection.HAL_IN, ValueType.HAL_FLOAT));
-		// panelZAxis.add(laserDistance0);
-		// laserDistance0.addFocusListener(new FocusListener() {
-		// @Override
-		// public void focusLost(FocusEvent e) {
-		// // TODO Auto-generated method stub
-		//
-		// }
-		//
-		// @Override
-		// public void focusGained(FocusEvent e) {
-		//
-		// }
-		// });
+		panelZAxis.add(laserDistance2);
 
 		// Add the series to your data set
 		XYSeriesCollection dataset = new XYSeriesCollection();
 		dataset.addSeries(seriesXZ);
-		seriesXZ.add(1, 1);
-		seriesXZ.add(1, 2);
-		seriesXZ.add(2, 1);
-		seriesXZ.add(3, 9);
-		seriesXZ.add(4, 10); // Generate the graph
 		chart = ChartFactory.createXYLineChart("", // Title
 				"x[mm]", // x-axis Label
 				"z[mm]", // y-axis Label
@@ -410,6 +400,27 @@ public class XYZSettings extends JPanel {
 		chartPanel.setPreferredSize(new Dimension(300, 200));
 		panelZAxis.add(chartPanel);
 
+		final JToggleButton btnCalibrate = new JToggleButton("CalibrateCapSense");
+		btnCalibrate.setBounds(75, 32, 54, 31);
+		panelZAxis.add(btnCalibrate);
+		btnCalibrate.addActionListener(new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent e1) {
+				AbstractButton abstractButton = (AbstractButton) e1.getSource();
+				boolean selected = abstractButton.getModel().isSelected();
+				if (selected) {
+					capSenseCalibrate = new CapSenseCalibrate();
+					new Thread(capSenseCalibrate).start();
+				} else {
+					capSenseCalibrate.stop();
+				}
+			}
+		});
+
+		if (instance == null)
+			instance = this;
+
 	}
 
 	public void updateChartRange() {
@@ -417,17 +428,18 @@ public class XYZSettings extends JPanel {
 		ValueAxis rangeAxis = chart.getXYPlot().getRangeAxis();
 		// set max time window as 1 sec
 
-		Float pipeDimX = Float.valueOf(Settings.instance.getSetting("pipe_dim_x"));
+		Float pipeDimX = Float.valueOf(Settings.getInstance().getSetting("pipe_dim_x"));
 
-		Float posX = Float.valueOf(Settings.instance.getSetting("position_x"));
-
-		Float pipeDimZ = Float.valueOf(Settings.instance.getSetting("pipe_dim_z"));
+		// Float posX =
+		// Float.valueOf(Settings.getInstance().getSetting("position_x"));
+		// Float pipeDimZ =
+		// Float.valueOf(Settings.getInstance().getSetting("pipe_dim_z"));
 
 		// current las measurement
-		Float lasHeight = Float.valueOf(Settings.instance.getSetting("mymotion.laserHeight1"));
+		Float lasHeight = Float.valueOf(Settings.getInstance().getSetting("mymotion.laserHeight1"));
 
-		domainAxis.setRange(posX - pipeDimX, posX + pipeDimX);
-		rangeAxis.setRange(lasHeight - 0.002, lasHeight + 0.002);
+		domainAxis.setRange(-pipeDimX - CenterXOnPipe.offsetX, pipeDimX + CenterXOnPipe.offsetX);
+		rangeAxis.setRange(lasHeight - 0.001, lasHeight + 0.001);
 		// rangeAxis.setTickUnit(new NumberTickUnit(0.05));
 	}
 
@@ -443,14 +455,14 @@ public class XYZSettings extends JPanel {
 
 			if (positionerUrlStr != null && !positionerUrlStr.equals("")) {
 				uri = new URI(positionerUrlStr);
-				myWebsocketClient = new MyLaserWebsocketClient();
-				if (Settings.instance != null)
-					Settings.instance.log("Connecting to: " + uri.toString());
+				myWebsocketClient = MyLaserWebsocketClient.getInstance();
+				if (Settings.getInstance() != null)
+					Settings.getInstance().log("Connecting to: " + uri.toString());
 				wsSession = cm.asyncConnectToServer(myWebsocketClient, uri).get(2000, TimeUnit.MILLISECONDS);
 			}
 		} catch (Exception e) {
-			if (Settings.instance != null)
-				Settings.instance.log("\t" + uri.toString() + " " + e.toString());
+			if (Settings.getInstance() != null)
+				Settings.getInstance().log("\t" + uri.toString() + " " + e.toString());
 		}
 
 	}

@@ -157,11 +157,11 @@ public class BBBHalRComp implements Runnable {
 									}
 
 									SwingUtilities.invokeLater(updateUi);
-									Settings.instance.updateHalValues();
+									Settings.getInstance().updateHalValues();
 
 								} else if (contReturned.getType().equals(ContainerType.MT_PING)) {
 									this.lastPingMs = System.currentTimeMillis();
-									MachinekitSettings.instance.pingHalRcomp();
+									MachinekitSettings.getInstance().pingHalRcomp();
 								} else if (contReturned.getType().equals(ContainerType.MT_HALRCOMP_INCREMENTAL_UPDATE)) {
 									for (int j = 0; j < contReturned.getPinCount(); j++) {
 										String value = null;
@@ -249,7 +249,7 @@ public class BBBHalRComp implements Runnable {
 	}
 
 	public void startBind() {
-		Settings.instance.log("Start bind...");
+		Settings.getInstance().log("Start bind...");
 		this.isTryingToBind = true;
 		Container container = this.builder.build();
 		byte[] buff = container.toByteArray();
@@ -334,36 +334,40 @@ public class BBBHalRComp implements Runnable {
 		public void run() {
 			if (halPins.get("mymotion.program-line") != null) {
 				// GcodeViewer.instance.setLineNumber(Integer.valueOf(halPins.get("mymotion.program-line")).intValue());
-				Settings.instance.setSetting("mymotion.program-line", Integer.valueOf(halPins.get("mymotion.program-line")));
+				Settings.getInstance().setSetting("mymotion.program-line", Integer.valueOf(halPins.get("mymotion.program-line")));
 			}
 			GcodeViewer.instance.setPlasmaOn(Boolean.valueOf(halPins.get("mymotion.spindle-on")).booleanValue());
 			
 			/*
-			Settings.instance.setSetting("mymotion.vx", Float.valueOf(halPins.get("mymotion.vx")));
-			Settings.instance.setSetting("mymotion.dvx", Float.valueOf(halPins.get("mymotion.dvx")));
-			Settings.instance.setSetting("mymotion.vz", Float.valueOf(halPins.get("mymotion.vz")));
-			Settings.instance.setSetting("mymotion.dvz", Float.valueOf(halPins.get("mymotion.dvz")));
-			Settings.instance.setSetting("mymotion.current-radius", String.format("%.3f", Float.valueOf(halPins.get("mymotion.current-radius"))));
-			Settings.instance.setSetting("mymotion.vy", Float.valueOf(halPins.get("mymotion.vy")));
-			Settings.instance.setSetting("mymotion.v", Float.valueOf(halPins.get("mymotion.v")));
+			Settings.getInstance().setSetting("mymotion.vx", Float.valueOf(halPins.get("mymotion.vx")));
+			Settings.getInstance().setSetting("mymotion.dvx", Float.valueOf(halPins.get("mymotion.dvx")));
+			Settings.getInstance().setSetting("mymotion.vz", Float.valueOf(halPins.get("mymotion.vz")));
+			Settings.getInstance().setSetting("mymotion.dvz", Float.valueOf(halPins.get("mymotion.dvz")));
+			Settings.getInstance().setSetting("mymotion.current-radius", String.format("%.3f", Float.valueOf(halPins.get("mymotion.current-radius"))));
+			Settings.getInstance().setSetting("mymotion.vy", Float.valueOf(halPins.get("mymotion.vy")));
+			Settings.getInstance().setSetting("mymotion.v", Float.valueOf(halPins.get("mymotion.v")));
 			*/
 			
 //			double laserHeight1 = Float.valueOf(halPins.get("mymotion.laserHeight1"));
-//			Settings.instance.setSetting("mymotion.laserHeight1", String.format("%.3f", laserHeight1));
+//			Settings.getInstance().setSetting("mymotion.laserHeight1", String.format("%.3f", laserHeight1));
 
 			double actualVolts = Float.valueOf(halPins.get("myini.actual-volts"));
-			Settings.instance.setSetting("myini.actual-volts", actualVolts);
-			double requestedVolts = Float.valueOf(Settings.instance.getSetting("myini.volts-requested"));
-			Settings.instance.plasmaSettings.seriesVoltConstTime.add(System.currentTimeMillis(), requestedVolts);
-			Settings.instance.plasmaSettings.seriesVoltTime.add(System.currentTimeMillis(), actualVolts);
-			Settings.instance.plasmaSettings.updateChartRange();
+			Settings.getInstance().setSetting("myini.actual-volts", actualVolts);
+			double requestedVolts = Float.valueOf(Settings.getInstance().getSetting("myini.volts-requested"));
+			Settings.getInstance().plasmaSettings.seriesVoltConstTime.add(System.currentTimeMillis(), requestedVolts);
+			Settings.getInstance().plasmaSettings.seriesVoltTime.add(System.currentTimeMillis(), actualVolts);
+			Settings.getInstance().plasmaSettings.updateChartRange();
 
-			Settings.instance.setSetting("myini.vel-status", String.format("%s", Boolean.valueOf(halPins.get("myini.vel-status"))));
+			Settings.getInstance().setSetting("myini.vel-status", String.format("%s", Boolean.valueOf(halPins.get("myini.vel-status"))));
 
-			Settings.instance.setSetting("myini.thc-z-pos", Float.valueOf(halPins.get("myini.thc-z-pos")));
-			Settings.instance.setSetting("myini.offset-value", Float.valueOf(halPins.get("myini.offset-value")));
+			Settings.getInstance().setSetting("myini.thc-z-pos", Float.valueOf(halPins.get("myini.thc-z-pos")));
+			Settings.getInstance().setSetting("myini.offset-value", Float.valueOf(halPins.get("myini.offset-value")));
 
-			Settings.instance.setSetting("myini.arc-ok", String.format("%s", Boolean.valueOf(halPins.get("myini.arc-ok"))));
+			Settings.getInstance().setSetting("myini.arc-ok", String.format("%s", Boolean.valueOf(halPins.get("myini.arc-ok"))));
+			
+			
+			
+			
 		}
 
 	};

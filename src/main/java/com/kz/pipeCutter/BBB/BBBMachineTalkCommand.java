@@ -133,7 +133,7 @@ public abstract class BBBMachineTalkCommand implements Callable<String> {
 				byte[] returnedBytes = frame.getData();
 				Container contReturned = Message.Container.parseFrom(returnedBytes);
 				if (contReturned.equals(pb.Types.ContainerType.MT_PING)) {
-					MachinekitSettings.instance.pingCommand();
+					MachinekitSettings.getInstance().pingCommand();
 				}
 				contReturned.getReplyTicket();
 				Settings.getInstance().log(contReturned.toString());

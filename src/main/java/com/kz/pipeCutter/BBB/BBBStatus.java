@@ -164,16 +164,18 @@ public class BBBStatus implements Runnable {
 								Settings.getInstance().setSetting("position_b", b);
 								// Settings.getInstance().setSetting("position_c", c);
 
-								if (SurfaceDemo.getInstance() != null && SurfaceDemo.instance != null) {
+								if (SurfaceDemo.getInstance() != null && SurfaceDemo.getInstance() != null) {
 									if (SurfaceDemo.getInstance().getChart() != null) {
 										// System.out.println(String.format("%1$,.2f, %2$,.2f,
 										// %3$,.2f",x,y,z));
 
 										if (BBBStatus.instance != null) {
 											float zOffset = 0;
-											if (!Settings.instance.getSetting("myini.offset-value").equals(""))
-												zOffset = Float.valueOf(Settings.instance.getSetting("myini.offset-value"));
-											Coord3d coord = new Coord3d(BBBStatus.instance.x, BBBStatus.instance.y, BBBStatus.instance.z + zOffset);
+//											if (!Settings.getInstance().getSetting("myini.offset-value").equals(""))
+//												zOffset = Float.valueOf(Settings.getInstance().getSetting("myini.offset-value"));
+											
+											//Coord3d coord = new Coord3d(BBBStatus.instance.x, BBBStatus.instance.y, BBBStatus.instance.z + zOffset);
+											Coord3d coord = new Coord3d(BBBStatus.instance.x, BBBStatus.instance.y, BBBStatus.instance.z);
 											SurfaceDemo.getInstance().utils.rotatePoints(BBBStatus.instance.a, false, false);
 											SurfaceDemo.getInstance().getPlasma().setPosition(coord);
 										}
@@ -187,7 +189,7 @@ public class BBBStatus implements Runnable {
 								}
 							} else if (contReturned.getType().equals(ContainerType.MT_PING)) {
 								this.lastPingMs = System.currentTimeMillis();
-								MachinekitSettings.instance.pingStatus();
+								MachinekitSettings.getInstance().pingStatus();
 							} else {
 								System.out.println(contReturned.getType());
 							}

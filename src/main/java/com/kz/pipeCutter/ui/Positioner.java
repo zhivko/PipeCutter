@@ -320,12 +320,12 @@ public class Positioner extends JPanel {
 			ClientManager cm = ClientManager.createClient();
 			uri = new URI(positionerUrl.getParValue());
 			myWebsocketClient = new MyWebsocketClient(this);
-			if (Settings.instance != null)
-				Settings.instance.log("Connecting to: " + uri.toString());
+			if (Settings.getInstance() != null)
+				Settings.getInstance().log("Connecting to: " + uri.toString());
 			wsSession = cm.asyncConnectToServer(myWebsocketClient, uri).get(2000, TimeUnit.MILLISECONDS);
 		} catch (Exception e) {
-			if (Settings.instance != null)
-				Settings.instance.log("\t" + uri.toString() + " " + e.toString());
+			if (Settings.getInstance() != null)
+				Settings.getInstance().log("\t" + uri.toString() + " " + e.toString());
 		}
 
 	}

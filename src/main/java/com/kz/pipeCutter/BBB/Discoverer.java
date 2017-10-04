@@ -62,8 +62,8 @@ public class Discoverer {
 					services.remove(arg0.getInfo());
 					Pattern p = Pattern.compile("(.*)service(.*)");
 					Matcher m = p.matcher(arg0.getInfo().getName());
-					if (m.find() && MachinekitSettings.instance != null) {
-						MachinekitSettings.instance.machinekitServices.removeService(arg0.getInfo());
+					if (m.find() && MachinekitSettings.getInstance() != null) {
+						MachinekitSettings.getInstance().machinekitServices.removeService(arg0.getInfo());
 					}
 				}
 
@@ -77,8 +77,8 @@ public class Discoverer {
 
 					Pattern p = Pattern.compile("(.*)service(.*)");
 					Matcher m = p.matcher(arg0.getInfo().getName());
-					if (m.find() && MachinekitSettings.instance != null) {
-						MachinekitSettings.instance.machinekitServices.addService(arg0.getInfo());
+					if (m.find() && MachinekitSettings.getInstance() != null) {
+						MachinekitSettings.getInstance().machinekitServices.addService(arg0.getInfo());
 					}
 				}
 			};
@@ -157,8 +157,8 @@ public class Discoverer {
 					if (BBBHalCommand.instance != null)
 						BBBHalCommand.instance.stop();
 					
-					if (MachinekitSettings.instance != null)
-						MachinekitSettings.instance.machinekitServices.removeAll();
+					if (MachinekitSettings.getInstance() != null)
+						MachinekitSettings.getInstance().machinekitServices.removeAll();
 
 					for (JmDNS jmDNS : Discoverer.this.jMdnsS) {
 						System.out.println("Discovering Machinekit services...");

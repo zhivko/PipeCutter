@@ -37,8 +37,8 @@ public class Cylinder extends AbstractComposite {
 //
 //		MyPickablePoint newPoint = new MyPickablePoint(-100000, position,Color.BLACK,0.4f,-200000);
 //
-//		String gcode = SurfaceDemo.instance.utils.coordinateToGcode(newPoint);
-//		SurfaceDemo.instance.writeToGcodeFile(gcode);
+//		String gcode = SurfaceDemo.getInstance().utils.coordinateToGcode(newPoint);
+//		SurfaceDemo.getInstance().writeToGcodeFile(gcode);
 //
 //		for (int i = 0; i < slices; i++) {
 //			float angleBorder1 = (float) i * 2 * (float) Math.PI / (float) slices;
@@ -81,10 +81,10 @@ public class Cylinder extends AbstractComposite {
 			System.out.println(abstractDrawable.getClass().getName());
 			if (abstractDrawable instanceof org.jzy3d.plot3d.primitives.Quad)
 				((org.jzy3d.plot3d.primitives.Quad) abstractDrawable).setColor(Color.RED);
-			SurfaceDemo.instance.myComposite.remove(abstractDrawable);
-			//SurfaceDemo.instance.getChart().removeDrawable(abstractDrawable);
+			SurfaceDemo.getInstance().myComposite.remove(abstractDrawable);
+			//SurfaceDemo.getInstance().getChart().removeDrawable(abstractDrawable);
 		}
-		SurfaceDemo.instance.myComposite.remove(this);
+		SurfaceDemo.getInstance().myComposite.remove(this);
 	
 
 	}
@@ -92,8 +92,8 @@ public class Cylinder extends AbstractComposite {
 //	public void move(Point3d newCoord) {
 //		clean();
 //		this.setData(newCoord, (float) height, 15, 5, Color.BLUE);
-//		SurfaceDemo.instance.myComposite.add(this);
-//		//SurfaceDemo.instance.getChart().render();
+//		SurfaceDemo.getInstance().myComposite.add(this);
+//		//SurfaceDemo.getInstance().getChart().render();
 //
 //		// Rotate rotate = new Rotate(angleDelta / 10, new Coord3d(0, 1, 0));
 //		// Translate translate = new Translate(newCoord.sub(position));

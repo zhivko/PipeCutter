@@ -70,7 +70,7 @@ public class Settings extends JFrame {
 	private JPanel contentPane;
 	public static String iniFullFileName = getIniPath();
 	public static String iniEdgeProperties = getEdgePropertiesPath();
-	public static Settings instance;
+	private static Settings instance;
 	public static Discoverer discoverer;
 	public static BBBError error;
 	public static BBBStatus status;
@@ -224,7 +224,7 @@ public class Settings extends JFrame {
 					}
 					// splitPane.setDividerLocation(1 -
 					// (commandPanel.getHeight() /
-					// Settings.instance.getHeight()));
+					// Settings.getInstance().getHeight()));
 				}
 			}
 		});
@@ -278,11 +278,11 @@ public class Settings extends JFrame {
 							System.out.println(size);
 							Settings.this.setMinimumSize(new Dimension(Double.valueOf(splittedSize[0]).intValue(), Double.valueOf(splittedSize[1]).intValue()));
 
-							// MachinekitSettings.instance.machinekitServices.setPreferredSize(new
+							// MachinekitSettings.getInstance().machinekitServices.setPreferredSize(new
 							// Dimension(200,200));
-							Settings.instance.pack();
-							Settings.instance.repaint();
-							SavableText c = (SavableText) Settings.instance.getParameter("machinekit_commandService_url");
+							Settings.getInstance().pack();
+							Settings.getInstance().repaint();
+							SavableText c = (SavableText) Settings.getInstance().getParameter("machinekit_commandService_url");
 							System.out.println(c.jValue.getSize());
 
 						} catch (Exception ex) {
@@ -308,7 +308,7 @@ public class Settings extends JFrame {
 						@Override
 						public void run() {
 							// TODO Auto-generated method stub
-							Settings.instance.pingBBB();
+							Settings.getInstance().pingBBB();
 
 							initErrorService();
 							initStatusService();
@@ -394,7 +394,13 @@ public class Settings extends JFrame {
 	
 
 	public String getSetting(String parameterId) {
-		return controls.get(parameterId).getParValue();
+		String ret = "";
+		synchronized (this) {
+			ret = controls.get(parameterId).getParValue();
+			if(ret.equals(""))
+				System.out.println("oops");
+		}
+		return ret;
 	}
 
 	public String getSetting2(String parameterId) {
@@ -421,7 +427,7 @@ public class Settings extends JFrame {
 			SavableControl mysavable = null;
 			// if (controls.get(parameterId) == null) {
 			// List<SavableControl> savableControls =
-			// harvestMatches(Settings.instance.getContentPane(),
+			// harvestMatches(Settings.getInstance().getContentPane(),
 			// SavableControl.class);
 			// for (SavableControl savableControl : savableControls) {
 			// Logger.getLogger(this.getClass()).info(savableControl.getPin().pinName);
@@ -434,6 +440,8 @@ public class Settings extends JFrame {
 			// }
 			
 			mysavable = controls.get(parameterId);
+			if(value.trim().equals("") && !mysavable.isLoadingValue)
+				System.out.println("");
 			mysavable.setParValue(value);
 			mysavable.save();
 		} catch (Exception ex) {
@@ -521,7 +529,7 @@ public class Settings extends JFrame {
 		return Collections.unmodifiableList(harvested);
 	}
 
-	public static Settings getInstance() {
+	public static synchronized Settings getInstance() {
 		if (instance == null)
 			instance = new Settings();
 		return instance;
@@ -545,12 +553,12 @@ public class Settings extends JFrame {
 	}
 
 	public List<SavableControl> getAllControls() {
-		List<SavableControl> savableControls = harvestMatches(Settings.instance.getContentPane(), SavableControl.class);
+		List<SavableControl> savableControls = harvestMatches(Settings.getInstance().getContentPane(), SavableControl.class);
 		return savableControls;
 	}
 
 	public List<IHasPinDef> getAllPinControls() {
-		List<IHasPinDef> savableControls = harvestSupportsInterface(Settings.instance.getContentPane(), IHasPinDef.class);
+		List<IHasPinDef> savableControls = harvestSupportsInterface(Settings.getInstance().getContentPane(), IHasPinDef.class);
 		return savableControls;
 	}
 

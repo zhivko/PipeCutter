@@ -37,6 +37,12 @@ public class RotatorSettings extends JPanel {
 	SavableText rotator2_stepgvel;
 	SavableText rotator2_stepgacc; 
 	
+	
+	public synchronized static RotatorSettings getInstance()
+	{
+		return instance;
+	}
+	
 	public RotatorSettings() {
 		super();
 		Dimension panelPreferedDimension = new Dimension(320, 580);

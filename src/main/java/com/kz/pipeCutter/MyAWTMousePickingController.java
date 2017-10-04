@@ -82,10 +82,10 @@ public class MyAWTMousePickingController extends AWTMousePickingController imple
 		String center = chart.getView().getBounds().getCenter().toString();
 		String radius = String.valueOf(chart.getView().getBounds().getRadius());
 
-		Settings.instance.setSetting("ui_zoom_center", center);
+		Settings.getInstance().setSetting("ui_zoom_center", center);
 		if (radius.equals("0"))
 			radius = "0.1";
-		Settings.instance.setSetting("ui_zoom_radius", radius);
+		Settings.getInstance().setSetting("ui_zoom_radius", radius);
 		zoomZ(factor);
 	}
 

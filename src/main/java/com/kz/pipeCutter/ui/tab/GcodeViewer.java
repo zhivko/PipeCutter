@@ -116,8 +116,8 @@ public class GcodeViewer extends JPanel {
 					Matcher m = p.matcher(lineStr);
 					if (m.find()) {
 						// System.out.println(m.group(1));
-						SurfaceDemo.instance.lastClickedPoint = SurfaceDemo.instance.utils.getPointbyId(Integer.valueOf(m.group(1)));
-						SurfaceDemo.instance.lastClickedPointChanged(SurfaceDemo.instance.lastClickedPoint);
+						SurfaceDemo.getInstance().lastClickedPoint = SurfaceDemo.getInstance().utils.getPointbyId(Integer.valueOf(m.group(1)));
+						SurfaceDemo.getInstance().lastClickedPointChanged(SurfaceDemo.getInstance().lastClickedPoint);
 					}
 
 				} catch (Exception ex) {
@@ -449,14 +449,14 @@ public class GcodeViewer extends JPanel {
 				org.jzy3d.colors.Color color = org.jzy3d.colors.Color.RED;
 				color.a = 0.55f;
 
-				SurfaceDemo.instance.getPlasma().setColor(color);
-				SurfaceDemo.instance.getPlasma().setWireframeColor(org.jzy3d.colors.Color.RED);
+				SurfaceDemo.getInstance().getPlasma().setColor(color);
+				SurfaceDemo.getInstance().getPlasma().setWireframeColor(org.jzy3d.colors.Color.RED);
 			} else {
 				org.jzy3d.colors.Color color = org.jzy3d.colors.Color.BLUE;
 				color.a = 0.55f;
 
-				SurfaceDemo.instance.getPlasma().setColor(color);
-				SurfaceDemo.instance.getPlasma().setWireframeColor(org.jzy3d.colors.Color.BLUE);
+				SurfaceDemo.getInstance().getPlasma().setColor(color);
+				SurfaceDemo.getInstance().getPlasma().setWireframeColor(org.jzy3d.colors.Color.BLUE);
 			}
 			this.plasmaOn = on;
 			SwingUtilities.invokeLater(new Runnable() {

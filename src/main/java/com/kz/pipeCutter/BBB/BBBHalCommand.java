@@ -154,13 +154,13 @@ public class BBBHalCommand implements Runnable {
 								}
 							} else if (contReturned.getType().equals(ContainerType.MT_PING_ACKNOWLEDGE)) {
 								this.lastPingMs = System.currentTimeMillis();
-								MachinekitSettings.instance.pingHalCommand();
+								MachinekitSettings.getInstance().pingHalCommand();
 								if (BBBStatus.getInstance().isAlive() && !BBBHalRComp.getInstance().isBinded && !BBBHalRComp.getInstance().isTryingToBind) {
 									// if (BBBHalRComp.getInstance().isAlive())
 									BBBHalRComp.getInstance().startBind();
 								}
 							} else if (contReturned.getType().equals(ContainerType.MT_HALRCOMP_BIND_CONFIRM)) {
-								Settings.instance.log("MT_HALRCOMP_BIND_CONFIRM");
+								Settings.getInstance().log("MT_HALRCOMP_BIND_CONFIRM");
 								BBBHalRComp.getInstance().isBinded = true;
 								BBBHalRComp.getInstance().isTryingToBind = false;
 
@@ -185,7 +185,7 @@ public class BBBHalCommand implements Runnable {
 				}
 			}
 		}
-		Settings.instance.log("BBBHalCommand END.");
+		Settings.getInstance().log("BBBHalCommand END.");
 
 	}
 

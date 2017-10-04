@@ -37,7 +37,7 @@ public class MachineKitStart extends SSH_Command {
 			String user = Settings.getInstance().getSetting("machinekit_user");
 			String pass = Settings.getInstance().getSetting("machinekit_password");
 			Settings.getInstance().log("MK instance at IP: " + ip);
-			// Settings.instance.log("MK instance at host: " + host);
+			// Settings.getInstance().log("MK instance at host: " + host);
 			session = jsch.getSession(user, ip, 22);
 			session.setPassword(pass);
 
@@ -72,7 +72,7 @@ public class MachineKitStart extends SSH_Command {
 				ps.println(command);
 			}
 			
-			String hostName = Settings.instance.getSetting("machinekit_host");
+			String hostName = Settings.getInstance().getSetting("machinekit_host");
 			
 			if(hostName.equals("beaglebone.local"))
 				command = "machinekit ~/git/machinekit/myini/CRAMPS.ini &";
@@ -106,8 +106,8 @@ public class MachineKitStart extends SSH_Command {
 				if (noOfserviceStarted < 6) {
 					Matcher m = p.matcher(line);
 					if (m.find()) {
-						Settings.instance.log("Service '" + m.group(2) + "' on port: " + m.group(1) + " on BBB is on.");
-						String hostName = Settings.instance.getSetting("machinekit_host");
+						Settings.getInstance().log("Service '" + m.group(2) + "' on port: " + m.group(1) + " on BBB is on.");
+						String hostName = Settings.getInstance().getSetting("machinekit_host");
 						ServiceInfo serviceInfo = ServiceInfoImpl.create(m.group(2), m.group(2), Integer.valueOf(m.group(1)), hostName);
 						NamedList.getCommandServiceUrl(serviceInfo);
 						NamedList.getErrorServiceUrl(serviceInfo);
@@ -122,12 +122,12 @@ public class MachineKitStart extends SSH_Command {
 				if (noOfserviceStarted == 5) {
 					// if all 5 services are started from mkwrapper
 					// start also halcmd and halrcomp
-					// Settings.instance.log("Starting discoverer...");
+					// Settings.getInstance().log("Starting discoverer...");
 					// Discoverer.getInstance().discover();
-					Settings.instance.log("Init HalCmd dealer");
-					Settings.instance.initHalCmdService();
-					Settings.instance.log("Init HalRComp XSUB subscriber");
-					Settings.instance.initHalRcompService();
+					Settings.getInstance().log("Init HalCmd dealer");
+					Settings.getInstance().initHalCmdService();
+					Settings.getInstance().log("Init HalRComp XSUB subscriber");
+					Settings.getInstance().initHalRcompService();
 				}
 			}
 		}

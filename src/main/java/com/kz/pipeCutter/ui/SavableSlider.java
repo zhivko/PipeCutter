@@ -33,6 +33,7 @@ public class SavableSlider extends SavableControl {
 	}
 
 	public void setValues(String values) {
+		this.isLoadingValue = true;
 		this.values = values;
 
 		String[] splittedValues = values.split(",");
@@ -50,7 +51,7 @@ public class SavableSlider extends SavableControl {
 		this.slider.setMaximum(splittedValues.length - 1);
 		this.slider.setMinimum(0);
 		this.setPreferredSize(new Dimension(300, 100));
-
+		this.isLoadingValue = false;
 	}
 
 	public SavableSlider() {
@@ -77,8 +78,7 @@ public class SavableSlider extends SavableControl {
 
 			public void warn() {
 				try {
-					if (!SavableSlider.this.isLoadingValue())
-					{
+					if (!SavableSlider.this.isLoadingValue()) {
 						SavableSlider.this.save();
 						valueChangedFromUI();
 					}
@@ -111,12 +111,13 @@ public class SavableSlider extends SavableControl {
 			@Override
 			public void stateChanged(ChangeEvent e) {
 				// TODO Auto-generated method stub
-				if (Settings.instance != null && !SavableSlider.this.slider.getValueIsAdjusting()) {
-					String txt = SavableSlider.this.table.get(SavableSlider.this.slider.getValue()).getText();
-					txt = txt.replaceAll("²", "0");
-					txt = txt.replaceAll("³", "00");
-					SavableSlider.this.setParValue(txt);
-				}
+				if (!isLoadingValue)
+					if (Settings.getInstance() != null && !SavableSlider.this.slider.getValueIsAdjusting()) {
+						String txt = SavableSlider.this.table.get(SavableSlider.this.slider.getValue()).getText();
+						txt = txt.replaceAll("²", "0");
+						txt = txt.replaceAll("³", "00");
+						SavableSlider.this.setParValue(txt);
+					}
 			}
 		});
 	}
@@ -140,11 +141,9 @@ public class SavableSlider extends SavableControl {
 	}
 
 	public void setStepValue(int stepValue) {
-		while (SavableSlider.this.table.keys().hasMoreElements())
-		{
+		while (SavableSlider.this.table.keys().hasMoreElements()) {
 			Integer i = SavableSlider.this.table.keys().nextElement();
-			if(Integer.valueOf(SavableSlider.this.table.get(i).getText()).intValue()==stepValue)
-			{
+			if (Integer.valueOf(SavableSlider.this.table.get(i).getText()).intValue() == stepValue) {
 				SavableSlider.this.slider.setValue(i);
 				break;
 			}
@@ -164,7 +163,7 @@ public class SavableSlider extends SavableControl {
 	@Override
 	public void valueChangedFromUI() {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 }

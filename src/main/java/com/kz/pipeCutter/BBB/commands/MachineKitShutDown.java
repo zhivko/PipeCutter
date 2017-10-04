@@ -40,7 +40,7 @@ public class MachineKitShutDown extends BBBMachineTalkCommand {
 			e.printStackTrace();
 		}
 
-		Settings.instance.log("MK instance shutted DOWN.");
+		Settings.getInstance().log("MK instance shutted DOWN.");
 		return null;
 	}
 

@@ -79,7 +79,7 @@ public class BBBError implements Runnable {
 							contReturned = Message.Container.parseFrom(returnedBytes);
 							if (contReturned.getType().equals(ContainerType.MT_PING)) {
 								this.lastPingMs = System.currentTimeMillis();
-								MachinekitSettings.instance.pingError();
+								MachinekitSettings.getInstance().pingError();
 							} else {
 								Settings.getInstance().log(contReturned.getType() + " " + contReturned.getTopic());
 								List<String> notes = contReturned.getNoteList();

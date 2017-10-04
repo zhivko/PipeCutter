@@ -111,11 +111,11 @@ public class MyEdge {
 		// TODO Auto-generated method stub
 		// @formatter:off
 		length = (float) Math.sqrt(Math.pow(
-				SurfaceDemo.instance.utils.points.get(this.points.get(0)).getX() - SurfaceDemo.instance.utils.points.get(this.points.get(1)).getX(), 2.0d)
+				SurfaceDemo.getInstance().utils.points.get(this.points.get(0)).getX() - SurfaceDemo.getInstance().utils.points.get(this.points.get(1)).getX(), 2.0d)
 				+ Math.pow(
-						SurfaceDemo.instance.utils.points.get(this.points.get(0)).getY() - SurfaceDemo.instance.utils.points.get(this.points.get(1)).getY(), 2.0d)
+						SurfaceDemo.getInstance().utils.points.get(this.points.get(0)).getY() - SurfaceDemo.getInstance().utils.points.get(this.points.get(1)).getY(), 2.0d)
 				+ Math.pow(
-						SurfaceDemo.instance.utils.points.get(this.points.get(0)).getZ() - SurfaceDemo.instance.utils.points.get(this.points.get(1)).getZ(),
+						SurfaceDemo.getInstance().utils.points.get(this.points.get(0)).getZ() - SurfaceDemo.getInstance().utils.points.get(this.points.get(1)).getZ(),
 						2.0d));
 		// @formatter:on
 	}
@@ -125,7 +125,7 @@ public class MyEdge {
 		float sumy = 0;
 		float sumz = 0;
 		for (Integer pointNo : points) {
-			MyPickablePoint p = SurfaceDemo.instance.utils.points.get(pointNo);
+			MyPickablePoint p = SurfaceDemo.getInstance().utils.points.get(pointNo);
 			sumx += p.getX();
 			sumy += p.getY();
 			sumz += p.getZ();
@@ -151,7 +151,7 @@ public class MyEdge {
 
 	public static MyEdge getEdge(int edgeNo) {
 		MyEdge ret = null;
-		for (MySurface surface : SurfaceDemo.instance.utils.surfaces.values()) {
+		for (MySurface surface : SurfaceDemo.getInstance().utils.surfaces.values()) {
 			for (MyEdge edge : surface.getEdges()) {
 				if (edge.edgeNo == edgeNo) {
 					ret = edge;
@@ -177,7 +177,7 @@ public class MyEdge {
 
 	public MyPickablePoint getPointByIndex(int index) {
 		Integer pointNo = this.points.get(index);
-		return SurfaceDemo.instance.utils.points.get(pointNo);
+		return SurfaceDemo.getInstance().utils.points.get(pointNo);
 	}
 
 	public String toString() {
@@ -205,7 +205,7 @@ public class MyEdge {
 	}
 
 	public void markAsRemoved() {
-		SurfaceDemo.instance.myComposite.remove(this.lineStrip);
+		SurfaceDemo.getInstance().myComposite.remove(this.lineStrip);
 		
 		FileOutputStream out;
 		try {
@@ -219,7 +219,7 @@ public class MyEdge {
 			props.store(out, null);
 			out.close();
 			
-			SurfaceDemo.instance.utils.removeNotUsedPoints();
+			SurfaceDemo.getInstance().utils.removeNotUsedPoints();
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

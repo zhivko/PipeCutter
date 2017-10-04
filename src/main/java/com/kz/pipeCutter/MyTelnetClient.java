@@ -160,7 +160,7 @@ public class MyTelnetClient implements TelnetNotificationHandler {
 						final String returnedString = new String(buff, 0, ret_read);
 						lastRead.append(returnedString);
 						if (lastRead.toString().endsWith("> ")) {
-							SurfaceDemo.instance.smoothie.lastRead = lastRead.toString();
+							SurfaceDemo.getInstance().smoothie.lastRead = lastRead.toString();
 							lastRead.delete(0, lastRead.toString().length() - 1);
 						}
 						// System.out.print(returnedString);

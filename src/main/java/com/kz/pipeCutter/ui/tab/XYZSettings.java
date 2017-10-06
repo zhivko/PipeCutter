@@ -332,16 +332,16 @@ public class XYZSettings extends JPanel {
 		positionZ.setParId("position_z");
 		positionZ.setNeedsSave(false);
 
-		JButton btnZRot = new JButton("Make X axis horizontal");
-		btnZRot.setBounds(75, 32, 54, 31);
-		panelZAxis.add(btnZRot);
-		btnZRot.addActionListener(new ActionListener() {
-
-			@Override
-			public void actionPerformed(ActionEvent e1) {
-				new Thread(new MakeXHorizontal()).start();
-			}
-		});
+//		JButton btnZRot = new JButton("Make X axis horizontal");
+//		btnZRot.setBounds(75, 32, 54, 31);
+//		panelZAxis.add(btnZRot);
+//		btnZRot.addActionListener(new ActionListener() {
+//
+//			@Override
+//			public void actionPerformed(ActionEvent e1) {
+//				new Thread(new MakeXHorizontal()).start();
+//			}
+//		});
 
 		JButton btnPlasmaTouch = new JButton("Plasma touch");
 		btnPlasmaTouch.setBounds(75, 32, 54, 31);
@@ -424,6 +424,27 @@ public class XYZSettings extends JPanel {
 	}
 
 	public void updateChartRange() {
+		ValueAxis domainAxis = chart.getXYPlot().getDomainAxis();
+		ValueAxis rangeAxis = chart.getXYPlot().getRangeAxis();
+		// set max time window as 1 sec
+
+		Float pipeDimX = Float.valueOf(Settings.getInstance().getSetting("pipe_dim_x"));
+
+		// Float posX =
+		// Float.valueOf(Settings.getInstance().getSetting("position_x"));
+		// Float pipeDimZ =
+		// Float.valueOf(Settings.getInstance().getSetting("pipe_dim_z"));
+
+		// current las measurement
+		Float lasHeight = Float.valueOf(Settings.getInstance().getSetting("mymotion.laserHeight1"));
+
+		domainAxis.setRange(-pipeDimX - CenterXOnPipe.offsetX, pipeDimX + CenterXOnPipe.offsetX);
+		rangeAxis.setRange(0, 20);
+		// rangeAxis.setTickUnit(new NumberTickUnit(0.05));
+	}
+	
+	
+	public void updateChartRangeCap() {
 		ValueAxis domainAxis = chart.getXYPlot().getDomainAxis();
 		ValueAxis rangeAxis = chart.getXYPlot().getRangeAxis();
 		// set max time window as 1 sec

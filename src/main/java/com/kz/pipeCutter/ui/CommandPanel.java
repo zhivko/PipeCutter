@@ -7,14 +7,17 @@ import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 
+import javax.swing.AbstractButton;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
+import javax.swing.JToggleButton;
 import javax.swing.SwingUtilities;
 
 import com.kz.pipeCutter.BBB.BBBHalCommand;
 import com.kz.pipeCutter.BBB.Discoverer;
 import com.kz.pipeCutter.BBB.commands.AbortGCode;
+import com.kz.pipeCutter.BBB.commands.CenterXOnPipe;
 import com.kz.pipeCutter.BBB.commands.ChangeMode;
 import com.kz.pipeCutter.BBB.commands.EstopReset;
 import com.kz.pipeCutter.BBB.commands.ExecuteMdi;
@@ -34,7 +37,18 @@ import pb.Status.EmcTaskModeType;
 
 public class CommandPanel extends JPanel {
 	public JTextArea log;
+	public JToggleButton startMachineKitButton;
+	MachineKitStart machinekitStart;
 
+	JToggleButton c;
+	
+	static CommandPanel instance=null;
+
+	public static synchronized CommandPanel getInstance()
+	{
+		return instance;
+	}
+	
 	public CommandPanel() {
 		super();
 
@@ -48,13 +62,22 @@ public class CommandPanel extends JPanel {
 		machineKitPanel.setPreferredSize(new Dimension(130, 280));
 		this.add(machineKitPanel);
 
-		MyButton startMachineKit = new MyButton("Start MK") {
+		startMachineKitButton = new JToggleButton("Start MK");
+		startMachineKitButton.addActionListener(new ActionListener() {
+
 			@Override
-			public void doIt() {
-				new MachineKitStart().start();
+			public void actionPerformed(ActionEvent e1) {
+				AbstractButton abstractButton = (AbstractButton) e1.getSource();
+				boolean selected = abstractButton.getModel().isSelected();
+				if (selected) {
+					machinekitStart = new MachineKitStart();
+					new Thread(machinekitStart).start();
+				} else {
+					machinekitStart.stop();
+				}
 			}
-		};
-		machineKitPanel.add(startMachineKit);
+		});
+		machineKitPanel.add(startMachineKitButton);
 
 		MyButton discoverMachineKit = new MyButton("Discover MK") {
 			@Override
@@ -83,12 +106,12 @@ public class CommandPanel extends JPanel {
 		MyButton MachineKitKill = new MyButton("Kill MK") {
 			@Override
 			public void doIt() {
+				MachineKitStart.getInstance().stop();
 				new MachinekitKill().start();
 			}
 		};
-		machineKitPanel.add(MachineKitKill);		
-		
-		
+		machineKitPanel.add(MachineKitKill);
+
 		// ----------machineTalkPanel---------------------------
 		JPanel machineTalkPanel = new JPanel();
 
@@ -223,8 +246,7 @@ public class CommandPanel extends JPanel {
 
 			}
 		});
-		
-		
+
 		final SavableText mdiCommand3 = new SavableText();
 		mdiCommand3.setLabelTxt("MDI3:");
 		mdiCommand3.setParId("machinekit_mdi3");
@@ -256,8 +278,7 @@ public class CommandPanel extends JPanel {
 				// TODO Auto-generated method stub
 
 			}
-		});		
-		
+		});
 
 		MyButton uploadGCode = new MyButton("Upload GC") {
 			@Override
@@ -267,27 +288,27 @@ public class CommandPanel extends JPanel {
 		};
 		machineTalkPanel.add(uploadGCode);
 
-		MyButton openGCode = new MyButton("Open GC"){
+		MyButton openGCode = new MyButton("Open GC") {
 			@Override
 			public void doIt() {
-					new OpenGCode().start();
+				new OpenGCode().start();
 			}
 		};
 		machineTalkPanel.add(openGCode);
 
-		MyButton playGCode = new MyButton("Play GC"){
+		MyButton playGCode = new MyButton("Play GC") {
 			@Override
 			public void doIt() {
-					new PlayGCode().start();
-					//BBBHalCommand.getInstance().requestDescribe();
+				new PlayGCode().start();
+				// BBBHalCommand.getInstance().requestDescribe();
 			}
 		};
 		machineTalkPanel.add(playGCode);
 
-		MyButton abortGCode = new MyButton("Abort GCODE"){
+		MyButton abortGCode = new MyButton("Abort GCODE") {
 			@Override
 			public void doIt() {
-					new AbortGCode().start();
+				new AbortGCode().start();
 			}
 		};
 		machineTalkPanel.add(abortGCode);
@@ -300,5 +321,7 @@ public class CommandPanel extends JPanel {
 		machineTalkPanel.add(sp);
 
 		machineTalkPanel.setPreferredSize(new Dimension(850, 400));
+		
+		instance=this;
 	}
 }

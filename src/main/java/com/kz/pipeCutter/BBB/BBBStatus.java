@@ -157,6 +157,7 @@ public class BBBStatus implements Runnable {
 								b = base_b - (g5x_b + g92_b + toolOff_b);
 								c = base_c - (g5x_c + g92_c + toolOff_c);
 
+								
 								Settings.getInstance().setSetting("position_x", x);
 								Settings.getInstance().setSetting("position_y", y);
 								Settings.getInstance().setSetting("position_z", z);

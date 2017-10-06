@@ -58,8 +58,8 @@ public class MyLaserWebsocketClient {
 			if (!value.trim().equals("")) {
 				Settings.getInstance().setSetting("mymotion.laserHeight1", value);
 				DecimalFormat df = new DecimalFormat("#.0");
-
-				Settings.getInstance().setSetting("mymotion.laserHeight1mm", df.format(capToMM(Float.valueOf(value))));
+				double val = capToMM(Float.valueOf(value));
+				Settings.getInstance().setSetting("mymotion.laserHeight1mm", val);
 
 				/*
 				 * if (((SavableText)

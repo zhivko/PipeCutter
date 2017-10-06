@@ -31,7 +31,7 @@ public class CapSenseCalibrate implements Runnable {
 		}
 
 		Settings.getInstance().xyzSettings.seriesXZ.clear();
-		Settings.getInstance().xyzSettings.updateChartRange();
+		Settings.getInstance().xyzSettings.updateChartRangeCap();
 
 		int waitPositionMs = 30;
 		new ExecuteMdi("G90").start();

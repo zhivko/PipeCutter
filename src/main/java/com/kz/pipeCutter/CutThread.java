@@ -32,7 +32,7 @@ public class CutThread extends SwingWorker<String, Object> {
 	float plasmaLeadinRadius;
 	static File gcodeFile;
 	public static int delay = 100;
-	public static float cutterYRange = 20;
+	public static float cutterYRange = 220;
 	private static long longDelay = 1000;
 	private MyPickablePoint point;
 	double sumAngle = 0;

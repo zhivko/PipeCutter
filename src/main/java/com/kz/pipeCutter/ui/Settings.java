@@ -458,6 +458,8 @@ public class Settings extends JFrame {
 		DecimalFormat df = new DecimalFormat("0.0000", otherSymbols);
 		df.setDecimalSeparatorAlwaysShown(true);
 		String strValue = df.format(value);
+		if(parameterId.startsWith("position_") && strValue.equals(""))
+			System.out.println("oops");
 		setSetting(parameterId, strValue);
 	}
 

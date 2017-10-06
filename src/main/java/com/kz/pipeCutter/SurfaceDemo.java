@@ -443,13 +443,15 @@ public class SurfaceDemo extends AbstractAnalysis {
 
 						// pauseAnimator();
 						// resumeAnimator();
-						try {
-							Thread.currentThread().sleep(500);
-						} catch (InterruptedException e1) {
-							// TODO Auto-generated catch block
-							e1.printStackTrace();
-						}
-						SurfaceDemo.getInstance().canvas.getAnimator().getThread().setName("ANIMATOR_THREAD");
+//						while (SurfaceDemo.getInstance().canvas.getAnimator().getThread() == null) {
+//							try {
+//								Thread.currentThread().sleep(1000);
+//							} catch (InterruptedException e1) {
+//								// TODO Auto-generated catch block
+//								e1.printStackTrace();
+//							}
+//						}
+						//SurfaceDemo.getInstance().canvas.getAnimator().getThread().setName("ANIMATOR_THREAD");
 						if (Settings.getInstance().getSetting("ui_zoom_plasma").equals("True"))
 							SurfaceDemo.ZOOM_PLASMA = true;
 						if (Settings.getInstance().getSetting("ui_zoom_point").equals("True"))
@@ -488,10 +490,9 @@ public class SurfaceDemo extends AbstractAnalysis {
 								}
 								Settings.getInstance().log("Starting zoom and focus to last point...Done.");
 
-								
 								Settings.getInstance().log("Connecting centering capacity sensor....");
-								XYZSettings.getInstance().makeWebsocketConnection();								
-								
+								XYZSettings.getInstance().makeWebsocketConnection();
+
 							}
 						});
 
@@ -710,22 +711,20 @@ public class SurfaceDemo extends AbstractAnalysis {
 				}
 			}
 
-			
-			//rotate geometry as needed
+			// rotate geometry as needed
 			String rotations = Settings.getInstance().getSetting("rotations");
 			String[] rotatSplit = rotations.split(" ");
 			for (String definition : rotatSplit) {
 				String axisStr = definition.substring(0, 1).toLowerCase();
-				double angle = Double.valueOf(definition.substring(1,definition.length())).doubleValue();
+				double angle = Double.valueOf(definition.substring(1, definition.length())).doubleValue();
 				double[] axisDouble;
-				if(axisStr.equals("x"))
-					axisDouble = new double[]{ 1.0d, 0.0d, 0.0d };
-				else if(axisStr.equals("y"))
-					axisDouble = new double[]{ 0.0d, 1.0d, 0.0d };
-				else if(axisStr.equals("z"))
-					axisDouble = new double[]{ 0.0d, 0.0d, 1.0d };
-				else
-				{
+				if (axisStr.equals("x"))
+					axisDouble = new double[] { 1.0d, 0.0d, 0.0d };
+				else if (axisStr.equals("y"))
+					axisDouble = new double[] { 0.0d, 1.0d, 0.0d };
+				else if (axisStr.equals("z"))
+					axisDouble = new double[] { 0.0d, 0.0d, 1.0d };
+				else {
 					Settings.getInstance().log("Unknown axis: " + axisStr);
 					throw new Exception("Unnown axis");
 				}
@@ -739,7 +738,7 @@ public class SurfaceDemo extends AbstractAnalysis {
 					SurfaceDemo.instance.utils.points.get(point.id).setCoord(result.getX(), result.getY(), result.getZ());
 				}
 			}
-			
+
 			utils.calculateMaxAndMins();
 			utils.markRadiusEdges();
 

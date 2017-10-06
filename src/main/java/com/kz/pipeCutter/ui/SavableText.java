@@ -11,6 +11,8 @@ import javax.swing.SwingConstants;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 
+import com.kz.pipeCutter.SurfaceDemo;
+
 @SuppressWarnings("serial")
 public class SavableText extends SavableControl {
 	public JTextField jValue;
@@ -68,8 +70,12 @@ public class SavableText extends SavableControl {
 
 		try {
 			// synchronized (this.value) {
-			if (this.getParId().equals("mymotion.laserHeight1") && val.trim().equals(""))
-				System.out.println("");
+			if (!this.isLoadingValue && SurfaceDemo.getInstance().isInitialized() && val.equals(""))
+			{
+				System.out.println(this.getParId() + " empty value: " + Thread.currentThread().getName());
+				if(this.getParId().startsWith("position_") || this.getParId().equals("mymotion.laserHeight1mm") )
+					System.out.println("");
+			}
 
 			if (!val.trim().equals(""))
 				this.value = val.trim();
@@ -97,7 +103,10 @@ public class SavableText extends SavableControl {
 		String ret;
 		semaphore.acquireUninterruptibly();
 		try {
-
+			if (this.getParId().equals("mymotion.laserHeight1") && value.trim().equals(""))
+			{
+				System.out.println(this.getParId() + " empty value: " + Thread.currentThread().getName());
+			}
 			ret = this.value;
 		} finally {
 			semaphore.release();

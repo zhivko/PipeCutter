@@ -230,7 +230,7 @@ public class BBBHalRComp implements Runnable {
 		String identity = String.format("%04X-%04X", rand.nextInt(), rand.nextInt());
 
 		socket.setIdentity(identity.getBytes());
-		socket.setReceiveTimeOut(200);
+		socket.setReceiveTimeOut(500);
 		socket.setSendTimeOut(1000);
 		socket.setRcvHWM(5000);
 		socket.connect(this.halRCompUri);

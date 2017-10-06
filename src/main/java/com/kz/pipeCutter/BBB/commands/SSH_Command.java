@@ -99,5 +99,10 @@ public abstract class SSH_Command {
 		return ret;
 	}
 
+	protected boolean shouldStop = false;
+	public void stop()
+	{
+		this.shouldStop = true;
+	}
 
 }

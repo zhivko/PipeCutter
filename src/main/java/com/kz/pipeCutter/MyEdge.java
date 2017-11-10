@@ -1,18 +1,15 @@
 package com.kz.pipeCutter;
 
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.TreeMap;
 
 import org.jzy3d.colors.Color;
 import org.jzy3d.maths.Coord3d;
 import org.jzy3d.plot3d.primitives.LineStrip;
 
-import com.kz.pipeCutter.MyContinuousEdge.EdgeType;
 import com.kz.pipeCutter.ui.Settings;
 import com.kz.pipeCutter.ui.SortedProperties;
 
@@ -96,7 +93,7 @@ public class MyEdge {
 		// }
 		// if (!alreadyAdded) {
 		points.add(pointNo);
-		calculateCenter();
+		getCenter();
 		if (points.size() >= 2) {
 			calculateLength();
 			if (!hmLengthDistrib.containsKey(this.length))
@@ -120,7 +117,7 @@ public class MyEdge {
 		// @formatter:on
 	}
 
-	public void calculateCenter() {
+	public Coord3d getCenter() {
 		float sumx = 0;
 		float sumy = 0;
 		float sumz = 0;
@@ -133,6 +130,8 @@ public class MyEdge {
 		center.x = sumx / (points.size());
 		center.y = sumy / (points.size());
 		center.z = sumz / (points.size());
+		
+		return center;
 	}
 
 	/**

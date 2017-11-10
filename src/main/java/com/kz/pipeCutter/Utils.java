@@ -496,7 +496,7 @@ public class Utils {
 				pointTexts.applyGeometryTransform(myRot);
 			}
 			for (MyEdge edge : continuousEdges.values()) {
-				edge.calculateCenter();
+				edge.getCenter();
 			}
 		} else {
 			int noSteps = 10;
@@ -540,7 +540,7 @@ public class Utils {
 				}
 
 				for (MyEdge edge : continuousEdges.values()) {
-					edge.calculateCenter();
+					edge.getCenter();
 				}
 				float val = (float) (value);
 				SurfaceDemo.getInstance().calculateRotationPoint(val);
@@ -553,7 +553,7 @@ public class Utils {
 			}
 		}
 		for (MyEdge edge : SurfaceDemo.getInstance().utils.edges.values()) {
-			edge.calculateCenter();
+			edge.getCenter();
 		}
 
 		// if((float)newValue == 360.0f)
@@ -1252,10 +1252,10 @@ public class Utils {
 
 	public void calculateCenters() {
 		for (MyEdge myContEdge : SurfaceDemo.getInstance().utils.continuousEdges.values()) {
-			myContEdge.calculateCenter();
+			myContEdge.getCenter();
 		}
 		for (MyEdge myContEdge : SurfaceDemo.getInstance().utils.edges.values()) {
-			myContEdge.calculateCenter();
+			myContEdge.getCenter();
 		}
 	}
 

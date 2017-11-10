@@ -64,6 +64,9 @@ import org.jzy3d.plot3d.text.align.Halign;
 import org.jzy3d.plot3d.text.align.Valign;
 import org.jzy3d.plot3d.text.drawable.DrawableTextBitmap;
 
+import com.jogamp.opengl.GLContext;
+import com.jogamp.opengl.glu.GLU;
+import com.jogamp.opengl.glu.gl2.GLUgl2;
 import com.kz.pipeCutter.BBB.BBBStatus;
 import com.kz.pipeCutter.BBB.Discoverer;
 import com.kz.pipeCutter.ui.MyPopupMenu;
@@ -121,6 +124,8 @@ public class SurfaceDemo extends AbstractAnalysis {
 	public double dimX;
 	public double dimZ;
 	public double dimR;
+
+	public ArrayList<org.apache.commons.math3.geometry.euclidean.threed.Rotation> alRotations;
 
 	protected SurfaceDemo() {
 		Thread t = new Thread(new Runnable() {
@@ -443,15 +448,16 @@ public class SurfaceDemo extends AbstractAnalysis {
 
 						// pauseAnimator();
 						// resumeAnimator();
-//						while (SurfaceDemo.getInstance().canvas.getAnimator().getThread() == null) {
-//							try {
-//								Thread.currentThread().sleep(1000);
-//							} catch (InterruptedException e1) {
-//								// TODO Auto-generated catch block
-//								e1.printStackTrace();
-//							}
-//						}
-						//SurfaceDemo.getInstance().canvas.getAnimator().getThread().setName("ANIMATOR_THREAD");
+						// while (SurfaceDemo.getInstance().canvas.getAnimator().getThread()
+						// == null) {
+						// try {
+						// Thread.currentThread().sleep(1000);
+						// } catch (InterruptedException e1) {
+						// // TODO Auto-generated catch block
+						// e1.printStackTrace();
+						// }
+						// }
+						// SurfaceDemo.getInstance().canvas.getAnimator().getThread().setName("ANIMATOR_THREAD");
 						if (Settings.getInstance().getSetting("ui_zoom_plasma").equals("True"))
 							SurfaceDemo.ZOOM_PLASMA = true;
 						if (Settings.getInstance().getSetting("ui_zoom_point").equals("True"))
@@ -530,8 +536,15 @@ public class SurfaceDemo extends AbstractAnalysis {
 		if (getPickingSupport() != null) {
 			for (int j = 0; j < edgeTexts.size(); j++) {
 				PickableDrawableTextBitmap t = (PickableDrawableTextBitmap) edgeTexts.get(j);
+				t.setBoundingBoxColor(Color.CYAN);
+				t.setBoundingBoxDisplayed(true);
+				// instance.canvas.getAnimator().getThread().
+				// t.draw(this.canvas.getGL(), new GLUgl2() ,
+				// this.chart.getView().getCamera());
 				getPickingSupport().registerPickableObject(t, t);
 			}
+			myComposite.setBoundingBoxDisplayed(true);
+			this.chart.render();
 
 			getPickingSupport().addObjectPickedListener(new IObjectPickedListener() {
 				@Override
@@ -541,6 +554,7 @@ public class SurfaceDemo extends AbstractAnalysis {
 					{
 						// System.out.println("Size: " + picked.size());
 						// for (int i = 0; i < picked.size(); i++) {
+						System.out.println(picked.get(0).getClass());
 						if (picked.get(0) instanceof PickableDrawableTextBitmap) {
 							final PickableDrawableTextBitmap e = ((PickableDrawableTextBitmap) picked.get(0));
 							final Integer edgeNo = Integer.valueOf(e.getText().split(" ")[0]);
@@ -714,6 +728,7 @@ public class SurfaceDemo extends AbstractAnalysis {
 			// rotate geometry as needed
 			String rotations = Settings.getInstance().getSetting("rotations");
 			String[] rotatSplit = rotations.split(" ");
+			alRotations = new ArrayList<org.apache.commons.math3.geometry.euclidean.threed.Rotation>();
 			for (String definition : rotatSplit) {
 				String axisStr = definition.substring(0, 1).toLowerCase();
 				double angle = Double.valueOf(definition.substring(1, definition.length())).doubleValue();
@@ -789,7 +804,7 @@ public class SurfaceDemo extends AbstractAnalysis {
 			System.out.println(ret);
 
 			initDraw();
-			
+
 			Settings.getInstance().setEdgePropertiesFile();
 
 		} catch (Exception ex) {
@@ -1031,20 +1046,20 @@ public class SurfaceDemo extends AbstractAnalysis {
 						String radius = "";
 
 						// 2 mm toward center
-						Coord3d textPoint = edge.center.sub(delta.getNormalizedTo(0.2f));
+						Coord3d textPoint = edge.getCenter().sub(delta.getNormalizedTo(0.1f));
 						if (edge.edgeType == MyEdge.EdgeType.ONRADIUS)
 							radius = "R";
 						Rotation r = new Rotation(0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f, -1.0f * Float.valueOf(SurfaceDemo.instance.angleTxt) * Math.PI / 180);
 						Coordinates c = new Coordinates(textPoint.x, textPoint.y, textPoint.z);
 						r.transform(c);
-
-						PickableDrawableTextBitmap t5 = new PickableDrawableTextBitmap(String.valueOf(edge.edgeNo + " (" + edge.cutVelocity + ")"),
-								new Coord3d(c.x, c.y, c.z), edge.isToCut() ? Color.RED : Color.BLUE);
+						String txt = String.valueOf(edge.edgeNo + " (" + edge.cutVelocity + ")");
+						PickableDrawableTextBitmap t5 = new PickableDrawableTextBitmap(txt, new Coord3d(c.x, c.y, c.z), edge.isToCut() ? Color.RED : Color.BLUE);
 						edge.setTxt(t5);
 						t5.setHalign(Halign.CENTER); // TODO: invert
 						t5.setValign(Valign.CENTER); // TODO: invert
 						// t5.setValign(Valign.BOTTOM); // TODO: invert
 						// left/right
+						t5.setDisplayed(true);
 						t5.setPickingId(edge.edgeNo);
 						utils.edgeTexts.add(t5);
 					}
@@ -1074,12 +1089,14 @@ public class SurfaceDemo extends AbstractAnalysis {
 					myComposite.add(edgeCenter);
 				}
 
+				instance.disablePicking();
 				if (NUMBER_EDGES) {
 					myComposite.add(utils.edgeTexts);
-					instance.enablePickingTexts(instance.utils.edgeTexts, instance.chart, 10);
+					instance.enablePickingTexts(utils.edgeTexts, instance.chart, 20);
 				}
 				if (NUMBER_POINTS) {
 					myComposite.add(utils.pointTexts);
+					instance.enablePicking(instance.utils.points.values(), instance.chart, 10);
 				}
 				instance.getChart().getScene().getGraph().add(instance.myComposite);
 				instance.getChart().getScene().getGraph().add(instance.myTrail);
@@ -1087,8 +1104,6 @@ public class SurfaceDemo extends AbstractAnalysis {
 				getPlasma();
 				redrawPosition();
 				instance.canvas.getAnimator().start();
-				instance.disablePicking();
-				instance.enablePicking(instance.utils.points.values(), instance.chart, 10);
 			}
 		});
 		t.start();
@@ -1131,7 +1146,6 @@ public class SurfaceDemo extends AbstractAnalysis {
 		if (getPickingSupport() != null) {
 			System.out.println("Point size:" + points.size());
 			for (MyPickablePoint p : points) {
-				// if (!getPickingSupport().isObjectRegistered(p))
 				getPickingSupport().registerPickableObject(p, p);
 			}
 

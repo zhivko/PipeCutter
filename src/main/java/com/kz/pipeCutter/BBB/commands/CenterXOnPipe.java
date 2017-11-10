@@ -29,10 +29,10 @@ public class CenterXOnPipe implements Runnable {
 
 		float diagonal = (float) Math.sqrt(Math.pow(dimX / 2, 2) + Math.pow(dimZ / 2, 2));
 		float highZPos = (diagonal + 20);
-		CenterPipe.executeMdiAndWaitFor("G00 Z" + highZPos, "position_z", highZPos);
-		CenterPipe.executeMdiAndWaitFor("G00 X0", "position_x", 0);
+		CenterPipe.getInstance().executeMdiAndWaitFor("G00 Z" + highZPos, "position_z", highZPos);
+		CenterPipe.getInstance().executeMdiAndWaitFor("G00 X0", "position_x", 0);
 
-		CenterPipe.moveProbeTo5mmOffset();
+		CenterPipe.getInstance().moveProbeTo5mmOffset();
 
 		int waitPositionMs = 30;
 
@@ -117,7 +117,7 @@ public class CenterXOnPipe implements Runnable {
 		}
 		float avgX = sumX / Settings.getInstance().xyzSettings.seriesXZ.getItems().size();
 
-		CenterPipe.executeMdiAndWaitFor("G00 X" + avgX, "position_x", avgX);
+		CenterPipe.getInstance().executeMdiAndWaitFor("G00 X" + avgX, "position_x", avgX);
 		new ExecuteMdi("G92 X0").start();
 
 		//

@@ -3,11 +3,12 @@ package com.kz.pipeCutter.ui;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.io.IOException;
 import java.net.URI;
-import java.net.URL;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -15,8 +16,8 @@ import java.util.concurrent.TimeUnit;
 import javax.swing.JButton;
 import javax.swing.JPanel;
 import javax.swing.JSlider;
+import javax.swing.JToggleButton;
 import javax.swing.SwingConstants;
-import javax.swing.SwingUtilities;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import javax.websocket.ContainerProvider;
@@ -26,8 +27,6 @@ import javax.websocket.WebSocketContainer;
 import org.glassfish.tyrus.client.ClientManager;
 
 import com.kz.pipeCutter.BBB.commands.CenterPipe;
-import com.kz.pipeCutter.BBB.commands.ExecuteMdi;
-import com.kz.pipeCutter.ui.tab.RotatorSettings;
 
 // Nema23 motor
 // step angle: 1.8, 200 steps ful degree
@@ -44,6 +43,8 @@ public class Positioner extends JPanel {
 	long y;
 	long z;
 	long e;
+	
+	CenterPipe cPipe;
 
 	boolean isConnecting = false;
 	public boolean isConnected = false;
@@ -52,6 +53,7 @@ public class Positioner extends JPanel {
 	int prevSliderHorValue;
 
 	int id;
+	JToggleButton btnC;
 
 	public Positioner() {
 		this(0);
@@ -290,14 +292,20 @@ public class Positioner extends JPanel {
 		});
 		add(stopBtn);
 
-		JButton btnC = new JButton("C");
+		btnC = new JToggleButton("C");
 		btnC.setBounds(75, 32, 54, 31);
 		add(btnC);
-		btnC.addActionListener(new ActionListener() {
-
+		btnC.addItemListener(new ItemListener() {
 			@Override
-			public void actionPerformed(ActionEvent e1) {
-				new Thread(new CenterPipe()).start();
+			public void itemStateChanged(ItemEvent ev) {
+				if (ev.getStateChange() == ItemEvent.SELECTED) {
+					cPipe = new CenterPipe(btnC);
+					new Thread(cPipe).start();
+				} else if (ev.getStateChange() == ItemEvent.DESELECTED) {
+					System.out.println("button is not selected");
+					cPipe.stop();
+				}
+
 			}
 		});
 
@@ -331,7 +339,7 @@ public class Positioner extends JPanel {
 	}
 
 	public void socketSend(String message) {
-		if (this.isConnected && wsSession!=null)
+		if (this.isConnected && wsSession != null)
 			try {
 				wsSession.getBasicRemote().sendText(message);
 			} catch (IOException e1) {

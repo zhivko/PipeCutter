@@ -789,6 +789,8 @@ public class SurfaceDemo extends AbstractAnalysis {
 			System.out.println(ret);
 
 			initDraw();
+			
+			Settings.getInstance().setEdgePropertiesFile();
 
 		} catch (Exception ex) {
 			ex.printStackTrace();

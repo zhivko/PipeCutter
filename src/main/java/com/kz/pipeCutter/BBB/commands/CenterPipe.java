@@ -1,5 +1,7 @@
 package com.kz.pipeCutter.BBB.commands;
 
+import javax.swing.JToggleButton;
+
 import org.apache.log4j.Logger;
 
 import com.kz.pipeCutter.ui.MyLaserWebsocketClient;
@@ -7,6 +9,28 @@ import com.kz.pipeCutter.ui.Settings;
 import com.kz.pipeCutter.ui.tab.RotatorSettings;
 
 public class CenterPipe implements Runnable {
+
+	JToggleButton toggleButton = null;
+	private boolean shouldStop = false;
+	
+	static CenterPipe instance;
+	
+	public CenterPipe()
+	{
+	}
+	
+	public static CenterPipe getInstance()
+	{
+		if(instance==null)
+			instance = new CenterPipe();
+		return instance;
+	}
+
+	public CenterPipe(JToggleButton btnC) {
+		// TODO Auto-generated constructor stub
+		getInstance();
+		this.toggleButton = toggleButton;
+	}
 
 	@Override
 	public void run() {
@@ -26,31 +50,31 @@ public class CenterPipe implements Runnable {
 
 		float angle = 0;
 		executeMdiAndWaitFor("G00 X0 Z" + highZPos, "position_z", highZPos);
+		if(this.shouldStop)
+			return;
 		executeMdiAndWaitFor("G01 A" + angle + " B" + angle + speed, "position_a", angle);
+		if(this.shouldStop)
+			return;
 		moveProbeTo1mmOffset();
-		float z = Float.valueOf(Settings.getInstance().getSetting("position_z"))
-				+ getCapSenseHeight();
+		float z = Float.valueOf(Settings.getInstance().getSetting("position_z")) + getCapSenseHeight();
 
 		angle = 90;
 		executeMdiAndWaitFor("G00 X0 Z" + highZPos, "position_z", highZPos);
 		executeMdiAndWaitFor("G01 A" + angle + " B" + angle + speed, "position_a", angle);
 		moveProbeTo1mmOffset();
-		float y = Float.valueOf(Settings.getInstance().getSetting("position_z"))
-				+ getCapSenseHeight();
+		float y = Float.valueOf(Settings.getInstance().getSetting("position_z")) + getCapSenseHeight();
 
 		angle = 180;
 		executeMdiAndWaitFor("G00 X0 Z" + highZPos, "position_z", highZPos);
 		executeMdiAndWaitFor("G01 A" + angle + " B" + angle + speed, "position_a", angle);
 		moveProbeTo1mmOffset();
-		float e = Float.valueOf(Settings.getInstance().getSetting("position_z"))
-				+ getCapSenseHeight();
+		float e = Float.valueOf(Settings.getInstance().getSetting("position_z")) + getCapSenseHeight();
 
 		angle = 270;
 		executeMdiAndWaitFor("G00 X0 Z" + highZPos, "position_z", highZPos);
 		executeMdiAndWaitFor("G01 A" + angle + " B" + angle + speed, "position_a", angle);
 		moveProbeTo1mmOffset();
-		float x = Float.valueOf(Settings.getInstance().getSetting("position_z"))
-				+ getCapSenseHeight();
+		float x = Float.valueOf(Settings.getInstance().getSetting("position_z")) + getCapSenseHeight();
 
 		angle = 0;
 		executeMdiAndWaitFor("G00 X0 Z" + highZPos, "position_z", highZPos);
@@ -76,6 +100,9 @@ public class CenterPipe implements Runnable {
 		String centerComm = commToSendVer + " " + commToSendHor;
 		Settings.getInstance().log(centerComm);
 		RotatorSettings.getInstance().pos2.socketSend(centerComm);
+
+		if (toggleButton != null)
+			this.toggleButton.setSelected(false);
 	}
 
 	private float getCapSenseHeight() {
@@ -86,11 +113,11 @@ public class CenterPipe implements Runnable {
 		int samples = 100;
 
 		for (int i = 0; i < samples; i++) {
-			
+
 			String val = Settings.getInstance().getSetting("mymotion.laserHeight1mm");
-			while(val.equals(""))
+			while (val.equals(""))
 				val = Settings.getInstance().getSetting("mymotion.laserHeight1mm");
-			
+
 			float distanceMM = Float.valueOf(val);
 			sum = sum + distanceMM;
 			try {
@@ -103,57 +130,56 @@ public class CenterPipe implements Runnable {
 		return (sum / samples);
 	}
 
-	public static void moveProbeTo1mmOffset() {
+	public void moveProbeTo1mmOffset() {
 
 		float laserOffset = Float.valueOf(Settings.getInstance().getSetting("mymotion.laserHeight1mm"));
-		while (laserOffset >= 10) {
+		while (laserOffset >= 10 && !shouldStop) {
 			float z = Float.valueOf(Settings.getInstance().getSetting("position_z"));
 			float newZ = z - 5;
 			executeMdiAndWaitFor("G00 X0 Z" + newZ, "position_z", newZ);
 			laserOffset = Float.valueOf(Settings.getInstance().getSetting("mymotion.laserHeight1mm"));
 		}
 
-		while (laserOffset >= 3.0f) {
+		while (laserOffset >= 3.0f && !shouldStop) {
 			float z = Float.valueOf(Settings.getInstance().getSetting("position_z"));
 			float newZ = z - 1;
 			executeMdiAndWaitFor("G00 X0 Z" + newZ, "position_z", newZ);
 			laserOffset = Float.valueOf(Settings.getInstance().getSetting("mymotion.laserHeight1mm"));
 		}
-		
-		while (laserOffset >= 1.5f) {
+
+		while (laserOffset >= 1.5f && !shouldStop) {
 			float z = Float.valueOf(Settings.getInstance().getSetting("position_z"));
 			float newZ = z - 0.2f;
 			executeMdiAndWaitFor("G00 X0 Z" + newZ, "position_z", newZ);
 			laserOffset = Float.valueOf(Settings.getInstance().getSetting("mymotion.laserHeight1mm"));
-		}		
+		}
 	}
-	
-	public static void moveProbeTo5mmOffset() {
+
+	public void moveProbeTo5mmOffset() {
 
 		float laserOffset = Float.valueOf(Settings.getInstance().getSetting("mymotion.laserHeight1mm"));
-		while (laserOffset >= 10) {
+		while (laserOffset >= 10 && !shouldStop) {
 			float z = Float.valueOf(Settings.getInstance().getSetting("position_z"));
 			float newZ = z - 4;
 			executeMdiAndWaitFor("G00 X0 Z" + newZ, "position_z", newZ);
 			laserOffset = Float.valueOf(Settings.getInstance().getSetting("mymotion.laserHeight1mm"));
 		}
 
-		while (laserOffset >= 5.0f) {
+		while (laserOffset >= 5.0f && !shouldStop) {
 			float z = Float.valueOf(Settings.getInstance().getSetting("position_z"));
 			float newZ = z - 1;
 			executeMdiAndWaitFor("G00 X0 Z" + newZ, "position_z", newZ);
 			laserOffset = Float.valueOf(Settings.getInstance().getSetting("mymotion.laserHeight1mm"));
 		}
-		
-	}	
-	
 
-	public static void executeMdiAndWaitFor(String mdiCommand, String setting, float value) {
+	}
+
+	public void executeMdiAndWaitFor(String mdiCommand, String setting, float value) {
 		long sleepMs = 100;
 		long timeOfLastSent = System.currentTimeMillis();
 		new ExecuteMdi(mdiCommand).start();
 
-		while (true) {
+		while (true && !this.shouldStop) {
 			try {
 				Thread.sleep(sleepMs);
 
@@ -173,5 +199,10 @@ public class CenterPipe implements Runnable {
 				e2.printStackTrace();
 			}
 		}
+	}
+
+	public void stop()
+	{
+		this.shouldStop = true;
 	}
 }

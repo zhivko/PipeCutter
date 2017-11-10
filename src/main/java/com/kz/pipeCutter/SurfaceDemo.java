@@ -1096,8 +1096,8 @@ public class SurfaceDemo extends AbstractAnalysis {
 				}
 				if (NUMBER_POINTS) {
 					myComposite.add(utils.pointTexts);
-					instance.enablePicking(instance.utils.points.values(), instance.chart, 10);
 				}
+				instance.enablePicking(instance.utils.points.values(), instance.chart, 10);
 				instance.getChart().getScene().getGraph().add(instance.myComposite);
 				instance.getChart().getScene().getGraph().add(instance.myTrail);
 				System.out.println("Composite element size: " + myComposite.getDrawables().size());

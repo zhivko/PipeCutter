@@ -201,6 +201,7 @@ public class BBBStatus implements Runnable {
 					}
 				}
 			}
+			Thread.yield();
 		}
 
 	}

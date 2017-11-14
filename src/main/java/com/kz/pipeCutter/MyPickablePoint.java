@@ -55,8 +55,9 @@ public class MyPickablePoint extends PickablePoint {
 	}
 
 	public String toString() {
+		MyContinuousEdge contEdge = SurfaceDemo.getInstance().utils.continuousEdges.get(this.continuousEdgeNo);
 		return " Id:" + this.getId() + " inventorEdgeNo:" + this.inventorEdge + " x:" + this.getX() + " y:" + this.getY() + " z:" + this.getZ()
-				+ " ContEdge " + SurfaceDemo.getInstance().utils.continuousEdges.get(this.continuousEdgeNo).toString();
+				+ " ContEdge " + contEdge.toString() + " cx=" + contEdge.center.x + " cy=" + contEdge.center.y + " cz=" + contEdge.center.z;
 	}
 
 	public boolean isOnSurface(MySurface surf) {

@@ -184,6 +184,7 @@ public class BBBHalCommand implements Runnable {
 					msg.destroy();
 				}
 			}
+			Thread.yield();
 		}
 		Settings.getInstance().log("BBBHalCommand END.");
 

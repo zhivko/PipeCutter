@@ -70,7 +70,7 @@ public class CommandPanel extends JPanel {
 				AbstractButton abstractButton = (AbstractButton) e1.getSource();
 				boolean selected = abstractButton.getModel().isSelected();
 				if (selected) {
-					machinekitStart = new MachineKitStart();
+					machinekitStart = MachineKitStart.getInstance();
 					new Thread(machinekitStart).start();
 				} else {
 					machinekitStart.stop();

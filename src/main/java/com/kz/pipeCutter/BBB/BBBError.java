@@ -94,6 +94,7 @@ public class BBBError implements Runnable {
 				}
 				msg.destroy();
 			}
+			Thread.yield();
 //			try {
 //				Thread.sleep(100);
 //			} catch (InterruptedException e) {

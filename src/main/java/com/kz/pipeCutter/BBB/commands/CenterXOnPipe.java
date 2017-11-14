@@ -9,11 +9,19 @@ import com.kz.pipeCutter.ui.Settings;
 public class CenterXOnPipe implements Runnable {
 
 	boolean shouldStop = false;
+	private static CenterXOnPipe instance;
 	public static float offsetX = 10; // we need to be in center x within 10mm
 																		// before starting center procedure
 
+	public static CenterXOnPipe getInstance() {
+		if (instance == null)
+			instance = new CenterXOnPipe();
+		return instance;
+	}
+
 	@Override
 	public void run() {
+		shouldStop = false;
 		Thread.currentThread().setName("CenterXOnPipe");
 		new ExecuteMdi("G90").start();
 		if (!MyLaserWebsocketClient.getInstance().isOn) {
@@ -30,9 +38,9 @@ public class CenterXOnPipe implements Runnable {
 		float diagonal = (float) Math.sqrt(Math.pow(dimX / 2, 2) + Math.pow(dimZ / 2, 2));
 		float highZPos = (diagonal + 20);
 		CenterPipe.getInstance().executeMdiAndWaitFor("G00 Z" + highZPos, "position_z", highZPos);
-		CenterPipe.getInstance().executeMdiAndWaitFor("G00 X0", "position_x", 0);
+		CenterPipe.getInstance().executeMdiAndWaitFor("G00  X0", "position_x", 0);
 
-		CenterPipe.getInstance().moveProbeTo5mmOffset();
+		CenterPipe.getInstance().moveProbeTo4mmOffset();
 
 		int waitPositionMs = 30;
 
@@ -76,22 +84,22 @@ public class CenterXOnPipe implements Runnable {
 			newXPos = Math.round((xPos + deltaX) * 10) / 10.0f;
 			new ExecuteMdi("G01 X" + newXPos + speed).start();
 			while (true) {
-				String xVal = Settings.getInstance().getSetting("position_x");
+				String xVal = Settings.getInstance().getNonEmptySetting("position_x");
 
 				if (xVal != null && !xVal.equals("")) {
-					xPos = Float.valueOf(xVal);
+					xPos =  Math.round((Float.valueOf(xVal)) * 10) / 10.0f;
 					if (xPos == newXPos)
 						break;
 				}
 				try {
 					Thread.sleep(waitPositionMs);
-					Settings.getInstance().log("Waiting for Xpos...");
+					Settings.getInstance().log("Waiting for Xpos... " + xPos + " != " + newXPos);
 
 				} catch (Exception ex) {
 					ex.printStackTrace();
 				}
 			}
-			String value = Settings.getInstance().getSetting("mymotion.laserHeight1mm");
+			String value = Settings.getInstance().getNonEmptySetting("mymotion.laserHeight1mm");
 			if (!value.equals("")) {
 				z = Float.valueOf(value);
 				Settings.getInstance().xyzSettings.seriesXZ.add(xPos, z);

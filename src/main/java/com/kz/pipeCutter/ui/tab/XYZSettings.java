@@ -149,7 +149,7 @@ public class XYZSettings extends JPanel {
 				AbstractButton abstractButton = (AbstractButton) e1.getSource();
 				boolean selected = abstractButton.getModel().isSelected();
 				if (selected) {
-					centerXOnPipe = new CenterXOnPipe();
+					centerXOnPipe = CenterXOnPipe.getInstance();
 					new Thread(centerXOnPipe).start();
 				} else {
 					centerXOnPipe.stop();
@@ -410,7 +410,7 @@ public class XYZSettings extends JPanel {
 				AbstractButton abstractButton = (AbstractButton) e1.getSource();
 				boolean selected = abstractButton.getModel().isSelected();
 				if (selected) {
-					capSenseCalibrate = new CapSenseCalibrate();
+					capSenseCalibrate = CapSenseCalibrate.getInstance();
 					new Thread(capSenseCalibrate).start();
 				} else {
 					capSenseCalibrate.stop();

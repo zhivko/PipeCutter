@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Locale;
 
+import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities;
 
 import org.jzy3d.colors.Color;
@@ -25,37 +26,36 @@ public class MyPopupMenu extends PopupMenu {
 
 	public MyPopupMenu() {
 
-//		MenuItem MenuItem14 = new MenuItem("Rotate around X for 90[deg]");
-//		MenuItem14.addActionListener(new ActionListener() {
-//			@Override
-//			public void actionPerformed(ActionEvent arg0) {
-//				SurfaceDemo.getInstance().rotateArroundX += 45;
-//				SurfaceDemo.getInstance().init();
-//			}
-//		});
-//		this.add(MenuItem14);
-//
-//		MenuItem MenuItem15 = new MenuItem("Rotate around Y for 90[deg]");
-//		MenuItem15.addActionListener(new ActionListener() {
-//			@Override
-//			public void actionPerformed(ActionEvent arg0) {
-//				SurfaceDemo.getInstance().rotateArroundY += 45;
-//				SurfaceDemo.getInstance().init();
-//			}
-//		});
-//		this.add(MenuItem15);
-//
-//		MenuItem MenuItem16 = new MenuItem("Rotate around Z for 90[deg]");
-//		MenuItem16.addActionListener(new ActionListener() {
-//			@Override
-//			public void actionPerformed(ActionEvent arg0) {
-//				SurfaceDemo.getInstance().rotateArroundZ += 45;
-//				SurfaceDemo.getInstance().init();
-//			}
-//		});
-//		this.add(MenuItem16);
-		
-		
+		// MenuItem MenuItem14 = new MenuItem("Rotate around X for 90[deg]");
+		// MenuItem14.addActionListener(new ActionListener() {
+		// @Override
+		// public void actionPerformed(ActionEvent arg0) {
+		// SurfaceDemo.getInstance().rotateArroundX += 45;
+		// SurfaceDemo.getInstance().init();
+		// }
+		// });
+		// this.add(MenuItem14);
+		//
+		// MenuItem MenuItem15 = new MenuItem("Rotate around Y for 90[deg]");
+		// MenuItem15.addActionListener(new ActionListener() {
+		// @Override
+		// public void actionPerformed(ActionEvent arg0) {
+		// SurfaceDemo.getInstance().rotateArroundY += 45;
+		// SurfaceDemo.getInstance().init();
+		// }
+		// });
+		// this.add(MenuItem15);
+		//
+		// MenuItem MenuItem16 = new MenuItem("Rotate around Z for 90[deg]");
+		// MenuItem16.addActionListener(new ActionListener() {
+		// @Override
+		// public void actionPerformed(ActionEvent arg0) {
+		// SurfaceDemo.getInstance().rotateArroundZ += 45;
+		// SurfaceDemo.getInstance().init();
+		// }
+		// });
+		// this.add(MenuItem16);
+
 		this.addSeparator();
 
 		MenuItem MenuItem13 = new MenuItem("Select top right point (startPoint)");
@@ -138,6 +138,21 @@ public class MyPopupMenu extends PopupMenu {
 			}
 		});
 		this.add(menuItem18);
+
+		MenuItem menuItem20 = new MenuItem("Add specific edges to cut selection");
+		menuItem20.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+				String edgesStr = JOptionPane.showInputDialog("Enter start edgeno and end edgeno in form [startEdgeNo] - [endEdgeNo]");
+				int start = Integer.valueOf(edgesStr.split("-")[0]);
+				int end = Integer.valueOf(edgesStr.split("-")[1]);
+				for (int i = start; i <= end; i++) {
+					MyEdge edge = SurfaceDemo.getInstance().utils.edges.get(i);
+					edge.markToCut(true);
+				}
+			}
+		});
+		this.add(menuItem20);
 
 		this.addSeparator();
 
@@ -307,11 +322,11 @@ public class MyPopupMenu extends PopupMenu {
 						// float z =
 						// Float.valueOf(Settings.getInstance().getSetting("position_z"));
 						// "G92 X%.3f Y%.3f Z%.3f\nG92.3"
-						
+
 						float angle = Float.valueOf(SurfaceDemo.getInstance().angleTxt).floatValue();
-						
+
 						String mdiCommand = String.format(Locale.US, "G92 X%.3f Y%.3f Z%.3f A%.3f B%.3f", SurfaceDemo.getInstance().lastClickedPoint.xyz.x,
-								SurfaceDemo.getInstance().lastClickedPoint.xyz.y, SurfaceDemo.getInstance().lastClickedPoint.xyz.z, angle,angle);
+								SurfaceDemo.getInstance().lastClickedPoint.xyz.y, SurfaceDemo.getInstance().lastClickedPoint.xyz.z, angle, angle);
 						Settings.getInstance().log(mdiCommand);
 						new ExecuteMdi(mdiCommand).start();
 

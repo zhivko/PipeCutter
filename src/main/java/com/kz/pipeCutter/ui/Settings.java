@@ -51,6 +51,7 @@ import org.apache.log4j.Logger;
 import org.glassfish.tyrus.client.ClientManager;
 import org.jzy3d.chart.factories.ChartComponentFactory;
 
+import com.jogamp.common.util.InterruptSource.Thread;
 import com.kz.pipeCutter.BBB.BBBError;
 import com.kz.pipeCutter.BBB.BBBHalCommand;
 import com.kz.pipeCutter.BBB.BBBHalRComp;
@@ -84,7 +85,7 @@ public class Settings extends JFrame {
 	CommandPanel commandPanel;
 	public XYZSettings xyzSettings;
 	public PlasmaSettings plasmaSettings;
-	
+
 	boolean repositioned = false;
 
 	/**
@@ -170,8 +171,7 @@ public class Settings extends JFrame {
 
 		xyzSettings = new XYZSettings();
 		plasmaSettings = new PlasmaSettings();
-		
-		
+
 		tabbedPane.addTab("MachinekitSettings", new MachinekitSettings());
 		tabbedPane.addTab("Rotators", new RotatorSettings());
 		tabbedPane.addTab("XYZ", xyzSettings);
@@ -332,7 +332,7 @@ public class Settings extends JFrame {
 		this.setVisible(true);
 		this.pack();
 		Settings.instance = this;
-		
+
 		setEdgePropertiesFile();
 	}
 
@@ -371,13 +371,13 @@ public class Settings extends JFrame {
 		}
 		return ret;
 	}
-	
+
 	public static String getEdgePropertiesPath() {
 		String ret = null;
 		Settings settInst = Settings.getInstance();
 		String gCodeInputFile = settInst.getParameter("gcode_input_file").getParValue();
 		File f1 = new File(gCodeInputFile);
-		
+
 		String iniFileName = f1.getName() + "-edgeProperties.ini";
 		try {
 			String path = new File(".").getCanonicalPath();
@@ -397,14 +397,31 @@ public class Settings extends JFrame {
 		}
 		return ret;
 	}
-	
 
 	public String getSetting(String parameterId) {
 		String ret = "";
 		synchronized (this) {
 			ret = controls.get(parameterId).getParValue();
-			if(ret.equals(""))
+			if (ret.equals(""))
 				System.out.println("oops");
+		}
+		return ret;
+	}
+
+	public String getNonEmptySetting(String parameterId) {
+		String ret = "";
+		synchronized (this) {
+			ret = controls.get(parameterId).getParValue();
+			while (ret.equals(""))
+			{
+				try {
+					Thread.currentThread().sleep(100);
+				} catch (InterruptedException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				ret = controls.get(parameterId).getParValue();
+			}
 		}
 		return ret;
 	}
@@ -444,10 +461,12 @@ public class Settings extends JFrame {
 			// }
 			// controls.put(parameterId, mysavable);
 			// }
-			
-			mysavable = controls.get(parameterId);
-			if(value.trim().equals("") && !mysavable.isLoadingValue)
+			if(value=="" && parameterId.startsWith("position_"))
 				System.out.println("");
+
+			mysavable = controls.get(parameterId);
+			// if(value.trim().equals("") && !mysavable.isLoadingValue)
+			// System.out.println("");
 			mysavable.setParValue(value);
 			mysavable.save();
 		} catch (Exception ex) {
@@ -460,23 +479,23 @@ public class Settings extends JFrame {
 		// otherSymbols.setDecimalSeparator('.');
 		// otherSymbols.setGroupingSeparator(',');
 
-		//DecimalFormat df = new DecimalFormat("##,##0.0000", otherSymbols);
+		// DecimalFormat df = new DecimalFormat("##,##0.0000", otherSymbols);
 		DecimalFormat df = new DecimalFormat("0.0000", otherSymbols);
 		df.setDecimalSeparatorAlwaysShown(true);
 		String strValue = df.format(value);
-		if(parameterId.startsWith("position_") && strValue.equals(""))
+		if (parameterId.startsWith("position_") && strValue.equals(""))
 			System.out.println("oops");
 		setSetting(parameterId, strValue);
 	}
 
 	public void setSetting(String parameterId, Float value) {
-		setSetting(parameterId, (double)value);
-	}	
+		setSetting(parameterId, (double) value);
+	}
 
 	public void setSetting(String parameterId, Integer value) {
 		setSetting(parameterId, String.valueOf(value));
-	}		
-	
+	}
+
 	public IParameter getParameter(String parameterId) {
 		IParameter ret = null;
 		List<SavableControl> savableControls = harvestMatches(this.getContentPane(), SavableControl.class);

@@ -43,6 +43,7 @@ public class MachineKitStart extends SSH_Command implements Runnable {
 
 	@Override
 	public void runSshCmd() throws Exception {
+		shouldStop = false;
 		if (!SSH_CheckIfMachinekitRunning()) {
 			// this.SSH_Login();
 			JSch jsch = new JSch();
@@ -225,7 +226,7 @@ public class MachineKitStart extends SSH_Command implements Runnable {
 
 				}
 			}
-		} catch (Exception e) {
+		} catch (Throwable e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} finally {
@@ -278,7 +279,7 @@ public class MachineKitStart extends SSH_Command implements Runnable {
 				}
 			}
 
-		} catch (Exception ex) {
+		} catch (Throwable ex) {
 			ex.printStackTrace();
 		} finally {
 
@@ -289,7 +290,7 @@ public class MachineKitStart extends SSH_Command implements Runnable {
 	public void run() {
 		try {
 			runSshCmd();
-		} catch (Exception e) {
+		} catch (Throwable e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}

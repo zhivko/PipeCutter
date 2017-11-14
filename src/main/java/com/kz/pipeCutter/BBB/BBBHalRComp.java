@@ -195,6 +195,7 @@ public class BBBHalRComp implements Runnable {
 					}
 				}
 			}
+			Thread.yield();
 		}
 	}
 

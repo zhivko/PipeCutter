@@ -275,26 +275,33 @@ public class CutThread extends SwingWorker<String, Object> {
 	private void cutSegment(float minY, double maxY, boolean withoutLastPoints, int rotationDirection) {
 		System.out.println("Cutting segment " + minY + " " + maxY);
 
-		if (SurfaceDemo.getInstance().pipeIsCircular) {
-
-			// get all continuous edges
-			ArrayList<MyContinuousEdge> edgesToCut = new ArrayList<MyContinuousEdge>();
+		// get all continuous edges
+		ArrayList<MyEdge> edgesToCut = new ArrayList<MyEdge>();
+		if (wholePipe) {
 			for (MyContinuousEdge e : SurfaceDemo.getInstance().utils.continuousEdges.values()) {
 				System.out.println(e.center.y);
 				if (e.center.y >= minY && e.center.y <= maxY)
 					edgesToCut.add(e);
 			}
+		} else {
+			for (MyEdge e : SurfaceDemo.getInstance().utils.edges.values()) {
+				if (e.isToCut() && e.center.y >= minY && e.center.y <= maxY) {
+					edgesToCut.add(e);
+				}
+			}
+		}
 
+		if (SurfaceDemo.getInstance().pipeIsCircular) {
 			boolean hasBeenCutting = false;
 			ArrayList<MyPickablePoint> pointsToCut = new ArrayList<MyPickablePoint>();
-			for (MyContinuousEdge contEdge : edgesToCut) {
+			for (MyEdge edge : edgesToCut) {
 				pointsToCut = new ArrayList<MyPickablePoint>();
 
-				for (Integer pointId : contEdge.points) {
+				for (Integer pointId : edge.points) {
 					pointsToCut.add(SurfaceDemo.getInstance().utils.points.get(pointId));
 				}
 				ArrayList<MyPickablePoint> sortedPointsToCut = new ArrayList<MyPickablePoint>(pointsToCut);
-				Collections.sort(sortedPointsToCut, new MyPickablePointMidXToEdgeCenterComparator(contEdge.center));
+				Collections.sort(sortedPointsToCut, new MyPickablePointMidXToEdgeCenterComparator(edge.center));
 				// Collections.sort(pointsToCut, new
 				// MyPickablePointMidXToEdgeCenterComparator(contEdge.center));
 				if (pointsToCut.size() > 0) {
@@ -392,14 +399,8 @@ public class CutThread extends SwingWorker<String, Object> {
 					}
 				}
 
-				// get all continuous edges
-				ArrayList<MyContinuousEdge> edgesToCut = new ArrayList<MyContinuousEdge>();
-				for (MyPickablePoint p : pointsToCut) {
-					edgesToCut.add(SurfaceDemo.getInstance().utils.continuousEdges.get(p.continuousEdgeNo));
-				}
-
 				boolean hasBeenCutting = false;
-				for (MyContinuousEdge contEdge : edgesToCut) {
+				for (MyEdge contEdge : edgesToCut) {
 					pointsToCut = new ArrayList<MyPickablePoint>();
 					for (Integer pointId : contEdge.points) {
 						pointsToCut.add(SurfaceDemo.getInstance().utils.points.get(pointId));
@@ -505,13 +506,13 @@ public class CutThread extends SwingWorker<String, Object> {
 			double angleDelta = 0, startAngle = 0, endAngle = 0;
 
 			if (contEdge.edgeType == MyContinuousEdge.EdgeType.START) {
-				startAngle = Math.PI/2;
+				startAngle = Math.PI / 2;
 				endAngle = 0;
 			} else if (contEdge.edgeType == MyContinuousEdge.EdgeType.END) {
 				startAngle = Math.PI / 2.0d;
 				endAngle = 0;
 			} else if (contEdge.edgeType == MyContinuousEdge.EdgeType.ONPIPE) {
-				startAngle = Math.PI/2;
+				startAngle = Math.PI / 2;
 				endAngle = 0;
 			}
 			angleDelta = (endAngle - startAngle) / 20.0d;
@@ -545,12 +546,12 @@ public class CutThread extends SwingWorker<String, Object> {
 				tempPoint.setColor(Color.GREEN);
 				alAlreadyAddedPoints.add(Integer.valueOf(tempPoint.id));
 			}
-			if (contEdge.edgeType == MyContinuousEdge.EdgeType.START)
+			if (contEdge.edgeType == MyContinuousEdge.EdgeType.START && wholePipe)
 				if (SurfaceDemo.getInstance().pipeIsCircular)
 					tempPoint = SurfaceDemo.getInstance().utils.findConnectedPoint(tempPoint, alAlreadyAddedPoints, true);
 				else
 					tempPoint = SurfaceDemo.getInstance().utils.findConnectedPoint(tempPoint, alAlreadyAddedPoints, true);
-			else if (contEdge.edgeType == MyContinuousEdge.EdgeType.END)
+			else if (contEdge.edgeType == MyContinuousEdge.EdgeType.END && wholePipe)
 				tempPoint = SurfaceDemo.getInstance().utils.findConnectedPoint(tempPoint, alAlreadyAddedPoints, false);
 			else {
 				if (contEdge.points.size() == contEdge.connectedEdges.size()) {
@@ -558,15 +559,43 @@ public class CutThread extends SwingWorker<String, Object> {
 					// tempPoint =
 					// SurfaceDemo.getInstance().utils.findConnectedPoint(tempPoint,
 					// alAlreadyAddedPoints, true);
-					tempPoint = SurfaceDemo.getInstance().utils.findConnectedPoint(tempPoint, alAlreadyAddedPoints, offPointAndPlane.direction);
-
+					if (wholePipe)
+						tempPoint = SurfaceDemo.getInstance().utils.findConnectedPoint(tempPoint, alAlreadyAddedPoints, offPointAndPlane.direction);
+					else {
+						boolean foundPoint = false;
+						for (MyEdge myEdge : SurfaceDemo.getInstance().utils.edges.values()) {
+							if (myEdge.isToCut() && !alreadyCuttedEdges.contains(myEdge))
+								if (myEdge.points.get(0) == tempPoint.id) {
+									foundPoint = true;
+									tempPoint = SurfaceDemo.getInstance().utils.points.get(myEdge.points.get(1));
+									break;
+								} else if (myEdge.points.get(1) == tempPoint.id) {
+									foundPoint = true;
+									tempPoint = SurfaceDemo.getInstance().utils.points.get(myEdge.points.get(0));
+									break;
+								}
+						}
+						if (!foundPoint)
+							tempPoint = null;
+					}
 				} else {
-					if (contEdge.points.indexOf(myPoint.id) == 0)
-						tempPoint = SurfaceDemo.getInstance().utils.findConnectedPoint(tempPoint, alAlreadyAddedPoints, true);
-					else
-						tempPoint = SurfaceDemo.getInstance().utils.findConnectedPoint(tempPoint, alAlreadyAddedPoints, false);
+					if (wholePipe) {
+						if (contEdge.points.indexOf(myPoint.id) == 0)
+							tempPoint = SurfaceDemo.getInstance().utils.findConnectedPoint(tempPoint, alAlreadyAddedPoints, true);
+						else
+							tempPoint = SurfaceDemo.getInstance().utils.findConnectedPoint(tempPoint, alAlreadyAddedPoints, false);
+					} else {
+						for (MyEdge myEdge : SurfaceDemo.getInstance().utils.edges.values()) {
+							if (myEdge.isToCut() && !alreadyCuttedEdges.contains(myEdge))
+								if (myEdge.points.get(0) == tempPoint.id)
+									tempPoint = SurfaceDemo.getInstance().utils.points.get(myEdge.points.get(1));
+								else if (myEdge.points.get(1) == tempPoint.id)
+									tempPoint = SurfaceDemo.getInstance().utils.points.get(myEdge.points.get(0));
+						}
+					}
 				}
 			}
+
 			if (tempPoint == null) {
 				shouldBreak = true;
 				tempPoint = myPoint;
@@ -599,10 +628,12 @@ public class CutThread extends SwingWorker<String, Object> {
 		}
 		tempPoint = myPoint;
 		prevPoint = tempPoint;
-		tempPoint = SurfaceDemo.getInstance().utils.findConnectedPoint(tempPoint, alAlreadyAddedPoints, false);
-		if (tempPoint != null) {
-			double angle = rotation(prevPoint, tempPoint);
-			return angle;
+		if (wholePipe) {
+			tempPoint = SurfaceDemo.getInstance().utils.findConnectedPoint(tempPoint, alAlreadyAddedPoints, false);
+			if (tempPoint != null) {
+				double angle = rotation(prevPoint, tempPoint);
+				return angle;
+			}
 		}
 		return 0.0d;
 

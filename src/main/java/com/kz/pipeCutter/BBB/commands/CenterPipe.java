@@ -12,16 +12,14 @@ public class CenterPipe implements Runnable {
 
 	JToggleButton toggleButton = null;
 	private boolean shouldStop = false;
-	
+
 	static CenterPipe instance;
-	
-	public CenterPipe()
-	{
+
+	public CenterPipe() {
 	}
-	
-	public static CenterPipe getInstance()
-	{
-		if(instance==null)
+
+	public static CenterPipe getInstance() {
+		if (instance == null)
 			instance = new CenterPipe();
 		return instance;
 	}
@@ -50,10 +48,10 @@ public class CenterPipe implements Runnable {
 
 		float angle = 0;
 		executeMdiAndWaitFor("G00 X0 Z" + highZPos, "position_z", highZPos);
-		if(this.shouldStop)
+		if (this.shouldStop)
 			return;
 		executeMdiAndWaitFor("G01 A" + angle + " B" + angle + speed, "position_a", angle);
-		if(this.shouldStop)
+		if (this.shouldStop)
 			return;
 		moveProbeTo1mmOffset();
 		float z = Float.valueOf(Settings.getInstance().getSetting("position_z")) + getCapSenseHeight();
@@ -132,7 +130,7 @@ public class CenterPipe implements Runnable {
 
 	public void moveProbeTo1mmOffset() {
 
-		float laserOffset = Float.valueOf(Settings.getInstance().getSetting("mymotion.laserHeight1mm"));
+		float laserOffset = Float.valueOf(Settings.getInstance().getNonEmptySetting("mymotion.laserHeight1mm"));
 		while (laserOffset >= 10 && !shouldStop) {
 			float z = Float.valueOf(Settings.getInstance().getSetting("position_z"));
 			float newZ = z - 5;
@@ -144,19 +142,19 @@ public class CenterPipe implements Runnable {
 			float z = Float.valueOf(Settings.getInstance().getSetting("position_z"));
 			float newZ = z - 1;
 			executeMdiAndWaitFor("G00 X0 Z" + newZ, "position_z", newZ);
-			laserOffset = Float.valueOf(Settings.getInstance().getSetting("mymotion.laserHeight1mm"));
+			laserOffset = Float.valueOf(Settings.getInstance().getNonEmptySetting("mymotion.laserHeight1mm"));
 		}
 
 		while (laserOffset >= 1.5f && !shouldStop) {
 			float z = Float.valueOf(Settings.getInstance().getSetting("position_z"));
 			float newZ = z - 0.2f;
 			executeMdiAndWaitFor("G00 X0 Z" + newZ, "position_z", newZ);
-			laserOffset = Float.valueOf(Settings.getInstance().getSetting("mymotion.laserHeight1mm"));
+			laserOffset = Float.valueOf(Settings.getInstance().getNonEmptySetting("mymotion.laserHeight1mm"));
 		}
 	}
 
-	public void moveProbeTo5mmOffset() {
-
+	public void moveProbeTo4mmOffset() {
+		shouldStop = false;
 		float laserOffset = Float.valueOf(Settings.getInstance().getSetting("mymotion.laserHeight1mm"));
 		while (laserOffset >= 10 && !shouldStop) {
 			float z = Float.valueOf(Settings.getInstance().getSetting("position_z"));
@@ -165,11 +163,15 @@ public class CenterPipe implements Runnable {
 			laserOffset = Float.valueOf(Settings.getInstance().getSetting("mymotion.laserHeight1mm"));
 		}
 
-		while (laserOffset >= 5.0f && !shouldStop) {
+		while (laserOffset >= 3.0f && !shouldStop) {
 			float z = Float.valueOf(Settings.getInstance().getSetting("position_z"));
 			float newZ = z - 1;
 			executeMdiAndWaitFor("G00 X0 Z" + newZ, "position_z", newZ);
-			laserOffset = Float.valueOf(Settings.getInstance().getSetting("mymotion.laserHeight1mm"));
+			String laserHeight1mm = "";
+			while (laserHeight1mm == "") {
+				laserHeight1mm = Settings.getInstance().getSetting("mymotion.laserHeight1mm");
+			}
+			laserOffset = Float.valueOf(laserHeight1mm);
 		}
 
 	}
@@ -201,8 +203,7 @@ public class CenterPipe implements Runnable {
 		}
 	}
 
-	public void stop()
-	{
+	public void stop() {
 		this.shouldStop = true;
 	}
 }

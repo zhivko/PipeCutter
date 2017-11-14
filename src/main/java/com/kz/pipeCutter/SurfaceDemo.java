@@ -1042,16 +1042,16 @@ public class SurfaceDemo extends AbstractAnalysis {
 					LineStrip ls = edge.lineStrip;
 					if (NUMBER_EDGES) {
 						Coord3d cent = utils.continuousEdges.get(edge.getPointByIndex(0).continuousEdgeNo).center;
-						Coord3d delta = edge.center.sub(cent);
+						Coord3d delta = edge.getCenter().sub(cent);
 						String radius = "";
 
 						// 2 mm toward center
-						Coord3d textPoint = edge.getCenter().sub(delta.getNormalizedTo(0.1f));
+						Coord3d textPoint = edge.getCenter().sub(delta.getNormalizedTo(0.2f));
 						if (edge.edgeType == MyEdge.EdgeType.ONRADIUS)
 							radius = "R";
 						Rotation r = new Rotation(0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f, -1.0f * Float.valueOf(SurfaceDemo.instance.angleTxt) * Math.PI / 180);
 						Coordinates c = new Coordinates(textPoint.x, textPoint.y, textPoint.z);
-						r.transform(c);
+						//r.transform(c);
 						String txt = String.valueOf(edge.edgeNo + " (" + edge.cutVelocity + ")");
 						PickableDrawableTextBitmap t5 = new PickableDrawableTextBitmap(txt, new Coord3d(c.x, c.y, c.z), edge.isToCut() ? Color.RED : Color.BLUE);
 						edge.setTxt(t5);

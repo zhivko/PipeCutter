@@ -51,7 +51,7 @@ public abstract class SavableControl extends JPanel implements IParameter, ISave
 	}
 
 	boolean isLoadingValue;
-	
+
 	public JPanel panel;
 
 	public SavableControl() {
@@ -93,8 +93,11 @@ public abstract class SavableControl extends JPanel implements IParameter, ISave
 			this.isLoadingValue = true;
 			this.setParValue(props.getProperty(this.getParId()));
 			this.isLoadingValue = false;
-		} else
+		} else {
+			if (this.getParId().equals("position_z"))
+				System.out.println("");
 			this.setParValue("");
+		}
 		this.isLoadingValue = false;
 	}
 

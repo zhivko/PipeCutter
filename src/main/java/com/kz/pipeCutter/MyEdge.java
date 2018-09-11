@@ -25,6 +25,15 @@ public class MyEdge {
 	public ArrayList<MyEdge> connectedEdges = null;
 	float length;
 	float cutVelocity;
+	Integer priority=0;
+	public Integer getPriority() {
+		return priority;
+	}
+
+	public void setPriority(Integer priority) {
+		this.priority = priority;
+	}
+
 	private boolean toCut = false;
 
 	EdgeType edgeType;

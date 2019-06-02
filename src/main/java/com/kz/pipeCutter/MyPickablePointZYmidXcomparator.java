@@ -11,11 +11,11 @@ public class MyPickablePointZYmidXcomparator implements Comparator<MyPickablePoi
 	public int compare(MyPickablePoint p1, MyPickablePoint p2) {
 		// TODO Auto-generated method stub
 		
-		for(MyContinuousEdge mcnte: SurfaceDemo.getInstance().utils.continuousEdges.values())
-		{	
-			System.out.println(String.format("mcnte: %d %d", mcnte.edgeNo, mcnte.priority));
-		}
-		
+//		for(MyContinuousEdge mcnte: SurfaceDemo.getInstance().utils.continuousEdges.values())
+//		{	
+//			System.out.println(String.format("mcnte: %d %d", mcnte.edgeNo, mcnte.priority));
+//		}
+//		
 		if (SurfaceDemo.getInstance().utils.continuousEdges
 				.get(p1.continuousEdgeNo).priority < SurfaceDemo.getInstance().utils.continuousEdges
 						.get(p2.continuousEdgeNo).priority) {

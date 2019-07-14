@@ -187,8 +187,8 @@ public class CutThread extends SwingWorker<String, Object> {
 			}
 			if (n > 0)
 				e.setPriority(contEdgePriority / n);
-		}		
-		
+		}
+
 		ArrayList<MyPickablePoint> sortedList = new ArrayList<MyPickablePoint>(cuttingPoints);
 		Collections.sort(sortedList, new MyPickablePointYZMidXComparator());
 
@@ -196,7 +196,8 @@ public class CutThread extends SwingWorker<String, Object> {
 		MyPickablePoint firstOuterPoint = sortedList.get(sortedList.size() - 1);
 
 		if (wholePipe)
-			firstPoints = SurfaceDemo.getInstance().utils.findAllConnectedPoints(firstOuterPoint, new ArrayList<Integer>());
+			firstPoints = SurfaceDemo.getInstance().utils.findAllConnectedPoints(firstOuterPoint,
+					new ArrayList<Integer>());
 		else
 			firstPoints = new ArrayList<Integer>();
 
@@ -209,10 +210,9 @@ public class CutThread extends SwingWorker<String, Object> {
 		SurfaceDemo.getInstance().utils.previousAngle = 0.0f;
 
 		double diagonal = (SurfaceDemo.getInstance().utils.maxEdge * Math.sqrt(2.0f));
-		SurfaceDemo.getInstance()
-				.writeToGcodeFile(String.format(Locale.US, "G00 X%.3f Y%.3f Z%.3f F%s",
-						SurfaceDemo.getInstance().utils.previousPoint.x, SurfaceDemo.getInstance().utils.previousPoint.y,
-						diagonal / 2.0f + 20.0f, Settings.getInstance().getSetting("gcode_feedrate_g0")));
+		SurfaceDemo.getInstance().writeToGcodeFile(String.format(Locale.US, "G00 X%.3f Y%.3f Z%.3f F%s",
+				SurfaceDemo.getInstance().utils.previousPoint.x, SurfaceDemo.getInstance().utils.previousPoint.y,
+				diagonal / 2.0f + 20.0f, Settings.getInstance().getSetting("gcode_feedrate_g0")));
 
 		// double diagonal = (SurfaceDemo.getInstance().utils.maxEdge *
 		// Math.sqrt(2.0f));
@@ -295,13 +295,14 @@ public class CutThread extends SwingWorker<String, Object> {
 		ArrayList<MyEdge> edgesToCut = new ArrayList<MyEdge>();
 		if (wholePipe) {
 
-	    List<MyContinuousEdge> contEdgeByPriority = new ArrayList<MyContinuousEdge>( SurfaceDemo.getInstance().utils.continuousEdges.values());
-	    Collections.sort(contEdgeByPriority, new Comparator<MyContinuousEdge>() {
-	        public int compare(MyContinuousEdge o1, MyContinuousEdge o2) {
-	            return o1.priority - o2.priority;
-	        }
-	    });		
-			
+			List<MyContinuousEdge> contEdgeByPriority = new ArrayList<MyContinuousEdge>(
+					SurfaceDemo.getInstance().utils.continuousEdges.values());
+			Collections.sort(contEdgeByPriority, new Comparator<MyContinuousEdge>() {
+				public int compare(MyContinuousEdge o1, MyContinuousEdge o2) {
+					return o1.priority - o2.priority;
+				}
+			});
+
 			for (MyContinuousEdge e : contEdgeByPriority) {
 				System.out.println(e.center.y);
 				if (e.center.y >= minY && e.center.y <= maxY)
@@ -348,8 +349,8 @@ public class CutThread extends SwingWorker<String, Object> {
 
 							float currAngle = Float.valueOf(SurfaceDemo.getInstance().angleTxt);
 
-							SurfaceDemo.getInstance()
-									.writeToGcodeFile(String.format(java.util.Locale.US, "G00 A%.3f B%.3f", currAngle, currAngle));
+							SurfaceDemo.getInstance().writeToGcodeFile(
+									String.format(java.util.Locale.US, "G00 A%.3f B%.3f", currAngle, currAngle));
 
 							double angle = followThePath(myPoint, this.alAlreadyAddedPoints);
 							hasBeenCutting = true;
@@ -437,16 +438,19 @@ public class CutThread extends SwingWorker<String, Object> {
 					// MyPickablePointMidXToEdgeCenterComparator(contEdge.center));
 					if (pointsToCut.size() > 0) {
 						for (MyPickablePoint myPoint : pointsToCut) {
-							if (!listContainsPoint(myPoint, alAlreadyAddedPoints) && Math.abs(myPoint.getZ() - topZ) < 0.1) {
+							if (!listContainsPoint(myPoint, alAlreadyAddedPoints)
+									&& Math.abs(myPoint.getZ() - topZ) < 0.1) {
 								double diagonal = (SurfaceDemo.getInstance().utils.maxEdge * Math.sqrt(2.0f));
 								MyPickablePoint safeRetractPoint = new MyPickablePoint(-100000,
-										new Point3d(myPoint.xyz.x, myPoint.xyz.y, diagonal / 2 + 10), Color.BLACK, 0.4f, -200000);
+										new Point3d(myPoint.xyz.x, myPoint.xyz.y, diagonal / 2 + 10), Color.BLACK, 0.4f,
+										-200000);
 
 								Point p = SurfaceDemo.getInstance().utils.calculateOffsetPoint(myPoint);
 								Vector3D kerfOffVec = new Vector3D(myPoint.xyz.x - p.xyz.x, myPoint.xyz.y - p.xyz.y,
 										myPoint.xyz.z - p.xyz.z);
 
-								SurfaceDemo.getInstance().move(safeRetractPoint, false, false, cutOffsetMm, true, kerfOffVec);
+								SurfaceDemo.getInstance().move(safeRetractPoint, false, false, cutOffsetMm, true,
+										kerfOffVec);
 								angle = followThePath(myPoint, this.alAlreadyAddedPoints);
 								hasBeenCutting = true;
 							}
@@ -513,7 +517,7 @@ public class CutThread extends SwingWorker<String, Object> {
 		}
 		Vector3D kerfOffVec = new Vector3D(0, 0, 0);
 		if (!isOnEdge) { // we don't do this for line just for edge forming closed
-											// loops
+							// loops
 			Point offsetPoint = offPointAndPlane.point;
 			if (this.useKerfOffset)
 				kerfOffVec = new Vector3D(myPoint.xyz.x - offsetPoint.xyz.x, myPoint.xyz.y - offsetPoint.xyz.y,
@@ -581,9 +585,11 @@ public class CutThread extends SwingWorker<String, Object> {
 			}
 			if (contEdge.edgeType == MyContinuousEdge.EdgeType.START && wholePipe)
 				if (SurfaceDemo.getInstance().pipeIsCircular)
-					tempPoint = SurfaceDemo.getInstance().utils.findConnectedPoint(tempPoint, alAlreadyAddedPoints, true);
+					tempPoint = SurfaceDemo.getInstance().utils.findConnectedPoint(tempPoint, alAlreadyAddedPoints,
+							true);
 				else
-					tempPoint = SurfaceDemo.getInstance().utils.findConnectedPoint(tempPoint, alAlreadyAddedPoints, true);
+					tempPoint = SurfaceDemo.getInstance().utils.findConnectedPoint(tempPoint, alAlreadyAddedPoints,
+							true);
 			else if (contEdge.edgeType == MyContinuousEdge.EdgeType.END && wholePipe)
 				tempPoint = SurfaceDemo.getInstance().utils.findConnectedPoint(tempPoint, alAlreadyAddedPoints, false);
 			else {
@@ -615,9 +621,11 @@ public class CutThread extends SwingWorker<String, Object> {
 				} else {
 					if (wholePipe) {
 						if (contEdge.points.indexOf(myPoint.id) == 0)
-							tempPoint = SurfaceDemo.getInstance().utils.findConnectedPoint(tempPoint, alAlreadyAddedPoints, true);
+							tempPoint = SurfaceDemo.getInstance().utils.findConnectedPoint(tempPoint,
+									alAlreadyAddedPoints, true);
 						else
-							tempPoint = SurfaceDemo.getInstance().utils.findConnectedPoint(tempPoint, alAlreadyAddedPoints, false);
+							tempPoint = SurfaceDemo.getInstance().utils.findConnectedPoint(tempPoint,
+									alAlreadyAddedPoints, false);
 					} else {
 						for (MyEdge myEdge : SurfaceDemo.getInstance().utils.edges.values()) {
 							if (myEdge.isToCut() && !alreadyCuttedEdges.contains(myEdge))
@@ -638,7 +646,8 @@ public class CutThread extends SwingWorker<String, Object> {
 					if (contEdge.points.size() == contEdge.connectedEdges.size() && this.useKerfOffset) {
 						offPointAndPlane = SurfaceDemo.getInstance().utils.calculateOffsetPointAndPlane(myPoint);
 						kerfOffVec = new Vector3D(myPoint.xyz.x - offPointAndPlane.point.xyz.x,
-								myPoint.xyz.y - offPointAndPlane.point.xyz.y, myPoint.xyz.z - offPointAndPlane.point.xyz.z);
+								myPoint.xyz.y - offPointAndPlane.point.xyz.y,
+								myPoint.xyz.z - offPointAndPlane.point.xyz.z);
 					}
 					SurfaceDemo.getInstance().move(tempPoint, true, true, cutOffsetMm, kerfOffVec);
 					if (contEdge.edgeNo == 1) {
@@ -651,11 +660,17 @@ public class CutThread extends SwingWorker<String, Object> {
 					if (contEdge.points.size() == contEdge.connectedEdges.size() && this.useKerfOffset) {
 						offPointAndPlane = SurfaceDemo.getInstance().utils.calculateOffsetPointAndPlane(tempPoint);
 						kerfOffVec = new Vector3D(tempPoint.xyz.x - offPointAndPlane.point.xyz.x,
-								tempPoint.xyz.y - offPointAndPlane.point.xyz.y, tempPoint.xyz.z - offPointAndPlane.point.xyz.z);
+								tempPoint.xyz.y - offPointAndPlane.point.xyz.y,
+								tempPoint.xyz.z - offPointAndPlane.point.xyz.z);
 					}
 					SurfaceDemo.getInstance().move(tempPoint, true, true, cutOffsetMm, kerfOffVec);
 					alreadyCuttedEdges.add(edge);
 				}
+			}
+			try {
+				Thread.sleep(delay);
+			} catch (Exception ex) {
+				ex.printStackTrace();
 			}
 			double angleDelta = rotation(prevPoint, tempPoint);
 			prevPoint = tempPoint;
@@ -702,7 +717,8 @@ public class CutThread extends SwingWorker<String, Object> {
 				return 0.0d;
 			}
 
-			double angleDelta = FastMath.atan2(tempPoint.getZ() - prevPoint.getZ(), prevPoint.getX() - tempPoint.getX());
+			double angleDelta = FastMath.atan2(tempPoint.getZ() - prevPoint.getZ(),
+					prevPoint.getX() - tempPoint.getX());
 
 			double angleDelta2 = Math.atan2(tempPoint.getZ() - prevPoint.getZ(), prevPoint.getX() - tempPoint.getX());
 

@@ -592,6 +592,8 @@ public class Utils {
 		}
 		for (MyPickablePoint point : points.values()) {
 			if (point.continuousEdgeNo == -1) {
+				if(edgeNo==3)
+					System.out.println("sdf");
 				MyContinuousEdge contEdge = new MyContinuousEdge(edgeNo, -1);
 				ArrayList<Integer> pointsOfEdgeAl = findAllConnectedPoints(point, new ArrayList<Integer>());
 
@@ -607,13 +609,16 @@ public class Utils {
 					MyPickablePoint edgePoint2 = points.get(pointsOfEdgeAl.get(j));
 					points.get(edgePoint1.id).continuousEdgeNo = edgeNo;
 					points.get(edgePoint2.id).continuousEdgeNo = edgeNo;
-					if (!contEdge.points.contains(edgePoint1.id))
-						contEdge.addPoint(edgePoint1.id);
-					if (!contEdge.points.contains(edgePoint2.id))
-						contEdge.addPoint(edgePoint2.id);
 					MyEdge edgeFromPoints = getEdgeFromTwoPoints(edgePoint1, edgePoint2);
 					if (edgeFromPoints != null)
+					{
 						contEdge.connectedEdges.add(edgeFromPoints);
+						if (!contEdge.points.contains(edgePoint1.id))
+							contEdge.addPoint(edgePoint1.id);
+						if (!contEdge.points.contains(edgePoint2.id))
+							contEdge.addPoint(edgePoint2.id);
+					
+					}
 					i++;
 				}
 				continuousEdges.put(edgeNo, contEdge);

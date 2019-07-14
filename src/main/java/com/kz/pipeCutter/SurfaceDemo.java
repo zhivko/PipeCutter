@@ -1311,6 +1311,7 @@ public class SurfaceDemo extends AbstractAnalysis {
 		Coord3d offsetedPoint = p.xyz.add(new Coord3d(0, 0, zOffset));
 		plasma.setPosition(offsetedPoint);
 
+
 		Point p1 = new Point(plasma.getPosition());
 		p1.setWidth(4f);
 		SurfaceDemo.getInstance().myTrail.add(p1);
@@ -1346,7 +1347,6 @@ public class SurfaceDemo extends AbstractAnalysis {
 		} else {
 			System.out.println("OOPS");
 		}
-
 		// if (instance.getChart().getView().getCanvas() != null)
 		// instance.getChart().render();
 	}
@@ -1407,13 +1407,7 @@ public class SurfaceDemo extends AbstractAnalysis {
 			canvas.getView().setBoundManual(new BoundingBox3d(plasma.getPosition(), edge));
 		}
 
-		// instance.getChart().render();
-		try {
-			TimeUnit.MILLISECONDS.sleep(Cylinder.sleep);
-		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+
 	}
 
 	public float getKerfOffset() {
@@ -1455,6 +1449,8 @@ public class SurfaceDemo extends AbstractAnalysis {
 			out.println(txt);
 			out.flush();
 			this.gCodeLineNo++;
+			
+			// instance.getChart().render();	
 
 		} catch (IOException e) {
 			// TODO Auto-generated catch block

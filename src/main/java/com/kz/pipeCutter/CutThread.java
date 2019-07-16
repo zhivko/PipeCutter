@@ -262,7 +262,7 @@ public class CutThread extends SwingWorker<String, Object> {
 		SurfaceDemo.getInstance().writeToGcodeFile("G94");
 		SurfaceDemo.getInstance().writeToGcodeFile("M2");
 
-		SurfaceDemo.getInstance().getChart().getScene().getGraph().remove(SurfaceDemo.getInstance().myTrail);
+		SurfaceDemo.getInstance().getChart().getScene().getGraph().add(SurfaceDemo.getInstance().myTrail);
 
 	}
 

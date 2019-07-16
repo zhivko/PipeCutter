@@ -191,8 +191,8 @@ public class SurfaceDemo extends AbstractAnalysis {
 							e2.printStackTrace();
 						}
 						Logger.getLogger(this.getClass()).info("Is daemon: " + Thread.currentThread().isDaemon());
-						Logger.getLogger(this.getClass())
-								.info("Is eventdispatched thread? " + javax.swing.SwingUtilities.isEventDispatchThread());
+						Logger.getLogger(this.getClass()).info(
+								"Is eventdispatched thread? " + javax.swing.SwingUtilities.isEventDispatchThread());
 
 						instance.canvas = (CanvasAWT) instance.getChart().getCanvas();
 
@@ -274,13 +274,11 @@ public class SurfaceDemo extends AbstractAnalysis {
 									menu.show(instance.frame, arg0.getX(), arg0.getY());
 
 									/*
-									 * SwingWorker menuShower = new SwingWorker<String, Object>()
-									 * {
+									 * SwingWorker menuShower = new SwingWorker<String, Object>() {
 									 * 
-									 * @Override protected String doInBackground() throws
-									 * Exception { // TODO Auto-generated method stub
-									 * menu.show(instance.canvas, arg0.getX(), arg0.getY());
-									 * return "Menu closed."; } }; menuShower.execute();
+									 * @Override protected String doInBackground() throws Exception { // TODO
+									 * Auto-generated method stub menu.show(instance.canvas, arg0.getX(),
+									 * arg0.getY()); return "Menu closed."; } }; menuShower.execute();
 									 */
 								}
 							}
@@ -318,7 +316,8 @@ public class SurfaceDemo extends AbstractAnalysis {
 									String[] splittedSize = size.split("x");
 									Integer x = Integer.valueOf(splittedSize[0]);
 									Integer y = Integer.valueOf(splittedSize[1]);
-									((Frame) (SurfaceDemo.instance.canvas.getParent())).setLocation(new java.awt.Point(x, y));
+									((Frame) (SurfaceDemo.instance.canvas.getParent()))
+											.setLocation(new java.awt.Point(x, y));
 								} catch (Exception ex) {
 									ex.printStackTrace();
 								}
@@ -334,7 +333,8 @@ public class SurfaceDemo extends AbstractAnalysis {
 							@Override
 							public void componentShown(ComponentEvent e) {
 								// TODO Auto-generated method stub
-								float radiusOfPlasma = Double.valueOf(SurfaceDemo.instance.canvas.getView().getBounds().getRadius())
+								float radiusOfPlasma = Double
+										.valueOf(SurfaceDemo.instance.canvas.getView().getBounds().getRadius())
 										.floatValue() / 20.0f;
 								plasma.setVolume(radiusOfPlasma);
 
@@ -353,8 +353,10 @@ public class SurfaceDemo extends AbstractAnalysis {
 												String[] splittedSize = size.split("x");
 												instance.canvas.validate();
 												instance.canvas.repaint();
-												instance.canvas.getParent().setSize(new Dimension(Double.valueOf(splittedSize[0]).intValue(),
-														Double.valueOf(splittedSize[1]).intValue()));
+												instance.canvas.getParent()
+														.setSize(new Dimension(
+																Double.valueOf(splittedSize[0]).intValue(),
+																Double.valueOf(splittedSize[1]).intValue()));
 											} catch (Exception ex) {
 												ex.printStackTrace();
 											}
@@ -382,8 +384,8 @@ public class SurfaceDemo extends AbstractAnalysis {
 										in.close();
 
 										FileOutputStream out = new FileOutputStream(Settings.iniFullFileName);
-										props.setProperty("surfaceDemo_size",
-												instance.canvas.getSize().getWidth() + "x" + instance.canvas.getSize().getHeight());
+										props.setProperty("surfaceDemo_size", instance.canvas.getSize().getWidth() + "x"
+												+ instance.canvas.getSize().getHeight());
 										props.store(out, null);
 										out.close();
 
@@ -408,8 +410,8 @@ public class SurfaceDemo extends AbstractAnalysis {
 										in.close();
 
 										FileOutputStream out = new FileOutputStream(Settings.iniFullFileName);
-										props.setProperty("surfaceDemo_position",
-												(int) c.getLocationOnScreen().getX() + "x" + (int) c.getLocationOnScreen().getY());
+										props.setProperty("surfaceDemo_position", (int) c.getLocationOnScreen().getX()
+												+ "x" + (int) c.getLocationOnScreen().getY());
 										props.store(out, null);
 										out.close();
 
@@ -488,8 +490,8 @@ public class SurfaceDemo extends AbstractAnalysis {
 										float y = Float.valueOf(center_str.split("\\s")[1].split("=")[1]);
 										float z = Float.valueOf(center_str.split("\\s")[2].split("=")[1]);
 
-										instance.chart.getView()
-												.setBoundManual(new BoundingBox3d(new Coord3d(x, y, z), Float.valueOf(radius)));
+										instance.chart.getView().setBoundManual(
+												new BoundingBox3d(new Coord3d(x, y, z), Float.valueOf(radius)));
 										instance.canvas.getAnimator().start();
 
 										MyPickablePoint lastClicked = findSelectedPoint();
@@ -598,13 +600,14 @@ public class SurfaceDemo extends AbstractAnalysis {
 							menuItem5.addActionListener(new ActionListener() {
 								@Override
 								public void actionPerformed(ActionEvent arg0) {
-									String priority = JOptionPane.showInputDialog(frame, "Enter priority (lower = higher)");
+									String priority = JOptionPane.showInputDialog(frame,
+											"Enter priority (lower = higher)");
 									MyEdge edge = utils.edges.get(edgeNo);
 									edge.setPriority(Integer.valueOf(priority));
 								}
 							});
-							menu.add(menuItem5);							
-							
+							menu.add(menuItem5);
+
 							JMenuItem menuItem4 = new JMenuItem("Remove from cut selection");
 							menuItem4.addActionListener(new ActionListener() {
 								@Override
@@ -621,8 +624,9 @@ public class SurfaceDemo extends AbstractAnalysis {
 								@Override
 								public void actionPerformed(ActionEvent arg0) {
 									MyEdge edge = utils.edges.get(edgeNo);
-									Object input = JOptionPane.showInputDialog(null, "Speed [mm/min]:", "Edge cutting speed",
-											JOptionPane.QUESTION_MESSAGE, null, null, edge.cutVelocity);
+									Object input = JOptionPane.showInputDialog(null, "Speed [mm/min]:",
+											"Edge cutting speed", JOptionPane.QUESTION_MESSAGE, null, null,
+											edge.cutVelocity);
 									if (input != null) {
 										edge.setVelocity(Float.valueOf(input.toString()));
 										e.setText(edge.edgeNo + " (" + edge.cutVelocity + ")");
@@ -717,8 +721,10 @@ public class SurfaceDemo extends AbstractAnalysis {
 							// try to find edge with this two points
 							boolean found = false;
 							for (MyEdge e : utils.edges.values()) {
-								if ((e.getPointByIndex(0).distance(mp1) == 0 && (e.getPointByIndex(1).distance(mp2) == 0)
-										|| (e.getPointByIndex(1).distance(mp1) == 0 && (e.getPointByIndex(0).distance(mp2) == 0)))) {
+								if ((e.getPointByIndex(0).distance(mp1) == 0
+										&& (e.getPointByIndex(1).distance(mp2) == 0)
+										|| (e.getPointByIndex(1).distance(mp1) == 0
+												&& (e.getPointByIndex(0).distance(mp2) == 0)))) {
 									found = true;
 									break;
 								}
@@ -767,7 +773,8 @@ public class SurfaceDemo extends AbstractAnalysis {
 					double[] myPointDouble = { point.getX(), point.getY(), point.getZ() };
 					Vector3D myPoint = new Vector3D(myPointDouble);
 					Vector3D result = rot.applyTo(myPoint);
-					SurfaceDemo.instance.utils.points.get(point.id).setCoord(result.getX(), result.getY(), result.getZ());
+					SurfaceDemo.instance.utils.points.get(point.id).setCoord(result.getX(), result.getY(),
+							result.getZ());
 				}
 			}
 
@@ -775,7 +782,7 @@ public class SurfaceDemo extends AbstractAnalysis {
 			utils.markRadiusEdges();
 
 			if (!utils.isPipeCircular()) {
-				// splitLongEdges();
+				splitLongEdges();
 				splitNearRadiusEdge();
 			}
 
@@ -887,84 +894,94 @@ public class SurfaceDemo extends AbstractAnalysis {
 		line[6] = new Line(new Vector3D(s1_1), new Vector3D(s2_1), 0.1);
 		line[7] = new Line(new Vector3D(t1_1), new Vector3D(t2_1), 0.1);
 
-		ArrayList<MyEdge> edgesToRemove = new ArrayList<MyEdge>();
+		ArrayList<Integer> edgesToRemove = new ArrayList<Integer>();
 		ArrayList<MyEdge> edgesToAdd = new ArrayList<MyEdge>();
-		Iterator<MyEdge> edgeIt = utils.edges.values().iterator();
 
 		int i = 0;
-		while (edgeIt.hasNext()) {
-			i++;
-			System.out.println(String.format("%d/%d", i, utils.edges.size()));
-			MyEdge edge = edgeIt.next();
-			// check to see if it splits with line1,2,3,4
-			double[] e1 = { utils.points.get(edge.points.get(0)).xyz.x, utils.points.get(edge.points.get(0)).xyz.y,
-					utils.points.get(edge.points.get(0)).xyz.z };
-			double[] e2 = { utils.points.get(edge.points.get(1)).xyz.x, utils.points.get(edge.points.get(1)).xyz.y,
-					utils.points.get(edge.points.get(1)).xyz.z };
-			try {
-				if (new Vector3D(e1).distance(new Vector3D(e2)) > 0) {
-					Vector3D start = new Vector3D(e1);
-					Vector3D end = new Vector3D(e2);
+		while (true) {
+			System.out.println(utils.edges.size());
+			Iterator<MyEdge> edgeIt = utils.edges.values().iterator();
+			boolean splittedOne = false;
+			while (edgeIt.hasNext()) {
+				i++;
+				System.out.println(String.format("%d/%d", i, utils.edges.size()));
+				MyEdge edge = edgeIt.next();
+				int origEdgeNo = edge.edgeNo;
+				// check to see if it splits with line1,2,3,4
+				double[] e1 = { utils.points.get(edge.points.get(0)).xyz.x, utils.points.get(edge.points.get(0)).xyz.y,
+						utils.points.get(edge.points.get(0)).xyz.z };
+				double[] e2 = { utils.points.get(edge.points.get(1)).xyz.x, utils.points.get(edge.points.get(1)).xyz.y,
+						utils.points.get(edge.points.get(1)).xyz.z };
+				try {
+					if (new Vector3D(e1).distance(new Vector3D(e2)) > 0) {
+						Vector3D start = new Vector3D(e1);
+						Vector3D end = new Vector3D(e2);
 
-					Line edgeLine = new Line(start, end, 0.1);
+						Line edgeLine = new Line(start, end, 0.001);
 
-					for (int k = 0; k < line.length; k++) {
-						Vector3D inters = line[k].intersection(edgeLine);
-						if (inters != null && (start.distance(inters) + end.distance(inters) == start.distance(end))) {
-							MyPickablePoint p1 = SurfaceDemo.instance.utils.points.get(edge.points.get(0));
-							MyPickablePoint p2 = SurfaceDemo.instance.utils.points.get(edge.points.get(1));
+						for (int k = 0; k < line.length; k++) {
+							Vector3D inters = line[k].intersection(edgeLine);
+							if (inters != null
+									&& (start.distance(inters) + end.distance(inters) == start.distance(end)) && start.distance(inters)>0.1 && end.distance(inters)>0.1) {
+								MyPickablePoint p1 = SurfaceDemo.instance.utils.points.get(edge.points.get(0));
+								MyPickablePoint p2 = SurfaceDemo.instance.utils.points.get(edge.points.get(1));
 
-							Point3d p = new Point3d(inters.getX(), inters.getY(), inters.getZ());
-							int id = pointId++;
-							MyPickablePoint newP = utils.createOrFindMyPickablePoint(id, p, -1);
-							newP.continuousEdgeNo = p1.continuousEdgeNo;
+								Point3d p = new Point3d(inters.getX(), inters.getY(), inters.getZ());
+								int id = pointId++;
+								MyPickablePoint newP = utils.createOrFindMyPickablePoint(id, p, -1);
+								newP.continuousEdgeNo = p1.continuousEdgeNo;
 
-							MyEdge edge1 = new MyEdge(edgeNo, -1);
-							edge1.addPoint(p1.id);
-							edge1.addPoint(newP.id);
-							MySurface surface = utils.surfaces.get(edge.surfaceNo);
-							if (surface == null) {
-								surface = new MySurface(edge.surfaceNo);
-								utils.surfaces.put(edge.surfaceNo, surface);
+								MyEdge edge1 = new MyEdge(edgeNo, -1);
+								edge1.addPoint(p1.id);
+								edge1.addPoint(newP.id);
+								MySurface surface = utils.surfaces.get(edge.surfaceNo);
+								if (surface == null) {
+									surface = new MySurface(edge.surfaceNo);
+									utils.surfaces.put(edge.surfaceNo, surface);
+								}
+								surface.addEdge(edge1);
+								// edgesToAdd.add(edge1);
+								// surface.edges.remove(edge.edgeNo);
+								utils.edges.remove(edge.edgeNo);
+								utils.edges.put(edge1.edgeNo, edge1);
+								edgeNo++;
+
+								MyEdge edge2 = new MyEdge(edgeNo, -1);
+								edge2.addPoint(newP.id);
+								edge2.addPoint(p2.id);
+								surface.addEdge(edge2);
+								// edgesToAdd.add(edge2);
+								utils.edges.put(edge2.edgeNo, edge2);
+								edgeNo++;
+
+								// edgesToRemove.add(edge.edgeNo);
+								// utils.edges.remove(edge.edgeNo);
+								System.out.println("Splitted edge: " + origEdgeNo);
+								splittedOne = true;
+								break;
 							}
-							surface.addEdge(edge1);
-							edgesToAdd.add(edge1);
-							// utils.edges.put(edgeNo, edge1);
-							edgeNo++;
-
-							MyEdge edge2 = new MyEdge(edgeNo, -1);
-							edge2.addPoint(newP.id);
-							edge2.addPoint(p2.id);
-							surface.addEdge(edge2);
-							edgesToAdd.add(edge2);
-							// utils.edges.put(edgeNo, edge2);
-							edgeNo++;
-
-							edgesToRemove.add(edge);
 						}
+					} else {
+						// System.out.println(edge.edgeNo + " points: " +
+						// edge.points.get(0) +
+						// " "
+						// + edge.points.get(1));
 					}
-				} else {
-					// System.out.println(edge.edgeNo + " points: " +
-					// edge.points.get(0) +
-					// " "
-					// + edge.points.get(1));
+					if (splittedOne)
+						break;
+				} catch (Exception ex) {
+					ex.printStackTrace();
 				}
-			} catch (Exception ex) {
-				ex.printStackTrace();
 			}
+			if (splittedOne == false)
+				break;
 		}
 
-		for (MyEdge myEdge : edgesToAdd) {
-			utils.edges.put(myEdge.edgeNo, myEdge);
-		}
+//		for (Integer edgeId : edgesToRemove) {
+//			if (utils.edges.remove(edgeId) != null)
+//				System.out.println("removed edgeNo:" + edgeId);
+//		}
 
-		edgeIt = utils.edges.values().iterator();
-		while (edgeIt.hasNext()) {
-			MyEdge edge = edgeIt.next();
-			if (edgesToRemove.contains(edge)) {
-				edgeIt.remove();
-			}
-		}
 	}
 
 	public void splitLongEdges() {
@@ -1087,7 +1104,8 @@ public class SurfaceDemo extends AbstractAnalysis {
 						ls.add(utils.points.get(point.id));
 						if (SurfaceDemo.NUMBER_POINTS) {
 							if (!alreadyAddedPointsText.contains(pointNo)) {
-								Coord3d cent = utils.continuousEdges.get(edge.getPointByIndex(0).continuousEdgeNo).center;
+								Coord3d cent = utils.continuousEdges
+										.get(edge.getPointByIndex(0).continuousEdgeNo).center;
 								Coord3d delta = point.xyz.sub(cent);
 								Coord3d textPoint = point.xyz.sub(delta.getNormalizedTo(0.2f));
 								PickableDrawableTextBitmap t4 = new PickableDrawableTextBitmap(String.valueOf(point.id),
@@ -1122,6 +1140,8 @@ public class SurfaceDemo extends AbstractAnalysis {
 				System.out.println("Composite element size: " + myComposite.getDrawables().size());
 				getPlasma();
 				redrawPosition();
+				SurfaceDemo.getInstance().getChart().getScene().getGraph().add(SurfaceDemo.getInstance().myTrail);
+
 				instance.canvas.getAnimator().start();
 			}
 		});
@@ -1311,11 +1331,10 @@ public class SurfaceDemo extends AbstractAnalysis {
 		Coord3d offsetedPoint = p.xyz.add(new Coord3d(0, 0, zOffset));
 		plasma.setPosition(offsetedPoint);
 
-
 		Point p1 = new Point(plasma.getPosition());
 		p1.setWidth(4f);
 		SurfaceDemo.getInstance().myTrail.add(p1);
-
+		SurfaceDemo.getInstance().canvas.forceRepaint();
 		Color color;
 		if (cut) {
 			color = Color.RED;
@@ -1389,7 +1408,8 @@ public class SurfaceDemo extends AbstractAnalysis {
 			writeToGcodeFile(String.format(Locale.US, "G04 P%.3f", (pierceTimeMs / 1000.0)));
 
 			if (CutThread.instance.waitForArcOK)
-				writeToGcodeFile("M66 P0 L3 Q3 (wait up to 5 seconds for digital input 0 Plasma-ArcOK to turn on - L3)");
+				writeToGcodeFile(
+						"M66 P0 L3 Q3 (wait up to 5 seconds for digital input 0 Plasma-ArcOK to turn on - L3)");
 
 			try {
 				TimeUnit.MILLISECONDS.sleep(pierceTimeMs);
@@ -1407,7 +1427,6 @@ public class SurfaceDemo extends AbstractAnalysis {
 			canvas.getView().setBoundManual(new BoundingBox3d(plasma.getPosition(), edge));
 		}
 
-
 	}
 
 	public float getKerfOffset() {
@@ -1417,22 +1436,27 @@ public class SurfaceDemo extends AbstractAnalysis {
 	}
 
 	public void redrawPosition() {
+		float currentViewRadius = Float.valueOf(Settings.getInstance().getSetting("ui_zoom_radius"));
+		if (currentViewRadius == 0)
+			currentViewRadius = 0.1f;
 		if (instance.getChart().getView().getCanvas() != null) {
-			float currentViewRadius = Float.valueOf(Settings.getInstance().getSetting("ui_zoom_radius"));
-			if (currentViewRadius == 0)
-				currentViewRadius = 0.1f;
 			if (ZOOM_PLASMA && SurfaceDemo.instance.getPlasma().getPosition() != null) {
 				SurfaceDemo.instance.canvas.getView().setBoundMode(ViewBoundMode.MANUAL);
-				SurfaceDemo.instance.canvas.getView()
-						.setBoundManual(new BoundingBox3d(SurfaceDemo.instance.getPlasma().getPosition(), currentViewRadius));
+				SurfaceDemo.instance.canvas.getView().setBoundManual(
+						new BoundingBox3d(SurfaceDemo.instance.getPlasma().getPosition(), currentViewRadius));
 			} else if (ZOOM_POINT && SurfaceDemo.instance.lastClickedPoint != null) {
 				SurfaceDemo.instance.canvas.getView().setBoundMode(ViewBoundMode.MANUAL);
-				SurfaceDemo.instance.canvas.getView()
-						.setBoundManual(new BoundingBox3d(SurfaceDemo.instance.lastClickedPoint.getCoord(), currentViewRadius));
+				SurfaceDemo.instance.canvas.getView().setBoundManual(
+						new BoundingBox3d(SurfaceDemo.instance.lastClickedPoint.getCoord(), currentViewRadius));
 			} else
 				SurfaceDemo.instance.canvas.getView().setBoundMode(ViewBoundMode.AUTO_FIT);
 			// instance.getChart().render();
 		}
+
+//		SurfaceDemo.instance.canvas.getView().setBoundMode(ViewBoundMode.MANUAL);
+//		SurfaceDemo.instance.canvas.getView().setBoundManual(
+//				new BoundingBox3d(SurfaceDemo.instance.utils.points.get(Integer.valueOf(2)).xyz, currentViewRadius));
+
 	}
 
 	public void writeToGcodeFile(String txt) {
@@ -1449,8 +1473,8 @@ public class SurfaceDemo extends AbstractAnalysis {
 			out.println(txt);
 			out.flush();
 			this.gCodeLineNo++;
-			
-			// instance.getChart().render();	
+
+			// instance.getChart().render();
 
 		} catch (IOException e) {
 			// TODO Auto-generated catch block

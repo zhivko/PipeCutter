@@ -19,13 +19,14 @@ public class MyEdge {
 	 * @param args
 	 */
 	Coord3d center = null;
-	public ArrayList<Integer> points = null;
+	public MyArrayList<Integer> points = null;
 	Integer edgeNo;
 	Integer surfaceNo;
-	public ArrayList<MyEdge> connectedEdges = null;
+	public MyArrayList<MyEdge> connectedEdges = null;
 	float length;
 	float cutVelocity;
-	Integer priority=0;
+	Integer priority = 0;
+
 	public Integer getPriority() {
 		return priority;
 	}
@@ -53,7 +54,7 @@ public class MyEdge {
 		ls.setWidth(2f);
 		this.setLineStrip(ls);
 		ls.setWireframeColor(Color.GRAY);
-		
+
 		this.edgeNo = edgeNo;
 		try {
 			FileInputStream in = new FileInputStream(Settings.iniEdgeProperties);
@@ -61,8 +62,7 @@ public class MyEdge {
 			props.load(in);
 			if (props.getProperty(this.edgeNo + ".cutVelocity") != null)
 				this.cutVelocity = Float.valueOf(props.getProperty(this.edgeNo + ".cutVelocity"));
-			if (props.getProperty(this.edgeNo + ".toCut") != null)
-			{
+			if (props.getProperty(this.edgeNo + ".toCut") != null) {
 				ls.setWireframeColor(Color.RED);
 				this.setToCut(true);
 			}
@@ -70,18 +70,18 @@ public class MyEdge {
 		} catch (Exception ex) {
 			ex.printStackTrace();
 		}
-		this.points = new ArrayList<Integer>();
+		this.points = new MyArrayList<Integer>();
 		this.center = new Coord3d();
 		this.surfaceNo = surfaceNo;
-		this.connectedEdges = new ArrayList<MyEdge>();
+		this.connectedEdges = new MyArrayList<MyEdge>();
 	}
 
 	public MyEdge() {
 		this.edgeNo = -1;
-		this.points = new ArrayList<Integer>();
+		this.points = new MyArrayList<Integer>();
 		this.center = new Coord3d();
 		this.surfaceNo = -1;
-		this.connectedEdges = new ArrayList<MyEdge>();
+		this.connectedEdges = new MyArrayList<MyEdge>();
 	}
 
 	public void setLineStrip(LineStrip ls) {
@@ -90,8 +90,8 @@ public class MyEdge {
 
 	public void setTxt(PickableDrawableTextBitmap tx) {
 		this.txt = tx;
-	}	
-	
+	}
+
 	public void addPoint(Integer pointNo) {
 		// boolean alreadyAdded = false;
 		// for (MyPickablePoint p1 : this.points) {
@@ -116,13 +116,13 @@ public class MyEdge {
 	private void calculateLength() {
 		// TODO Auto-generated method stub
 		// @formatter:off
-		length = (float) Math.sqrt(Math.pow(
-				SurfaceDemo.getInstance().utils.points.get(this.points.get(0)).getX() - SurfaceDemo.getInstance().utils.points.get(this.points.get(1)).getX(), 2.0d)
-				+ Math.pow(
-						SurfaceDemo.getInstance().utils.points.get(this.points.get(0)).getY() - SurfaceDemo.getInstance().utils.points.get(this.points.get(1)).getY(), 2.0d)
-				+ Math.pow(
-						SurfaceDemo.getInstance().utils.points.get(this.points.get(0)).getZ() - SurfaceDemo.getInstance().utils.points.get(this.points.get(1)).getZ(),
-						2.0d));
+		length = (float) Math.sqrt(Math
+				.pow(SurfaceDemo.getInstance().utils.points.get(this.points.get(0)).getX()
+						- SurfaceDemo.getInstance().utils.points.get(this.points.get(1)).getX(), 2.0d)
+				+ Math.pow(SurfaceDemo.getInstance().utils.points.get(this.points.get(0)).getY()
+						- SurfaceDemo.getInstance().utils.points.get(this.points.get(1)).getY(), 2.0d)
+				+ Math.pow(SurfaceDemo.getInstance().utils.points.get(this.points.get(0)).getZ()
+						- SurfaceDemo.getInstance().utils.points.get(this.points.get(1)).getZ(), 2.0d));
 		// @formatter:on
 	}
 
@@ -139,20 +139,16 @@ public class MyEdge {
 		center.x = sumx / (points.size());
 		center.y = sumy / (points.size());
 		center.z = sumz / (points.size());
-		
+
 		return center;
 	}
 
 	/**
-	 * Calculate the angle at the vertex between two rays formed by three 3d
-	 * points.
+	 * Calculate the angle at the vertex between two rays formed by three 3d points.
 	 * 
-	 * @param a
-	 *          A 3d point.
-	 * @param vertex
-	 *          The vertex point.
-	 * @param b
-	 *          A 3d point.
+	 * @param a      A 3d point.
+	 * @param vertex The vertex point.
+	 * @param b      A 3d point.
 	 * 
 	 * @return The angle, from 0 to 2 * PI, in radians.
 	 */
@@ -189,7 +185,14 @@ public class MyEdge {
 	}
 
 	public String toString() {
-		return this.edgeType + " " + String.valueOf(this.edgeNo) + " cut=" + String.valueOf(isToCut());
+		// return this.edgeType + " " + String.valueOf(this.edgeNo) + " cut=" +
+		// String.valueOf(isToCut());
+		String ret = this.edgeNo + " - ";
+		for (int i = 0; i < this.points.size(); i++) {
+			ret = ret + this.points.get(i) + ";";
+		}
+		ret = ret.substring(0,ret.length()-1);
+		return ret;
 	}
 
 	public void setVelocity(float vel) {
@@ -214,7 +217,7 @@ public class MyEdge {
 
 	public void markAsRemoved() {
 		SurfaceDemo.getInstance().myComposite.remove(this.lineStrip);
-		
+
 		FileOutputStream out;
 		try {
 			FileInputStream in = new FileInputStream(Settings.iniEdgeProperties);
@@ -226,7 +229,7 @@ public class MyEdge {
 			props.setProperty(this.edgeNo + ".isRemoved", "True");
 			props.store(out, null);
 			out.close();
-			
+
 			SurfaceDemo.getInstance().utils.removeNotUsedPoints();
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
@@ -265,7 +268,7 @@ public class MyEdge {
 
 	public void setToCut(boolean toCut) {
 		this.toCut = toCut;
-		if(!this.toCut )
+		if (!this.toCut)
 			this.lineStrip.setWireframeColor(Color.GRAY);
 		else
 			this.lineStrip.setWireframeColor(Color.RED);

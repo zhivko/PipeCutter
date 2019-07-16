@@ -31,7 +31,7 @@ import com.kz.pipeCutter.ui.tab.GcodeViewer;
 public class CutThread extends SwingWorker<String, Object> {
 	float plasmaLeadinRadius;
 	static File gcodeFile;
-	public static int delay = 100;
+	public static int delay = 30;
 	public static float cutterYRange = 200;
 	private static long longDelay = 1000;
 	private MyPickablePoint point;
@@ -164,7 +164,6 @@ public class CutThread extends SwingWorker<String, Object> {
 
 	public void cut() throws InterruptedException {
 		SurfaceDemo.getInstance().myTrail.clear();
-		SurfaceDemo.getInstance().getChart().getScene().getGraph().remove(SurfaceDemo.getInstance().myTrail);
 
 		SurfaceDemo.getInstance().gCodeLineNo = 0;
 		SurfaceDemo.getInstance().g93mode = false;
@@ -263,7 +262,6 @@ public class CutThread extends SwingWorker<String, Object> {
 		SurfaceDemo.getInstance().writeToGcodeFile("G94");
 		SurfaceDemo.getInstance().writeToGcodeFile("M2");
 
-		SurfaceDemo.getInstance().getChart().getScene().getGraph().add(SurfaceDemo.getInstance().myTrail);
 
 	}
 
@@ -637,7 +635,6 @@ public class CutThread extends SwingWorker<String, Object> {
 					}
 				}
 			}
-
 			if (tempPoint == null) {
 				shouldBreak = true;
 				tempPoint = myPoint;

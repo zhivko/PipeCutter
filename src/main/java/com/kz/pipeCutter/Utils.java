@@ -1116,7 +1116,9 @@ public class Utils {
 			System.out.println("Colinear");
 			Rotation rotation1 = new Rotation(ret.plane.getNormal(), angleToOffset);
 			Vector3D rotatedA = rotation1.applyTo(vecA).normalize();
-			Vector3D newPoint = vecPoint.add(rotatedA.scalarMultiply(SurfaceDemo.getInstance().getKerfOffset()));
+			
+			//Vector3D newPoint = vecPoint.add(rotatedA.scalarMultiply(SurfaceDemo.getInstance().getKerfOffset()));
+			Vector3D newPoint = vecPoint.add(rotatedA.scalarMultiply(((Number) continuousEdge.getKerfOffset()).doubleValue()));
 
 			ret.point.xyz.set((float) newPoint.getX(), (float) newPoint.getY(), (float) newPoint.getZ());
 
@@ -1130,8 +1132,8 @@ public class Utils {
 			Vector3D rotatedA = rotationP.applyTo(vecA).normalize();
 			Vector3D rotatedB = rotationP.applyTo(vecB).normalize();
 
-			Vector3D pointA1 = vecPointPrevProj.add(rotatedA.scalarMultiply(SurfaceDemo.getInstance().getKerfOffset()));
-			Vector3D pointB1 = vecPoint.add(rotatedA.scalarMultiply(SurfaceDemo.getInstance().getKerfOffset()));
+			Vector3D pointA1 = vecPointPrevProj.add(rotatedA.scalarMultiply(((Number) continuousEdge.getKerfOffset()).doubleValue()));
+			Vector3D pointB1 = vecPoint.add(rotatedA.scalarMultiply(((Number) continuousEdge.getKerfOffset()).doubleValue()));
 
 			if (plotIntermediateResult) {
 				LineStrip ls1 = new LineStrip(new Point(new Coord3d(pointA1.getX(), pointA1.getY(), pointA1.getZ())),
@@ -1151,8 +1153,8 @@ public class Utils {
 				SurfaceDemo.getInstance().getChart().render();
 			}
 
-			Vector3D pointA2 = vecPoint.add(rotatedB.scalarMultiply(SurfaceDemo.getInstance().getKerfOffset()));
-			Vector3D pointB2 = vecPointNextProj.add(rotatedB.scalarMultiply(SurfaceDemo.getInstance().getKerfOffset()));
+			Vector3D pointA2 = vecPoint.add(rotatedB.scalarMultiply(((Number) continuousEdge.getKerfOffset()).doubleValue()));
+			Vector3D pointB2 = vecPointNextProj.add(rotatedB.scalarMultiply(((Number) continuousEdge.getKerfOffset()).doubleValue()));
 			if (plotIntermediateResult) {
 				LineStrip ls2 = new LineStrip(new Point(new Coord3d(pointA2.getX(), pointA2.getY(), pointA2.getZ())),
 						new Point(new Coord3d(pointB2.getX(), pointB2.getY(), pointB2.getZ())));

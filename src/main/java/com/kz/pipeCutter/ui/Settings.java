@@ -71,6 +71,7 @@ public class Settings extends JFrame {
 	private JPanel contentPane;
 	public static String iniFullFileName = getIniPath();
 	public static String iniEdgeProperties;
+	public static String iniContinuousEdgeProperties;
 	private static Settings instance;
 	public static Discoverer discoverer;
 	public static BBBError error;
@@ -398,6 +399,34 @@ public class Settings extends JFrame {
 		return ret;
 	}
 
+	public static String getContinuousEdgePropertiesPath() {
+		String ret = null;
+		Settings settInst = Settings.getInstance();
+		String gCodeInputFile = settInst.getParameter("gcode_input_file").getParValue();
+		File f1 = new File(gCodeInputFile);
+
+		String iniFileName = f1.getName() + "-ContEdgeProperties.ini";
+		try {
+			String path = new File(".").getCanonicalPath();
+			ret = path + File.separator + iniFileName;
+			File f = new File(ret);
+			if (!f.exists()) {
+				Settings.instance.log(ret + " does not exist. Creating in path:" + path);
+				File fout = new File(ret);
+				FileOutputStream fos = new FileOutputStream(fout);
+				BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(fos));
+				bw.write("# continuous edge kerf offset ini file");
+				bw.close();
+			}
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return ret;
+	}
+
+	
+	
 	public String getSetting(String parameterId) {
 		String ret = "";
 		synchronized (this) {
@@ -603,6 +632,7 @@ public class Settings extends JFrame {
 
 	public void setEdgePropertiesFile() {
 		iniEdgeProperties = getEdgePropertiesPath();
+		iniContinuousEdgeProperties = getContinuousEdgePropertiesPath();
 	}
 
 }

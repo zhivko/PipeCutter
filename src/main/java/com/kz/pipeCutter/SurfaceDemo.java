@@ -635,6 +635,24 @@ public class SurfaceDemo extends AbstractAnalysis {
 							});
 							menu.add(menuItem2);
 
+							JMenuItem menuItem7 = new JMenuItem("Set kerf offset");
+							menuItem7.addActionListener(new ActionListener() {
+								@Override
+								public void actionPerformed(ActionEvent arg0) {
+									MyEdge edge = utils.edges.get(edgeNo);
+									MyContinuousEdge myContEdge = utils.continuousEdges.get(utils.points.get(edge.points.get(0)).continuousEdgeNo);
+									
+									Object input = JOptionPane.showInputDialog(null, "Kerf plasma offset [mm]:",
+											"Edge cutting speed", JOptionPane.QUESTION_MESSAGE, null, null,
+											myContEdge.getKerfOffset());
+									if (input != null) {
+										myContEdge.setKerfOffset(Float.valueOf(input.toString()));
+										e.setText(edge.edgeNo + " (" + edge.cutVelocity + ")");
+									}
+								}
+							});
+							menu.add(menuItem7);							
+							
 							java.awt.Point point = MouseInfo.getPointerInfo().getLocation();
 							SwingUtilities.convertPointFromScreen(point, canvas);
 							menu.show(instance.canvas, point.x, point.y);

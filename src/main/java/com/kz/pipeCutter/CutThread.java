@@ -132,7 +132,6 @@ public class CutThread extends SwingWorker<String, Object> {
 		SurfaceDemo.getInstance().utils.rotatePoints(0, true, false);
 
 		System.out.println("name: " + Thread.currentThread().getName());
-		SurfaceDemo.getInstance().myTrail.clear();
 
 		Settings.getInstance()
 				.log("Pipe is" + (SurfaceDemo.getInstance().pipeIsCircular == true ? " " : " NOT ") + "circular.");
@@ -163,6 +162,7 @@ public class CutThread extends SwingWorker<String, Object> {
 	}
 
 	public void cut() throws InterruptedException {
+		SurfaceDemo.getInstance().getChart().getScene().getGraph().remove(SurfaceDemo.getInstance().myTrail);
 		SurfaceDemo.getInstance().myTrail.clear();
 
 		SurfaceDemo.getInstance().gCodeLineNo = 0;
@@ -262,6 +262,7 @@ public class CutThread extends SwingWorker<String, Object> {
 		SurfaceDemo.getInstance().writeToGcodeFile("G94");
 		SurfaceDemo.getInstance().writeToGcodeFile("M2");
 
+		SurfaceDemo.getInstance().getChart().getScene().getGraph().remove(SurfaceDemo.getInstance().myTrail);
 
 	}
 

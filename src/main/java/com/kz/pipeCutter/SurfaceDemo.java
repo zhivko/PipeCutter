@@ -1136,7 +1136,6 @@ public class SurfaceDemo extends AbstractAnalysis {
 				}
 				instance.enablePicking(instance.utils.points.values(), instance.chart, 10);
 				instance.getChart().getScene().getGraph().add(instance.myComposite);
-				instance.getChart().getScene().getGraph().add(instance.myTrail);
 				System.out.println("Composite element size: " + myComposite.getDrawables().size());
 				getPlasma();
 				redrawPosition();

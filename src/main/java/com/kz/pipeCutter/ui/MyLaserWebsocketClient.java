@@ -29,31 +29,31 @@ public class MyLaserWebsocketClient {
 	private static PolyTrendLine ptl;
 
 	public void init() {
-		File f = new File("./capsense.csv");
-		Path p = Paths.get(f.toURI());
-		try {
-			List<String> lines = Files.readAllLines(p);
-
-			if (lines.size() > 0) {
-
-				double[] x = new double[lines.size()];
-				double[] y = new double[lines.size()];
-
-				int i = 0;
-				for (String line : lines) {
-					String[] xy = line.split(",");
-					x[i] = Double.valueOf(xy[1]);
-					y[i] = Double.valueOf(xy[0]);
-					i++;
-				}
-
-				ptl = new PolyTrendLine(4);
-				ptl.setValues(y, x);
-			}
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+//		File f = new File("./capsense.csv");
+//		Path p = Paths.get(f.toURI());
+//		try {
+//			List<String> lines = Files.readAllLines(p);
+//
+//			if (lines.size() > 0) {
+//
+//				double[] x = new double[lines.size()];
+//				double[] y = new double[lines.size()];
+//
+//				int i = 0;
+//				for (String line : lines) {
+//					String[] xy = line.split(",");
+//					x[i] = Double.valueOf(xy[1]);
+//					y[i] = Double.valueOf(xy[0]);
+//					i++;
+//				}
+//
+//				ptl = new PolyTrendLine(4);
+//				ptl.setValues(y, x);
+//			}
+//		} catch (IOException e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		}
 
 	}
 
@@ -91,7 +91,14 @@ public class MyLaserWebsocketClient {
 		// Settings.getInstance().log("\tGot message from laser at: " + uri + "
 		// message:"
 		// + message);
-		if (message.startsWith("Analogue")) {
+		if (message.startsWith("distance")) {
+			String valueStr = message.split(" ")[1];
+			if (!valueStr.trim().equals("")) {
+				value = Float.valueOf(valueStr);
+				Settings.getInstance().setSetting("mymotion.laserHeight1", valueStr);
+				Settings.getInstance().setSetting("mymotion.laserHeight1mm", value);
+			}
+		} else if (message.startsWith("Analogue")) {
 			String valueStr = message.substring(message.lastIndexOf(" "), message.length());
 			if (!valueStr.trim().equals("")) {
 				value = Float.valueOf(valueStr);
@@ -99,14 +106,13 @@ public class MyLaserWebsocketClient {
 				DecimalFormat df = new DecimalFormat("#.0");
 				double val = capToMM(Float.valueOf(valueStr));
 				Settings.getInstance().setSetting("mymotion.laserHeight1mm", val);
-				
-				Thread.yield();
 
+				Thread.yield();
 
 				/*
 				 * if (((SavableText)
-				 * Settings.controls.get("mymotion.laserHeight1")).jValue.getBackground(
-				 * ) != Color.GREEN) { Settings.getInstance(); ((SavableText)
+				 * Settings.controls.get("mymotion.laserHeight1")).jValue.getBackground( ) !=
+				 * Color.GREEN) { Settings.getInstance(); ((SavableText)
 				 * Settings.controls.get("mymotion.laserHeight1")).jValue.setBackground(
 				 * Color.GREEN); } else ((SavableText)
 				 * Settings.controls.get("mymotion.laserHeight1")).jValue.setBackground(
@@ -133,7 +139,7 @@ public class MyLaserWebsocketClient {
 
 		// double ret = 1.010286660820*Math.pow(10, -3302) * Math.pow(Math.E,
 		// 949.613*capSenseValue);
-		if(ptl==null)
+		if (ptl == null)
 			return -1.0;
 		return ptl.predict(capSenseValue);
 	}

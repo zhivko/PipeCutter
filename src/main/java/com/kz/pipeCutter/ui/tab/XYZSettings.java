@@ -479,7 +479,7 @@ public class XYZSettings extends JPanel {
 				myWebsocketClient = MyLaserWebsocketClient.getInstance();
 				if (Settings.getInstance() != null)
 					Settings.getInstance().log("Connecting to: " + uri.toString());
-				wsSession = cm.asyncConnectToServer(myWebsocketClient, uri).get(2000, TimeUnit.MILLISECONDS);
+				wsSession = cm.asyncConnectToServer(myWebsocketClient, uri).get(4000, TimeUnit.MILLISECONDS);
 			}
 		} catch (Exception e) {
 			if (Settings.getInstance() != null)

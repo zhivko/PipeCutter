@@ -17,6 +17,7 @@ import javax.websocket.OnOpen;
 import javax.websocket.Session;
 
 import com.kz.pipeCutter.BBB.predict.PolyTrendLine;
+import com.kz.pipeCutter.ui.tab.XYZSettings;
 
 @ClientEndpoint
 public class MyLaserWebsocketClient {
@@ -152,6 +153,8 @@ public class MyLaserWebsocketClient {
 	@OnClose
 	public void onClose() {
 		Settings.getInstance().log("\tClose ws connection to laser at: " + uri);
+		Settings.getInstance().log("\tTrying to reconnect to: " + uri);
+		XYZSettings.getInstance().makeWebsocketConnection();
 	}
 
 }

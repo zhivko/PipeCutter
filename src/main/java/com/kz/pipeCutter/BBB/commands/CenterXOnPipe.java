@@ -10,7 +10,7 @@ public class CenterXOnPipe implements Runnable {
 
 	boolean shouldStop = false;
 	private static CenterXOnPipe instance;
-	public static float offsetX = 10; // we need to be in center x within 10mm
+	public static float offsetX = 40; // we need to be in center x within 10mm
 																		// before starting center procedure
 
 	public static CenterXOnPipe getInstance() {
@@ -28,6 +28,13 @@ public class CenterXOnPipe implements Runnable {
 			Settings.getInstance().log("Connect capacitive sensor!");
 			return;
 		}
+		
+		try {
+			Thread.sleep(1000);
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 
 		Settings.getInstance().xyzSettings.seriesXZ.clear();
 		Settings.getInstance().xyzSettings.updateChartRange();
@@ -36,11 +43,11 @@ public class CenterXOnPipe implements Runnable {
 		Float dimZ = Float.valueOf(Settings.getInstance().getSetting("pipe_dim_z"));
 
 		float diagonal = (float) Math.sqrt(Math.pow(dimX / 2, 2) + Math.pow(dimZ / 2, 2));
-		float highZPos = (diagonal + 20);
+		float highZPos = (diagonal + 40);
 		CenterPipe.getInstance().executeMdiAndWaitFor("G00 Z" + highZPos, "position_z", highZPos);
 		CenterPipe.getInstance().executeMdiAndWaitFor("G00  X0", "position_x", 0);
 
-		CenterPipe.getInstance().moveProbeTo4mmOffset();
+		CenterPipe.getInstance().moveProbeTo20mmOffset();
 
 		int waitPositionMs = 30;
 
@@ -55,6 +62,8 @@ public class CenterXOnPipe implements Runnable {
 		new ExecuteMdi("G00 X" + newXPos).start();
 		while (true && !shouldStop) {
 			// we need to check for position x to reach new x pos
+			if (shouldStop)
+				return;			
 			String xVal = Settings.getInstance().getSetting("position_x");
 			if (xVal != null && !xVal.equals("")) {
 				xPos = Float.valueOf(xVal);
@@ -105,10 +114,10 @@ public class CenterXOnPipe implements Runnable {
 				Settings.getInstance().xyzSettings.seriesXZ.add(xPos, z);
 				// if (z > startZ + 1.5f)
 				// deltaX = 0.1f;
-				if (z > 1000) {
-					xmin = xPos;
-					break;
-				}
+//				if (z > 1000) {
+//					xmin = xPos;
+//					break;
+//				}
 			}
 			if (xPos >= (pipe_dim_x / 2 + offsetX))
 				break;

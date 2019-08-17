@@ -1,0 +1,102 @@
+# 
+# THC conf from https://github.com/modmaker/machinekit/blob/master/configs/by_interface/mesa/plasma-5i20/plasma-demo.hal
+#
+
+
+#CRAMPS_P503_2 MISO P929 ...  for thc voltage from mesa thc 10v - needs to go to hal_arm335xQEP encoder
+#CRAMPS_P503_6 MOSI P930 ...  arcOK - transfer start CNC machine motion
+#CRAMPS_P503_4 SCK  P931 ...  plasma start
+
+loadrt myrand names=rand.0
+addf rand.0 servo-thread
+setp rand.0.amplitude 7000.0
+setp rand.0.value 130000.0
+setp rand.0.timeDelta 0.0014
+
+#newinst thc thc.0
+#loadrt thc names=thc0
+loadrt mythc
+addf mythc servo-thread
+
+##############################
+# HAL PLASMA SETUP
+##############################
+setp mythc.scale-offset 119000.0
+setp mythc.vel-scale 0.00037866834
+setp mythc.velocity-tol 3.0
+setp mythc.voltage-tol 2.0
+setp mythc.correction-vel 0.0001
+
+
+###################################
+#   encoder thc config
+###################################
+# The direct inputs for the PRU are located in register 31.  In the pinmux 
+# spreadsheet (https://github.com/cdsteinkuehler/beaglebone-black-pinmux/blob/hal_pru_generic/pinmux.ods), you will find several modes that look like: 
+#   pr1_pru0_pru_r31_1 
+#          ^         ^ 
+#          |         Input number 
+#         PRU 
+# The input number is what you would put in the HAL file for the pin 
+# value, and the PRU (0 or 1) needs to match the PRU you specify when 
+# loading the hal_pru_generic module.  These pins need to be set to the 
+# pruin mode using the config-pin utility to work as encoder inputs.
+# example: config-pin P9.29 pruin
+# bb_gpio.p9.in-29 = pr1_pru0_pru_r31_1
+#setp hpg.encoder.00.chan.00.counter-mode 	2
+#setp hpg.encoder.00.chan.00.A-pin			1
+#setp hpg.encoder.00.chan.00.B-pin			2
+#setp hpg.encoder.00.chan.00.index-pin		0
+#setp hpg.encoder.00.chan.00.index-enable	false
+#setp hpg.encoder.00.chan.00.scale			1
+#setp hpg.encoder.00.chan.00.vel-timeout     3.0
+
+
+#######################################
+####  HAL PLASMA 				   ####
+#######################################
+
+
+# we get touchoff from laser sensor
+net thc-torch-probe motion.probe-input <= udp.1.touchOff 
+
+# encoder velosity simulation from random generator
+#net thc-vel-in hpg.encoder.00.chan.00.velocity => mythc.encoder-vel
+#net thc-vel-in rand.0.out => mythc.encoder-vel
+
+# starts the motion when the plasma arc has transfered to the work
+# bb_gpio.p9.in-30 = MOSI = P503_6 = pin 930
+#net thc-arc-ok mythc.arc-ok <= motion.digital-in-00 <= bb_gpio.p9.in-30
+# arc ok signal
+#net thc-arc-ok mythc.arc-ok <= motion.digital-in-00 <= bb_gpio.p9.in-30 
+#setp mythc.arc-ok true
+
+
+# THC parameter connections
+#net thc-scale-offset 	myini.scale-offset		mythc.scale-offset
+#net thc-vel-scale    	myini.vel-scale 		mythc.vel-scale
+#net thc-voltage-tol  	myini.voltage-tol 		mythc.voltage-tol
+#net thc-correction-vel  myini.correction-vel	mythc.correction-vel
+
+
+# position command and feedback
+# hijack position command and feed through thc
+#net emcmot.02.pos-cmd mythc.z-pos-in <= axis.2.motor-pos-cmd
+#net thc-pos-cmd mythc.z-pos-out hpg.stepgen.02.position-cmd myini.thc-z-pos
+#net motor.02.pos-fb axis.2.motor-pos-fb <= mythc.z-fb-out
+
+# spindle on starts the arc
+# bb_gpio.p9.out-31 = SCK = P503_4 = pin 931
+net spindle-on motion.spindle-on => mymotion.spindle-on => mythc.torch-on
+
+net thc-enable myini.thc-enable mythc.enable
+net thc-voltmeter mythc.volts myini.actual-volts
+net thc-voltset myini.volts-requested mythc.volts-requested
+net thc-req-vel mythc.requested-vel <= motion.requested-vel
+net thc-cur-vel mythc.current-vel <= motion.current-vel
+net thc-offset-value mythc.offset-value myini.offset-value
+
+net thc-vel-status mythc.vel-status myini.vel-status
+net thc-vel-tol myini.vel-tol mythc.vel-tol
+net thc-torch-probe myini.torch-probe
+

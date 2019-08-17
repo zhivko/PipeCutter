@@ -44,34 +44,58 @@ public class CenterPipe implements Runnable {
 		Float dimZ = Float.valueOf(Settings.getInstance().getSetting("pipe_dim_z"));
 
 		float diagonal = (float) Math.sqrt(Math.pow(dimX / 2, 2) + Math.pow(dimZ / 2, 2));
-		float highZPos = (diagonal + 20);
+		float highZPos = (diagonal + 40);
 
 		float angle = 0;
+		new ExecuteMdi("G90").start(); //to absolute coordinates
+		try {
+			Thread.sleep(500);
+		} catch (InterruptedException e2) {
+			// TODO Auto-generated catch block
+			e2.printStackTrace();
+		}
 		executeMdiAndWaitFor("G00 X0 Z" + highZPos, "position_z", highZPos);
 		if (this.shouldStop)
 			return;
 		executeMdiAndWaitFor("G01 A" + angle + " B" + angle + speed, "position_a", angle);
+		
+		try {
+			Thread.sleep(1500);
+		} catch (InterruptedException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
+		
 		if (this.shouldStop)
 			return;
 		moveProbeTo1mmOffset();
+		if (this.shouldStop)
+			return;
+		
 		float z = Float.valueOf(Settings.getInstance().getSetting("position_z")) + getCapSenseHeight();
 
 		angle = 90;
 		executeMdiAndWaitFor("G00 X0 Z" + highZPos, "position_z", highZPos);
 		executeMdiAndWaitFor("G01 A" + angle + " B" + angle + speed, "position_a", angle);
 		moveProbeTo1mmOffset();
+		if (this.shouldStop)
+			return;
 		float y = Float.valueOf(Settings.getInstance().getSetting("position_z")) + getCapSenseHeight();
 
 		angle = 180;
 		executeMdiAndWaitFor("G00 X0 Z" + highZPos, "position_z", highZPos);
 		executeMdiAndWaitFor("G01 A" + angle + " B" + angle + speed, "position_a", angle);
 		moveProbeTo1mmOffset();
+		if (this.shouldStop)
+			return;
 		float e = Float.valueOf(Settings.getInstance().getSetting("position_z")) + getCapSenseHeight();
 
 		angle = 270;
 		executeMdiAndWaitFor("G00 X0 Z" + highZPos, "position_z", highZPos);
 		executeMdiAndWaitFor("G01 A" + angle + " B" + angle + speed, "position_a", angle);
 		moveProbeTo1mmOffset();
+		if (this.shouldStop)
+			return;
 		float x = Float.valueOf(Settings.getInstance().getSetting("position_z")) + getCapSenseHeight();
 
 		angle = 0;
@@ -131,21 +155,21 @@ public class CenterPipe implements Runnable {
 	public void moveProbeTo1mmOffset() {
 
 		float laserOffset = Float.valueOf(Settings.getInstance().getNonEmptySetting("mymotion.laserHeight1mm"));
-		while (laserOffset >= 10 && !shouldStop) {
+		while (laserOffset >= 30.0f && !shouldStop) {
 			float z = Float.valueOf(Settings.getInstance().getSetting("position_z"));
 			float newZ = z - 5;
 			executeMdiAndWaitFor("G00 X0 Z" + newZ, "position_z", newZ);
 			laserOffset = Float.valueOf(Settings.getInstance().getSetting("mymotion.laserHeight1mm"));
 		}
 
-		while (laserOffset >= 3.0f && !shouldStop) {
+		while (laserOffset >= 23.0f && !shouldStop) {
 			float z = Float.valueOf(Settings.getInstance().getSetting("position_z"));
 			float newZ = z - 1;
 			executeMdiAndWaitFor("G00 X0 Z" + newZ, "position_z", newZ);
 			laserOffset = Float.valueOf(Settings.getInstance().getNonEmptySetting("mymotion.laserHeight1mm"));
 		}
 
-		while (laserOffset >= 1.5f && !shouldStop) {
+		while (laserOffset >= 20.0f && !shouldStop) {
 			float z = Float.valueOf(Settings.getInstance().getSetting("position_z"));
 			float newZ = z - 0.2f;
 			executeMdiAndWaitFor("G00 X0 Z" + newZ, "position_z", newZ);
@@ -153,17 +177,17 @@ public class CenterPipe implements Runnable {
 		}
 	}
 
-	public void moveProbeTo4mmOffset() {
+	public void moveProbeTo20mmOffset() {
 		shouldStop = false;
 		float laserOffset = Float.valueOf(Settings.getInstance().getSetting("mymotion.laserHeight1mm"));
-		while (laserOffset >= 10 && !shouldStop) {
+		while (laserOffset >= 30 && !shouldStop) {
 			float z = Float.valueOf(Settings.getInstance().getSetting("position_z"));
 			float newZ = z - 4;
 			executeMdiAndWaitFor("G00 X0 Z" + newZ, "position_z", newZ);
 			laserOffset = Float.valueOf(Settings.getInstance().getSetting("mymotion.laserHeight1mm"));
 		}
 
-		while (laserOffset >= 3.0f && !shouldStop) {
+		while (laserOffset >= 20.0f && !shouldStop) {
 			float z = Float.valueOf(Settings.getInstance().getSetting("position_z"));
 			float newZ = z - 1;
 			executeMdiAndWaitFor("G00 X0 Z" + newZ, "position_z", newZ);
@@ -188,6 +212,7 @@ public class CenterPipe implements Runnable {
 				if (System.currentTimeMillis() - timeOfLastSent > 2000) {
 					new ExecuteMdi(mdiCommand).start();
 					timeOfLastSent = System.currentTimeMillis();
+					
 				}
 
 				String val = Settings.getInstance().getSetting(setting);
@@ -196,6 +221,8 @@ public class CenterPipe implements Runnable {
 
 				if (Math.round(tempValue * 10.0) / 10.0 == Math.round(value * 10.0) / 10.0)
 					break;
+				
+				Thread.yield();
 			} catch (InterruptedException e2) {
 				// TODO Auto-generated catch block
 				e2.printStackTrace();

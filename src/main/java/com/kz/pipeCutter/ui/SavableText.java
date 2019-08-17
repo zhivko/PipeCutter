@@ -49,7 +49,8 @@ public class SavableText extends SavableControl {
 				try {
 					if (!SavableText.this.isLoadingValue()) {
 						value = jValue.getText();
-						SavableText.this.save();
+						if (SavableText.this.needsSave)
+							SavableText.this.save();
 						valueChangedFromUI();
 					}
 				} catch (Exception ex) {
@@ -70,10 +71,9 @@ public class SavableText extends SavableControl {
 
 		try {
 			// synchronized (this.value) {
-			if (!this.isLoadingValue && SurfaceDemo.getInstance().isInitialized() && val.equals(""))
-			{
+			if (!this.isLoadingValue && SurfaceDemo.getInstance().isInitialized() && val.equals("")) {
 				System.out.println(this.getParId() + " empty value: " + Thread.currentThread().getName());
-				if(this.getParId().startsWith("position_") || this.getParId().equals("mymotion.laserHeight1mm") )
+				if (this.getParId().startsWith("position_") || this.getParId().equals("mymotion.laserHeight1mm"))
 					System.out.println("");
 			}
 
@@ -103,11 +103,10 @@ public class SavableText extends SavableControl {
 		String ret;
 		semaphore.acquireUninterruptibly();
 		try {
-			if (this.getParId().equals("mymotion.laserHeight1") && value.trim().equals(""))
-			{
-				System.out.println(this.getParId() + " empty value: " + Thread.currentThread().getName());
-			}
-			ret = this.value;
+			if (this.getParId().startsWith("mymotion.laserHeight1"))
+				ret = String.valueOf(MyLaserWebsocketClient.getInstance().value);
+			else
+				ret = this.value;
 		} finally {
 			semaphore.release();
 		}

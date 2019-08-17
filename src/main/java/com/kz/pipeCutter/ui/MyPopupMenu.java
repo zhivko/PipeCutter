@@ -396,5 +396,20 @@ public class MyPopupMenu extends PopupMenu {
 		});
 		this.add(menuItem14);
 
+		
+		MenuItem menuItem19 = new MenuItem("Restart animator");
+		menuItem14.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+				SwingUtilities.invokeLater(new Runnable() {
+					@Override
+					public void run() {
+						SurfaceDemo.getInstance().getChart().startAnimator();
+					}
+				});
+			}
+		});
+		this.add(menuItem19);		
+		
 	}
 }

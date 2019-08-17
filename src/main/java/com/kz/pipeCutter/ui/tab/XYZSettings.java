@@ -354,26 +354,13 @@ public class XYZSettings extends JPanel {
 			}
 		});
 
-		SavableText laserDistance1 = new SavableText();
-		laserDistance1.setLabelTxt("Cap. sense distance: ");
-		laserDistance1.setParId("mymotion.laserHeight1");
-		laserDistance1.setNeedsSave(false);
-		// laserDistance1.setPin(new PinDef("mymotion.laserHeight1",
-		// HalPinDirection.HAL_IN, ValueType.HAL_FLOAT));
-		laserDistance1.addFocusListener(new FocusListener() {
-
-			@Override
-			public void focusLost(FocusEvent e) {
-				// TODO Auto-generated method stub
-
-			}
-
-			@Override
-			public void focusGained(FocusEvent e) {
-
-			}
-		});
-		panelZAxis.add(laserDistance1);
+		SavableText motionTouch = new SavableText();
+		motionTouch.setLabelTxt("Probe touch");
+		motionTouch.setParId("motionTouch");
+		motionTouch.setNeedsSave(false);
+		motionTouch.setPin(new PinDef("motion.probe-input",
+		HalPinDirection.HAL_IN, ValueType.HAL_BIT));
+		panelZAxis.add(motionTouch);
 
 		SavableText laserDistance2 = new SavableText();
 		laserDistance2.setLabelTxt("Cap. sense distance [mm]: ");
@@ -439,7 +426,7 @@ public class XYZSettings extends JPanel {
 		Float lasHeight = Float.valueOf(Settings.getInstance().getSetting("mymotion.laserHeight1"));
 
 		domainAxis.setRange(-pipeDimX - CenterXOnPipe.offsetX, pipeDimX + CenterXOnPipe.offsetX);
-		rangeAxis.setRange(0, 20);
+		rangeAxis.setRange(0, 40);
 		// rangeAxis.setTickUnit(new NumberTickUnit(0.05));
 	}
 	

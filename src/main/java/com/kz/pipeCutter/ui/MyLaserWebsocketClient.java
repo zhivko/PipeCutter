@@ -93,11 +93,18 @@ public class MyLaserWebsocketClient {
 		// message:"
 		// + message);
 		if (message.startsWith("distance")) {
-			String valueStr = message.split(" ")[1];
+			String valueStr = message.split("\\s+")[1];
 			if (!valueStr.trim().equals("")) {
 				value = Float.valueOf(valueStr);
 				Settings.getInstance().setSetting("mymotion.laserHeight1", valueStr);
 				Settings.getInstance().setSetting("mymotion.laserHeight1mm", value);
+				if (System.currentTimeMillis() < lastPingMilis + 500) {
+					getInstance().isOn = true;
+				} else {
+					getInstance().isOn = false;
+				}
+				lastPingMilis = System.currentTimeMillis();
+				Thread.yield();
 			}
 		} else if (message.startsWith("Analogue")) {
 			String valueStr = message.substring(message.lastIndexOf(" "), message.length());

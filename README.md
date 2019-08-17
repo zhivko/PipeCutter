@@ -417,7 +417,8 @@ Pins to be used on BBB:
 ```
 CRAMPS_P503_2 SPI_CS0 	P928 ...  for thc voltage from mesa thc 10v - needs to go to pru_generic encoder bb_gpio.p9.in-28
 CRAMPS_P503_4 SCK   	P931 ...  plasma start physically connected to 3.3V relay  bb_gpio.p9.out-31 	
-CRAMPS_P503_6 MOSI  	P930 ...  arc OK - transfer start CNC machine motion bb_gpio.p9.in-30 			
+CRAMPS_P503_6 MOSI  	P930 ...  arc OK - transfer start CNC machine motion bb_gpio.p9.in-30
+CRAMPS_P503_0 MISO		P929 ...  plasma touch for G38.x command - centering procedure			
 ```
 Fritzing connections below:
 ![Fritzing pipecuter setup](https://raw.githubusercontent.com/zhivko/PipeCutter/master/screenshots/PipeCutter_bb.png)

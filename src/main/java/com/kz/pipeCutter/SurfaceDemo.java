@@ -452,7 +452,7 @@ public class SurfaceDemo extends AbstractAnalysis {
 
 						NUMBER_EDGES = Boolean.valueOf(Settings.getInstance().getSetting("ui_number_edges"));
 						NUMBER_POINTS = Boolean.valueOf(Settings.getInstance().getSetting("ui_number_points"));
-
+						resumeAnimator();
 						// pauseAnimator();
 						// resumeAnimator();
 						// while (SurfaceDemo.getInstance().canvas.getAnimator().getThread()

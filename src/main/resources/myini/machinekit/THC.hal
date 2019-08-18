@@ -109,9 +109,8 @@ net thc-torch-probe myini.torch-probe
 #touch probe debouncing
 #change delay and pin number to fit your needs
 setp bb_gpio.p9.in-13.invert 1
-loadrt debounce
 setp debounce.0.delay 200
-addf debounce.0 servo-thread
+
 net debounce-probe-in debounce.0.0.in <= bb_gpio.p9.in-13
 net probe-in debounce.0.0.out => motion.probe-input
 #end of probe debouncing

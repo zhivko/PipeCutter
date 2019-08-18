@@ -310,14 +310,14 @@ net emcmot.00.enable => bb_gpio.p9.out-25
 # ################
 # Limit Switches
 # ################
-#newsig limit-x-min bit
+newsig limit-x-min bit
 newsig limit-x-max bit
 newsig limit-y-min bit
 newsig limit-y-max bit
 #newsig limit-z-min bit
 newsig limit-z-max bit
 
-#net limit-x-min <= bb_gpio.p8.in-08
+net limit-x-min <= bb_gpio.p8.in-08
 setp debounce.1.delay 50
 net X-unfilt bb_gpio.p8.in-07 => debounce.1.0.in
 net limit-x-max <= debounce.1.0.out
@@ -336,7 +336,7 @@ setp bb_gpio.p9.in-11.invert 1
 
 # Uncomment if you actually have limit switches setup
 # You probably want to setup homing in the INI file, as well
-#net limit-x-min => axis.0.home-sw-in
+net limit-x-min => axis.0.home-sw-in
 #net limit-x-min => axis.0.neg-lim-sw-in
 net limit-x-max => axis.0.pos-lim-sw-in
 #net limit-y-min => axis.1.home-sw-in

@@ -13,10 +13,10 @@ public class HomeAllAxis extends BBBMachineTalkCommand {
 	@Override
 	public Container prepareContainer() throws Exception {
 		// TODO Auto-generated method stub
-		
-		for (int i = 0; i < 5; i++) {
+		Integer axes[] = {0}; 
+		for (int i = 0; i < axes.length; i++) {
 			pb.Message.Container.Builder builder = Container.newBuilder();
-			pb.Status.EmcCommandParameters emcCommandParameter = pb.Status.EmcCommandParameters.newBuilder().setIndex(i)
+			pb.Status.EmcCommandParameters emcCommandParameter = pb.Status.EmcCommandParameters.newBuilder().setIndex(axes[i])
 					.build();
 			builder.setType(ContainerType.MT_EMC_AXIS_HOME);
 			builder.setEmcCommandParams(emcCommandParameter);

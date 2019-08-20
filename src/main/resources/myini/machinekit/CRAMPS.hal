@@ -317,8 +317,9 @@ newsig limit-y-max bit
 #newsig limit-z-min bit
 newsig limit-z-max bit
 
-#net limit-x-min <= bb_gpio.p8.in-08
 setp debounce.1.delay 50
+#net limit-x-min <= bb_gpio.p8.in-08
+sets limit-x-min 1
 net X-unfilt bb_gpio.p8.in-07 => debounce.1.0.in
 net limit-x-max <= debounce.1.0.out
 net limit-y-min <= bb_gpio.p8.in-10
@@ -328,7 +329,7 @@ net limit-z-max <= bb_gpio.p9.in-11
 
 # Adjust as needed for your switch polarity
 setp bb_gpio.p8.in-08.invert 1
-#setp bb_gpio.p8.in-07.invert 1
+setp bb_gpio.p8.in-07.invert 1
 setp bb_gpio.p8.in-10.invert 1
 setp bb_gpio.p8.in-09.invert 1
 setp bb_gpio.p9.in-11.invert 1

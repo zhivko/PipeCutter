@@ -139,6 +139,13 @@ public class XYZSettings extends JPanel {
 		positionX.setParId("position_x");
 		positionX.setNeedsSave(false);
 
+		SavableText myiniXHomeOfsett = new SavableText();
+		myiniXHomeOfsett.setPin(new PinDef("myini.x-home-offset", HalPinDirection.HAL_OUT, ValueType.HAL_FLOAT));
+		myiniXHomeOfsett.requiresHalRCompSet = true;
+		myiniXHomeOfsett.setLabelTxt("Z Home Offset [mm]:");
+		myiniXHomeOfsett.setParId("myini.x-home-offset");
+		panelXAxis.add(myiniXHomeOfsett);
+
 		final JToggleButton btnC = new JToggleButton("Center X on pipe");
 		btnC.setBounds(75, 32, 54, 31);
 		panelXAxis.add(btnC);
@@ -197,7 +204,8 @@ public class XYZSettings extends JPanel {
 					Settings.getInstance().log("Setting x offset...");
 					Float dimX = Float.valueOf(Settings.getInstance().getSetting("pipe_dim_x"));
 
-					ExecuteMdi command = new ExecuteMdi("G92 X" + (dimX.floatValue() / 2.0f - Float.valueOf(x_cut_centProc.jValue.getText())));
+					ExecuteMdi command = new ExecuteMdi(
+							"G92 X" + (dimX.floatValue() / 2.0f - Float.valueOf(x_cut_centProc.jValue.getText())));
 					command.start();
 					Settings.getInstance().log("Setting x offset...Done.");
 				}
@@ -332,6 +340,13 @@ public class XYZSettings extends JPanel {
 		positionZ.setParId("position_z");
 		positionZ.setNeedsSave(false);
 
+		SavableText myiniZHomeOfsett = new SavableText();
+		myiniZHomeOfsett.setPin(new PinDef("myini.z-home-offset", HalPinDirection.HAL_OUT, ValueType.HAL_FLOAT));
+		myiniZHomeOfsett.requiresHalRCompSet = true;
+		myiniZHomeOfsett.setLabelTxt("Z Home Offset [mm]:");
+		myiniZHomeOfsett.setParId("myini.z-home-offset");
+		panelZAxis.add(myiniZHomeOfsett);
+
 //		JButton btnZRot = new JButton("Make X axis horizontal");
 //		btnZRot.setBounds(75, 32, 54, 31);
 //		panelZAxis.add(btnZRot);
@@ -358,8 +373,8 @@ public class XYZSettings extends JPanel {
 		motionTouch.setLabelTxt("Probe touch");
 		motionTouch.setParId("motionTouch");
 		motionTouch.setNeedsSave(false);
-		motionTouch.setPin(new PinDef("motion.probe-input",
-		HalPinDirection.HAL_IN, ValueType.HAL_BIT));
+		motionTouch.setPin(new PinDef("motion.probe-input", HalPinDirection.HAL_IN, ValueType.HAL_BIT));
+		motionTouch.requiresHalRCompSet = true;
 		panelZAxis.add(motionTouch);
 
 		SavableText laserDistance2 = new SavableText();
@@ -429,8 +444,7 @@ public class XYZSettings extends JPanel {
 		rangeAxis.setRange(0, 40);
 		// rangeAxis.setTickUnit(new NumberTickUnit(0.05));
 	}
-	
-	
+
 	public void updateChartRangeCap() {
 		ValueAxis domainAxis = chart.getXYPlot().getDomainAxis();
 		ValueAxis rangeAxis = chart.getXYPlot().getRangeAxis();

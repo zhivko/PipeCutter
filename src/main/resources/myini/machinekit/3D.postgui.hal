@@ -28,3 +28,5 @@ net stepg_maxaccel_3		myini.stepgen_maxacc_3 	hpg.stepgen.03.maxaccel
 net stepg_maxvelocity_4		myini.stepgen_maxvel_4 	hpg.stepgen.04.maxvel
 net stepg_maxaccel_4		myini.stepgen_maxacc_4 	hpg.stepgen.04.maxaccel
 
+net x-home-offset myini.x-home-offset => axis.0.home-offset
+net z-home-offset myini.z-home-offset => axis.2.home-offset

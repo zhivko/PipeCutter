@@ -314,7 +314,7 @@ newsig limit-x-min bit
 newsig limit-x-max bit
 newsig limit-y-min bit
 newsig limit-y-max bit
-#newsig limit-z-min bit
+newsig limit-z-min bit
 newsig limit-z-max bit
 
 setp debounce.1.delay 50
@@ -325,7 +325,10 @@ net limit-x-max <= debounce.1.0.out
 net limit-y-min <= bb_gpio.p8.in-10
 net limit-y-max <= bb_gpio.p8.in-09
 #net limit-z-min <= bb_gpio.p9.in-13
-net limit-z-max <= bb_gpio.p9.in-11
+sets limit-z-min 1
+#net limit-x-max <= bb_gpio.p9.in-11
+net Z-unfilt bb_gpio.p9.in-11 => debounce.1.1.in
+net limit-z-max <= debounce.1.1.out
 
 # Adjust as needed for your switch polarity
 setp bb_gpio.p8.in-08.invert 1
@@ -337,14 +340,15 @@ setp bb_gpio.p9.in-11.invert 1
 
 # Uncomment if you actually have limit switches setup
 # You probably want to setup homing in the INI file, as well
-net limit-x-min => axis.0.home-sw-in
+net limit-x-max => axis.0.home-sw-in
 net limit-x-min => axis.0.neg-lim-sw-in
 net limit-x-max => axis.0.pos-lim-sw-in
+
 #net limit-y-min => axis.1.home-sw-in
 #net limit-y-min => axis.1.neg-lim-sw-in
 #net limit-y-max => axis.1.pos-lim-sw-in
-#net limit-z-min => axis.2.home-sw-in
-#net limit-z-min => axis.2.neg-lim-sw-in
+net limit-z-max => axis.2.home-sw-in
+net limit-z-min => axis.2.neg-lim-sw-in
 net limit-z-max => axis.2.pos-lim-sw-in
 
 

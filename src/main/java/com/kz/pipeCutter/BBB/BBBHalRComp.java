@@ -146,7 +146,7 @@ public class BBBHalRComp implements Runnable {
 											halPins.put(contReturned.getComp(i).getPin(j).getName(), value);
 
 											if (BBBHalRComp.instance.pinsByName.get(contReturned.getComp(i).getPin(j).getName()) == null)
-												throw new Exception("Missing PIN !!!");
+												throw new Exception("Missing PIN: " + contReturned.getComp(i).getPin(j).getName());
 
 											if (BBBHalRComp.instance.pinsByHandle.get(contReturned.getComp(i).getPin(j).getHandle()) == null
 													&& BBBHalRComp.instance.pinsByName.get(contReturned.getComp(i).getPin(j).getName()) != null)

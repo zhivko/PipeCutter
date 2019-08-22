@@ -58,6 +58,10 @@ newpin myini  myini.correction-vel 	 float out
 newpin myini  myini.thc-simulation   bit out
 newpin myini  myini.arc-ok			 bit in
 
+newpin myini  myini.x-home-offset    float out
+newpin myini  myini.z-home-offset    float out
+
+
 ready  myini
 
 #net netLaserHeight0	udp.0.distance	mymotion.laserHeight0

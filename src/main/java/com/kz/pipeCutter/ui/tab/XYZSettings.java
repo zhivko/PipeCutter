@@ -32,9 +32,11 @@ import com.kz.pipeCutter.BBB.commands.CapSenseCalibrate;
 import com.kz.pipeCutter.BBB.commands.CenterXOnPipe;
 import com.kz.pipeCutter.BBB.commands.CenterXOnPipeProcedure;
 import com.kz.pipeCutter.BBB.commands.ExecuteMdi;
+import com.kz.pipeCutter.BBB.commands.HomeAxis;
 import com.kz.pipeCutter.BBB.commands.Jog;
 import com.kz.pipeCutter.BBB.commands.MakeXHorizontal;
 import com.kz.pipeCutter.BBB.commands.PlasmaTouch;
+import com.kz.pipeCutter.ui.MyButton;
 import com.kz.pipeCutter.ui.MyLaserWebsocketClient;
 import com.kz.pipeCutter.ui.MyVerticalFlowLayout;
 import com.kz.pipeCutter.ui.PinDef;
@@ -145,6 +147,14 @@ public class XYZSettings extends JPanel {
 		myiniXHomeOfsett.setLabelTxt("Z Home Offset [mm]:");
 		myiniXHomeOfsett.setParId("myini.x-home-offset");
 		panelXAxis.add(myiniXHomeOfsett);
+		
+		MyButton homeX = new MyButton("Home X") {
+			@Override
+			public void doIt() {
+				new HomeAxis(0).start();
+			}
+		};
+		panelXAxis.add(homeX);
 
 		final JToggleButton btnC = new JToggleButton("Center X on pipe");
 		btnC.setBounds(75, 32, 54, 31);
@@ -346,6 +356,15 @@ public class XYZSettings extends JPanel {
 		myiniZHomeOfsett.setLabelTxt("Z Home Offset [mm]:");
 		myiniZHomeOfsett.setParId("myini.z-home-offset");
 		panelZAxis.add(myiniZHomeOfsett);
+		
+		MyButton homeZ = new MyButton("Home Z") {
+			@Override
+			public void doIt() {
+				new HomeAxis(2).start();
+			}
+		};
+		panelZAxis.add(homeZ);			
+		
 
 //		JButton btnZRot = new JButton("Make X axis horizontal");
 //		btnZRot.setBounds(75, 32, 54, 31);

@@ -53,7 +53,7 @@ public class CenterXOnPipeProcedure implements Runnable {
 		SurfaceDemo.getInstance().writeToGcodeFile(String.format(java.util.Locale.US, "M5"));
 
 		// move to safe pos
-		SurfaceDemo.getInstance().writeToGcodeFile(String.format(java.util.Locale.US, "G00 X0 Y%.2f Z%.2f", dimMaxY - 10.0f, diagonal / 2 + 10.0f));
+		SurfaceDemo.getInstance().writeToGcodeFile(String.format(java.util.Locale.US, "G00 X0 Y%.2f Z%.2f", dimMaxY - 10.0f, diagonal / 2));
 
 		// End program
 		SurfaceDemo.getInstance().writeToGcodeFile(String.format(java.util.Locale.US, "M02"));

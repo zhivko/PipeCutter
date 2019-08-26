@@ -22,6 +22,7 @@ import com.kz.pipeCutter.BBB.commands.ChangeMode;
 import com.kz.pipeCutter.BBB.commands.EstopReset;
 import com.kz.pipeCutter.BBB.commands.ExecuteMdi;
 import com.kz.pipeCutter.BBB.commands.HomeAllAxis;
+import com.kz.pipeCutter.BBB.commands.HomeAxis;
 import com.kz.pipeCutter.BBB.commands.MachinekitListProcesses;
 import com.kz.pipeCutter.BBB.commands.MachineKitStart;
 import com.kz.pipeCutter.BBB.commands.MachinekitKill;
@@ -163,15 +164,7 @@ public class CommandPanel extends JPanel {
 				new ChangeMode(EmcTaskModeType.EMC_TASK_MODE_AUTO).start();
 			}
 		};
-		machineTalkPanel.add(modeAutomatic);
-
-		MyButton homeAll = new MyButton("Home ALL") {
-			@Override
-			public void doIt() {
-				new HomeAllAxis().start();
-			}
-		};
-		machineTalkPanel.add(homeAll);
+		machineTalkPanel.add(modeAutomatic);	
 
 		MyButton unHomeAll = new MyButton("UnHome ALL") {
 			@Override
